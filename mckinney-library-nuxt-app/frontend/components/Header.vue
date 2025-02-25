@@ -2,7 +2,6 @@
     <header class="navbar">
       <div class="logo">
         <img src="../logo.jpg" alt="MPLF Logo" />
-        <h1>MPLF Donor & Grant Tracker</h1>
       </div>
       <nav>
         <a href="https://mckinneylplf.org" target="_blank">MPLF Website</a>
@@ -34,36 +33,42 @@
   }
   
   .logo img {
-    width: 40px;
+    width: 160px;
+    height: auto; /* Maintain aspect ratio */
     margin-right: 10px;
   }
   
-  nav a, .logout {
+  nav a {
     margin: 0 10px;
-    text-decoration: none;
+    text-decoration: underline;
     color: #333;
-    font-weight: bold;
+    font-weight: none;
+    font-size: 12px;
   }
   
   .logout {
-    background: #e74c3c;
+    background: #545679;
     color: white;
     border: none;
     padding: 5px 10px;
     cursor: pointer;
+    border-radius: 8px;
   }
   
   .main-nav {
     display: flex;
     background: #f4f4f4;
-    padding: 10px;
+    width: 100%;
   }
   
   .main-nav a {
-    margin-right: 15px;
+    flex: 1; /* Each button takes up equal space */
+    text-align: center;
+    padding: 15px 0;
     text-decoration: none;
-    color: #007bff;
+    color: #545679;
     font-weight: bold;
+    font-size: 18px;
   }
   </style>
   
