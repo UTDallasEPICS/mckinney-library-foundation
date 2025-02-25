@@ -1,7 +1,7 @@
 <template>
     <header class="navbar">
       <div class="logo">
-        <img src="../logo.jpg" alt="MPLF Logo" />
+        <img src="/logo.jpg" alt="MPLF Logo" />
       </div>
       <nav>
         <a href="https://mckinneyplf.org" target="_blank">MPLF Website</a>
@@ -66,17 +66,39 @@
   };
   
   const setActiveTab = (tab) => {
-    activeTab.value = tab;
-    activeSubTab.value = tabs[tab]?.[0]?.path || ''; // Default to the first sub-tab
-    if (activeSubTab.value) {
-      router.push(activeSubTab.value);
-    }
-  };
+  activeTab.value = tab;
+
+  // Determine the default route for the selected tab
+  let defaultPath = '';
+
+  switch (tab) {
+    case 'dashboard':
+      defaultPath = '/';
+      break;
+    case 'donations':
+      defaultPath = '/donations';
+      break;
+    case 'grants':
+      defaultPath = '/grants';
+      break;
+    case 'settings':
+      defaultPath = '/settings';
+      break;
+  }
+
+  activeSubTab.value = tabs[tab]?.[0]?.path || defaultPath; 
+
+  // Navigate to the correct page
+  router.push(activeSubTab.value);
+};
+
   
   const navigateTo = (path) => {
-    activeSubTab.value = path;
-    router.push(path);
-  };
+  console.log("Navigating to:", path); // Debugging log
+  activeSubTab.value = path;
+  router.push(path);
+};
+
   
   const subTabs = computed(() => tabs[activeTab.value] || []);
   </script>
