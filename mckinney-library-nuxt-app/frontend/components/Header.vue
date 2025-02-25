@@ -4,7 +4,7 @@
         <img src="../logo.jpg" alt="MPLF Logo" />
       </div>
       <nav>
-        <a href="https://mckinneylplf.org" target="_blank">MPLF Website</a>
+        <a href="https://mckinneyplf.org" target="_blank">MPLF Website</a>
         <button class="logout">Log out</button>
       </nav>
     </header>
