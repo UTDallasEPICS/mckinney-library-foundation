@@ -9,7 +9,7 @@
             <th>Last Name</th>
             <th>Role</th>
             <th>Email</th>
-            <th>Manage Accounts</th>
+            <th colspan="2">Manage Accounts</th>
           </tr>
         </thead>
         <tbody>
@@ -28,6 +28,8 @@
               <button :class="user.status === 'Active' ? 'freeze' : 'unfreeze'">
                 {{ user.status === 'Active' ? 'Freeze' : 'Unfreeze' }}
               </button>
+              </td>
+              <td>
               <button class="delete">Delete</button>
             </td>
           </tr>
@@ -64,6 +66,7 @@
     width: 100%;
     border-collapse: collapse;
     background: white;
+    background-color: #e6f0ff;
   }
   
   .accounts-table th, .accounts-table td {
@@ -75,6 +78,7 @@
   .accounts-table th {
     background: #ddd;
     text-align: center;
+    background-color: #e6f0ff;
   }
   
   .accounts-table select {
@@ -82,33 +86,31 @@
     padding: 5px;
   }
   
-  .action-buttons {
-    display: flex;
-    gap: 10px;
-  }
-  
-  .freeze {
-    background-color: yellow;
-    color: black;
-    padding: 5px 10px;
-    border: none;
-    cursor: pointer;
-  }
-  
-  .unfreeze {
-    background-color: green;
-    color: white;
-    padding: 5px 10px;
-    border: none;
-    cursor: pointer;
-  }
-  
-  .delete {
-    background-color: red;
-    color: white;
-    padding: 5px 10px;
-    border: none;
-    cursor: pointer;
-  }
+  /* Style for buttons */
+.action-buttons button, .delete {
+  width: 100%; /* Makes buttons take up the entire cell */
+  padding: 10px 0; /* Adds vertical padding */
+  border-radius: 20px; /* Rounds the corners */
+  font-size: 14px;
+  font-weight: bold;
+  cursor: pointer;
+  border: none;
+}
+
+/* Specific styles for each button type */
+.freeze {
+  background-color: yellow;
+  color: black;
+}
+
+.unfreeze {
+  background-color: green;
+  color: white;
+}
+
+.delete {
+  background-color: red;
+  color: white;
+}
   </style>
   
