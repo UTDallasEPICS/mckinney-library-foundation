@@ -1,4 +1,5 @@
 <template>
+  <div class="login-page">
   <div class="wrapper">
     <form @submit.prevent="handleSubmit">
       <h1>Welcome!</h1>
@@ -25,6 +26,7 @@
       </div>
     </form>
   </div>
+</div>
 </template>
 
 <script>
@@ -43,6 +45,10 @@ export default {
     },
   },
 };
+
+definePageMeta({
+  layout: false, // This removes the default layout (header, navbar)
+});
 </script>
 
 <style scoped>
