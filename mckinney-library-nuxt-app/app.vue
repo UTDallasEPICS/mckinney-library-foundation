@@ -4,5 +4,6 @@
 </template>
 
 <script setup>
-import Header from '~/components/Header.vue';
+import LoginPage from '~/pages/login/LoginPage.vue'
+//import Header from '~/components/Header.vue';
 </script>
