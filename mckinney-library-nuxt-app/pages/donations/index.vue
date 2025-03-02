@@ -18,27 +18,53 @@
 <script setup>
 import { ref } from 'vue'
 
-const headers = ref(["Name", "Organization", "Email", "Phone", "Address", "First Donation Date", "Last Donation Date"]) // Define column names
+const headers = ref([
+  "Name",
+  "Communication",
+  "Personal Info",
+  "Date",
+  "Amount",
+  "Status",
+  "Type",
+  "Board Member"
+]) // Updated column names
 </script>
 
 <style scoped>
+/* Match the header navigation styles */
 .table-container {
   width: 100%;
   overflow-x: auto;
   padding: 20px;
 }
+
+/* Style the table to be consistent with the navigation */
 table {
   width: 100%;
   border-collapse: collapse;
-  font-size: 16px;
-}
-th, td {
-  border: 1px solid #ddd;
-  padding: 10px;
-  text-align: left;
-}
-th {
-  background-color: #f4f4f4;
+  font-size: 14px; /* Match .main-nav button */
   font-weight: bold;
+  font-family: sans-serif; /* Inherit from navbar */
+  color: #545679; /* Match inactive buttons */
 }
+
+/* Headers: Blue background with white text */
+th {
+  background-color: #545679; /* Blue background */
+  color: white; /* White text */
+  font-weight: bold;
+  text-transform: uppercase;
+  padding: 15px;
+  text-align: center;
+  border-bottom: 2px solid #ddd; /* Adds separation */
+}
+
+/* Table body */
+td {
+  background-color: white;
+  padding: 10px;
+  border: 1px solid #ddd;
+  text-align: center;
+}
+
 </style>
