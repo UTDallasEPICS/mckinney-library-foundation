@@ -34,18 +34,27 @@ const headers = ref([
 /* Match the header navigation styles */
 .table-container {
   width: 100%;
-  overflow-x: auto;
-  padding: 20px;
+  display: flex;
+  justify-content: center; /* Centers table horizontally */
+  padding: 0; /* Remove unnecessary padding */
+  margin: 0 auto; /* Ensures centering */
 }
 
-/* Style the table to be consistent with the navigation */
 table {
-  width: 100%;
+  width: 90%; /* Ensures the table doesn't stretch too much */
   border-collapse: collapse;
-  font-size: 14px; /* Match .main-nav button */
+  font-size: 14px;
   font-weight: bold;
-  font-family: sans-serif; /* Inherit from navbar */
-  color: #545679; /* Match inactive buttons */
+  font-family: sans-serif;
+  color: #545679;
+}
+
+.sub-nav {
+  margin-bottom: 15px; /* Adjust spacing as needed */
+}
+
+.table-container {
+  margin-top: 20px; /* Creates space between navbar and table */
 }
 
 /* Headers: Blue background with white text */
