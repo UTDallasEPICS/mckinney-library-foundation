@@ -53,46 +53,44 @@ export default {
     const passwordInput = ref(null);
 
     const validateForm = () => {
-      let isValid = true;
+  let isValid = true;
 
-      // Email validation pattern
-      const emailPattern = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
-      if (!email.value) {
-        emailInput.value.setCustomValidity("Please enter your email.");
-        isValid = false;
-      } else if (!emailPattern.test(email.value)) {
-        emailInput.value.setCustomValidity("Please enter a valid email address (example@domain.com).");
-        isValid = false;
-      } else {
-        emailInput.value.setCustomValidity(""); // Reset validation message
-      }
+  // Updated email validation pattern
+  const emailPattern = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+  if (!email.value.trim()) {
+    emailInput.value.setCustomValidity("Please enter your email.");
+    isValid = false;
+  } else if (!emailPattern.test(email.value.trim())) {
+    emailInput.value.setCustomValidity("Please enter a valid email address (example@domain.com).");
+    isValid = false;
+  } else {
+    emailInput.value.setCustomValidity(""); // Reset validation message
+  }
 
-      // Password validation pattern
-      const passwordPattern = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,20}$/;
-      if (!password.value) {
-        passwordInput.value.setCustomValidity("Please enter your password.");
-        isValid = false;
-      } else if (!passwordPattern.test(password.value)) {
-        passwordInput.value.setCustomValidity(
-          "Password must be 8-20 characters long, include an uppercase letter, a lowercase letter, and a number."
-        );
-        isValid = false;
-      } else {
-        passwordInput.value.setCustomValidity(""); // Reset validation message
-      }
+  // Updated password validation pattern
+  const passwordPattern = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,20}$/;
+  if (!password.value) {
+    passwordInput.value.setCustomValidity("Please enter your password.");
+    isValid = false;
+  } else if (!passwordPattern.test(password.value)) {
+    passwordInput.value.setCustomValidity(
+      "Password must be 8-20 characters long, include an uppercase letter, a lowercase letter, and a number."
+    );
+    isValid = false;
+  } else {
+    passwordInput.value.setCustomValidity(""); // Reset validation message
+  }
 
-      // Trigger built-in validation messages
-      emailInput.value.reportValidity();
-      passwordInput.value.reportValidity();
+  // Trigger built-in validation messages
+  emailInput.value.reportValidity();
+  passwordInput.value.reportValidity();
 
-      if (isValid) {
-        alert("Form submitted successfully!");
-        navigateTo("/donations");
-      }
+  if (isValid) {
+    alert("Form submitted successfully!");
+    navigateTo("/donations");
+  }
+};
 
-    
-     
-    };
 
     return {
       email,
