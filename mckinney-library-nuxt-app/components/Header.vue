@@ -5,7 +5,7 @@
       </div>
       <nav>
         <a href="https://mckinneyplf.org" target="_blank">MPLF Website</a>
-        <button class="logout">Log out</button>
+        <button class="logout" @click="logout">Log out</button>
       </nav>
     </header>
   
@@ -101,6 +101,12 @@
 
   
   const subTabs = computed(() => tabs[activeTab.value] || []);
+
+  // Logout function: navigate to the login page (using replace to clear history)
+const logout = () => {
+  // Clear authentication state if needed, e.g. remove tokens
+  navigateTo('/login', { replace: true });
+};
   </script>
   
   
