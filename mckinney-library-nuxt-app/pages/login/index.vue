@@ -1,54 +1,91 @@
 <template>
-  <div class="login-page">
-  <div class="wrapper">
-    <form @submit.prevent="handleSubmit">
-      <h1>Welcome!</h1>
-      <h3>Please sign in to continue</h3>
+  <div class="container">
+    <div class="wrapper">
+      <form @submit.prevent="validateForm">
+        <h1>Welcome!</h1>
+        <h3>Please sign in to continue</h3>
 
-      <div class="input-box">
-        <input type="text" v-model="email" placeholder="Email" required />
-      </div>
-      <div class="input-box">
-        <input type="password" v-model="password" placeholder="Password" required />
-      </div>
+        <div class="input-box">
+          <input type="text" v-model.trim="email" placeholder="Email" required ref="emailInput" />
+        </div>
+        <div class="input-box">
+          <input type="password" v-model.trim="password" placeholder="Password" required ref="passwordInput" />
+        </div>
 
-      <div class="remember-forgot">
-        <label>
-          <input type="checkbox" v-model="rememberMe" />Remember me
-        </label>
-        <a href="#">Forgot password?</a>
-      </div>
+        <div class="remember-forgot">
+          <label><input type="checkbox" v-model="rememberMe"> Remember me</label>
+          <a href="#">Forgot password?</a>
+        </div>
 
-      <button type="submit" class="btn">Sign in</button>
+        <button type="submit" class="btn">Sign in</button>
 
-      <div class="request-invitation">
-        <p><a href="#">Or Request an Invitation</a></p>
-      </div>
-    </form>
+        <div class="request-invitation">
+          <p><a href="#">Or Request an Invitation</a></p>
+        </div>
+      </form>
+    </div>
   </div>
-</div>
 </template>
 
 <script>
+import { ref } from "vue";
+
 export default {
-  data() {
+  setup() {
+    const email = ref("");
+    const password = ref("");
+    const rememberMe = ref(false);
+    const emailInput = ref(null);
+    const passwordInput = ref(null);
+
+    const validateForm = () => {
+      let isValid = true;
+
+      // Email validation pattern
+      const emailPattern = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+      if (!email.value) {
+        emailInput.value.setCustomValidity("Please enter your email.");
+        isValid = false;
+      } else if (!emailPattern.test(email.value)) {
+        emailInput.value.setCustomValidity("Please enter a valid email address (example@domain.com).");
+        isValid = false;
+      } else {
+        emailInput.value.setCustomValidity(""); // Reset validation message
+      }
+
+      // Password validation pattern
+      const passwordPattern = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{16,128}$/;
+      if (!password.value) {
+        passwordInput.value.setCustomValidity("Please enter your password.");
+        isValid = false;
+      } else if (!passwordPattern.test(password.value)) {
+        passwordInput.value.setCustomValidity(
+          "Password must be 16-128 characters long, include an uppercase letter, a lowercase letter, and a number."
+        );
+        isValid = false;
+      } else {
+        passwordInput.value.setCustomValidity(""); // Reset validation message
+      }
+
+      // Trigger built-in validation messages
+      emailInput.value.reportValidity();
+      passwordInput.value.reportValidity();
+
+      if (isValid) {
+        alert("Form submitted successfully!");
+      }
+    };
+
     return {
-      email: "",
-      password: "",
-      rememberMe: false,
+      email,
+      password,
+      rememberMe,
+      validateForm,
+      emailInput,
+      passwordInput,
     };
   },
-  methods: {
-    handleSubmit() {
-      console.log("Logging in with:", this.email, this.password, this.rememberMe);
-      // Handle login logic here (API call, validation, etc.)
-    },
-  },
 };
-
-definePageMeta({
-  layout: false, // This removes the default layout (header, navbar)
-});
 </script>
 
 <style scoped>
@@ -62,7 +99,7 @@ definePageMeta({
   font-family: 'Alice', sans-serif;
 }
 
-body {
+body, .container {
   display: flex;
   justify-content: center;
   align-items: center;
@@ -86,7 +123,7 @@ body {
   text-align: center;
   color: #42446A;
   margin-bottom: 10px;
-  font-family: 'Aclonica', sans-serif;
+  font-family: 'Aclonica', san-serif;
 }
 
 .wrapper h3 {
@@ -134,6 +171,11 @@ body {
 .remember-forgot label {
   color: #42446A;
   margin-bottom: 5px;
+}
+
+.remember-forgot label input {
+  accent-color: #fff;
+  margin-right: 3px;
 }
 
 .remember-forgot a {
