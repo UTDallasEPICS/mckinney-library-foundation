@@ -86,7 +86,13 @@ export default {
     };
   },
 };
+
+definePageMeta({
+  layout: 'login'
+});
 </script>
+
+
 
 <style scoped>
 @import url('https://fonts.googleapis.com/css2?family=Aclonica&display=swap');

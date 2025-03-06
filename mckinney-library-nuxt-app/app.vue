@@ -1,6 +1,7 @@
 <template>
-  <Header />
-  <NuxtPage />
+  <NuxtLayout>
+    <NuxtPage />
+  </NuxtLayout>
 </template>
 
 <script setup>
