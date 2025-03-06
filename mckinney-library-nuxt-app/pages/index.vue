@@ -74,9 +74,10 @@ export default {
 
       if (isValid) {
         alert("Form submitted successfully!");
+        navigateTo("/donations");
       }
 
-      navigateTo("/donations");
+    
      
     };
 
