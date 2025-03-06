@@ -73,7 +73,7 @@
 
   switch (tab) {
     case 'dashboard':
-      defaultPath = '/';
+      defaultPath = '/dashboard';
       break;
     case 'donations':
       defaultPath = '/donations';
