@@ -1,4 +1,17 @@
+<!--Login Page (It's under Setting but it's the login page, do not remove!!!)-->
+
 <template>
+  <!-- Header (logo and link to website)-->
+  <header class="navbar">
+    <div class="logo">
+      <img src="/logo.jpg" alt="MPLF Logo" />
+    </div>
+    <nav>
+      <a href="https://mckinneyplf.org" target="_blank">MPLF Website</a>
+    </nav>
+  </header>
+
+  <!-- Login Form -->
   <div class="container">
     <div class="wrapper">
       <form @submit.prevent="validateForm">
@@ -232,4 +245,42 @@ body, .container {
 .request-invitation p a:hover {
   text-decoration: underline;
 }
+/* Header Styles */
+.navbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: #fff;
+  padding: 10px 20px;
+  box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+}
+
+.logo img {
+  width: 160px;
+  height: auto;
+  margin-right: 10px;
+}
+
+nav a {
+  margin: 0 10px;
+  text-decoration: underline;
+  color: #333;
+  font-weight: none;
+  font-size: 12px;
+}
+
+.logout {
+  background: #545679;
+  color: white;
+  border: none;
+  padding: 5px 10px;
+  cursor: pointer;
+  border-radius: 8px;
+}
+
 </style>
