@@ -54,13 +54,13 @@ export default {
       }
 
       // Password validation pattern
-      const passwordPattern = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{16,128}$/;
+      const passwordPattern = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,20}$/;
       if (!password.value) {
         passwordInput.value.setCustomValidity("Please enter your password.");
         isValid = false;
       } else if (!passwordPattern.test(password.value)) {
         passwordInput.value.setCustomValidity(
-          "Password must be 16-128 characters long, include an uppercase letter, a lowercase letter, and a number."
+          "Password must be 8-20 characters long, include an uppercase letter, a lowercase letter, and a number."
         );
         isValid = false;
       } else {

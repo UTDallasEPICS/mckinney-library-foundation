@@ -6,5 +6,5 @@
 
 <script setup>
 import LoginPage from '~/pages/login/index.vue'
-//import Header from '~/components/Header.vue';
+import Header from '~/components/Header.vue';
 </script>
