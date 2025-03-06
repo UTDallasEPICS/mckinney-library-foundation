@@ -105,7 +105,7 @@
   // Logout function: navigate to the login page (using replace to clear history)
 const logout = () => {
   // Clear authentication state if needed, e.g. remove tokens
-  navigateTo('/login', { replace: true });
+  navigateTo('/', { replace: true });
 };
   </script>
   
