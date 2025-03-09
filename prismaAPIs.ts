@@ -24,33 +24,37 @@ async function main() {
 
 main();
 
+//T is a generic type that represents the name of a table
+//keyof PrismaClient makes sure that T is the name of a table from the Prisma schema
 async function insertTuple<T extends keyof PrismaClient>(
     table: T,
-    data: Prisma.Args<PrismaClient[T], 'create'>['data']
+    data: Prisma.Args<PrismaClient[T], 'create'>['data']       //ensures that "data" matches the structure of the table
 ) {
     return await (prisma[table] as any).create({data});
 }
 
 async function updateTuple<T extends keyof PrismaClient>(
     table: T,
-    where: Prisma.Args<PrismaClient[T], 'update'>['where'],
-    data: Prisma.Args<PrismaClient[T], 'update'>['data']
+    where: Prisma.Args<PrismaClient[T], 'update'>['where'],    //specifies what tuples to update
+    data: Prisma.Args<PrismaClient[T], 'update'>['data']       //gives new values to the tuples
 ) {
     return await (prisma[table] as any).update({where, data});
 }
 
 async function deleteTuple<T extends keyof PrismaClient>(
     table: T, 
-    where?: Prisma.Args<PrismaClient[T], 'delete'>['where']
-  ) {
-    return await (prisma[table] as any).delete({where});
+    where?: Prisma.Args<PrismaClient[T], 'delete'>['where']     //the "where" argument is optional. If you don't include
+  ) {                                                           //a "where" argument, deleteTuple() will delete all tuples
+    return await (prisma[table] as any).delete({where});        //from the table
 }
 
 async function selectTuple<T extends keyof PrismaClient>(
     table: T,
-    where?: Prisma.Args<PrismaClient[T], 'findMany'>['where']
-  ) {
-    //return await (prisma[table] as any).findMany({where});
+    where?: Prisma.Args<PrismaClient[T], 'findMany'>['where']       //the "where" argument is optional. If you don't include
+  ) {                                                               //a "where" argument, selectTuple() will select all tuples
+    //return await (prisma[table] as any).findMany({where});        //from the table
     const results = await (prisma[table] as any).findMany({where});
     return { count: results.length, data: results };
 }
+
+//selectTuple() returns both the tuples themselves and the number of tuples selected
