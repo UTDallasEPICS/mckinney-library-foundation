@@ -1,0 +1,112 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+//If Prisma can't find the database file, check your .env file to see whether the DATABASE_URL is an absolute
+//or relative path. If it's an absolute path, make sure it's the absolute path to the database file for your
+//computer and not on someone else's computer
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+//An ? next to a data type means that the attribute is nullable
+model donations {
+  donationID     Int     @id @default(autoincrement())
+  donorID        Int?
+  value          Float
+  donationMethod String
+  allocatedFor   String
+  date           String  @default("DATETIME('now')")
+  notes          String?
+  donors         donors? @relation(fields: [donorID], references: [donorID], onDelete: NoAction, onUpdate: NoAction)
+}
+//Setting onDelete and onUpdate to NoAction means that if someone tries to update or delete a donorID referenced by
+//a donation, SQLite will throw an error and prevent the donorID from being updated or deleted, either in the donor
+//tuple or the donation tuple. 
+
+model donors {
+  donorID           Int         @id @default(autoincrement())
+  organizationName  String?     @unique(map: "sqlite_autoindex_donors_1")
+  contactFirstName  String?
+  contactLastName   String?
+  email             String?     @unique(map: "sqlite_autoindex_donors_2")
+  phone_number      Int?        @unique(map: "sqlite_autoindex_donors_3")
+  address           String?
+  firstDonationDate String      @default("DATETIME('now')")
+  lastDonationDate  String      @default("DATETIME('now')")
+  lastContacted     String
+  lifetimeDonations Float
+  notes             String?
+  donations         donations[]
+}
+
+model grants {
+  grantID          Int     @id @default(autoincrement())
+  organizationName String  @unique(map: "sqlite_autoindex_grants_1")
+  contactFirstName String?
+  contactLastName  String?
+  email            String? @unique(map: "sqlite_autoindex_grants_2")
+  phone_number     Int?    @unique(map: "sqlite_autoindex_grants_3")
+  address          String?
+  value            Float
+  allocatedFor     String
+  date             String  @default("DATETIME('now')")
+  notes            String?
+}
+
+model role_permissions {
+  role                   Role  @id
+  viewDonors             Int
+  emailDonors            Int
+  viewDonationsAndGrants Int
+  addDonationsAndGrants  Int
+  viewAccounts           Int
+  addAccounts            Int
+  manageAccounts         Int
+  viewRoles              Int
+  manageRoles            Int
+  users                  users[]
+}
+
+model userInvitations {
+  userInvitationID                            Int    @id @default(autoincrement())
+  invitingUserID                              Int
+  invitedUserID                               Int
+  invitationCreationDate                      String @default("DATETIME('now')")
+  invitationExpirationDate                    String @default("DATETIME('now', '+72 hours')")
+  users_userInvitations_invitingUserIDTousers users  @relation("userInvitations_invitingUserIDTousers", fields: [invitingUserID], references: [userID], onDelete: NoAction, onUpdate: NoAction)
+  users_userInvitations_invitedUserIDTousers  users  @relation("userInvitations_invitedUserIDTousers", fields: [invitedUserID], references: [userID], onDelete: NoAction, onUpdate: NoAction)
+}
+//Setting onDelete and onUpdate to NoAction means that if someone tries to update or delete an invitingUserID or invitedUserID referenced by
+//a userInvitation, SQLite will throw an error and prevent the invitingUserID/invitedUserID from being updated or deleted, either in the
+//userInvitation tuple or the user tuple
+
+model users {
+  userID                                                Int               @id @default(autoincrement())
+  firstName                                             String
+  lastName                                              String
+  role                                                  Role
+  status                                                String
+  creationDate                                          String            @default("DATETIME('now')")
+  email                                                 String            @unique(map: "sqlite_autoindex_users_1")
+  phone_number                                          Int?              @unique(map: "sqlite_autoindex_users_2")
+  password                                              String
+  notes                                                 String?
+  userInvitations_userInvitations_invitingUserIDTousers userInvitations[] @relation("userInvitations_invitingUserIDTousers")
+  userInvitations_userInvitations_invitedUserIDTousers  userInvitations[] @relation("userInvitations_invitedUserIDTousers")
+  role_permissions                                      role_permissions  @relation(fields: [role], references: [role], onDelete: NoAction, onUpdate: Cascade)
+}
+//Setting onDelete to NoAction means that if someone tries to delete a role referenced by a user, SQLite will throw an error and prevent the
+//the role from being deleted, either in the rolePermissions table or the user tuple
+
+//Setting onUpdate to Cascade means that if someone updates a role's permissions in the rolePermissions table, all users that have that role
+//will have their role permissions automatically updated
+
+enum Role {
+  FUNDRAISING
+  FINANCE_VIEW_ONLY
+  EDITOR
+  ADMIN
+  MAIN_ADMIN
+}
