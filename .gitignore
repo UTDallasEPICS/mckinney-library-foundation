@@ -7,3 +7,6 @@ mplf.db
 .env
 
 .DS_Store
+
+prisma/migrations/
+prisma/mplf.db-journal
