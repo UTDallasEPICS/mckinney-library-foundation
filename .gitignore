@@ -8,5 +8,5 @@ mplf.db
 
 .DS_Store
 
-prisma/migrations/
+mckinney-library-nuxt-app/prisma/migrations/
 prisma/mplf.db-journal

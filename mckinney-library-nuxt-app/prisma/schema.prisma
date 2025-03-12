@@ -27,32 +27,24 @@ model donations {
 
 model donors {
   donorID           Int         @id @default(autoincrement())
-  organizationName  String?     @unique(map: "sqlite_autoindex_donors_1")
-  contactFirstName  String?
-  contactLastName   String?
-  email             String?     @unique(map: "sqlite_autoindex_donors_2")
-  phone_number      Int?        @unique(map: "sqlite_autoindex_donors_3")
-  address           String?
+  contactInfoID     Int         @unique
   firstDonationDate String      @default("DATETIME('now')")
   lastDonationDate  String      @default("DATETIME('now')")
   lastContacted     String
   lifetimeDonations Float
   notes             String?
   donations         donations[]
+  contactInfo       contactInfo       @relation(fields: [contactInfoID], references: [contactInfoID], onDelete: NoAction, onUpdate: Cascade)
 }
 
 model grants {
   grantID          Int     @id @default(autoincrement())
-  organizationName String  @unique(map: "sqlite_autoindex_grants_1")
-  contactFirstName String?
-  contactLastName  String?
-  email            String? @unique(map: "sqlite_autoindex_grants_2")
-  phone_number     Int?    @unique(map: "sqlite_autoindex_grants_3")
-  address          String?
+  contactInfoID    Int     @unique
   value            Float
   allocatedFor     String
   date             String  @default("DATETIME('now')")
   notes            String?
+  contactInfo      contactInfo       @relation(fields: [contactInfoID], references: [contactInfoID], onDelete: NoAction, onUpdate: Cascade)
 }
 
 model role_permissions {
@@ -75,8 +67,8 @@ model userInvitations {
   invitedUserID                               Int
   invitationCreationDate                      String @default("DATETIME('now')")
   invitationExpirationDate                    String @default("DATETIME('now', '+72 hours')")
-  users_userInvitations_invitingUserIDTousers users  @relation("userInvitations_invitingUserIDTousers", fields: [invitingUserID], references: [userID], onDelete: NoAction, onUpdate: NoAction)
-  users_userInvitations_invitedUserIDTousers  users  @relation("userInvitations_invitedUserIDTousers", fields: [invitedUserID], references: [userID], onDelete: NoAction, onUpdate: NoAction)
+  invitingUserID_to_users users  @relation("invitingUserID", fields: [invitingUserID], references: [userID], onDelete: NoAction, onUpdate: NoAction)
+  invitedUserID_to_users  users  @relation("invitedUserID", fields: [invitedUserID], references: [userID], onDelete: NoAction, onUpdate: NoAction)
 }
 //Setting onDelete and onUpdate to NoAction means that if someone tries to update or delete an invitingUserID or invitedUserID referenced by
 //a userInvitation, SQLite will throw an error and prevent the invitingUserID/invitedUserID from being updated or deleted, either in the
@@ -84,24 +76,36 @@ model userInvitations {
 
 model users {
   userID                                                Int               @id @default(autoincrement())
-  firstName                                             String
-  lastName                                              String
+  contactInfoID                                         Int               @unique
   role                                                  Role
   status                                                String
   creationDate                                          String            @default("DATETIME('now')")
-  email                                                 String            @unique(map: "sqlite_autoindex_users_1")
-  phone_number                                          Int?              @unique(map: "sqlite_autoindex_users_2")
   password                                              String
   notes                                                 String?
-  userInvitations_userInvitations_invitingUserIDTousers userInvitations[] @relation("userInvitations_invitingUserIDTousers")
-  userInvitations_userInvitations_invitedUserIDTousers  userInvitations[] @relation("userInvitations_invitedUserIDTousers")
+  invitingUserID_to_invitations userInvitations[] @relation("invitingUserID")
+  invitedUserID_to_invitations  userInvitations[] @relation("invitedUserID")
   role_permissions                                      role_permissions  @relation(fields: [role], references: [role], onDelete: NoAction, onUpdate: Cascade)
+  contactInfo                                           contactInfo       @relation(fields: [contactInfoID], references: [contactInfoID], onDelete: NoAction, onUpdate: Cascade)
 }
 //Setting onDelete to NoAction means that if someone tries to delete a role referenced by a user, SQLite will throw an error and prevent the
 //the role from being deleted, either in the rolePermissions table or the user tuple
 
 //Setting onUpdate to Cascade means that if someone updates a role's permissions in the rolePermissions table, all users that have that role
 //will have their role permissions automatically updated
+
+model contactInfo {
+  contactInfoID                                         Int               @id @default(autoincrement())
+  firstName                                             String            @default("Anonymous")
+  lastName                                              String            @default("Anonymous")
+  organizationName                                      String            @default("No organization listed")
+  email                                                 String            @default("No email listed")
+  phoneNumber                                           Int?
+  address                                               String            @default("No address listed")
+  notes                                                 String?
+  users                                                 users?         
+  donors                                                donors?
+  grants                                                grants?
+}
 
 enum Role {
   FUNDRAISING

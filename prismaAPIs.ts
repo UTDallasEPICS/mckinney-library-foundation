@@ -7,8 +7,12 @@ dotenv.config();  // This will explicitly load environment variables from the .e
 //console.log(process.env.DATABASE_URL); 
 
 async function main() {
+    console.log("hello");
     //await insertTuple('role_permissions', {role: 'MAIN_ADMIN', viewDonors: 1, emailDonors: 1, viewDonationsAndGrants: 1, addDonationsAndGrants: 1, viewAccounts: 1, addAccounts: 1, manageAccounts: 1, viewRoles: 1, manageRoles: 1});
-    //console.log(await selectTuple('role_permissions'));
+    console.log(await selectTuple('role_permissions'));
+
+    await insertTuple('contactInfo', {firstName: 'Abe', lastName: 'Lincoln', organizationName: 'United States'});
+    console.log(await selectTuple('contactInfo'));
 
     //await insertTuple('users', {firstName: 'Main', lastName: 'Admin', role: 'MAIN_ADMIN', status: 'Active', creationDate: new Date().toISOString(), email: 'mplfboard@gmail.com', password: 'MainAdmin12345' });
     //const result = await selectTuple('users', { firstName: 'Main' });
@@ -16,7 +20,7 @@ async function main() {
     //console.log('User data:', result.data);
 
     //await updateTuple('users', {email: 'mplfboard@gmail.com'}, {email: 'mplfBOARD@gmail.com'});
-    console.log(await selectTuple('users'));
+    //console.log(await selectTuple('users'));
 
     //await deleteTuple('users', {role: 'MAIN_ADMIN', email: 'mplfBOARD@gmail.com'});
     //console.log(await selectTuple('users'));
