@@ -4,6 +4,7 @@
     <div v-else-if="error" class="error-message">Error: {{ error }}</div>
     <div v-else>
       <div class="actions-bar">
+        <button @click="showAddDonorModal = true" class="add-button">+ Add Donor</button>
         <button @click="showEmailModal = true" class="email-button" :disabled="selectedDonors.length === 0">
           Mass Email Donors {{ selectedDonors.length > 0 ? `(${selectedDonors.length})` : '' }}
         </button>
@@ -147,8 +148,8 @@
           
           <div class="modal-actions">
             <button type="button" @click="showEmailModal = false" class="cancel-button">Cancel</button>
-            <button type="submit" class="submit-button" :disabled="isEmailSending">
-              {{ isEmailSending ? 'Sending...' : 'Send Email' }}
+            <button type="submit" class="submit-button" :disabled="emailsLoading">
+              {{ emailsLoading ? 'Sending...' : 'Send Email' }}
             </button>
           </div>
         </form>
@@ -160,6 +161,7 @@
 <script setup>
 import { ref, computed, onMounted } from 'vue';
 import { useDonors } from '~/composables/useDonors';
+import { useEmails } from '~/composables/useEmails';
 
 const headers = ref([
   "Donor Name",
@@ -171,8 +173,9 @@ const headers = ref([
   "Status"
 ]);
 
-// Get everything we need from the composable
+// Get everything we need from the composables
 const { donors, isLoading, error, fetchDonors, addDonor, deleteDonor, updateDonor } = useDonors();
+const { isLoading: emailsLoading, error: emailError, getTemplate, getTemplates, sendMassEmail } = useEmails();
 
 // State for modals
 const showDeleteModal = ref(false);
@@ -198,33 +201,12 @@ const donorForm = ref({...emptyDonorForm});
 // Email state
 const selectedDonors = ref([]);
 const selectAll = ref(false);
-const isEmailSending = ref(false);
 const emailForm = ref({
   subject: '',
   body: '',
   includeUnsubscribe: true
 });
 const selectedTemplate = ref('');
-
-// Email templates
-const emailTemplates = {
-  thankYou: {
-    subject: "Thank You for Your Support",
-    body: "Dear [Donor Name],\n\nWe wanted to express our sincere gratitude for your generous donation to the McKinney Public Library Foundation. Your support makes a meaningful difference in our community.\n\nThanks to supporters like you, we can continue to enhance library services, expand our collections, and provide educational programs for all ages.\n\nWith appreciation,\nThe McKinney Public Library Foundation Team"
-  },
-  event: {
-    subject: "Invitation: Upcoming Library Event",
-    body: "Dear [Donor Name],\n\nAs a valued supporter of the McKinney Public Library Foundation, we'd like to invite you to our upcoming event: [Event Name].\n\nDate: [Event Date]\nTime: [Event Time]\nLocation: [Event Location]\n\nWe hope you can join us for this special occasion.\n\nBest regards,\nThe McKinney Public Library Foundation Team"
-  },
-  newsletter: {
-    subject: "McKinney Library Foundation Monthly Update",
-    body: "Dear [Donor Name],\n\nWe're pleased to share our monthly newsletter highlighting recent library accomplishments and upcoming initiatives.\n\nRECENT HIGHLIGHTS:\n- [Highlight 1]\n- [Highlight 2]\n- [Highlight 3]\n\nUPCOMING EVENTS:\n- [Event 1]\n- [Event 2]\n\nThank you for your continued support!\n\nSincerely,\nThe McKinney Public Library Foundation Team"
-  },
-  fundraising: {
-    subject: "Help Us Reach Our Goal",
-    body: "Dear [Donor Name],\n\nWe're launching a new fundraising campaign to support [Campaign Purpose].\n\nOur goal is to raise $[Amount] by [Date]. Your past support has been invaluable, and we hope you'll consider contributing to this important initiative.\n\nTo donate, visit our website or contact us directly.\n\nThank you for helping us make a difference!\n\nGratefully,\nThe McKinney Public Library Foundation Team"
-  }
-};
 
 // Fetch donors when the component mounts
 onMounted(() => {
@@ -267,25 +249,41 @@ const getSelectedDonorNames = () => {
 const applyTemplate = () => {
   if (!selectedTemplate.value) return;
   
-  const template = emailTemplates[selectedTemplate.value];
-  emailForm.value.subject = template.subject;
-  emailForm.value.body = template.body;
+  const template = getTemplate(selectedTemplate.value);
+  if (template) {
+    emailForm.value.subject = template.subject;
+    emailForm.value.body = template.body;
+  }
+};
+
+// Get selected donor objects
+const getSelectedDonorObjects = () => {
+  return selectedDonors.value.map(id => 
+    donors.value.find(donor => donor.id === id)
+  ).filter(donor => donor);
 };
 
 // Send email to selected donors
 const sendEmail = async () => {
-  isEmailSending.value = true;
-  
   try {
-    // In a real application, you would call an API endpoint to send the emails
-    console.log('Sending email to:', selectedDonors.value);
-    console.log('Email subject:', emailForm.value.subject);
-    console.log('Email body:', emailForm.value.body);
+    // Get selected donor objects
+    const recipientDonors = getSelectedDonorObjects();
     
-    // Simulate API call delay
-    await new Promise(resolve => setTimeout(resolve, 1500));
+    // Prepare email data with unsubscribe link if needed
+    let emailBody = emailForm.value.body;
+    if (emailForm.value.includeUnsubscribe) {
+      emailBody += "\n\n---\nTo unsubscribe from future emails, click here: [Unsubscribe Link]";
+    }
     
-    // Clear form and close modal
+    const emailData = {
+      subject: emailForm.value.subject,
+      body: emailBody
+    };
+    
+    // Send emails using the composable
+    const result = await sendMassEmail(recipientDonors, emailData);
+    
+    // Clear form and close modal on success
     emailForm.value = {
       subject: '',
       body: '',
@@ -298,13 +296,11 @@ const sendEmail = async () => {
     selectedDonors.value = [];
     selectAll.value = false;
     
-    // Show success message or notification here
-    alert('An email would have sent... logging instead tho!');
-  } catch (error) {
-    console.error('Failed to send emails:', error);
-    alert('Failed to send emails. Please try again.');
-  } finally {
-    isEmailSending.value = false;
+    // Show success message
+    alert('Emails sent successfully!');
+  } catch (err) {
+    console.error('Failed to send emails:', err);
+    alert(`Failed to send emails: ${err.message || 'Unknown error'}`);
   }
 };
 
