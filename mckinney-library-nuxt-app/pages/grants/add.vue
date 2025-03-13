@@ -141,15 +141,18 @@ const submitGrant = async () => {
 
 <style scoped>
 .add-grant-container {
-  max-width: 600px;
-  margin: 0 auto;
+  width: 100%;
+  max-width: 100%;
+  margin: 0;
   padding: 20px;
+  background-color: #e6f0ff;
+  min-height: calc(100vh - 150px); /* Adjust based on your header height */
 }
 
 .grant-form {
-  background-color: #e6f0ff;
   padding: 30px;
-  border-radius: 5px;
+  max-width: 600px;
+  margin: 0 auto;
 }
 
 .form-group {
@@ -194,7 +197,7 @@ const submitGrant = async () => {
   background-color: #45a049;
 }
 
-/* Make inputs appear exactly like in the screenshot */
+
 input {
   height: 36px;
   width: 100%;

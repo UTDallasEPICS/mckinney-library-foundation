@@ -228,10 +228,13 @@ const submitDonation = async () => {
 
 <style scoped>
 .add-donation-container {
-  max-width: 600px;
-  margin: 0 auto;
+  width: 100%;
+  max-width: 100%;
+  margin: 0;
   padding: 20px;
   font-family: sans-serif;
+  background-color: #e6f0ff;
+  min-height: calc(100vh - 150px); /* Adjust based on your header height */
 }
 
 .donation-title {
@@ -242,9 +245,9 @@ const submitDonation = async () => {
 }
 
 .donation-form {
-  background-color: #e6f0ff;
   padding: 20px;
-  border-radius: 5px;
+  max-width: 600px;
+  margin: 0 auto;
 }
 
 /* Donor selection styling */
