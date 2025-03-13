@@ -3,16 +3,23 @@
     <div v-if="isLoading" class="loading-message">Loading donors...</div>
     <div v-else-if="error" class="error-message">Error: {{ error }}</div>
     <div v-else>
+      <div class="actions-bar">
+        <button @click="showEmailModal = true" class="email-button" :disabled="selectedDonors.length === 0">
+          Mass Email Donors {{ selectedDonors.length > 0 ? `(${selectedDonors.length})` : '' }}
+        </button>
+      </div>
       
       <table v-if="donors.length > 0">
         <thead>
           <tr>
+            <th><input type="checkbox" @change="toggleAllDonors" v-model="selectAll"></th>
             <th v-for="header in headers" :key="header">{{ header }}</th>
             <th>Actions</th>
           </tr>
         </thead>
         <tbody>
           <tr v-for="donor in donors" :key="donor.id">
+            <td><input type="checkbox" v-model="selectedDonors" :value="donor.id"></td>
             <td>{{ donor.name }}</td>
             <td>{{ donor.email }}</td>
             <td>{{ donor.phone }}</td>
@@ -101,11 +108,57 @@
         </form>
       </div>
     </div>
+    
+    <!-- Mass Email Modal -->
+    <div v-if="showEmailModal" class="modal">
+      <div class="modal-content email-form-modal">
+        <h3>Send Email to {{ selectedDonors.length }} Donor{{ selectedDonors.length > 1 ? 's' : '' }}</h3>
+        
+        <div class="recipients-summary">
+          <p>Recipients: {{ getSelectedDonorNames() }}</p>
+        </div>
+        
+        <form @submit.prevent="sendEmail">
+          <div class="form-group">
+            <label for="emailSubject">Subject *</label>
+            <input id="emailSubject" v-model="emailForm.subject" type="text" required>
+          </div>
+          
+          <div class="form-group">
+            <label for="emailTemplate">Template</label>
+            <select id="emailTemplate" v-model="selectedTemplate" @change="applyTemplate">
+              <option value="">Select a template</option>
+              <option value="thankYou">Thank You</option>
+              <option value="event">Upcoming Event</option>
+              <option value="newsletter">Monthly Newsletter</option>
+              <option value="fundraising">Fundraising Campaign</option>
+            </select>
+          </div>
+          
+          <div class="form-group">
+            <label for="emailBody">Message *</label>
+            <textarea id="emailBody" v-model="emailForm.body" rows="8" required></textarea>
+          </div>
+          
+          <div class="form-group checkbox-group">
+            <input id="includeUnsubscribe" type="checkbox" v-model="emailForm.includeUnsubscribe">
+            <label for="includeUnsubscribe">Include unsubscribe link</label>
+          </div>
+          
+          <div class="modal-actions">
+            <button type="button" @click="showEmailModal = false" class="cancel-button">Cancel</button>
+            <button type="submit" class="submit-button" :disabled="isEmailSending">
+              {{ isEmailSending ? 'Sending...' : 'Send Email' }}
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
   </div>
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue';
+import { ref, computed, onMounted } from 'vue';
 import { useDonors } from '~/composables/useDonors';
 
 const headers = ref([
@@ -125,6 +178,7 @@ const { donors, isLoading, error, fetchDonors, addDonor, deleteDonor, updateDono
 const showDeleteModal = ref(false);
 const showAddDonorModal = ref(false);
 const showEditDonorModal = ref(false);
+const showEmailModal = ref(false);
 const selectedDonor = ref(null);
 
 // Default form values
@@ -141,6 +195,37 @@ const emptyDonorForm = {
 // Donor form data
 const donorForm = ref({...emptyDonorForm});
 
+// Email state
+const selectedDonors = ref([]);
+const selectAll = ref(false);
+const isEmailSending = ref(false);
+const emailForm = ref({
+  subject: '',
+  body: '',
+  includeUnsubscribe: true
+});
+const selectedTemplate = ref('');
+
+// Email templates
+const emailTemplates = {
+  thankYou: {
+    subject: "Thank You for Your Support",
+    body: "Dear [Donor Name],\n\nWe wanted to express our sincere gratitude for your generous donation to the McKinney Public Library Foundation. Your support makes a meaningful difference in our community.\n\nThanks to supporters like you, we can continue to enhance library services, expand our collections, and provide educational programs for all ages.\n\nWith appreciation,\nThe McKinney Public Library Foundation Team"
+  },
+  event: {
+    subject: "Invitation: Upcoming Library Event",
+    body: "Dear [Donor Name],\n\nAs a valued supporter of the McKinney Public Library Foundation, we'd like to invite you to our upcoming event: [Event Name].\n\nDate: [Event Date]\nTime: [Event Time]\nLocation: [Event Location]\n\nWe hope you can join us for this special occasion.\n\nBest regards,\nThe McKinney Public Library Foundation Team"
+  },
+  newsletter: {
+    subject: "McKinney Library Foundation Monthly Update",
+    body: "Dear [Donor Name],\n\nWe're pleased to share our monthly newsletter highlighting recent library accomplishments and upcoming initiatives.\n\nRECENT HIGHLIGHTS:\n- [Highlight 1]\n- [Highlight 2]\n- [Highlight 3]\n\nUPCOMING EVENTS:\n- [Event 1]\n- [Event 2]\n\nThank you for your continued support!\n\nSincerely,\nThe McKinney Public Library Foundation Team"
+  },
+  fundraising: {
+    subject: "Help Us Reach Our Goal",
+    body: "Dear [Donor Name],\n\nWe're launching a new fundraising campaign to support [Campaign Purpose].\n\nOur goal is to raise $[Amount] by [Date]. Your past support has been invaluable, and we hope you'll consider contributing to this important initiative.\n\nTo donate, visit our website or contact us directly.\n\nThank you for helping us make a difference!\n\nGratefully,\nThe McKinney Public Library Foundation Team"
+  }
+};
+
 // Fetch donors when the component mounts
 onMounted(() => {
   fetchDonors();
@@ -151,6 +236,76 @@ const formatDate = (dateString) => {
   if (!dateString) return '-';
   const date = new Date(dateString);
   return date.toLocaleDateString();
+};
+
+// Toggle all donors selection
+const toggleAllDonors = () => {
+  if (selectAll.value) {
+    selectedDonors.value = donors.value.map(donor => donor.id);
+  } else {
+    selectedDonors.value = [];
+  }
+};
+
+// Get names of selected donors
+const getSelectedDonorNames = () => {
+  if (selectedDonors.value.length === 0) return "None selected";
+  
+  const selectedNames = selectedDonors.value.map(id => {
+    const donor = donors.value.find(d => d.id === id);
+    return donor ? donor.name : '';
+  }).filter(name => name);
+  
+  if (selectedNames.length <= 3) {
+    return selectedNames.join(", ");
+  } else {
+    return `${selectedNames.slice(0, 3).join(", ")} and ${selectedNames.length - 3} more`;
+  }
+};
+
+// Apply email template
+const applyTemplate = () => {
+  if (!selectedTemplate.value) return;
+  
+  const template = emailTemplates[selectedTemplate.value];
+  emailForm.value.subject = template.subject;
+  emailForm.value.body = template.body;
+};
+
+// Send email to selected donors
+const sendEmail = async () => {
+  isEmailSending.value = true;
+  
+  try {
+    // In a real application, you would call an API endpoint to send the emails
+    console.log('Sending email to:', selectedDonors.value);
+    console.log('Email subject:', emailForm.value.subject);
+    console.log('Email body:', emailForm.value.body);
+    
+    // Simulate API call delay
+    await new Promise(resolve => setTimeout(resolve, 1500));
+    
+    // Clear form and close modal
+    emailForm.value = {
+      subject: '',
+      body: '',
+      includeUnsubscribe: true
+    };
+    selectedTemplate.value = '';
+    showEmailModal.value = false;
+    
+    // Optionally reset selection after sending
+    selectedDonors.value = [];
+    selectAll.value = false;
+    
+    // Show success message or notification here
+    alert('An email would have sent... logging instead tho!');
+  } catch (error) {
+    console.error('Failed to send emails:', error);
+    alert('Failed to send emails. Please try again.');
+  } finally {
+    isEmailSending.value = false;
+  }
 };
 
 // Show edit modal with donor data
@@ -221,17 +376,33 @@ const submitDonorForm = async () => {
   max-width: 1400px;
   margin-bottom: 15px;
   text-align: right;
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
 }
 
-.add-button {
-  background-color: #4CAF50;
-  color: white;
+.add-button, .email-button {
   padding: 10px 15px;
   border-radius: 4px;
   border: none;
   text-decoration: none;
   font-weight: bold;
   cursor: pointer;
+}
+
+.add-button {
+  background-color: #4CAF50;
+  color: white;
+}
+
+.email-button {
+  background-color: #2196F3;
+  color: white;
+}
+
+.email-button:disabled {
+  background-color: #cccccc;
+  cursor: not-allowed;
 }
 
 /* Style the table to be consistent with the navigation */
@@ -262,6 +433,13 @@ td {
   padding: 10px;
   border: 1px solid #ddd;
   text-align: center;
+}
+
+/* Checkbox styling */
+input[type="checkbox"] {
+  width: 18px;
+  height: 18px;
+  cursor: pointer;
 }
 
 /* Action buttons */
@@ -335,6 +513,12 @@ td {
   width: 500px;
 }
 
+.email-form-modal {
+  width: 600px;
+  max-height: 90vh;
+  overflow-y: auto;
+}
+
 .modal-actions {
   display: flex;
   justify-content: flex-end;
@@ -352,12 +536,39 @@ td {
   font-weight: bold;
 }
 
-.form-group input, .form-group select {
+.checkbox-group {
+  display: flex;
+  align-items: center;
+}
+
+.checkbox-group label {
+  margin-left: 10px;
+  margin-bottom: 0;
+}
+
+.form-group input[type="text"], 
+.form-group input[type="email"], 
+.form-group input[type="tel"], 
+.form-group input[type="number"], 
+.form-group input[type="date"], 
+.form-group select,
+.form-group textarea {
   width: 100%;
   padding: 8px;
   border: 1px solid #ddd;
   border-radius: 4px;
   font-size: 14px;
+}
+
+.form-group textarea {
+  resize: vertical;
+}
+
+.recipients-summary {
+  background-color: #f5f5f5;
+  padding: 10px;
+  border-radius: 4px;
+  margin-bottom: 15px;
 }
 
 .loading-message, .error-message, .no-data-message {
