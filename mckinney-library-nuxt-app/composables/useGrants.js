@@ -1,7 +1,7 @@
 // composables/useGrants.js
-export const useGrants = () => {
-    const { $fetch } = useNuxtApp();
+import { ref } from 'vue';
 
+export const useGrants = () => {
     const grants = ref([]);
     const isLoading = ref(false);
     const error = ref(null);
@@ -12,7 +12,14 @@ export const useGrants = () => {
         error.value = null;
 
         try {
-            grants.value = await $fetch('/api/grants');
+            // Use the standard fetch API instead of $fetch
+            const response = await fetch('/api/grants');
+
+            if (!response.ok) {
+                throw new Error(`HTTP error! Status: ${response.status}`);
+            }
+
+            grants.value = await response.json();
         } catch (err) {
             error.value = err.message || 'Failed to fetch grants';
             console.error(err);
@@ -27,15 +34,24 @@ export const useGrants = () => {
         error.value = null;
 
         try {
-            const response = await $fetch('/api/grants', {
+            const response = await fetch('/api/grants', {
                 method: 'POST',
-                body: grant
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(grant)
             });
+
+            if (!response.ok) {
+                throw new Error(`HTTP error! Status: ${response.status}`);
+            }
+
+            const result = await response.json();
 
             // Refresh the grants list
             await fetchGrants();
 
-            return response;
+            return result;
         } catch (err) {
             error.value = err.message || 'Failed to add grant';
             console.error(err);
@@ -51,14 +67,20 @@ export const useGrants = () => {
         error.value = null;
 
         try {
-            const response = await $fetch(`/api/grants/${id}`, {
+            const response = await fetch(`/api/grants/${id}`, {
                 method: 'DELETE'
             });
+
+            if (!response.ok) {
+                throw new Error(`HTTP error! Status: ${response.status}`);
+            }
+
+            const result = await response.json();
 
             // Refresh the grants list
             await fetchGrants();
 
-            return response;
+            return result;
         } catch (err) {
             error.value = err.message || 'Failed to delete grant';
             console.error(err);
@@ -74,15 +96,24 @@ export const useGrants = () => {
         error.value = null;
 
         try {
-            const response = await $fetch(`/api/grants/${id}`, {
+            const response = await fetch(`/api/grants/${id}`, {
                 method: 'PUT',
-                body: grant
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(grant)
             });
+
+            if (!response.ok) {
+                throw new Error(`HTTP error! Status: ${response.status}`);
+            }
+
+            const result = await response.json();
 
             // Refresh the grants list
             await fetchGrants();
 
-            return response;
+            return result;
         } catch (err) {
             error.value = err.message || 'Failed to update grant';
             console.error(err);

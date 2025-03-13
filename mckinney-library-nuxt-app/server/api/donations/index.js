@@ -6,6 +6,7 @@ export default defineEventHandler(async (event) => {
             // Sample data
             const donations = [
                 { id: 1, donor: 'John Smith', amount: 100, date: '2025-03-01', category: 'Books' },
+                { id: 2, donor: 'Jane Doe', amount: 250, date: '2025-03-05', category: 'Programs' },
                 { id: 2, donor: 'Jane Doe', amount: 250, date: '2025-03-05', category: 'Programs' }
             ];
 

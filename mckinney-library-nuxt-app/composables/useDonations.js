@@ -1,7 +1,7 @@
 // composables/useDonations.js
-export const useDonations = () => {
-    const { $fetch } = useNuxtApp();
+import { ref } from 'vue';
 
+export const useDonations = () => {
     const donations = ref([]);
     const isLoading = ref(false);
     const error = ref(null);
@@ -12,7 +12,14 @@ export const useDonations = () => {
         error.value = null;
 
         try {
-            donations.value = await $fetch('/api/donations');
+            // Use the fetch API directly instead of $fetch
+            const response = await fetch('/api/donations');
+
+            if (!response.ok) {
+                throw new Error(`HTTP error! Status: ${response.status}`);
+            }
+
+            donations.value = await response.json();
         } catch (err) {
             error.value = err.message || 'Failed to fetch donations';
             console.error(err);
@@ -27,15 +34,24 @@ export const useDonations = () => {
         error.value = null;
 
         try {
-            const response = await $fetch('/api/donations', {
+            const response = await fetch('/api/donations', {
                 method: 'POST',
-                body: donation
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(donation)
             });
+
+            if (!response.ok) {
+                throw new Error(`HTTP error! Status: ${response.status}`);
+            }
+
+            const result = await response.json();
 
             // Refresh the donations list
             await fetchDonations();
 
-            return response;
+            return result;
         } catch (err) {
             error.value = err.message || 'Failed to add donation';
             console.error(err);
@@ -51,14 +67,20 @@ export const useDonations = () => {
         error.value = null;
 
         try {
-            const response = await $fetch(`/api/donations/${id}`, {
+            const response = await fetch(`/api/donations/${id}`, {
                 method: 'DELETE'
             });
+
+            if (!response.ok) {
+                throw new Error(`HTTP error! Status: ${response.status}`);
+            }
+
+            const result = await response.json();
 
             // Refresh the donations list
             await fetchDonations();
 
-            return response;
+            return result;
         } catch (err) {
             error.value = err.message || 'Failed to delete donation';
             console.error(err);
@@ -74,15 +96,24 @@ export const useDonations = () => {
         error.value = null;
 
         try {
-            const response = await $fetch(`/api/donations/${id}`, {
+            const response = await fetch(`/api/donations/${id}`, {
                 method: 'PUT',
-                body: donation
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(donation)
             });
+
+            if (!response.ok) {
+                throw new Error(`HTTP error! Status: ${response.status}`);
+            }
+
+            const result = await response.json();
 
             // Refresh the donations list
             await fetchDonations();
 
-            return response;
+            return result;
         } catch (err) {
             error.value = err.message || 'Failed to update donation';
             console.error(err);
