@@ -308,7 +308,7 @@ const submitDonation = async () => {
   width: 100%;
   padding: 10px;
   border: 1px solid #ddd;
-  border-radius: 4px;
+  border-radius: 24px;
   font-size: 16px;
   background-color: white;
 }
