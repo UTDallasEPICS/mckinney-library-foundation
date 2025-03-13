@@ -1,18 +1,13 @@
 // server/api/donations/[id].js
+import { mockDonations } from '~/server/data/mockData';
+
 export default defineEventHandler(async (event) => {
-    const id = getRouterParam(event, 'id');
+    const id = parseInt(getRouterParam(event, 'id'));
 
     // GET: Fetch a specific donation
     if (event.node.req.method === 'GET') {
         try {
-            // Replace with your actual database query
-            const donation = {
-                id: parseInt(id),
-                donor: 'John Smith',
-                amount: 100,
-                date: '2025-03-01',
-                category: 'Books'
-            };
+            const donation = mockDonations.find(d => d.id === id);
 
             if (!donation) {
                 throw createError({
@@ -34,20 +29,26 @@ export default defineEventHandler(async (event) => {
     if (event.node.req.method === 'PUT') {
         try {
             const body = await readBody(event);
+            const donationIndex = mockDonations.findIndex(d => d.id === id);
 
-            // Here you would update your database
-            // For example: const updatedDonation = await db.donations.update(id, body);
+            if (donationIndex === -1) {
+                throw createError({
+                    statusCode: 404,
+                    statusMessage: 'Donation not found',
+                });
+            }
 
-            // Mock response with updated donation
-            const updatedDonation = {
-                id: parseInt(id),
+            // Update the donation
+            mockDonations[donationIndex] = {
+                ...mockDonations[donationIndex],
                 ...body,
+                id: id, // Ensure ID doesn't change
                 updatedAt: new Date().toISOString()
             };
 
             return {
                 message: 'Donation updated successfully',
-                donation: updatedDonation
+                donation: mockDonations[donationIndex]
             };
         } catch (error) {
             throw createError({
@@ -60,12 +61,24 @@ export default defineEventHandler(async (event) => {
     // DELETE: Remove a donation
     if (event.node.req.method === 'DELETE') {
         try {
-            // Here you would delete from your database
-            // For example: await db.donations.delete(id);
+            const donationIndex = mockDonations.findIndex(d => d.id === id);
+
+            if (donationIndex === -1) {
+                throw createError({
+                    statusCode: 404,
+                    statusMessage: 'Donation not found',
+                });
+            }
+
+            // Remove the donation from the array
+            const deleted = mockDonations.splice(donationIndex, 1)[0];
+
+            console.log(`Deleted donation with ID: ${id}`);
 
             return {
                 message: 'Donation deleted successfully',
-                id: parseInt(id)
+                id: id,
+                deleted: deleted
             };
         } catch (error) {
             throw createError({

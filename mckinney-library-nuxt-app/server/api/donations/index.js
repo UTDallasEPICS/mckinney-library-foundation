@@ -1,16 +1,12 @@
 // server/api/donations/index.js
+// Share the same mock database with the [id].js file
+import { mockDonations } from '~/server/data/mockData';
+
 export default defineEventHandler(async (event) => {
     // GET: Fetch all donations
     if (event.node.req.method === 'GET') {
         try {
-            // Sample data
-            const donations = [
-                { id: 1, donor: 'John Smith', amount: 100, date: '2025-03-01', category: 'Books' },
-                { id: 2, donor: 'Jane Doe', amount: 250, date: '2025-03-05', category: 'Programs' },
-                { id: 2, donor: 'Jane Doe', amount: 250, date: '2025-03-05', category: 'Programs' }
-            ];
-
-            return donations;
+            return mockDonations;
         } catch (error) {
             throw createError({
                 statusCode: 500,
@@ -32,15 +28,22 @@ export default defineEventHandler(async (event) => {
                 });
             }
 
-            // Here you would add to your database
-            // For example: const newDonation = await db.donations.create(body);
+            // Create a new donation with incremental ID
+            const newId = mockDonations.length > 0
+                ? Math.max(...mockDonations.map(d => d.id)) + 1
+                : 1;
 
-            // Mock response with created donation
             const newDonation = {
-                id: Math.floor(Math.random() * 1000),
+                id: newId,
                 ...body,
+                amount: parseFloat(body.amount),
                 createdAt: new Date().toISOString()
             };
+
+            // Add to mock database
+            mockDonations.push(newDonation);
+
+            console.log(`Added new donation with ID: ${newId}`);
 
             return {
                 message: 'Donation added successfully',

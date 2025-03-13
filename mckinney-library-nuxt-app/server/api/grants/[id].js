@@ -1,19 +1,13 @@
 // server/api/grants/[id].js
+import { mockGrants } from '~/server/data/mockData';
+
 export default defineEventHandler(async (event) => {
-    const id = getRouterParam(event, 'id');
+    const id = parseInt(getRouterParam(event, 'id'));
 
     // GET: Fetch a specific grant
     if (event.node.req.method === 'GET') {
         try {
-            // Replace with your actual database query
-            const grant = {
-                id: parseInt(id),
-                name: 'Community Literacy',
-                amount: 5000,
-                startDate: '2025-01-01',
-                endDate: '2025-12-31',
-                status: 'Active'
-            };
+            const grant = mockGrants.find(g => g.id === id);
 
             if (!grant) {
                 throw createError({
@@ -35,20 +29,26 @@ export default defineEventHandler(async (event) => {
     if (event.node.req.method === 'PUT') {
         try {
             const body = await readBody(event);
+            const grantIndex = mockGrants.findIndex(g => g.id === id);
 
-            // Here you would update your database
-            // For example: const updatedGrant = await db.grants.update(id, body);
+            if (grantIndex === -1) {
+                throw createError({
+                    statusCode: 404,
+                    statusMessage: 'Grant not found',
+                });
+            }
 
-            // Mock response with updated grant
-            const updatedGrant = {
-                id: parseInt(id),
+            // Update the grant
+            mockGrants[grantIndex] = {
+                ...mockGrants[grantIndex],
                 ...body,
+                id: id, // Ensure ID doesn't change
                 updatedAt: new Date().toISOString()
             };
 
             return {
                 message: 'Grant updated successfully',
-                grant: updatedGrant
+                grant: mockGrants[grantIndex]
             };
         } catch (error) {
             throw createError({
@@ -61,12 +61,24 @@ export default defineEventHandler(async (event) => {
     // DELETE: Remove a grant
     if (event.node.req.method === 'DELETE') {
         try {
-            // Here you would delete from your database
-            // For example: await db.grants.delete(id);
+            const grantIndex = mockGrants.findIndex(g => g.id === id);
+
+            if (grantIndex === -1) {
+                throw createError({
+                    statusCode: 404,
+                    statusMessage: 'Grant not found',
+                });
+            }
+
+            // Remove the grant from the array
+            const deleted = mockGrants.splice(grantIndex, 1)[0];
+
+            console.log(`Deleted grant with ID: ${id}`);
 
             return {
                 message: 'Grant deleted successfully',
-                id: parseInt(id)
+                id: id,
+                deleted: deleted
             };
         } catch (error) {
             throw createError({

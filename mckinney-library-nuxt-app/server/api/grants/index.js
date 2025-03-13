@@ -1,15 +1,11 @@
 // server/api/grants/index.js
+import { mockGrants } from '~/server/data/mockData';
+
 export default defineEventHandler(async (event) => {
     // GET: Fetch all grants
     if (event.node.req.method === 'GET') {
         try {
-            // Replace with your actual database query
-            const grants = [
-                { id: 1, name: 'Community Literacy', amount: 5000, startDate: '2025-01-01', endDate: '2025-12-31', status: 'Active' },
-                { id: 2, name: 'Technology Fund', amount: 7500, startDate: '2025-02-15', endDate: '2025-08-15', status: 'Pending' }
-            ];
-
-            return grants;
+            return mockGrants;
         } catch (error) {
             throw createError({
                 statusCode: 500,
@@ -31,16 +27,23 @@ export default defineEventHandler(async (event) => {
                 });
             }
 
-            // Here you would add to your database
-            // For example: const newGrant = await db.grants.create(body);
+            // Create a new grant with incremental ID
+            const newId = mockGrants.length > 0
+                ? Math.max(...mockGrants.map(g => g.id)) + 1
+                : 1;
 
-            // Mock response with created grant
             const newGrant = {
-                id: Math.floor(Math.random() * 1000),
+                id: newId,
                 ...body,
+                amount: parseFloat(body.amount),
                 status: body.status || 'Pending',
                 createdAt: new Date().toISOString()
             };
+
+            // Add to mock database
+            mockGrants.push(newGrant);
+
+            console.log(`Added new grant with ID: ${newId}`);
 
             return {
                 message: 'Grant added successfully',
