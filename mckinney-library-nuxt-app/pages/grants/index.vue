@@ -30,7 +30,7 @@
             <td>{{ grant.notes || '-' }}</td>
             <td>{{ grant.boardMember ? 'Yes' : 'No' }}</td>
             <td class="actions-cell">
-              <button @click="editGrant(grant.id)" class="edit-button">Edit</button>
+              <button @click="editGrant(grant)" class="edit-button">Edit</button>
               <button @click="confirmDelete(grant)" class="delete-button">Delete</button>
             </td>
           </tr>
@@ -43,7 +43,7 @@
     </div>
     
     <!-- Delete Confirmation Modal -->
-    <div v-if="showDeleteModal" class="delete-modal">
+    <div v-if="showDeleteModal" class="modal">
       <div class="modal-content">
         <h3>Confirm Deletion</h3>
         <p>Are you sure you want to delete the grant "{{ selectedGrant?.name }}"?</p>
@@ -51,6 +51,74 @@
           <button @click="showDeleteModal = false" class="cancel-button">Cancel</button>
           <button @click="handleDelete" class="confirm-delete-button">Delete</button>
         </div>
+      </div>
+    </div>
+    
+    <!-- Edit Grant Modal -->
+    <div v-if="showEditModal" class="modal">
+      <div class="modal-content grant-form-modal">
+        <h3>Edit Grant</h3>
+        <form @submit.prevent="submitEditForm">
+          <div class="form-group">
+            <label for="name">Grant Name *</label>
+            <input id="name" v-model="grantForm.name" type="text" required>
+          </div>
+          
+          <div class="form-group">
+            <label for="grantor">Grantor *</label>
+            <input id="grantor" v-model="grantForm.grantor" type="text" required>
+          </div>
+          
+          <div class="form-group">
+            <label for="amount">Amount ($) *</label>
+            <input id="amount" v-model="grantForm.amount" type="number" step="0.01" min="0" required>
+          </div>
+          
+          <div class="form-group">
+            <label for="startDate">Start Date *</label>
+            <input id="startDate" v-model="grantForm.startDate" type="date" required>
+          </div>
+          
+          <div class="form-group">
+            <label for="endDate">End Date *</label>
+            <input id="endDate" v-model="grantForm.endDate" type="date" required>
+          </div>
+          
+          <div class="form-group">
+            <label for="status">Status</label>
+            <select id="status" v-model="grantForm.status">
+              <option value="Active">Active</option>
+              <option value="Pending">Pending</option>
+              <option value="Expired">Expired</option>
+              <option value="Rejected">Rejected</option>
+            </select>
+          </div>
+          
+          <div class="form-group">
+            <label for="boardMember">Board Member</label>
+            <select id="boardMember" v-model="grantForm.boardMember">
+              <option :value="true">Yes</option>
+              <option :value="false">No</option>
+            </select>
+          </div>
+          
+          <div class="form-group">
+            <label for="link">Link (Optional)</label>
+            <input id="link" v-model="grantForm.link" type="url" placeholder="https://example.com">
+          </div>
+          
+          <div class="form-group">
+            <label for="notes">Notes</label>
+            <textarea id="notes" v-model="grantForm.notes" rows="3"></textarea>
+          </div>
+          
+          <div class="modal-actions">
+            <button type="button" @click="showEditModal = false" class="cancel-button">Cancel</button>
+            <button type="submit" class="submit-button" :disabled="isSubmitting">
+              {{ isSubmitting ? 'Saving...' : 'Update Grant' }}
+            </button>
+          </div>
+        </form>
       </div>
     </div>
   </div>
@@ -72,11 +140,26 @@ const headers = ref([
 ]);
 
 // Get everything we need from the composable
-const { grants, isLoading, error, fetchGrants, deleteGrant } = useGrants();
+const { grants, isLoading, error, fetchGrants, deleteGrant, updateGrant } = useGrants();
 
-// State for delete confirmation
+// State for modals
 const showDeleteModal = ref(false);
+const showEditModal = ref(false);
 const selectedGrant = ref(null);
+const isSubmitting = ref(false);
+
+// Grant form data
+const grantForm = ref({
+  name: '',
+  grantor: '',
+  amount: '',
+  startDate: '',
+  endDate: '',
+  status: 'Pending',
+  boardMember: false,
+  link: '',
+  notes: ''
+});
 
 // Fetch grants when the component mounts
 onMounted(() => {
@@ -90,9 +173,21 @@ const formatDate = (dateString) => {
   return date.toLocaleDateString();
 };
 
-// Navigate to edit page
-const editGrant = (id) => {
-  router.push(`/grants/${id}/edit`);
+// Open edit modal with grant data
+const editGrant = (grant) => {
+  selectedGrant.value = grant;
+  grantForm.value = {
+    name: grant.name,
+    grantor: grant.grantor || '',
+    amount: grant.amount,
+    startDate: grant.startDate || '',
+    endDate: grant.endDate || '',
+    status: grant.status || 'Pending',
+    boardMember: grant.boardMember || false,
+    link: grant.link || '',
+    notes: grant.notes || ''
+  };
+  showEditModal.value = true;
 };
 
 // Show delete confirmation
@@ -112,6 +207,30 @@ const handleDelete = async () => {
     showDeleteModal.value = false;
   }
 };
+
+// Submit edit form
+const submitEditForm = async () => {
+  isSubmitting.value = true;
+  
+  try {
+    // Prepare grant data for API
+    const grantData = {
+      ...grantForm.value,
+      amount: parseFloat(grantForm.value.amount)
+    };
+    
+    await updateGrant(selectedGrant.value.id, grantData);
+    
+    // Close modal and reset form
+    showEditModal.value = false;
+    selectedGrant.value = null;
+  } catch (err) {
+    // Error is handled in the composable
+    console.error('Form submission failed:', err);
+  } finally {
+    isSubmitting.value = false;
+  }
+};
 </script>
 
 <style scoped>
@@ -123,24 +242,6 @@ const handleDelete = async () => {
   align-items: center;
   padding: 0;
   margin: 20px auto;
-}
-
-/* Add button styling */
-.actions-bar {
-  width: 98%;
-  max-width: 1400px;
-  margin-bottom: 15px;
-  text-align: right;
-}
-
-.add-button {
-  display: inline-block;
-  background-color: #4CAF50;
-  color: white;
-  padding: 10px 15px;
-  border-radius: 4px;
-  text-decoration: none;
-  font-weight: bold;
 }
 
 /* Style the table to be consistent with the navigation */
@@ -173,30 +274,15 @@ td {
   text-align: center;
 }
 
-/* Action buttons */
-.actions-cell {
-  display: flex;
-  justify-content: center;
-  gap: 5px;
-}
-
-.edit-button, .delete-button {
-  padding: 6px 12px;
-  border-radius: 4px;
-  font-size: 12px;
+/* Grant link */
+.grant-link {
+  color: #2196F3;
+  text-decoration: none;
   font-weight: bold;
-  cursor: pointer;
-  border: none;
 }
 
-.edit-button {
-  background-color: #2196F3;
-  color: white;
-}
-
-.delete-button {
-  background-color: #f44336;
-  color: white;
+.grant-link:hover {
+  text-decoration: underline;
 }
 
 /* Status badges */
@@ -228,15 +314,30 @@ td {
   color: white;
 }
 
-/* Grant link */
-.grant-link {
-  color: #2196F3;
-  text-decoration: none;
-  font-weight: bold;
+/* Action buttons */
+.actions-cell {
+  display: flex;
+  justify-content: center;
+  gap: 5px;
 }
 
-.grant-link:hover {
-  text-decoration: underline;
+.edit-button, .delete-button {
+  padding: 6px 12px;
+  border-radius: 4px;
+  font-size: 12px;
+  font-weight: bold;
+  cursor: pointer;
+  border: none;
+}
+
+.edit-button {
+  background-color: #2196F3;
+  color: white;
+}
+
+.delete-button {
+  background-color: #f44336;
+  color: white;
 }
 
 /* Loading, error, and no data messages */
@@ -253,7 +354,7 @@ td {
 }
 
 /* Modal Styles */
-.delete-modal {
+.modal {
   position: fixed;
   top: 0;
   left: 0;
@@ -274,11 +375,41 @@ td {
   max-width: 90%;
 }
 
+.grant-form-modal {
+  width: 500px;
+  max-height: 90vh;
+  overflow-y: auto;
+}
+
 .modal-actions {
   display: flex;
   justify-content: flex-end;
   gap: 10px;
   margin-top: 20px;
+}
+
+.form-group {
+  margin-bottom: 15px;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 5px;
+  font-weight: bold;
+}
+
+.form-group input,
+.form-group select,
+.form-group textarea {
+  width: 100%;
+  padding: 8px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 14px;
+}
+
+.form-group textarea {
+  resize: vertical;
 }
 
 .cancel-button {
@@ -290,12 +421,16 @@ td {
   cursor: pointer;
 }
 
-.confirm-delete-button {
-  background-color: #f44336;
+.confirm-delete-button, .submit-button {
+  background-color: #4CAF50;
   color: white;
   padding: 8px 15px;
   border: none;
   border-radius: 4px;
   cursor: pointer;
+}
+
+.confirm-delete-button {
+  background-color: #f44336;
 }
 </style>

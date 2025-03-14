@@ -22,7 +22,7 @@
             <td>{{ donation.category || 'General' }}</td>
             <td>{{ donation.boardMember ? 'Yes' : 'No' }}</td>
             <td class="actions-cell">
-              <button @click="editDonation(donation.id)" class="edit-button">Edit</button>
+              <button @click="editDonation(donation)" class="edit-button">Edit</button>
               <button @click="confirmDelete(donation)" class="delete-button">Delete</button>
             </td>
           </tr>
@@ -35,7 +35,7 @@
     </div>
     
     <!-- Delete Confirmation Modal -->
-    <div v-if="showDeleteModal" class="delete-modal">
+    <div v-if="showDeleteModal" class="modal">
       <div class="modal-content">
         <h3>Confirm Deletion</h3>
         <p>Are you sure you want to delete the donation from {{ selectedDonation?.donor }}?</p>
@@ -43,6 +43,72 @@
           <button @click="showDeleteModal = false" class="cancel-button">Cancel</button>
           <button @click="handleDelete" class="confirm-delete-button">Delete</button>
         </div>
+      </div>
+    </div>
+    
+    <!-- Edit Donation Modal -->
+    <div v-if="showEditModal" class="modal">
+      <div class="modal-content donation-form-modal">
+        <h3>Edit Donation</h3>
+        <form @submit.prevent="submitEditForm">
+          <div class="form-group">
+            <label for="donor">Donor Name *</label>
+            <input id="donor" v-model="donationForm.donor" type="text" required>
+          </div>
+          
+          <div class="form-group">
+            <label for="amount">Amount ($) *</label>
+            <input id="amount" v-model="donationForm.amount" type="number" step="0.01" min="0.01" required>
+          </div>
+          
+          <div class="form-group">
+            <label for="date">Date *</label>
+            <input id="date" v-model="donationForm.date" type="date" required>
+          </div>
+          
+          <div class="form-group">
+            <label for="category">Category *</label>
+            <select id="category" v-model="donationForm.category" required>
+              <option value="" disabled>Select a category</option>
+              <option value="Books">Books</option>
+              <option value="Programs">Programs</option>
+              <option value="Technology">Technology</option>
+              <option value="Furniture">Furniture</option>
+              <option value="Children's Area">Children's Area</option>
+              <option value="General">General</option>
+              <option value="Other">Other</option>
+            </select>
+          </div>
+          
+          <div class="form-group">
+            <label for="status">Status</label>
+            <select id="status" v-model="donationForm.status">
+              <option value="Received">Received</option>
+              <option value="Pending">Pending</option>
+              <option value="Declined">Declined</option>
+            </select>
+          </div>
+          
+          <div class="form-group">
+            <label for="boardMember">Board Member</label>
+            <select id="boardMember" v-model="donationForm.boardMember">
+              <option :value="true">Yes</option>
+              <option :value="false">No</option>
+            </select>
+          </div>
+          
+          <div class="form-group">
+            <label for="notes">Notes</label>
+            <textarea id="notes" v-model="donationForm.notes" rows="3"></textarea>
+          </div>
+          
+          <div class="modal-actions">
+            <button type="button" @click="showEditModal = false" class="cancel-button">Cancel</button>
+            <button type="submit" class="submit-button" :disabled="isSubmitting">
+              {{ isSubmitting ? 'Saving...' : 'Update Donation' }}
+            </button>
+          </div>
+        </form>
       </div>
     </div>
   </div>
@@ -65,11 +131,24 @@ const headers = ref([
 ]);
 
 // Get everything we need from the composable
-const { donations, isLoading, error, fetchDonations, deleteDonation } = useDonations();
+const { donations, isLoading, error, fetchDonations, deleteDonation, updateDonation } = useDonations();
 
-// State for delete confirmation
+// State for modals
 const showDeleteModal = ref(false);
+const showEditModal = ref(false);
 const selectedDonation = ref(null);
+const isSubmitting = ref(false);
+
+// Donation form data
+const donationForm = ref({
+  donor: '',
+  amount: '',
+  date: '',
+  category: '',
+  status: 'Received',
+  boardMember: false,
+  notes: ''
+});
 
 // Fetch donations when the component mounts
 onMounted(() => {
@@ -82,9 +161,19 @@ const formatDate = (dateString) => {
   return date.toLocaleDateString();
 };
 
-// Navigate to edit page
-const editDonation = (id) => {
-  router.push(`/donations/${id}/edit`);
+// Open edit modal with donation data
+const editDonation = (donation) => {
+  selectedDonation.value = donation;
+  donationForm.value = {
+    donor: donation.donor,
+    amount: donation.amount,
+    date: donation.date,
+    category: donation.category || 'General',
+    status: donation.status || 'Received',
+    boardMember: donation.boardMember || false,
+    notes: donation.notes || ''
+  };
+  showEditModal.value = true;
 };
 
 // Show delete confirmation
@@ -104,6 +193,30 @@ const handleDelete = async () => {
     showDeleteModal.value = false;
   }
 };
+
+// Submit edit form
+const submitEditForm = async () => {
+  isSubmitting.value = true;
+  
+  try {
+    // Prepare donation data for API
+    const donationData = {
+      ...donationForm.value,
+      amount: parseFloat(donationForm.value.amount)
+    };
+    
+    await updateDonation(selectedDonation.value.id, donationData);
+    
+    // Close modal and reset form
+    showEditModal.value = false;
+    selectedDonation.value = null;
+  } catch (err) {
+    // Error is handled in the composable
+    console.error('Form submission failed:', err);
+  } finally {
+    isSubmitting.value = false;
+  }
+};
 </script>
 
 <style scoped>
@@ -115,24 +228,6 @@ const handleDelete = async () => {
   align-items: center;
   padding: 0;
   margin: 20px auto;
-}
-
-/* Add button styling */
-.actions-bar {
-  width: 98%;
-  max-width: 1400px;
-  margin-bottom: 15px;
-  text-align: right;
-}
-
-.add-button {
-  display: inline-block;
-  background-color: #4CAF50;
-  color: white;
-  padding: 10px 15px;
-  border-radius: 4px;
-  text-decoration: none;
-  font-weight: bold;
 }
 
 /* Style the table to be consistent with the navigation */
@@ -205,7 +300,7 @@ td {
 }
 
 /* Modal Styles */
-.delete-modal {
+.modal {
   position: fixed;
   top: 0;
   left: 0;
@@ -226,11 +321,41 @@ td {
   max-width: 90%;
 }
 
+.donation-form-modal {
+  width: 500px;
+  max-height: 90vh;
+  overflow-y: auto;
+}
+
 .modal-actions {
   display: flex;
   justify-content: flex-end;
   gap: 10px;
   margin-top: 20px;
+}
+
+.form-group {
+  margin-bottom: 15px;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 5px;
+  font-weight: bold;
+}
+
+.form-group input,
+.form-group select,
+.form-group textarea {
+  width: 100%;
+  padding: 8px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 14px;
+}
+
+.form-group textarea {
+  resize: vertical;
 }
 
 .cancel-button {
@@ -242,12 +367,16 @@ td {
   cursor: pointer;
 }
 
-.confirm-delete-button {
-  background-color: #f44336;
+.confirm-delete-button, .submit-button {
+  background-color: #4CAF50;
   color: white;
   padding: 8px 15px;
   border: none;
   border-radius: 4px;
   cursor: pointer;
+}
+
+.confirm-delete-button {
+  background-color: #f44336;
 }
 </style>
