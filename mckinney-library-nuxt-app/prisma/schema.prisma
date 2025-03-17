@@ -82,9 +82,9 @@ model users {
   creationDate                                          String            @default("DATETIME('now')")
   password                                              String
   notes                                                 String?
-  invitingUserID_to_invitations userInvitations[] @relation("invitingUserID")
-  invitedUserID_to_invitations  userInvitations[] @relation("invitedUserID")
-  rolePermissions                                      rolePermissions  @relation(fields: [role], references: [role], onDelete: NoAction, onUpdate: Cascade)
+  invitingUserID_to_invitations                         userInvitations[] @relation("invitingUserID")
+  invitedUserID_to_invitations                          userInvitations[] @relation("invitedUserID")
+  rolePermissions                                       rolePermissions   @relation(fields: [role], references: [role], onDelete: NoAction, onUpdate: Cascade)
   contactInfo                                           contactInfo       @relation(fields: [contactInfoID], references: [contactInfoID], onDelete: NoAction, onUpdate: Cascade)
 }
 //Setting onDelete to NoAction means that if someone tries to delete a role referenced by a user, SQLite will throw an error and prevent the

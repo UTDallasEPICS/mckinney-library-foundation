@@ -9,53 +9,59 @@ dotenv.config();  // This will explicitly load environment variables from the .e
 async function main() {
 
     /**
+    await deleteTuple('contactInfo');
+    await deleteTuple('users');
+    await deleteTuple('donations');
+    await deleteTuple('donors');
+    await deleteTuple('grants');
+    await deleteTuple('rolePermissions');
+     */
+
+    /**
      * Contact Info and Users
      */
     const contact1 = await insertTuple('contactInfo', {firstName: 'George', lastName: 'Washington', email: 'gwashthefirst@gmail.com'});
-    await insertTuple('users', { contactInfoID: contact1.contactInfoID, role: 'MAIN_ADMIN', status: 'Active', creationDate: new Date().toISOString(), password: 'georgeyboy101' });
-    const result1 = await selectTuple('users');
+    //await insertTuple('users', { contactInfoID: contact1.contactInfoID, role: 'MAIN_ADMIN', status: 'Active', password: 'georgeyboy101' });
 
     const contact2 = await insertTuple('contactInfo', {firstName: 'Abe', lastName: 'Lincoln', email: 'honestabe@gmail.com'});
-    await insertTuple('users', { contactInfoID: contact2.contactInfoID, role: 'ADMIN', status: 'Active', creationDate: new Date().toISOString(), password: 'letthetruthbetold' });
-    const result = await selectTuple('users');
+    //await insertTuple('users', { contactInfoID: contact2.contactInfoID, role: 'ADMIN', status: 'Active', password: 'letthetruthbetold' });
+
+    const contactInfo = await selectTuple('contactInfo');
+    console.log(contactInfo);
+    
 
     /**
      * Donations
      */
     await insertTuple('donations', {value: 10000, donationMethod: 'Check',allocatedFor: 'Fundraiser'});
-    console.log(await selectTuple('donations'));
-    
     await insertTuple('donations', {value: 3200, donationMethod: 'GiveButter', allocatedFor: 'Library Event'});
-    console.log(await selectTuple('donations'));
+    const donations = await selectTuple('donations');
+    console.log(donations);
 
 
     /**
      * Donors
      */
     await insertTuple('donors', {contactInfoID: contact1.contactInfoID, lastContacted: '01/01/2003', lifetimeDonations: 100000});
-    console.log(await selectTuple('donors'));
-
     await insertTuple('donors', {contactInfoID: contact2.contactInfoID, lastContacted: '03/13/2025', lifetimeDonations: 2500});
-    console.log(await selectTuple('donors'));
+    const donors = await selectTuple('donors');
+    console.log(donors);
 
     /**
      * Grants
      */
     await insertTuple('grants', {contactInfoID: contact1.contactInfoID, value: 4000, allocatedFor: 'Fundraiser'});
-    console.log(await selectTuple('grants'));
-
     await insertTuple('grants', {contactInfoID: contact2.contactInfoID, value: 7500, allocatedFor: 'Event'});
-    console.log(await selectTuple('grants'));
+    const grants = await selectTuple('grants');
+    console.log(grants);
 
     /**
      * Role Permissions
      */
     await insertTuple('rolePermissions', {role: 'MAIN_ADMIN', viewDonors: 1, emailDonors: 1, viewDonationsAndGrants: 1, addDonationsAndGrants: 1, viewAccounts: 1, addAccounts: 1, manageAccounts: 1, viewRoles: 1, manageRoles: 1});
-    console.log(await selectTuple('rolePermissions'));
-
     await insertTuple('rolePermissions', {role: 'EDITOR', viewDonors: 1, emailDonors: 1, viewDonationsAndGrants: 1, addDonationsAndGrants: 1, viewAccounts: 1, addAccounts: 0, manageAccounts: 0, viewRoles: 0, manageRoles: 0});
-    console.log(await selectTuple('rolePermissions'));
-
+    const rolePermissions = await selectTuple('rolePermissions');
+    console.log(rolePermissions);
     
 
     //console.log('Number of users:', result.count);
