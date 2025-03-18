@@ -1,0 +1,12 @@
+node_modules/
+
+package-lock.json
+
+mplf.db
+
+.env
+
+.DS_Store
+
+mckinney-library-nuxt-app/prisma/migrations/
+prisma/mplf.db-journal
