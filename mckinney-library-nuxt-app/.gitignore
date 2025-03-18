@@ -6,6 +6,12 @@
 .cache
 dist
 
+# SQLite database file
+/prisma/mplf.db
+
+# Prisma migrations
+/prisma/migrations/
+
 # Node dependencies
 node_modules
 
