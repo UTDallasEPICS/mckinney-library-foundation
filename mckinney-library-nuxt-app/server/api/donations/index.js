@@ -8,7 +8,6 @@ export default defineEventHandler(async (event) => {
             // Fetch donations from database with correct relation names
             const donations = await prisma.donations.findMany({
                 include: {
-                    // Note: in your schema, the relation field is named "donors" not "donor"
                     donors: {
                         include: {
                             contactInfo: true
@@ -16,8 +15,6 @@ export default defineEventHandler(async (event) => {
                     }
                 }
             });
-
-            console.log('Fetched donations:', donations); // For debugging
 
             // Transform data to match the format expected by the frontend
             const transformedDonations = donations.map(donation => {
@@ -85,20 +82,36 @@ export default defineEventHandler(async (event) => {
 
             let donorId = null;
 
-            // If donor information is provided, find or create the donor
-            if (body.donor && typeof body.donor === 'string' && body.donor !== 'Anonymous') {
-                // Create a transaction for creating donor and contact info
+            // Handle different donor scenarios
+            if (body.donorId) {
+                // Case 1: Existing donor specified by ID
+                donorId = parseInt(body.donorId);
+
+                // Verify the donor exists
+                const existingDonor = await prisma.donors.findUnique({
+                    where: { donorID: donorId }
+                });
+
+                if (!existingDonor) {
+                    throw createError({
+                        statusCode: 404,
+                        statusMessage: 'Specified donor not found',
+                    });
+                }
+            } else if (body.donor && typeof body.donor === 'string' && body.donor !== 'Anonymous') {
+                // Case 2: New donor with details
                 if (body.donorDetails) {
                     try {
                         const result = await prisma.$transaction(async (tx) => {
                             // Create contact info
                             const contactInfo = await tx.contactInfo.create({
                                 data: {
-                                    firstName: body.donor.split(' ')[0] || 'Anonymous',
-                                    lastName: body.donor.split(' ').slice(1).join(' ') || 'Anonymous',
+                                    firstName: body.donorDetails.firstName || body.donor.split(' ')[0] || 'Anonymous',
+                                    lastName: body.donorDetails.lastName || body.donor.split(' ').slice(1).join(' ') || 'Anonymous',
                                     email: body.donorDetails.email || 'No email listed',
-                                    phoneNumber: body.donorDetails.phoneNumber ? parseInt(body.donorDetails.phoneNumber) : null,
-                                    address: body.donorDetails.address || 'No address listed'
+                                    phoneNumber: body.donorDetails.phoneNumber ? null : null, // Using null to avoid type conversion issues
+                                    address: body.donorDetails.address || 'No address listed',
+                                    organizationName: body.donorDetails.organization || 'No organization listed'
                                 }
                             });
 
@@ -124,6 +137,7 @@ export default defineEventHandler(async (event) => {
                     }
                 }
             }
+            // Case 3: Anonymous donation (donorId remains null)
 
             // Create the donation
             const newDonation = await prisma.donations.create({
