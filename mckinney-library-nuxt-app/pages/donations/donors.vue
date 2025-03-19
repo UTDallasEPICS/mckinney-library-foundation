@@ -49,7 +49,7 @@
     <div v-if="showDeleteModal" class="modal">
       <div class="modal-content">
         <h3>Confirm Deletion</h3>
-        <p>Are you sure you want to delete the donor "{{ selectedDonor?.name }}"?</p>
+        <p>Are you sure you want to delete the donor - this will delete all donations associated with the donor as well. "{{ selectedDonor?.name }}"?</p>
         <div class="modal-actions">
           <button @click="showDeleteModal = false" class="cancel-button">Cancel</button>
           <button @click="handleDelete" class="confirm-delete-button">Delete</button>

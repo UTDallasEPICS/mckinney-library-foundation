@@ -168,7 +168,7 @@ export default defineEventHandler(async (event) => {
     // DELETE: Remove a donor
     if (event.node.req.method === 'DELETE') {
         try {
-            // Find the donor first to get the contactInfoID
+            // Find the donor first to check if it exists
             const donor = await prisma.donors.findUnique({
                 where: {
                     donorID: id
@@ -185,44 +185,34 @@ export default defineEventHandler(async (event) => {
                 });
             }
 
-            // Check if donor has donations
-            if (donor.donations && donor.donations.length > 0) {
-                throw createError({
-                    statusCode: 400,
-                    statusMessage: 'Cannot delete donor with existing donations. Update or delete the donations first.',
-                });
-            }
-
-            // Delete in a transaction
+            // Use a transaction to delete donations first, then donor
             await prisma.$transaction(async (tx) => {
-                // First delete the donor
+                // 1. Delete all donations from this donor
+                if (donor.donations && donor.donations.length > 0) {
+                    await tx.donations.deleteMany({
+                        where: {
+                            donorID: id
+                        }
+                    });
+
+                    console.log(`Deleted ${donor.donations.length} donations for donor ${id}`);
+                }
+
+                // 2. Delete the donor record (but not contact info)
                 await tx.donors.delete({
                     where: {
                         donorID: id
                     }
                 });
 
-                // Then delete the associated contact info
-                // Note: Only do this if contactInfo is not referenced by other entities
-                // Check if this contactInfo is used elsewhere first
-                const contactUsage = await tx.users.findFirst({
-                    where: {
-                        contactInfoID: donor.contactInfoID
-                    }
-                });
-
-                if (!contactUsage) {
-                    await tx.contactInfo.delete({
-                        where: {
-                            contactInfoID: donor.contactInfoID
-                        }
-                    });
-                }
+                console.log(`Deleted donor with ID: ${id}`);
             });
 
+            // Return success response
             return {
-                message: 'Donor deleted successfully',
-                id
+                message: `Donor and ${donor.donations.length} associated donations deleted successfully`,
+                id,
+                donationsDeleted: donor.donations.length
             };
         } catch (error) {
             console.error('Error deleting donor:', error);
@@ -232,7 +222,7 @@ export default defineEventHandler(async (event) => {
             }));
             throw createError({
                 statusCode: error.statusCode || 500,
-                statusMessage: 'Failed to delete donor: ' + error.message,
+                statusMessage: error.statusMessage || 'Failed to delete donor: ' + error.message,
             });
         }
     }
