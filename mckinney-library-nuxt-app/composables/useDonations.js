@@ -12,7 +12,7 @@ export const useDonations = () => {
         error.value = null;
 
         try {
-            // Use the fetch API directly instead of $fetch
+            // Use the standard fetch API
             const response = await fetch('/api/donations');
 
             if (!response.ok) {
@@ -34,6 +34,24 @@ export const useDonations = () => {
         error.value = null;
 
         try {
+            // Make sure required fields are present according to your Prisma schema
+            if (!donation.amount) {
+                throw new Error('Donation amount is required');
+            }
+
+            if (!donation.donationMethod) {
+                // Default if not provided
+                donation.donationMethod = 'Other';
+            }
+
+            if (!donation.allocatedFor && donation.category) {
+                // Use category as allocatedFor if provided
+                donation.allocatedFor = donation.category;
+            } else if (!donation.allocatedFor) {
+                // Default if not provided
+                donation.allocatedFor = 'General';
+            }
+
             const response = await fetch('/api/donations', {
                 method: 'POST',
                 headers: {
@@ -42,8 +60,11 @@ export const useDonations = () => {
                 body: JSON.stringify(donation)
             });
 
+            // Check if the request was successful
             if (!response.ok) {
-                throw new Error(`HTTP error! Status: ${response.status}`);
+                // Try to get more details about the error
+                const errorData = await response.json().catch(() => ({}));
+                throw new Error(errorData.statusMessage || `HTTP error! Status: ${response.status}`);
             }
 
             const result = await response.json();
@@ -54,7 +75,7 @@ export const useDonations = () => {
             return result;
         } catch (err) {
             error.value = err.message || 'Failed to add donation';
-            console.error(err);
+            console.error('Donation submission error:', err);
             throw err;
         } finally {
             isLoading.value = false;
@@ -96,6 +117,12 @@ export const useDonations = () => {
         error.value = null;
 
         try {
+            // Make sure required fields are present for update
+            if (donation.amount === undefined && donation.donationMethod === undefined &&
+                donation.allocatedFor === undefined && donation.date === undefined) {
+                throw new Error('At least one field must be updated');
+            }
+
             const response = await fetch(`/api/donations/${id}`, {
                 method: 'PUT',
                 headers: {

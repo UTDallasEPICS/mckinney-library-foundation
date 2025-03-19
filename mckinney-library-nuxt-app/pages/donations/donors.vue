@@ -25,11 +25,11 @@
             <td>{{ donor.email }}</td>
             <td>{{ donor.phone }}</td>
             <td>{{ donor.address }}</td>
-            <td>${{ donor.totalDonations.toLocaleString() }}</td>
+            <td>${{ (donor.totalDonations || 0).toLocaleString() }}</td>
             <td>{{ formatDate(donor.lastDonationDate) }}</td>
             <td>
-              <span :class="'status-badge ' + donor.status.toLowerCase()">
-                {{ donor.status }}
+              <span :class="'status-badge ' + getDonorStatusClass(donor)">
+                {{ getDonorStatus(donor) }}
               </span>
             </td>
             <td class="actions-cell">
@@ -218,6 +218,17 @@ const formatDate = (dateString) => {
   if (!dateString) return '-';
   const date = new Date(dateString);
   return date.toLocaleDateString();
+};
+
+// Safely get donor status with fallback
+const getDonorStatus = (donor) => {
+  return donor.status || 'Active';
+};
+
+// Safely get donor status class with fallback
+const getDonorStatusClass = (donor) => {
+  const status = donor.status || 'active';
+  return typeof status === 'string' ? status.toLowerCase() : 'active';
 };
 
 // Toggle all donors selection
