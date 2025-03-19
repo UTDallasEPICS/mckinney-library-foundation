@@ -3,7 +3,7 @@
     <h1 class="donation-title">Donor Info</h1>
     
     <form @submit.prevent="submitDonation" class="donation-form">
-      <!-- Donor Selection Section -->
+      <!-- Donor Type Selection Section -->
       <div class="donor-selection">
         <button 
           type="button" 
@@ -11,6 +11,13 @@
           @click="donorType = 'new'"
         >
           New
+        </button>
+        <button 
+          type="button" 
+          :class="['selection-button', donorType === 'existing' ? 'selected' : '']" 
+          @click="donorType = 'existing'"
+        >
+          Existing
         </button>
         
         <div class="anonymous-section">
@@ -20,12 +27,13 @@
             id="anonymous" 
             v-model="donationForm.isAnonymous" 
             class="anonymous-checkbox"
+            @change="handleAnonymousChange"
           >
         </div>
       </div>
       
-      <!-- Donor Information Section -->
-      <div class="form-fields" v-if="!donationForm.isAnonymous">
+      <!-- New Donor Information Section -->
+      <div class="form-fields" v-if="donorType === 'new' && !donationForm.isAnonymous">
         <div class="form-group">
           <label for="firstName">First Name</label>
           <input 
@@ -75,7 +83,7 @@
         
         <div class="form-group">
           <label for="type">Type</label>
-          <select id="type" v-model="donationForm.type">
+          <select id="type" v-model="donationForm.type" required>
             <option value="" disabled>Select</option>
             <option value="Individual">Individual</option>
             <option value="Corporation">Corporation</option>
@@ -87,7 +95,7 @@
         
         <div class="form-group">
           <label for="communicationPreference">Communication Preference</label>
-          <select id="communicationPreference" v-model="donationForm.communicationPreference">
+          <select id="communicationPreference" v-model="donationForm.communicationPreference" required>
             <option value="" disabled>Select</option>
             <option value="Email">Email</option>
             <option value="Phone">Phone</option>
@@ -97,15 +105,54 @@
         </div>
       </div>
       
-      <!-- Anonymous donor form - simplified version -->
-      <div class="form-fields" v-else>
+      <!-- Existing Donor Selection Section -->
+      <div class="form-fields" v-if="donorType === 'existing' && !donationForm.isAnonymous">
+        <div class="form-group donor-search">
+          <label for="donorSearch">Search Donors</label>
+          <div class="search-container">
+            <input 
+              type="text" 
+              id="donorSearch" 
+              v-model="donorSearchQuery"
+              placeholder="Start typing to search donors..." 
+              @input="searchDonors"
+            >
+            <div v-if="showDonorSearchResults" class="search-results">
+              <div 
+                v-for="donor in filteredDonors" 
+                :key="donor.id" 
+                class="search-result-item"
+                @click="selectExistingDonor(donor)"
+              >
+                {{ donor.name }} ({{ donor.email }})
+              </div>
+              <div v-if="filteredDonors.length === 0" class="no-results">
+                No donors found
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <div v-if="selectedExistingDonor" class="selected-donor-info">
+          <h3>Selected Donor</h3>
+          <div class="donor-details">
+            <p><strong>Name:</strong> {{ selectedExistingDonor.name }}</p>
+            <p><strong>Email:</strong> {{ selectedExistingDonor.email }}</p>
+            <p><strong>Phone:</strong> {{ selectedExistingDonor.phone || 'N/A' }}</p>
+            <p><strong>Total Donations:</strong> ${{ (selectedExistingDonor.totalDonations || 0).toLocaleString() }}</p>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Anonymous donor message -->
+      <div class="form-fields" v-if="donationForm.isAnonymous">
         <p class="anonymous-message">Donor will be recorded as Anonymous</p>
       </div>
       
-      <!-- Additional donation details (not shown in screenshot but likely needed) -->
+      <!-- Donation details section -->
       <div class="form-fields donation-details">
         <div class="form-group">
-          <label for="amount">Donation Amount ($)</label>
+          <label for="amount">Donation Amount ($) *</label>
           <input 
             type="number" 
             id="amount" 
@@ -117,7 +164,7 @@
         </div>
         
         <div class="form-group">
-          <label for="date">Date</label>
+          <label for="date">Date *</label>
           <input 
             type="date" 
             id="date" 
@@ -127,14 +174,30 @@
         </div>
         
         <div class="form-group">
-          <label for="category">Category</label>
-          <select id="category" v-model="donationForm.category" required>
+          <label for="donationMethod">Donation Method *</label>
+          <select id="donationMethod" v-model="donationForm.donationMethod" required>
+            <option value="" disabled>Select</option>
+            <option value="Check">Check</option>
+            <option value="Cash">Cash</option>
+            <option value="Credit Card">Credit Card</option>
+            <option value="Bank Transfer">Bank Transfer</option>
+            <option value="PayPal">PayPal</option>
+            <option value="GiveButter">GiveButter</option>
+            <option value="Other">Other</option>
+          </select>
+        </div>
+        
+        <div class="form-group">
+          <label for="allocatedFor">Allocated For *</label>
+          <select id="allocatedFor" v-model="donationForm.allocatedFor" required>
             <option value="" disabled>Select</option>
             <option value="Books">Books</option>
             <option value="Programs">Programs</option>
             <option value="Technology">Technology</option>
             <option value="Furniture">Furniture</option>
             <option value="Children's Area">Children's Area</option>
+            <option value="Fundraiser">Fundraiser</option>
+            <option value="Library Event">Library Event</option>
             <option value="General">General</option>
             <option value="Other">Other</option>
           </select>
@@ -150,26 +213,37 @@
         </div>
       </div>
       
+      <div v-if="error" class="error-message">
+        {{ error }}
+      </div>
+      
       <!-- Form actions -->
       <div class="form-actions">
-        <button type="submit" class="submit-button">Submit</button>
+        <button type="submit" class="submit-button" :disabled="isLoading">
+          {{ isLoading ? 'Submitting...' : 'Submit' }}
+        </button>
       </div>
     </form>
   </div>
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, computed, watch } from 'vue';
 import { useDonations } from '~/composables/useDonations';
+import { useDonors } from '~/composables/useDonors';
 
 const router = useRouter();
 const { addDonation, isLoading, error } = useDonations();
+const { donors, fetchDonors } = useDonors();
 
 // Default date to today
 const today = new Date().toISOString().split('T')[0];
 
 // Donor type selection ('new' or 'existing')
 const donorType = ref('new');
+const donorSearchQuery = ref('');
+const showDonorSearchResults = ref(false);
+const selectedExistingDonor = ref(null);
 
 // Form data
 const donationForm = ref({
@@ -179,49 +253,112 @@ const donationForm = ref({
   phoneNumber: '',
   email: '',
   address: '',
-  type: '',
-  communicationPreference: '',
+  type: 'Individual',
+  communicationPreference: 'Email',
   amount: '',
   date: today,
-  category: '',
+  donationMethod: '',
+  allocatedFor: '',
   notes: ''
 });
+
+// Fetch all donors when component mounts
+onMounted(async () => {
+  await fetchDonors();
+});
+
+// Filter donors based on search query
+const filteredDonors = computed(() => {
+  if (!donorSearchQuery.value.trim()) return donors.value.slice(0, 5); // Show first 5 by default
+  
+  const query = donorSearchQuery.value.toLowerCase();
+  return donors.value.filter(donor => {
+    return donor.name.toLowerCase().includes(query) || 
+           (donor.email && donor.email.toLowerCase().includes(query));
+  }).slice(0, 10); // Limit to 10 results
+});
+
+// Clear selection when donor type changes
+watch(donorType, () => {
+  selectedExistingDonor.value = null;
+  donorSearchQuery.value = '';
+});
+
+// Handle anonymous checkbox change
+const handleAnonymousChange = () => {
+  if (donationForm.value.isAnonymous) {
+    // If anonymous, clear donor information
+    selectedExistingDonor.value = null;
+    donorSearchQuery.value = '';
+    // Reset donor type to new (for when anonymous is unchecked)
+    donorType.value = 'new';
+  }
+};
+
+// Search donors
+const searchDonors = () => {
+  showDonorSearchResults.value = true;
+};
+
+// Select an existing donor
+const selectExistingDonor = (donor) => {
+  selectedExistingDonor.value = donor;
+  donorSearchQuery.value = donor.name;
+  showDonorSearchResults.value = false;
+};
 
 // Handle form submission
 const submitDonation = async () => {
   try {
-    // Prepare donor name based on anonymous status
-    const donor = donationForm.value.isAnonymous 
-      ? 'Anonymous' 
-      : `${donationForm.value.firstName} ${donationForm.value.lastName}`;
+    let donorData = null;
+    let donorId = null;
     
-    // Prepare donation data for API
-    const donationData = {
-      donor: donor,
-      amount: parseFloat(donationForm.value.amount),
-      date: donationForm.value.date,
-      category: donationForm.value.category,
-      notes: donationForm.value.notes || '',
-      status: 'Received',
-      // Include donor details if not anonymous
-      ...(donationForm.value.isAnonymous ? {} : {
+    // Determine donor information based on selection type
+    if (donationForm.value.isAnonymous) {
+      // Anonymous donation
+      donorData = { donor: 'Anonymous' };
+    } else if (donorType.value === 'existing' && selectedExistingDonor.value) {
+      // Existing donor
+      donorData = { 
+        donor: selectedExistingDonor.value.name,
+        donorId: selectedExistingDonor.value.id
+      };
+    } else if (donorType.value === 'new') {
+      // New donor
+      donorData = {
+        donor: `${donationForm.value.firstName} ${donationForm.value.lastName}`,
         donorDetails: {
+          firstName: donationForm.value.firstName,
+          lastName: donationForm.value.lastName,
           phoneNumber: donationForm.value.phoneNumber,
           email: donationForm.value.email,
           address: donationForm.value.address,
           type: donationForm.value.type,
           communicationPreference: donationForm.value.communicationPreference
         }
-      })
+      };
+    } else {
+      throw new Error('Please select a donor or choose anonymous');
+    }
+    
+    // Prepare donation data for API
+    const donationData = {
+      ...donorData,
+      amount: parseFloat(donationForm.value.amount),
+      date: donationForm.value.date,
+      donationMethod: donationForm.value.donationMethod,
+      allocatedFor: donationForm.value.allocatedFor,
+      notes: donationForm.value.notes || ''
     };
     
+    console.log("Submitting donation:", donationData);
     await addDonation(donationData);
     
     // Redirect to donations list on success
     router.push('/donations');
   } catch (err) {
-    // Error is handled in the composable
     console.error('Form submission failed:', err);
+    // Error will be handled by the composable and displayed in the template
   }
 };
 </script>
@@ -234,7 +371,7 @@ const submitDonation = async () => {
   padding: 20px;
   font-family: sans-serif;
   background-color: #e6f0ff;
-  min-height: calc(100vh - 150px); /* Adjust based on your header height */
+  min-height: calc(100vh - 150px);
 }
 
 .donation-title {
@@ -265,6 +402,7 @@ const submitDonation = async () => {
   border-radius: 4px;
   font-weight: bold;
   cursor: pointer;
+  margin-right: 10px;
 }
 
 .selection-button.selected {
@@ -275,6 +413,7 @@ const submitDonation = async () => {
 .anonymous-section {
   display: flex;
   align-items: center;
+  margin-left: auto;
 }
 
 .anonymous-label {
@@ -311,7 +450,7 @@ const submitDonation = async () => {
   width: 100%;
   padding: 10px;
   border: 1px solid #ddd;
-  border-radius: 24px;
+  border-radius: 4px;
   font-size: 16px;
   background-color: white;
 }
@@ -324,10 +463,75 @@ const submitDonation = async () => {
   background-size: 16px;
 }
 
+/* Donor search styling */
+.donor-search {
+  position: relative;
+}
+
+.search-container {
+  position: relative;
+}
+
+.search-results {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  background-color: white;
+  border: 1px solid #ddd;
+  border-radius: 0 0 4px 4px;
+  max-height: 200px;
+  overflow-y: auto;
+  z-index: 10;
+}
+
+.search-result-item {
+  padding: 10px;
+  cursor: pointer;
+  border-bottom: 1px solid #eee;
+}
+
+.search-result-item:hover {
+  background-color: #f5f5f5;
+}
+
+.no-results {
+  padding: 10px;
+  color: #999;
+  text-align: center;
+}
+
+.selected-donor-info {
+  background-color: #f5f5f5;
+  padding: 15px;
+  border-radius: 4px;
+  margin-top: 10px;
+}
+
+.selected-donor-info h3 {
+  margin-top: 0;
+  margin-bottom: 10px;
+  font-size: 16px;
+}
+
+.donor-details p {
+  margin: 5px 0;
+}
+
 .anonymous-message {
   font-style: italic;
   color: #666;
   margin: 10px 0;
+}
+
+.error-message {
+  color: #ff0000;
+  font-weight: bold;
+  margin: 10px 0;
+  padding: 10px;
+  background-color: #ffeeee;
+  border-radius: 4px;
+  border: 1px solid #ffcccc;
 }
 
 /* Form actions */
@@ -353,10 +557,21 @@ const submitDonation = async () => {
   background-color: #45a049;
 }
 
+.submit-button:disabled {
+  background-color: #cccccc;
+  cursor: not-allowed;
+}
+
 /* Responsive adjustments */
 @media (min-width: 768px) {
   .form-group {
     flex: 0 0 calc(50% - 15px);
+  }
+  
+  .donor-search,
+  .selected-donor-info,
+  .form-group:last-child {
+    flex: 1 0 100%;
   }
 }
 </style>

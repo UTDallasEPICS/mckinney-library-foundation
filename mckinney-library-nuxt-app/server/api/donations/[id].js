@@ -161,32 +161,46 @@ export default defineEventHandler(async (event) => {
 
             // Store the amount and donor ID for later use
             const amount = donation.value || 0;
-            const donorId = donation.donorID;
+            const donorID = donation.donorID;
 
-            // Delete the donation
-            await prisma.donations.delete({
-                where: {
-                    donationID: id
+            // Use a transaction to ensure both operations succeed or fail together
+            await prisma.$transaction(async (tx) => {
+                // 1. Delete the donation
+                await tx.donations.delete({
+                    where: {
+                        donationID: id
+                    }
+                });
+
+                // 2. Update donor's lifetime donations if a donor was associated with this donation
+                if (donorID && amount > 0) {
+                    const donor = await tx.donors.findUnique({
+                        where: { donorID: donorID }
+                    });
+
+                    if (donor) {
+                        // Calculate new total (ensure it doesn't go below 0)
+                        const newTotal = Math.max(0, donor.lifetimeDonations - amount);
+
+                        await tx.donors.update({
+                            where: {
+                                donorID: donorID
+                            },
+                            data: {
+                                lifetimeDonations: newTotal
+                            }
+                        });
+
+                        console.log(`Updated donor ${donorID} lifetimeDonations from ${donor.lifetimeDonations} to ${newTotal}`);
+                    }
                 }
             });
 
-            // Update donor's lifetime donations if applicable
-            if (donorId && amount > 0) {
-                await prisma.donors.update({
-                    where: {
-                        donorID: donorId
-                    },
-                    data: {
-                        lifetimeDonations: {
-                            decrement: amount
-                        }
-                    }
-                });
-            }
-
             return {
-                message: 'Donation deleted successfully',
-                id
+                message: 'Donation deleted successfully and donor totals updated',
+                id,
+                amountDeducted: amount,
+                donorUpdated: donorID ? true : false
             };
         } catch (error) {
             console.error('Error deleting donation:', error);
@@ -196,7 +210,7 @@ export default defineEventHandler(async (event) => {
             }));
             throw createError({
                 statusCode: error.statusCode || 500,
-                statusMessage: 'Failed to delete donation: ' + error.message,
+                statusMessage: error.statusMessage || 'Failed to delete donation: ' + error.message,
             });
         }
     }
