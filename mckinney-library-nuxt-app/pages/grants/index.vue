@@ -14,20 +14,21 @@
         <tbody>
           <tr v-for="grant in grants" :key="grant.id">
             <td>{{ grant.name }}</td>
+            <td>{{ grant.contactName || '-' }}</td>
             <td>
               <a v-if="grant.link" :href="grant.link" target="_blank" class="grant-link">
                 View
               </a>
               <span v-else>-</span>
             </td>
-            <td>{{ formatDate(grant.endDate) }}</td>
-            <td>${{ grant.amount.toFixed(2) }}</td>
+            <td>${{ (grant.amount || 0).toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2}) }}</td>
+            <td>{{ formatDate(grant.date) }}</td>
+            <td>{{ grant.allocatedFor }}</td>
             <td>
-              <span :class="'status-badge ' + grant.status.toLowerCase()">
-                {{ grant.status }}
+              <span :class="'status-badge ' + (grant.status || 'pending').toLowerCase()">
+                {{ grant.status || 'Pending' }}
               </span>
             </td>
-            <td>{{ grant.notes || '-' }}</td>
             <td>{{ grant.boardMember ? 'Yes' : 'No' }}</td>
             <td class="actions-cell">
               <button @click="editGrant(grant)" class="edit-button">Edit</button>
@@ -54,34 +55,44 @@
       </div>
     </div>
     
-    <!-- Edit Grant Modal -->
-    <div v-if="showEditModal" class="modal">
+    <!-- Add/Edit Grant Modal -->
+    <div v-if="showAddGrantModal || showEditGrantModal" class="modal">
       <div class="modal-content grant-form-modal">
-        <h3>Edit Grant</h3>
-        <form @submit.prevent="submitEditForm">
+        <h3>{{ showEditGrantModal ? 'Edit' : 'Add' }} Grant</h3>
+        <form @submit.prevent="submitGrantForm">
           <div class="form-group">
-            <label for="name">Grant Name *</label>
+            <label for="name">Grant/Organization Name *</label>
             <input id="name" v-model="grantForm.name" type="text" required>
           </div>
           
           <div class="form-group">
-            <label for="grantor">Grantor *</label>
-            <input id="grantor" v-model="grantForm.grantor" type="text" required>
+            <label for="contactName">Contact Name</label>
+            <input id="contactName" v-model="grantForm.contactName" type="text">
           </div>
           
           <div class="form-group">
-            <label for="amount">Amount ($) *</label>
+            <label for="email">Contact Email</label>
+            <input id="email" v-model="grantForm.email" type="email">
+          </div>
+          
+          <div class="form-group">
+            <label for="phone">Contact Phone</label>
+            <input id="phone" v-model="grantForm.phone" type="tel">
+          </div>
+          
+          <div class="form-group">
+            <label for="amount">Grant Amount ($) *</label>
             <input id="amount" v-model="grantForm.amount" type="number" step="0.01" min="0" required>
           </div>
           
           <div class="form-group">
-            <label for="startDate">Start Date *</label>
-            <input id="startDate" v-model="grantForm.startDate" type="date" required>
+            <label for="allocatedFor">Allocation Purpose *</label>
+            <input id="allocatedFor" v-model="grantForm.allocatedFor" type="text" required>
           </div>
           
           <div class="form-group">
-            <label for="endDate">End Date *</label>
-            <input id="endDate" v-model="grantForm.endDate" type="date" required>
+            <label for="date">Grant Date *</label>
+            <input id="date" v-model="grantForm.date" type="date" required>
           </div>
           
           <div class="form-group">
@@ -113,9 +124,9 @@
           </div>
           
           <div class="modal-actions">
-            <button type="button" @click="showEditModal = false" class="cancel-button">Cancel</button>
+            <button type="button" @click="cancelGrantForm" class="cancel-button">Cancel</button>
             <button type="submit" class="submit-button" :disabled="isSubmitting">
-              {{ isSubmitting ? 'Saving...' : 'Update Grant' }}
+              {{ isSubmitting ? 'Saving...' : (showEditGrantModal ? 'Update' : 'Add') }}
             </button>
           </div>
         </form>
@@ -128,38 +139,44 @@
 import { ref, onMounted } from 'vue';
 import { useGrants } from '~/composables/useGrants';
 
-const router = useRouter();
 const headers = ref([
   "Name",
+  "Contact",
   "Link",
-  "Due Date",
   "Amount",
+  "Date",
+  "Allocated For",
   "Status",
-  "Notes",
   "Board Member"
 ]);
 
 // Get everything we need from the composable
-const { grants, isLoading, error, fetchGrants, deleteGrant, updateGrant } = useGrants();
+const { grants, isLoading, error, fetchGrants, addGrant, deleteGrant, updateGrant } = useGrants();
 
 // State for modals
 const showDeleteModal = ref(false);
-const showEditModal = ref(false);
+const showAddGrantModal = ref(false);
+const showEditGrantModal = ref(false);
 const selectedGrant = ref(null);
 const isSubmitting = ref(false);
 
-// Grant form data
-const grantForm = ref({
+// Default form values
+const emptyGrantForm = {
   name: '',
-  grantor: '',
-  amount: '',
-  startDate: '',
-  endDate: '',
+  contactName: '',
+  email: '',
+  phone: '',
+  amount: 0,
+  allocatedFor: '',
+  date: new Date().toISOString().split('T')[0],
   status: 'Pending',
   boardMember: false,
   link: '',
   notes: ''
-});
+};
+
+// Grant form data
+const grantForm = ref({...emptyGrantForm});
 
 // Fetch grants when the component mounts
 onMounted(() => {
@@ -173,21 +190,23 @@ const formatDate = (dateString) => {
   return date.toLocaleDateString();
 };
 
-// Open edit modal with grant data
+// Show edit modal with grant data
 const editGrant = (grant) => {
   selectedGrant.value = grant;
   grantForm.value = {
-    name: grant.name,
-    grantor: grant.grantor || '',
-    amount: grant.amount,
-    startDate: grant.startDate || '',
-    endDate: grant.endDate || '',
+    name: grant.name || '',
+    contactName: grant.contactName || '',
+    email: grant.email || '',
+    phone: grant.phone || '',
+    amount: grant.amount || 0,
+    allocatedFor: grant.allocatedFor || '',
+    date: grant.date || new Date().toISOString().split('T')[0],
     status: grant.status || 'Pending',
     boardMember: grant.boardMember || false,
     link: grant.link || '',
     notes: grant.notes || ''
   };
-  showEditModal.value = true;
+  showEditGrantModal.value = true;
 };
 
 // Show delete confirmation
@@ -208,8 +227,17 @@ const handleDelete = async () => {
   }
 };
 
-// Submit edit form
-const submitEditForm = async () => {
+// Cancel form
+const cancelGrantForm = () => {
+  showAddGrantModal.value = false;
+  showEditGrantModal.value = false;
+  grantForm.value = {...emptyGrantForm};
+  selectedGrant.value = null;
+  isSubmitting.value = false;
+};
+
+// Submit form for add/edit
+const submitGrantForm = async () => {
   isSubmitting.value = true;
   
   try {
@@ -219,11 +247,14 @@ const submitEditForm = async () => {
       amount: parseFloat(grantForm.value.amount)
     };
     
-    await updateGrant(selectedGrant.value.id, grantData);
+    if (showEditGrantModal.value) {
+      await updateGrant(selectedGrant.value.id, grantData);
+    } else {
+      await addGrant(grantData);
+    }
     
-    // Close modal and reset form
-    showEditModal.value = false;
-    selectedGrant.value = null;
+    // Reset form and close modal
+    cancelGrantForm();
   } catch (err) {
     // Error is handled in the composable
     console.error('Form submission failed:', err);
@@ -242,6 +273,28 @@ const submitEditForm = async () => {
   align-items: center;
   padding: 0;
   margin: 20px auto;
+}
+
+/* Add button styling */
+.actions-bar {
+  width: 98%;
+  max-width: 1400px;
+  margin-bottom: 15px;
+  text-align: right;
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+}
+
+.add-button {
+  padding: 10px 15px;
+  border-radius: 4px;
+  border: none;
+  text-decoration: none;
+  font-weight: bold;
+  cursor: pointer;
+  background-color: #4CAF50;
+  color: white;
 }
 
 /* Style the table to be consistent with the navigation */
@@ -285,6 +338,32 @@ td {
   text-decoration: underline;
 }
 
+/* Action buttons */
+.actions-cell {
+  display: flex;
+  justify-content: center;
+  gap: 5px;
+}
+
+.edit-button, .delete-button {
+  padding: 6px 12px;
+  border-radius: 4px;
+  font-size: 12px;
+  font-weight: bold;
+  cursor: pointer;
+  border: none;
+}
+
+.edit-button {
+  background-color: #2196F3;
+  color: white;
+}
+
+.delete-button {
+  background-color: #f44336;
+  color: white;
+}
+
 /* Status badges */
 .status-badge {
   display: inline-block;
@@ -312,45 +391,6 @@ td {
 .status-badge.rejected {
   background-color: #F44336;
   color: white;
-}
-
-/* Action buttons */
-.actions-cell {
-  display: flex;
-  justify-content: center;
-  gap: 5px;
-}
-
-.edit-button, .delete-button {
-  padding: 6px 12px;
-  border-radius: 4px;
-  font-size: 12px;
-  font-weight: bold;
-  cursor: pointer;
-  border: none;
-}
-
-.edit-button {
-  background-color: #2196F3;
-  color: white;
-}
-
-.delete-button {
-  background-color: #f44336;
-  color: white;
-}
-
-/* Loading, error, and no data messages */
-.loading-message, .error-message, .no-data-message {
-  width: 98%;
-  max-width: 1400px;
-  padding: 20px;
-  text-align: center;
-  font-weight: bold;
-}
-
-.error-message {
-  color: #f44336;
 }
 
 /* Modal Styles */
@@ -412,6 +452,18 @@ td {
   resize: vertical;
 }
 
+.loading-message, .error-message, .no-data-message {
+  width: 98%;
+  max-width: 1400px;
+  padding: 20px;
+  text-align: center;
+  font-weight: bold;
+}
+
+.error-message {
+  color: #f44336;
+}
+
 .cancel-button {
   background-color: #9e9e9e;
   color: white;
@@ -432,5 +484,10 @@ td {
 
 .confirm-delete-button {
   background-color: #f44336;
+}
+
+.submit-button:disabled {
+  background-color: #cccccc;
+  cursor: not-allowed;
 }
 </style>
