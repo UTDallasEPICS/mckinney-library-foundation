@@ -202,6 +202,11 @@ const grantForm = ref({
 // Handle form submission
 const submitGrant = async () => {
   try {
+
+    // Ensure the date is treated as local time by adding a timezone offset
+  const dateObj = new Date(grantForm.value.date + 'T12:00:00'); // Add noon time to avoid any day boundary issues
+  const formattedDate = dateObj.toISOString().split('T')[0]; // Get YYYY-MM-DD format
+
     // Prepare grant data for API based on our schema
     const grantData = {
       // Core fields from our schema
@@ -211,7 +216,7 @@ const submitGrant = async () => {
       phone: grantForm.value.phone,
       amount: parseFloat(grantForm.value.amount || 0),
       allocatedFor: grantForm.value.allocatedFor,
-      date: grantForm.value.date,
+      date: formattedDate,
       notes: grantForm.value.notes,
       
       // Additional fields that will be stored at API level

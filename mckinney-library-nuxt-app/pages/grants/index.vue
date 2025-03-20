@@ -186,7 +186,8 @@ onMounted(() => {
 // Format date for display
 const formatDate = (dateString) => {
   if (!dateString) return '-';
-  const date = new Date(dateString);
+  // Use local date string to avoid timezone issues
+  const date = new Date(dateString + 'T12:00:00');
   return date.toLocaleDateString();
 };
 

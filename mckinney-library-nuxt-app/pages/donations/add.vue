@@ -309,6 +309,11 @@ const selectExistingDonor = (donor) => {
 
 // Handle form submission
 const submitDonation = async () => {
+
+  // Ensure the date is treated as local time by adding a timezone offset
+  const dateObj = new Date(grantForm.value.date + 'T12:00:00'); // Add noon time to avoid any day boundary issues
+  const formattedDate = dateObj.toISOString().split('T')[0]; // Get YYYY-MM-DD format
+
   try {
     let donorData = null;
     let donorId = null;
@@ -345,7 +350,7 @@ const submitDonation = async () => {
     const donationData = {
       ...donorData,
       amount: parseFloat(donationForm.value.amount),
-      date: donationForm.value.date,
+      date: formattedDate,
       donationMethod: donationForm.value.donationMethod,
       allocatedFor: donationForm.value.allocatedFor,
       notes: donationForm.value.notes || ''
