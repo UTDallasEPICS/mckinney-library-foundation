@@ -213,11 +213,23 @@ onMounted(() => {
   fetchDonors();
 });
 
-// Format date for display
+// Format date for display with timezone handling
 const formatDate = (dateString) => {
   if (!dateString) return '-';
-  const date = new Date(dateString);
+  
+  // Add time component to ensure consistent date interpretation
+  // Using noon (12:00) to avoid any potential day boundary issues
+  const date = new Date(`${dateString}T12:00:00`);
   return date.toLocaleDateString();
+};
+
+// Function to handle date formatting for API submission
+const formatDateForAPI = (dateString) => {
+  if (!dateString) return '';
+  
+  // Add time to ensure proper timezone handling
+  const date = new Date(`${dateString}T12:00:00`);
+  return date.toISOString().split('T')[0]; // Returns YYYY-MM-DD
 };
 
 // Safely get donor status with fallback
@@ -348,13 +360,21 @@ const cancelDonorForm = () => {
   selectedDonor.value = null;
 };
 
-// Submit form for add/edit
+// Submit form for add/edit with proper date handling
 const submitDonorForm = async () => {
   try {
+    // Create a copy of form data to avoid modifying the original
+    const formData = { ...donorForm.value };
+    
+    // Format the date correctly to prevent timezone issues
+    if (formData.lastDonationDate) {
+      formData.lastDonationDate = formatDateForAPI(formData.lastDonationDate);
+    }
+    
     if (showEditDonorModal.value) {
-      await updateDonor(selectedDonor.value.id, donorForm.value);
+      await updateDonor(selectedDonor.value.id, formData);
     } else {
-      await addDonor(donorForm.value);
+      await addDonor(formData);
     }
     
     // Reset form and close modal
