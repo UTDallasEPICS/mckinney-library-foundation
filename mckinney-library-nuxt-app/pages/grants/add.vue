@@ -1,138 +1,156 @@
 <template>
   <div class="add-grant-container">
-    <h1>Add New Grant</h1>
+    <h1 class="grant-title">Add New Grant</h1>
+    
     <form @submit.prevent="submitGrant" class="grant-form">
-      <div class="form-group">
-        <label for="grantor">Grantor Organization</label>
-        <input 
-          type="text" 
-          id="grantor" 
-          v-model="grantForm.name"
-          required
-          placeholder="Organization providing the grant"
-        >
+      <!-- Grant Information Section -->
+      <div class="form-fields">
+        <div class="form-group">
+          <label for="grantor">Grantor Organization *</label>
+          <input 
+            type="text" 
+            id="grantor" 
+            v-model="grantForm.name"
+            required
+            placeholder="Organization providing the grant"
+          >
+        </div>
+        
+        <div class="form-group">
+          <label for="contactName">Contact Name</label>
+          <input 
+            type="text" 
+            id="contactName" 
+            v-model="grantForm.contactName"
+            placeholder="Primary contact person"
+          >
+        </div>
+        
+        <div class="form-group">
+          <label for="email">Contact Email</label>
+          <input 
+            type="email" 
+            id="email" 
+            v-model="grantForm.email"
+            placeholder="contact@example.com"
+          >
+        </div>
+        
+        <div class="form-group">
+          <label for="phone">Contact Phone</label>
+          <input 
+            type="tel" 
+            id="phone" 
+            v-model="grantForm.phone"
+            placeholder="(123) 456-7890"
+          >
+        </div>
       </div>
       
-      <div class="form-group">
-        <label for="contactName">Contact Name</label>
-        <input 
-          type="text" 
-          id="contactName" 
-          v-model="grantForm.contactName"
-          placeholder="Primary contact person"
-        >
+      <!-- Grant Details Section -->
+      <div class="form-fields">
+        <div class="form-group">
+          <label for="amount">Amount Requested ($) *</label>
+          <input 
+            type="number" 
+            id="amount" 
+            v-model="grantForm.amount"
+            step="0.01"
+            min="0"
+            required
+            placeholder="0.00"
+          >
+        </div>
+        
+        <div class="form-group">
+          <label for="allocatedFor">Purpose *</label>
+          <input 
+            type="text" 
+            id="allocatedFor" 
+            v-model="grantForm.allocatedFor"
+            required
+            placeholder="What the grant will be used for"
+          >
+        </div>
+        
+        <div class="form-group">
+          <label for="date">Grant Date *</label>
+          <input 
+            type="date" 
+            id="date" 
+            v-model="grantForm.date"
+            required
+          >
+        </div>
+        
+        <div class="form-group">
+          <label for="status">Status *</label>
+          <select id="status" v-model="grantForm.status" required>
+            <option value="Pending">Pending</option>
+            <option value="Active">Active</option>
+            <option value="Expired">Expired</option>
+            <option value="Rejected">Rejected</option>
+          </select>
+        </div>
       </div>
       
-      <div class="form-group">
-        <label for="email">Contact Email</label>
-        <input 
-          type="email" 
-          id="email" 
-          v-model="grantForm.email"
-          placeholder="contact@example.com"
-        >
+      <!-- Additional Details Section -->
+      <div class="form-fields">
+        <div class="form-group">
+          <label for="proposalDate">Proposal Date</label>
+          <input 
+            type="date" 
+            id="proposalDate" 
+            v-model="grantForm.proposalDate"
+          >
+        </div>
+        
+        <div class="form-group">
+          <label for="awardDate">Award Date</label>
+          <input 
+            type="date" 
+            id="awardDate" 
+            v-model="grantForm.awardDate"
+          >
+        </div>
+        
+        <div class="form-group">
+          <label for="boardMember">Board Member</label>
+          <select id="boardMember" v-model="grantForm.boardMember">
+            <option :value="true">Yes</option>
+            <option :value="false">No</option>
+          </select>
+        </div>
+        
+        <div class="form-group">
+          <label for="link">Grant URL</label>
+          <input 
+            type="url" 
+            id="link" 
+            v-model="grantForm.link"
+            placeholder="https://example.com/grant"
+          >
+        </div>
       </div>
       
-      <div class="form-group">
-        <label for="phone">Contact Phone</label>
-        <input 
-          type="tel" 
-          id="phone" 
-          v-model="grantForm.phone"
-          placeholder="(123) 456-7890"
-        >
+      <!-- Notes Section -->
+      <div class="form-fields">
+        <div class="form-group full-width">
+          <label for="notes">Notes</label>
+          <textarea 
+            id="notes" 
+            v-model="grantForm.notes"
+            rows="3"
+            placeholder="Additional details about this grant"
+          ></textarea>
+        </div>
       </div>
       
-      <div class="form-group">
-        <label for="amount">Amount Requested</label>
-        <input 
-          type="number" 
-          id="amount" 
-          v-model="grantForm.amount"
-          step="0.01"
-          min="0"
-          required
-          placeholder="0.00"
-        >
+      <div v-if="error" class="error-message">
+        {{ error }}
       </div>
       
-      <div class="form-group">
-        <label for="allocatedFor">Purpose</label>
-        <input 
-          type="text" 
-          id="allocatedFor" 
-          v-model="grantForm.allocatedFor"
-          required
-          placeholder="What the grant will be used for"
-        >
-      </div>
-      
-      <div class="form-group">
-        <label for="date">Grant Date</label>
-        <input 
-          type="date" 
-          id="date" 
-          v-model="grantForm.date"
-          required
-        >
-      </div>
-      
-      <div class="form-group">
-        <label for="proposalDate">Proposal Date</label>
-        <input 
-          type="date" 
-          id="proposalDate" 
-          v-model="grantForm.proposalDate"
-        >
-      </div>
-      
-      <div class="form-group">
-        <label for="awardDate">Award Date</label>
-        <input 
-          type="date" 
-          id="awardDate" 
-          v-model="grantForm.awardDate"
-        >
-      </div>
-      
-      <div class="form-group">
-        <label for="status">Status</label>
-        <select id="status" v-model="grantForm.status">
-          <option value="Pending">Pending</option>
-          <option value="Active">Active</option>
-          <option value="Expired">Expired</option>
-          <option value="Rejected">Rejected</option>
-        </select>
-      </div>
-      
-      <div class="form-group">
-        <label for="boardMember">Board Member</label>
-        <select id="boardMember" v-model="grantForm.boardMember">
-          <option :value="true">Yes</option>
-          <option :value="false">No</option>
-        </select>
-      </div>
-      
-      <div class="form-group">
-        <label for="link">Grant URL</label>
-        <input 
-          type="url" 
-          id="link" 
-          v-model="grantForm.link"
-          placeholder="https://example.com/grant"
-        >
-      </div>
-      
-      <div class="form-group">
-        <label for="notes">Notes</label>
-        <textarea 
-          id="notes" 
-          v-model="grantForm.notes"
-          rows="3"
-          placeholder="Additional details about this grant"
-        ></textarea>
-      </div>
-      
+      <!-- Form actions -->
       <div class="form-actions">
         <button 
           type="button" 
@@ -148,10 +166,6 @@
         >
           {{ isLoading ? 'Submitting...' : 'Submit Grant' }}
         </button>
-      </div>
-      
-      <div v-if="error" class="error-message">
-        {{ error }}
       </div>
     </form>
   </div>
@@ -232,56 +246,81 @@ const goBack = () => {
   max-width: 100%;
   margin: 0;
   padding: 20px;
+  font-family: sans-serif;
   background-color: #e6f0ff;
-  min-height: calc(100vh - 150px); /* Adjust based on your header height */
+  min-height: calc(100vh - 150px);
 }
 
-h1 {
+.grant-title {
   text-align: center;
-  color: #545679;
+  color: #333;
   margin-bottom: 30px;
+  font-size: 24px;
 }
 
 .grant-form {
-  padding: 30px;
+  padding: 20px;
   max-width: 600px;
   margin: 0 auto;
-  background-color: white;
-  border-radius: 8px;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+/* Form fields styling */
+.form-fields {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 15px;
+  margin-bottom: 20px;
 }
 
 .form-group {
-  display: flex;
-  margin-bottom: 15px;
-  align-items: center;
+  flex: 1 0 100%;
+}
+
+.form-group.full-width {
+  flex: 1 0 100%;
 }
 
 .form-group label {
-  width: 150px;
-  text-align: right;
-  margin-right: 15px;
+  display: block;
+  margin-bottom: 5px;
   font-weight: bold;
-  color: #545679;
 }
 
 .form-group input,
 .form-group select,
 .form-group textarea {
-  flex: 1;
+  width: 100%;
   padding: 10px;
   border: 1px solid #ddd;
-  border-radius: 24px;
+  border-radius: 4px;
+  font-size: 16px;
   background-color: white;
-  font-family: inherit;
+}
+
+.form-group select {
+  appearance: none;
+  background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+  background-repeat: no-repeat;
+  background-position: right 10px center;
+  background-size: 16px;
 }
 
 .form-group textarea {
-  border-radius: 16px;
   min-height: 80px;
   resize: vertical;
 }
 
+.error-message {
+  color: #ff0000;
+  font-weight: bold;
+  margin: 10px 0;
+  padding: 10px;
+  background-color: #ffeeee;
+  border-radius: 4px;
+  border: 1px solid #ffcccc;
+}
+
+/* Form actions */
 .form-actions {
   display: flex;
   justify-content: center;
@@ -296,7 +335,7 @@ h1 {
   cursor: pointer;
   font-weight: bold;
   font-size: 16px;
-  transition: background-color 0.2s;
+  transition: background-color 0.3s;
 }
 
 .submit-button {
@@ -322,33 +361,14 @@ h1 {
   background-color: #e6e6e6;
 }
 
-.error-message {
-  color: #f44336;
-  text-align: center;
-  margin-top: 15px;
-  font-weight: bold;
-}
-
-input, select {
-  height: 42px;
-  width: 100%;
-}
-
 /* Responsive adjustments */
-@media (max-width: 768px) {
+@media (min-width: 768px) {
   .form-group {
-    flex-direction: column;
-    align-items: flex-start;
+    flex: 0 0 calc(50% - 15px);
   }
   
-  .form-group label {
-    width: 100%;
-    text-align: left;
-    margin-bottom: 5px;
-  }
-  
-  .grant-form {
-    padding: 20px;
+  .form-group.full-width {
+    flex: 1 0 100%;
   }
 }
 </style>
