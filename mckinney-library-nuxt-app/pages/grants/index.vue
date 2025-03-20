@@ -287,17 +287,6 @@ const submitGrantForm = async () => {
   gap: 10px;
 }
 
-.add-button {
-  padding: 10px 15px;
-  border-radius: 4px;
-  border: none;
-  text-decoration: none;
-  font-weight: bold;
-  cursor: pointer;
-  background-color: #4CAF50;
-  color: white;
-}
-
 /* Style the table to be consistent with the navigation */
 table {
   width: 98%;
@@ -341,9 +330,10 @@ td {
 
 /* Action buttons */
 .actions-cell {
-  display: flex;
   justify-content: center;
   gap: 5px;
+  align-items: center;
+  white-space: nowrap; /* Prevent buttons from wrapping */
 }
 
 .edit-button, .delete-button {
@@ -353,6 +343,8 @@ td {
   font-weight: bold;
   cursor: pointer;
   border: none;
+  display: inline-block;
+  margin: 0 2px; /* Add horizontal margin between buttons */
 }
 
 .edit-button {

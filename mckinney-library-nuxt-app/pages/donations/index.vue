@@ -264,9 +264,9 @@ td {
 
 /* Action buttons */
 .actions-cell {
-  display: flex;
   justify-content: center;
   gap: 5px;
+  white-space: nowrap; /* Prevent buttons from wrapping */
 }
 
 .edit-button, .delete-button {
@@ -276,6 +276,8 @@ td {
   font-weight: bold;
   cursor: pointer;
   border: none;
+  display: inline-block;
+  margin: 0 2px; /* Add horizontal margin between buttons */
 }
 
 .edit-button {
