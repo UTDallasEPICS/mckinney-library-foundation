@@ -377,6 +377,8 @@ const submitDonation = async () => {
   font-family: sans-serif;
   background-color: #e6f0ff;
   min-height: calc(100vh - 150px);
+  box-sizing: border-box;
+  overflow-x: hidden; /* Prevent horizontal scroll */
 }
 
 .donation-title {
@@ -390,14 +392,18 @@ const submitDonation = async () => {
   padding: 20px;
   max-width: 600px;
   margin: 0 auto;
+  box-sizing: border-box;
+  width: 100%;
 }
 
 /* Donor selection styling */
 .donor-selection {
   display: flex;
-  justify-content: space-between;
+  justify-content: flex-start; /* Changed from space-between to prevent stretching */
   align-items: center;
   margin-bottom: 20px;
+  flex-wrap: wrap; /* Allow wrapping on small screens */
+  gap: 10px; /* Add gap for spacing when wrapped */
 }
 
 .selection-button {
@@ -437,10 +443,14 @@ const submitDonation = async () => {
   flex-wrap: wrap;
   gap: 15px;
   margin-bottom: 20px;
+  max-width: 100%; /* Ensure it doesn't exceed container width */
+  box-sizing: border-box;
 }
 
 .form-group {
   flex: 1 0 100%;
+  max-width: 100%; /* Ensure form groups don't exceed container width */
+  box-sizing: border-box;
 }
 
 .form-group label {
@@ -453,11 +463,13 @@ const submitDonation = async () => {
 .form-group select,
 .form-group textarea {
   width: 100%;
+  max-width: 100%; /* Prevent overflowing */
   padding: 10px;
   border: 1px solid #ddd;
   border-radius: 4px;
   font-size: 16px;
   background-color: white;
+  box-sizing: border-box;
 }
 
 .form-group select {
@@ -471,10 +483,14 @@ const submitDonation = async () => {
 /* Donor search styling */
 .donor-search {
   position: relative;
+  width: 100%;
+  max-width: 100%;
 }
 
 .search-container {
   position: relative;
+  width: 100%;
+  max-width: 100%;
 }
 
 .search-results {
@@ -488,12 +504,16 @@ const submitDonation = async () => {
   max-height: 200px;
   overflow-y: auto;
   z-index: 10;
+  box-sizing: border-box;
+  width: 100%;
+  max-width: 100%;
 }
 
 .search-result-item {
   padding: 10px;
   cursor: pointer;
   border-bottom: 1px solid #eee;
+  word-break: break-word; /* Handle long text */
 }
 
 .search-result-item:hover {
@@ -511,6 +531,9 @@ const submitDonation = async () => {
   padding: 15px;
   border-radius: 4px;
   margin-top: 10px;
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
 }
 
 .selected-donor-info h3 {
@@ -521,6 +544,7 @@ const submitDonation = async () => {
 
 .donor-details p {
   margin: 5px 0;
+  word-break: break-word; /* Handle long text without overflow */
 }
 
 .anonymous-message {
@@ -537,6 +561,9 @@ const submitDonation = async () => {
   background-color: #ffeeee;
   border-radius: 4px;
   border: 1px solid #ffcccc;
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
 }
 
 /* Form actions */
@@ -544,6 +571,8 @@ const submitDonation = async () => {
   display: flex;
   justify-content: center;
   margin-top: 30px;
+  width: 100%;
+  max-width: 100%;
 }
 
 .submit-button {
@@ -571,12 +600,14 @@ const submitDonation = async () => {
 @media (min-width: 768px) {
   .form-group {
     flex: 0 0 calc(50% - 15px);
+    max-width: calc(50% - 15px); /* Ensure proper sizing when in flex container */
   }
   
   .donor-search,
   .selected-donor-info,
   .form-group:last-child {
     flex: 1 0 100%;
+    max-width: 100%;
   }
 }
 </style>
