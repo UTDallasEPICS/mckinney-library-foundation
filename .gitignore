@@ -1,8 +1,39 @@
+#Nuxt folder .gitignore
+
+# Nuxt dev/build outputs
+.output
+.data
+.nuxt
+.nitro
+.cache
+dist
+
+# Prisma migrations
+#/prisma/migrations/
+
+# Node dependencies
+node_modules
+
+# Logs
+logs
+*.log
+
+# Misc
+.DS_Store
+.fleet
+.idea
+
+# Local env files
+#.env
+.env.*
+!.env.example
+
+#Root .gitignore file
 node_modules/
 
 package-lock.json
 
-mplf.db
+#mplf.db
 
 .env
 
