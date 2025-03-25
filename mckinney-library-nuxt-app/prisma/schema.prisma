@@ -99,7 +99,7 @@ model contactInfo {
   lastName                                              String            @default("Anonymous")
   organizationName                                      String            @default("No organization listed")
   email                                                 String            @default("No email listed")
-  phoneNumber                                           Int?
+  phoneNumber                                           BigInt?
   address                                               String            @default("No address listed")
   notes                                                 String?
   users                                                 users?         
