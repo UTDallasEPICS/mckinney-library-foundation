@@ -20,7 +20,7 @@
           Existing
         </button>
         
-        <div class="anonymous-section">
+        <div class="anonymous-section" v-if="donorType === 'new'">
           <label for="anonymous" class="anonymous-label">Anonymous?</label>
           <input 
             type="checkbox" 
