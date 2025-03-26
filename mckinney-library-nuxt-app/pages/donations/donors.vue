@@ -4,7 +4,7 @@
     <div v-else-if="error" class="error-message">Error: {{ error }}</div>
     <div v-else>
       <div class="actions-bar">
-        <button @click="showAddDonorModal = true" class="add-button">+ Add Donor</button>
+        <!-- Add Donor button removed -->
         <button @click="showEmailModal = true" class="email-button" :disabled="selectedDonors.length === 0">
           Mass Email Donors {{ selectedDonors.length > 0 ? `(${selectedDonors.length})` : '' }}
         </button>
@@ -41,7 +41,7 @@
       </table>
       
       <div v-else class="no-data-message">
-        No donors found. Add your first donor!
+        No donors found.
       </div>
     </div>
     
@@ -57,10 +57,10 @@
       </div>
     </div>
     
-    <!-- Add/Edit Donor Modal -->
-    <div v-if="showAddDonorModal || showEditDonorModal" class="modal">
+    <!-- Edit Donor Modal (Add functionality removed) -->
+    <div v-if="showEditDonorModal" class="modal">
       <div class="modal-content donor-form-modal">
-        <h3>{{ showEditDonorModal ? 'Edit' : 'Add' }} Donor</h3>
+        <h3>Edit Donor</h3>
         <form @submit.prevent="submitDonorForm">
           <div class="form-group">
             <label for="name">Name *</label>
@@ -103,7 +103,7 @@
           <div class="modal-actions">
             <button type="button" @click="cancelDonorForm" class="cancel-button">Cancel</button>
             <button type="submit" class="submit-button">
-              {{ isLoading ? 'Saving...' : (showEditDonorModal ? 'Update' : 'Add') }}
+              {{ isLoading ? 'Saving...' : 'Update' }}
             </button>
           </div>
         </form>
@@ -179,7 +179,6 @@ const { isLoading: emailsLoading, error: emailError, getTemplate, getTemplates, 
 
 // State for modals
 const showDeleteModal = ref(false);
-const showAddDonorModal = ref(false);
 const showEditDonorModal = ref(false);
 const showEmailModal = ref(false);
 const selectedDonor = ref(null);
@@ -354,13 +353,12 @@ const handleDelete = async () => {
 
 // Cancel form
 const cancelDonorForm = () => {
-  showAddDonorModal.value = false;
   showEditDonorModal.value = false;
   donorForm.value = {...emptyDonorForm};
   selectedDonor.value = null;
 };
 
-// Submit form for add/edit with proper date handling
+// Submit form for edit
 const submitDonorForm = async () => {
   try {
     // Create a copy of form data to avoid modifying the original
@@ -371,11 +369,7 @@ const submitDonorForm = async () => {
       formData.lastDonationDate = formatDateForAPI(formData.lastDonationDate);
     }
     
-    if (showEditDonorModal.value) {
-      await updateDonor(selectedDonor.value.id, formData);
-    } else {
-      await addDonor(formData);
-    }
+    await updateDonor(selectedDonor.value.id, formData);
     
     // Reset form and close modal
     cancelDonorForm();
