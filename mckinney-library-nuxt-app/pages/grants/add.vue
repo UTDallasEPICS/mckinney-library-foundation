@@ -366,6 +366,20 @@ const goBack = () => {
   background-color: #e6e6e6;
 }
 
+/* Hide the increment/decrement buttons on number inputs */
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* For Firefox */
+input[type="number"] {
+  -moz-appearance: textfield;
+}
+
+/* WebKit browsers (Chrome, Safari, Edge)
+
 /* Responsive adjustments */
 @media (min-width: 768px) {
   .form-group {
