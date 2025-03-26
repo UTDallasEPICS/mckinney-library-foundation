@@ -20,7 +20,7 @@
           Existing
         </button>
         
-        <div class="anonymous-section">
+        <div class="anonymous-section" v-if="donorType === 'new'">
           <label for="anonymous" class="anonymous-label">Anonymous?</label>
           <input 
             type="checkbox" 
@@ -157,7 +157,6 @@
             type="number" 
             id="amount" 
             v-model="donationForm.amount"
-            step="0.01"
             min="0.01"
             required
           >
@@ -595,6 +594,20 @@ const submitDonation = async () => {
   background-color: #cccccc;
   cursor: not-allowed;
 }
+
+/* Hide the increment/decrement buttons on number inputs */
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* For Firefox */
+input[type="number"] {
+  -moz-appearance: textfield;
+}
+
+/* WebKit browsers (Chrome, Safari, Edge)
 
 /* Responsive adjustments */
 @media (min-width: 768px) {

@@ -114,17 +114,20 @@ select {
 
 /* Action buttons */
 .actions-cell {
-  padding: 5px;
+  white-space: nowrap;
+  padding: 15px;
 }
 
 .status-button, .delete-button {
-  padding: 8px 15px;
-  border-radius: 20px;
+  padding: 6px 12px;
+  border-radius: 4px;
   font-size: 12px;
   font-weight: bold;
   cursor: pointer;
   border: none;
   width: 100%;
+  margin: 0 2px; /* Add small horizontal spacing between buttons */
+  display: inline-block; /* Keep buttons side-by-side */
 }
 
 .freeze {
