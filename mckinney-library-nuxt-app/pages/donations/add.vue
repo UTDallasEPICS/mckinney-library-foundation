@@ -7,17 +7,17 @@
       <div class="donor-selection">
         <button 
           type="button" 
-          :class="['selection-button', donorType === 'new' ? 'selected' : '']" 
-          @click="donorType = 'new'"
-        >
-          New
-        </button>
-        <button 
-          type="button" 
           :class="['selection-button', donorType === 'existing' ? 'selected' : '']" 
           @click="donorType = 'existing'"
         >
           Existing
+        </button>
+        <button 
+          type="button" 
+          :class="['selection-button', donorType === 'new' ? 'selected' : '']" 
+          @click="donorType = 'new'"
+        >
+          New
         </button>
         
         <div class="anonymous-section" v-if="donorType === 'new'">
@@ -36,12 +36,33 @@
       <div class="form-fields" v-if="donorType === 'new' && !donationForm.isAnonymous">
         <div class="form-group">
           <label for="firstName">First Name</label>
-          <input 
+          <div class="search-container">
+            <input 
+              type="text" 
+              id="donorSearch" 
+              v-model="donorSearchQuery" 
+              @input="searchDonors"
+            >
+            <div v-if="showDonorSearchResults" class="search-results">
+              <div 
+                v-for="donor in filteredDonorsByName" 
+                :key="donor.id" 
+                class="search-result-item"
+                @click="selectExistingDonor(donor)"
+              >
+                {{ donor.name }}
+              </div>
+              <div v-if="filteredDonorsByName.length === 0" class="no-results">
+                No donors found
+              </div>
+            </div>
+          </div>
+          <!-- <input 
             type="text" 
             id="firstName" 
             v-model="donationForm.firstName"
             required
-          >
+          > -->
         </div>
         
         <div class="form-group">
@@ -239,7 +260,7 @@ const { donors, fetchDonors } = useDonors();
 const today = new Date().toISOString().split('T')[0];
 
 // Donor type selection ('new' or 'existing')
-const donorType = ref('new');
+const donorType = ref('existing');
 const donorSearchQuery = ref('');
 const showDonorSearchResults = ref(false);
 const selectedExistingDonor = ref(null);
@@ -277,6 +298,15 @@ const filteredDonors = computed(() => {
   }).slice(0, 10); // Limit to 10 results
 });
 
+const filteredDonorsByName = computed(() => {
+  if (!donorSearchQuery.value.trim()) return donors.value.slice(0, 5); // Show first 5 by default
+  
+  const query = donorSearchQuery.value.toLowerCase();
+  return donors.value.filter(donor => {
+    return donor.name.toLowerCase().includes(query); 
+  }).slice(0, 10); // Limit to 10 results
+});
+
 // Clear selection when donor type changes
 watch(donorType, () => {
   selectedExistingDonor.value = null;
@@ -301,6 +331,10 @@ const searchDonors = () => {
 
 // Select an existing donor
 const selectExistingDonor = (donor) => {
+  if (donorType.value === "new") {
+    donorType.value = "existing";
+  }
+  
   selectedExistingDonor.value = donor;
   donorSearchQuery.value = donor.name;
   showDonorSearchResults.value = false;
