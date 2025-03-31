@@ -15,12 +15,6 @@
           <tr v-for="grant in grants" :key="grant.id">
             <td>{{ grant.name }}</td>
             <td>{{ grant.contactName || '-' }}</td>
-            <td>
-              <a v-if="grant.link" :href="grant.link" target="_blank" class="grant-link">
-                View
-              </a>
-              <span v-else>-</span>
-            </td>
             <td>${{ (grant.amount || 0).toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2}) }}</td>
             <td>{{ formatDate(grant.date) }}</td>
             <td>{{ grant.allocatedFor }}</td>
@@ -91,7 +85,7 @@
           </div>
           
           <div class="form-group">
-            <label for="date">Grant Date *</label>
+            <label for="date">Grant Start Date *</label>
             <input id="date" v-model="grantForm.date" type="date" required>
           </div>
           
@@ -111,11 +105,6 @@
               <option :value="true">Yes</option>
               <option :value="false">No</option>
             </select>
-          </div>
-          
-          <div class="form-group">
-            <label for="link">Link (Optional)</label>
-            <input id="link" v-model="grantForm.link" type="url" placeholder="https://example.com">
           </div>
           
           <div class="form-group">
@@ -142,9 +131,8 @@ import { useGrants } from '~/composables/useGrants';
 const headers = ref([
   "Name",
   "Contact",
-  "Link",
   "Amount",
-  "Date",
+  "Start Date",
   "Allocated For",
   "Status",
   "Board Member"
@@ -171,7 +159,6 @@ const emptyGrantForm = {
   date: new Date().toISOString().split('T')[0],
   status: 'Pending',
   boardMember: false,
-  link: '',
   notes: ''
 };
 
@@ -204,7 +191,6 @@ const editGrant = (grant) => {
     date: grant.date || new Date().toISOString().split('T')[0],
     status: grant.status || 'Pending',
     boardMember: grant.boardMember || false,
-    link: grant.link || '',
     notes: grant.notes || ''
   };
   showEditGrantModal.value = true;
@@ -315,17 +301,6 @@ td {
   padding: 10px;
   border: 1px solid #ddd;
   text-align: center;
-}
-
-/* Grant link */
-.grant-link {
-  color: #2196F3;
-  text-decoration: none;
-  font-weight: bold;
-}
-
-.grant-link:hover {
-  text-decoration: underline;
 }
 
 /* Action buttons */

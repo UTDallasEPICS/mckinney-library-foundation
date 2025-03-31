@@ -74,7 +74,7 @@
         </div>
         
         <div class="form-group">
-          <label for="date">Grant Date *</label>
+          <label for="date">Grant Start Date *</label>
           <input 
             type="date" 
             id="date" 
@@ -120,16 +120,6 @@
             <option :value="true">Yes</option>
             <option :value="false">No</option>
           </select>
-        </div>
-        
-        <div class="form-group">
-          <label for="link">Grant URL</label>
-          <input 
-            type="url" 
-            id="link" 
-            v-model="grantForm.link"
-            placeholder="https://example.com/grant"
-          >
         </div>
       </div>
       
@@ -195,7 +185,6 @@ const grantForm = ref({
   awardDate: '',
   status: 'Pending',
   boardMember: false,
-  link: '',
   notes: ''
 });
 
@@ -222,7 +211,6 @@ const submitGrant = async () => {
       // Additional fields that will be stored at API level
       status: grantForm.value.status,
       boardMember: grantForm.value.boardMember,
-      link: grantForm.value.link,
       
       // Custom fields specific to grants UI
       proposalDate: grantForm.value.proposalDate,
