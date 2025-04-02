@@ -1,35 +1,25 @@
 <template>
   <div class="create-account-container">
     <h1 class="page-title">Create Account</h1>
-    <form @submit.prevent="submitAccount" class="create-account-form">
+    <form @submit.prevent="sendInvite" class="create-account-form">
       
       <div class="form-group">
-        <label for="firstName">First Name</label>
+        <label for="firstName">First Name *</label>
         <input type="text" id="firstName" v-model="accountForm.firstName" required>
       </div>
       
       <div class="form-group">
-        <label for="lastName">Last Name</label>
+        <label for="lastName">Last Name *</label>
         <input type="text" id="lastName" v-model="accountForm.lastName" required>
       </div>
       
       <div class="form-group">
-        <label for="email">Email</label>
+        <label for="email">Email *</label>
         <input type="email" id="email" v-model="accountForm.email" required>
       </div>
       
       <div class="form-group">
-        <label for="password">Password</label>
-        <input type="password" id="password" v-model="accountForm.password" required>
-      </div>
-      
-      <div class="form-group">
-        <label for="confirmPassword">Confirm Password</label>
-        <input type="password" id="confirmPassword" v-model="accountForm.confirmPassword" required>
-      </div>
-      
-      <div class="form-group">
-        <label for="role">Role</label>
+        <label for="role">Role *</label>
         <select id="role" v-model="accountForm.role" required>
           <option value="" disabled>Select Role</option>
           <option v-for="role in roles" :key="role" :value="role">
@@ -43,8 +33,8 @@
       </div>
       
       <div class="form-actions">
-        <button type="submit" class="submit-button" :disabled="isLoading">
-          {{ isLoading ? 'Creating...' : 'Create Account' }}
+        <button type="submit" class="send-invite-button" :disabled="isLoading">
+          {{ isLoading ? 'Sending Invite...' : 'Send Invite' }}
         </button>
       </div>
       
@@ -61,42 +51,24 @@ const accountForm = ref({
   firstName: '',
   lastName: '',
   email: '',
-  password: '',
-  confirmPassword: '',
   role: ''
 });
 
 const isLoading = ref(false);
 const error = ref('');
 
-const submitAccount = async () => {
+const sendInvite = async () => {
   error.value = '';
-  // Simple validation: check if passwords match
-  if (accountForm.value.password !== accountForm.value.confirmPassword) {
-    error.value = "Passwords do not match.";
-    return;
-  }
-  
   isLoading.value = true;
   try {
-    // Simulate account creation
-    console.log("Creating account:", accountForm.value);
-    // Simulate an API call delay
+    // Replace this with your actual invite API logic
+    console.log("Sending invite for:", accountForm.value);
     await new Promise(resolve => setTimeout(resolve, 1000));
-    
-    // Reset the form on successful submission
-    accountForm.value = {
-      firstName: '',
-      lastName: '',
-      email: '',
-      password: '',
-      confirmPassword: '',
-      role: ''
-    };
-    // Optionally, redirect to the Manage Accounts page or show a success message
+    // Reset the form on success
+    accountForm.value = { firstName: '', lastName: '', email: '', role: '' };
   } catch (err) {
-    error.value = "Failed to create account. Please try again.";
-    console.error(err);
+    console.error("Invite failed:", err);
+    error.value = "Failed to send invite. Please try again.";
   } finally {
     isLoading.value = false;
   }
@@ -110,6 +82,8 @@ const submitAccount = async () => {
   margin: 20px auto;
   padding: 20px;
   font-family: sans-serif;
+  background-color: #f9f9f9;
+  border-radius: 8px;
 }
 
 .page-title {
@@ -119,13 +93,12 @@ const submitAccount = async () => {
 }
 
 .create-account-form {
-  background-color: #f9f9f9;
-  padding: 20px;
-  border-radius: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
 }
 
 .form-group {
-  margin-bottom: 15px;
   display: flex;
   flex-direction: column;
 }
@@ -144,31 +117,36 @@ const submitAccount = async () => {
   font-size: 14px;
 }
 
-.form-actions {
-  display: flex;
-  justify-content: center;
-  margin-top: 20px;
-}
-
-.submit-button {
-  background-color: #4CAF50;
-  color: white;
-  padding: 12px 30px;
-  border: none;
-  border-radius: 4px;
-  font-size: 14px;
-  font-weight: bold;
-  cursor: pointer;
-}
-
-.submit-button:disabled {
-  background-color: #cccccc;
-  cursor: not-allowed;
-}
-
 .error-message {
   color: #f44336;
   font-weight: bold;
+  text-align: center;
   margin: 10px 0;
+}
+
+.form-actions {
+  display: flex;
+  justify-content: center;
+}
+
+.send-invite-button {
+  padding: 12px 30px;
+  background-color: #4CAF50;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  font-size: 16px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.send-invite-button:hover {
+  background-color: #45a049;
+}
+
+.send-invite-button:disabled {
+  background-color: #cccccc;
+  cursor: not-allowed;
 }
 </style>
