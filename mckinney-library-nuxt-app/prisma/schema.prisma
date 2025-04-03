@@ -12,43 +12,72 @@ datasource db {
 
 //An ? next to a data type means that the attribute is nullable
 model donations {
-  donationID     Int     @id @default(autoincrement())
-  donorID        Int?
-  value          Float
-  donationMethod String
-  allocatedFor   String
-  date           String  @default("DATETIME('now')")
-  notes          String?
-  donors         donors? @relation(fields: [donorID], references: [donorID], onDelete: NoAction, onUpdate: NoAction)
+  donationID        Int            @id @default(autoincrement())
+  donorID           Int? //Anonymous donations won't have a donorID and won't be associated with a Donor tuple
+  value             Float
+  // monetaryAmount    Float
+  // nonmonetaryAmount String
+  // amountSpent       Float
+  donationMethod    String
+  allocatedFor      String
+  date              String
+  // status            DonationStatus
+  // boardMemberID     Int?
+  // lastEditorID      Int
+  notes             String?
+
+  donors      donors? @relation(fields: [donorID], references: [donorID], onDelete: NoAction, onUpdate: NoAction)
+  // boardMember users?  @relation("donationBoardMember", fields: [boardMemberID], references: [userID], onDelete: NoAction, onUpdate: NoAction)
+  // lastEditor  users   @relation("donationLastEditor", fields: [lastEditorID], references: [userID], onDelete: NoAction, onUpdate: NoAction)
 }
+
 //Setting onDelete and onUpdate to NoAction means that if someone tries to update or delete a donorID referenced by
 //a donation, SQLite will throw an error and prevent the donorID from being updated or deleted, either in the donor
 //tuple or the donation tuple. 
 
 model donors {
-  donorID           Int         @id @default(autoincrement())
-  contactInfoID     Int         @unique
-  firstDonationDate String      @default("DATETIME('now')")
-  lastDonationDate  String      @default("DATETIME('now')")
+  donorID           Int     @id @default(autoincrement())
+  contactInfoID     Int     @unique
+  firstDonationDate String  @default("DATETIME('now')")
+  lastDonationDate  String  @default("DATETIME('now')")
   lastContacted     String
+  // numDonations      Int
   lifetimeDonations Float
+  // lastEditorID      Int
   notes             String?
-  donations         donations[]
-  contactInfo       contactInfo       @relation(fields: [contactInfoID], references: [contactInfoID], onDelete: NoAction, onUpdate: Cascade)
+
+  donations   donations[]
+  contactInfo contactInfo @relation(fields: [contactInfoID], references: [contactInfoID], onDelete: NoAction, onUpdate: Cascade)
+  // lastEditor  users       @relation("donorLastEditor", fields: [lastEditorID], references: [userID], onDelete: NoAction, onUpdate: NoAction)
 }
 
 model grants {
-  grantID          Int     @id @default(autoincrement())
-  contactInfoID    Int     @unique
-  value            Float
-  allocatedFor     String
-  date             String  @default("DATETIME('now')")
-  notes            String?
-  contactInfo      contactInfo       @relation(fields: [contactInfoID], references: [contactInfoID], onDelete: NoAction, onUpdate: Cascade)
+  grantID                    Int         @id @default(autoincrement())
+  contactInfoID              Int         @unique
+  value                      Float
+  // monetaryAmountRequested    Float
+  // nonmonetaryAmountRequested String
+  // monetaryAmountReceived     Float?
+  // nonmonetaryAmountReceived  String?
+  // monetaryAmountSpent        Float
+  allocatedFor               String
+  date                       String
+  // proposalDate               String
+  // awardDate                  String?
+  // startDate                  String?
+  // expirationDate             String?
+  // status                     GrantStatus
+  // boardMemberID              Int?
+  // lastEditorID               Int
+  notes                      String?
+
+  contactInfo contactInfo @relation(fields: [contactInfoID], references: [contactInfoID], onDelete: NoAction, onUpdate: Cascade)
+  // boardMember users?      @relation("grantBoardMember", fields: [boardMemberID], references: [userID], onDelete: NoAction, onUpdate: NoAction)
+  // lastEditor  users       @relation("grantLastEditor", fields: [lastEditorID], references: [userID], onDelete: NoAction, onUpdate: NoAction)
 }
 
 model rolePermissions {
-  role                   Role  @id @unique
+  role                   Role    @id @unique
   viewDonors             Int
   emailDonors            Int
   viewDonationsAndGrants Int
@@ -62,31 +91,44 @@ model rolePermissions {
 }
 
 model userInvitations {
-  userInvitationID                            Int    @id @default(autoincrement())
-  invitingUserID                              Int
-  invitedUserID                               Int
-  invitationCreationDate                      String @default("DATETIME('now')")
-  invitationExpirationDate                    String @default("DATETIME('now', '+72 hours')")
-  invitingUserID_to_users users  @relation("invitingUserID", fields: [invitingUserID], references: [userID], onDelete: NoAction, onUpdate: NoAction)
-  invitedUserID_to_users  users  @relation("invitedUserID", fields: [invitedUserID], references: [userID], onDelete: NoAction, onUpdate: NoAction)
+  userInvitationID         Int    @id @default(autoincrement())
+  invitingUserID           Int
+  invitedUserID            Int
+  invitationCreationDate   String @default("DATETIME('now')")
+  invitationExpirationDate String @default("DATETIME('now', '+24 hours')")
+
+  invitingUserID_to_users users @relation("invitingUserID", fields: [invitingUserID], references: [userID], onDelete: NoAction, onUpdate: NoAction)
+  invitedUserID_to_users  users @relation("invitedUserID", fields: [invitedUserID], references: [userID], onDelete: NoAction, onUpdate: NoAction)
 }
+
 //Setting onDelete and onUpdate to NoAction means that if someone tries to update or delete an invitingUserID or invitedUserID referenced by
 //a userInvitation, SQLite will throw an error and prevent the invitingUserID/invitedUserID from being updated or deleted, either in the
 //userInvitation tuple or the user tuple
 
 model users {
-  userID                                                Int               @id @default(autoincrement())
-  contactInfoID                                         Int               @unique
-  role                                                  Role
-  status                                                String
-  creationDate                                          String            @default("DATETIME('now')")
-  password                                              String
-  notes                                                 String?
-  invitingUserID_to_invitations                         userInvitations[] @relation("invitingUserID")
-  invitedUserID_to_invitations                          userInvitations[] @relation("invitedUserID")
-  rolePermissions                                       rolePermissions   @relation(fields: [role], references: [role], onDelete: NoAction, onUpdate: Cascade)
-  contactInfo                                           contactInfo       @relation(fields: [contactInfoID], references: [contactInfoID], onDelete: NoAction, onUpdate: Cascade)
+  userID                        Int               @id @default(autoincrement())
+  contactInfoID                 Int               @unique
+  role                          Role
+  status                        String
+  creationDate                  String            @default("DATETIME('now')")
+  // lastEditorID                  Int
+  notes                         String?
+
+  invitingUserID_to_invitations userInvitations[] @relation("invitingUserID")
+  invitedUserID_to_invitations  userInvitations[] @relation("invitedUserID")
+  // lastEditor                    users             @relation("userLastEditor", fields: [lastEditorID], references: [userID], onDelete: NoAction, onUpdate: NoAction)
+  rolePermissions               rolePermissions   @relation(fields: [role], references: [role], onDelete: NoAction, onUpdate: Cascade)
+  contactInfo                   contactInfo       @relation(fields: [contactInfoID], references: [contactInfoID], onDelete: NoAction, onUpdate: Cascade)
+
+  // donationBoardMember           donations[]       @relation("donationBoardMember")
+  // grantBoardMember              grants[]          @relation("grantBoardMember")
+
+  // userLastEditor                users[]           @relation("userLastEditor")
+  // donationEditor                donations[]       @relation("donationLastEditor")
+  // donorLastEditor               donors[]          @relation("donorLastEditor")
+  // grantLastEditor               grants[]          @relation("grantLastEditor")
 }
+
 //Setting onDelete to NoAction means that if someone tries to delete a role referenced by a user, SQLite will throw an error and prevent the
 //the role from being deleted, either in the rolePermissions table or the user tuple
 
@@ -94,17 +136,17 @@ model users {
 //will have their role permissions automatically updated
 
 model contactInfo {
-  contactInfoID                                         Int               @id @default(autoincrement())
-  firstName                                             String            @default("Anonymous")
-  lastName                                              String            @default("Anonymous")
-  organizationName                                      String            @default("No organization listed")
-  email                                                 String            @default("No email listed")
-  phoneNumber                                           BigInt?
-  address                                               String            @default("No address listed")
-  notes                                                 String?
-  users                                                 users?         
-  donors                                                donors?
-  grants                                                grants?
+  contactInfoID    Int     @id @default(autoincrement())
+  firstName        String  @default("Anonymous")
+  lastName         String  @default("Anonymous")
+  organizationName String  @default("No organization listed")
+  email            String  @default("No email listed")
+  phoneNumber      BigInt?
+  address          String  @default("No address listed")
+  notes            String?
+  users            users?
+  donors           donors?
+  grants           grants?
 }
 
 enum Role {
@@ -114,3 +156,17 @@ enum Role {
   ADMIN
   MAIN_ADMIN
 }
+
+// enum DonationStatus {
+//   PENDING
+//   RECEIVED
+//   DECLINED
+// }
+
+// enum GrantStatus {
+//   PENDING
+//   ACTIVE
+//   EXPIRED
+//   DECLINED
+//   REJECTED
+// }
