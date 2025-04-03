@@ -88,7 +88,7 @@ export default {
 
   if (isValid) {
     loginForm.value.reset();
-    navigateTo("/donations");
+    navigateTo("/dashboard");
   }
 };
 
