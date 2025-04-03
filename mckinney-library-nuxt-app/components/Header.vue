@@ -60,7 +60,7 @@ const tabs = {
   ],
   settings: [
     { label: 'Create Account', path: '/settings' },
-    { label: 'Manage Roles', path: '/settings/roles' },
+    { label: 'View Roles', path: '/settings/roles' },
     { label: 'Manage Accounts', path: '/settings/accounts' }
   ]
 };
