@@ -87,7 +87,7 @@ export default {
   passwordInput.value.reportValidity();
 
   if (isValid) {
-    alert("Form submitted successfully!");
+    loginForm.value.reset();
     navigateTo("/dashboard");
   }
 };
