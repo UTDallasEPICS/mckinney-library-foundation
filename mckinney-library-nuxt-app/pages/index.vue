@@ -1,4 +1,4 @@
-<!--Login Page (It's under Setting but it's the login page, do not remove!!!)-->
+<!--Login Page -->
 
 <template>
   <!-- Header (logo and link to website)-->
@@ -14,7 +14,7 @@
   <!-- Login Form -->
   <div class="container">
     <div class="wrapper">
-      <form @submit.prevent="validateForm">
+      <form @submit.prevent="validateForm" ref="loginForm">
         <h1>Welcome!</h1>
         <h3>Please sign in to continue</h3>
 
@@ -41,7 +41,7 @@
 </template>
 
 <script>
-import { ref } from "vue";
+import { ref, watchEffect } from "vue";
 import { navigateTo } from '#app';
 
 export default {
@@ -51,6 +51,7 @@ export default {
     const rememberMe = ref(false);
     const emailInput = ref(null);
     const passwordInput = ref(null);
+    const loginForm = ref(null);
 
     const validateForm = () => {
   let isValid = true;
@@ -86,11 +87,20 @@ export default {
   passwordInput.value.reportValidity();
 
   if (isValid) {
-    alert("Form submitted successfully!");
+    loginForm.value.reset();
     navigateTo("/donations");
   }
 };
 
+// Watch the form fields to reset any validation state when changed
+watchEffect(() => {
+  if (email.value) {
+    emailInput.value.setCustomValidity("");
+  }
+  if (password.value) {
+    passwordInput.value.setCustomValidity("");
+  }
+});
 
     return {
       email,
@@ -99,6 +109,7 @@ export default {
       validateForm,
       emailInput,
       passwordInput,
+      loginForm,
     };
   },
 };
