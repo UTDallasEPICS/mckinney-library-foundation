@@ -10,6 +10,7 @@
   </header>
 
   <!-- Main Navigation Tabs -->
+  <!-- <nav v-if="route.path !== '/dashboard'" class="main-nav"> for dissapearing navbar on dashboard -->
   <nav class="main-nav">
     <button @click="setActiveTab('dashboard')" :class="{ active: activeTab === 'dashboard' }">
       Dashboard

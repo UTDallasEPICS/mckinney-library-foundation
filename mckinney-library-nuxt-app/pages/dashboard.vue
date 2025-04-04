@@ -8,14 +8,14 @@
         <a href="/donations/donors"> <button> View Donors </button></a>        
       </div>
 
-      <div>
-        <h1 class="grants"> Grants </h1>
+      <div >
+        <h1> Grants </h1>
         <a href="/grants"> <button> View Grants </button></a>        
         <a href="/grants/add"> <button> Add Grants </button></a>        
       </div>
 
       <div>
-        <h1 class="settings"> Settings</h1>
+        <h1> Settings</h1>
         <a href="/settings"> <button> Create Account </button></a>        
         <a href="/settings/roles"> <button> View Roles </button></a>        
         <a href="/settings/accounts"> <button> Manage Accounts </button></a>        
@@ -32,14 +32,7 @@
   h1 {
     color: #545679;
     font-family: sans-serif;
-  }
-
-  .grants {
-    padding-top: 20px;
-  }
-
-  .settings {
-    padding-top: 20px;
+    text-align: center;
   }
 
   button { 
@@ -47,14 +40,23 @@
     font-family: sans-serif;
     border: none; 
     color: white; 
-    padding: 20px 34px; 
+    padding: 15px 30px; 
     text-align: center; 
     text-decoration: none; 
     display: inline-block; 
     font-size: 20px; 
-    margin: 4px 2px; 
+    margin: 10px; 
     cursor: pointer; 
     border-radius: 8px;
   }
+
+  .dashboard {
+  display: flex;
+  flex-direction: column; /* Stack elements vertically */
+  align-items: center; /* Center items horizontally */
+  gap: 40px; /* Add vertical spacing between sections */
+}
+
+
   </style>
   
