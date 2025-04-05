@@ -14,21 +14,20 @@ datasource db {
 model donations {
   donationID        Int            @id @default(autoincrement())
   donorID           Int? //Anonymous donations won't have a donorID and won't be associated with a Donor tuple
-  value             Float
-  // monetaryAmount    Float
-  // nonmonetaryAmount String
-  // amountSpent       Float
+  monetaryAmount    Float
+  nonmonetaryAmount String
+  amountSpent       Float
   donationMethod    String
   allocatedFor      String
   date              String
-  // status            DonationStatus
-  // boardMemberID     Int?
-  // lastEditorID      Int
+  status            DonationStatus
+  boardMemberID     Int?
+  lastEditorID      Int
   notes             String?
 
   donors      donors? @relation(fields: [donorID], references: [donorID], onDelete: NoAction, onUpdate: NoAction)
-  // boardMember users?  @relation("donationBoardMember", fields: [boardMemberID], references: [userID], onDelete: NoAction, onUpdate: NoAction)
-  // lastEditor  users   @relation("donationLastEditor", fields: [lastEditorID], references: [userID], onDelete: NoAction, onUpdate: NoAction)
+  boardMember users?  @relation("donationBoardMember", fields: [boardMemberID], references: [userID], onDelete: NoAction, onUpdate: NoAction)
+  lastEditor  users   @relation("donationLastEditor", fields: [lastEditorID], references: [userID], onDelete: NoAction, onUpdate: NoAction)
 }
 
 //Setting onDelete and onUpdate to NoAction means that if someone tries to update or delete a donorID referenced by
@@ -41,39 +40,37 @@ model donors {
   firstDonationDate String  @default("DATETIME('now')")
   lastDonationDate  String  @default("DATETIME('now')")
   lastContacted     String
-  // numDonations      Int
+  numDonations      Int
   lifetimeDonations Float
-  // lastEditorID      Int
+  lastEditorID      Int
   notes             String?
 
   donations   donations[]
   contactInfo contactInfo @relation(fields: [contactInfoID], references: [contactInfoID], onDelete: NoAction, onUpdate: Cascade)
-  // lastEditor  users       @relation("donorLastEditor", fields: [lastEditorID], references: [userID], onDelete: NoAction, onUpdate: NoAction)
+  lastEditor  users       @relation("donorLastEditor", fields: [lastEditorID], references: [userID], onDelete: NoAction, onUpdate: NoAction)
 }
 
 model grants {
   grantID                    Int         @id @default(autoincrement())
   contactInfoID              Int         @unique
-  value                      Float
-  // monetaryAmountRequested    Float
-  // nonmonetaryAmountRequested String
-  // monetaryAmountReceived     Float?
-  // nonmonetaryAmountReceived  String?
-  // monetaryAmountSpent        Float
+  monetaryAmountRequested    Float
+  nonmonetaryAmountRequested String
+  monetaryAmountReceived     Float?
+  nonmonetaryAmountReceived  String?
+  monetaryAmountSpent        Float?
   allocatedFor               String
-  date                       String
-  // proposalDate               String
-  // awardDate                  String?
-  // startDate                  String?
-  // expirationDate             String?
-  // status                     GrantStatus
-  // boardMemberID              Int?
-  // lastEditorID               Int
+  proposalDate               String
+  awardDate                  String?
+  startDate                  String?
+  expirationDate             String?
+  status                     GrantStatus
+  boardMemberID              Int?
+  lastEditorID               Int
   notes                      String?
 
   contactInfo contactInfo @relation(fields: [contactInfoID], references: [contactInfoID], onDelete: NoAction, onUpdate: Cascade)
-  // boardMember users?      @relation("grantBoardMember", fields: [boardMemberID], references: [userID], onDelete: NoAction, onUpdate: NoAction)
-  // lastEditor  users       @relation("grantLastEditor", fields: [lastEditorID], references: [userID], onDelete: NoAction, onUpdate: NoAction)
+  boardMember users?      @relation("grantBoardMember", fields: [boardMemberID], references: [userID], onDelete: NoAction, onUpdate: NoAction)
+  lastEditor  users       @relation("grantLastEditor", fields: [lastEditorID], references: [userID], onDelete: NoAction, onUpdate: NoAction)
 }
 
 model rolePermissions {
@@ -111,22 +108,22 @@ model users {
   role                          Role
   status                        String
   creationDate                  String            @default("DATETIME('now')")
-  // lastEditorID                  Int
+  lastEditorID                  Int
   notes                         String?
 
   invitingUserID_to_invitations userInvitations[] @relation("invitingUserID")
   invitedUserID_to_invitations  userInvitations[] @relation("invitedUserID")
-  // lastEditor                    users             @relation("userLastEditor", fields: [lastEditorID], references: [userID], onDelete: NoAction, onUpdate: NoAction)
+  lastEditor                    users             @relation("userLastEditor", fields: [lastEditorID], references: [userID], onDelete: NoAction, onUpdate: NoAction)
   rolePermissions               rolePermissions   @relation(fields: [role], references: [role], onDelete: NoAction, onUpdate: Cascade)
   contactInfo                   contactInfo       @relation(fields: [contactInfoID], references: [contactInfoID], onDelete: NoAction, onUpdate: Cascade)
 
-  // donationBoardMember           donations[]       @relation("donationBoardMember")
-  // grantBoardMember              grants[]          @relation("grantBoardMember")
+  donationBoardMember           donations[]       @relation("donationBoardMember")
+  grantBoardMember              grants[]          @relation("grantBoardMember")
 
-  // userLastEditor                users[]           @relation("userLastEditor")
-  // donationEditor                donations[]       @relation("donationLastEditor")
-  // donorLastEditor               donors[]          @relation("donorLastEditor")
-  // grantLastEditor               grants[]          @relation("grantLastEditor")
+  userLastEditor                users[]           @relation("userLastEditor")
+  donationEditor                donations[]       @relation("donationLastEditor")
+  donorLastEditor               donors[]          @relation("donorLastEditor")
+  grantLastEditor               grants[]          @relation("grantLastEditor")
 }
 
 //Setting onDelete to NoAction means that if someone tries to delete a role referenced by a user, SQLite will throw an error and prevent the
@@ -157,16 +154,16 @@ enum Role {
   MAIN_ADMIN
 }
 
-// enum DonationStatus {
-//   PENDING
-//   RECEIVED
-//   DECLINED
-// }
+enum DonationStatus {
+  PENDING
+  RECEIVED
+  DECLINED
+}
 
-// enum GrantStatus {
-//   PENDING
-//   ACTIVE
-//   EXPIRED
-//   DECLINED
-//   REJECTED
-// }
+enum GrantStatus {
+  PENDING
+  ACTIVE
+  EXPIRED
+  DECLINED
+  REJECTED
+}

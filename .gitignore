@@ -8,8 +8,10 @@
 .cache
 dist
 
-# Prisma migrations
-#/prisma/migrations/
+#SQLite temp files
+*.db-journal
+*.db-wal
+*.db-shm
 
 # Node dependencies
 node_modules
