@@ -20,7 +20,7 @@ model donations {
   donationMethod    String
   allocatedFor      String
   date              String
-  status            DonationStatus
+  status            String
   boardMemberID     Int?
   lastEditorID      Int
   notes             String?
@@ -63,7 +63,7 @@ model grants {
   awardDate                  String?
   startDate                  String?
   expirationDate             String?
-  status                     GrantStatus
+  status                     String
   boardMemberID              Int?
   lastEditorID               Int
   notes                      String?
@@ -74,7 +74,7 @@ model grants {
 }
 
 model rolePermissions {
-  role                   Role    @id @unique
+  role                   String   @id @unique
   viewDonors             Int
   emailDonors            Int
   viewDonationsAndGrants Int
@@ -105,7 +105,7 @@ model userInvitations {
 model users {
   userID                        Int               @id @default(autoincrement())
   contactInfoID                 Int               @unique
-  role                          Role
+  role                          String
   status                        String
   creationDate                  String            @default("DATETIME('now')")
   lastEditorID                  Int
@@ -113,14 +113,12 @@ model users {
 
   invitingUserID_to_invitations userInvitations[] @relation("invitingUserID")
   invitedUserID_to_invitations  userInvitations[] @relation("invitedUserID")
-  lastEditor                    users             @relation("userLastEditor", fields: [lastEditorID], references: [userID], onDelete: NoAction, onUpdate: NoAction)
   rolePermissions               rolePermissions   @relation(fields: [role], references: [role], onDelete: NoAction, onUpdate: Cascade)
   contactInfo                   contactInfo       @relation(fields: [contactInfoID], references: [contactInfoID], onDelete: NoAction, onUpdate: Cascade)
 
   donationBoardMember           donations[]       @relation("donationBoardMember")
   grantBoardMember              grants[]          @relation("grantBoardMember")
 
-  userLastEditor                users[]           @relation("userLastEditor")
   donationEditor                donations[]       @relation("donationLastEditor")
   donorLastEditor               donors[]          @relation("donorLastEditor")
   grantLastEditor               grants[]          @relation("grantLastEditor")
@@ -144,26 +142,4 @@ model contactInfo {
   users            users?
   donors           donors?
   grants           grants?
-}
-
-enum Role {
-  FUNDRAISING
-  FINANCE_VIEW_ONLY
-  EDITOR
-  ADMIN
-  MAIN_ADMIN
-}
-
-enum DonationStatus {
-  PENDING
-  RECEIVED
-  DECLINED
-}
-
-enum GrantStatus {
-  PENDING
-  ACTIVE
-  EXPIRED
-  DECLINED
-  REJECTED
 }
