@@ -223,6 +223,7 @@ const grantForm = ref({
   lastName: '',
   email: '',
   phone: '',
+  address: '',
   monetaryAmountRequested: '',
   nonmonetaryAmountRequested: '',
   allocatedFor: '',        // Maps to purpose in your form
@@ -269,6 +270,7 @@ const submitGrant = async () => {
       lastName: grantForm.value.lastName,
       email: grantForm.value.email,
       phone: grantForm.value.phone,
+      address: grantForm.value.address,
       monetaryAmountRequested: parseFloat(grantForm.value.monetaryAmountRequested || 0),
       nonmonetaryAmountRequested: grantForm.value.nonmonetaryAmountRequested,
       allocatedFor: grantForm.value.allocatedFor,

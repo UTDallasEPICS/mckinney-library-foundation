@@ -84,6 +84,7 @@ export const useGrants = () => {
                 lastName: grantData.lastName,
                 email: grantData.email,
                 phone: grantData.phone,
+                address: grantData.address,
                 monetaryAmountRequested: grantData.monetaryAmountRequested,
                 nonmonetaryAmountRequested: grantData.nonmonetaryAmountRequested,
                 monetaryAmountReceived: grantData.monetaryAmountReceived,
