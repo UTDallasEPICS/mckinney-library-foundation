@@ -108,7 +108,7 @@ model users {
   role                          String
   status                        String
   creationDate                  String            @default("DATETIME('now')")
-  lastEditorID                  Int
+  lastEditorID                  Int?
   notes                         String?
 
   invitingUserID_to_invitations userInvitations[] @relation("invitingUserID")

@@ -35,6 +35,6 @@ node_modules/
 
 package-lock.json
 
-#mplf.db
+mplf.db
 
 .env
