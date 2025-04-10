@@ -25,7 +25,6 @@ export const useGrants = () => {
             grants.value = data.map(grant => ({
                 ...grant,
                 boardMember: grant.boardMember || false,
-                link: grant.link || null
             }));
         } catch (err) {
             error.value = err.message || 'Failed to fetch grants';
@@ -53,7 +52,6 @@ export const useGrants = () => {
             return {
                 ...grant,
                 boardMember: grant.boardMember || false,
-                link: grant.link || null
             };
         } catch (err) {
             error.value = err.message || `Failed to fetch grant ${id}`;
@@ -70,31 +68,37 @@ export const useGrants = () => {
         error.value = null;
 
         try {
-            // Validate required fields
-            if (!grant.amount || !grant.allocatedFor) {
-                throw new Error('Grant amount and allocation purpose are required');
-            }
-
             // Prepare grant data for API
             const grantData = {
                 ...grant,
                 // Convert amount to number if it's a string
-                amount: typeof grant.amount === 'string' ? parseFloat(grant.amount) : grant.amount
+                monetaryAmountRequested: typeof grant.monetaryAmountRequested === 'string' ? parseFloat(grant.monetaryAmountRequested) : grant.monetaryAmountRequested,
+                monetaryAmountReceived: typeof grant.monetaryAmounteceived === 'string' ? parseFloat(grant.monetaryAmountReceived) : grant.monetaryAmountReceived,
+                monetaryAmountSpent: typeof grant.monetaryAmountSpent === 'string' ? parseFloat(grant.monetaryAmountSpent) : grant.monetaryAmountSpent
             };
 
             // Transform the keys to match the backend API expectations
             const apiGrant = {
-                name: grantData.name,
-                contactName: grantData.contactName,
+                orgName: grantData.orgName,
+                firstName: grantData.firstName,
+                lastName: grantData.lastName,
                 email: grantData.email,
                 phone: grantData.phone,
-                amount: grantData.amount,
+                address: grantData.address,
+                monetaryAmountRequested: grantData.monetaryAmountRequested,
+                nonmonetaryAmountRequested: grantData.nonmonetaryAmountRequested,
+                monetaryAmountReceived: grantData.monetaryAmountReceived,
+                nonmonetaryAmountReceived: grantData.nonmonetaryAmountReceived,
+                monetaryAmountSpent: grantData.monetaryAmountSpent,
                 allocatedFor: grantData.allocatedFor,
-                date: grantData.date,
                 status: grantData.status,
-                notes: grantData.notes,
+                proposalDate: grantData.proposalDate,
+                awardDate: grantData.awardDate,
+                startDate: grantData.startDate,
+                expirationDate: grantData.expirationDate,
+                lastEditor: grantData.lastEditor,      //Hardcoded value that will be changed once we offer support for multiple accounts
                 boardMember: grantData.boardMember,
-                link: grantData.link
+                notes: grantData.notes
             };
 
             const response = await fetch('/api/grants', {
@@ -135,7 +139,9 @@ export const useGrants = () => {
             const updatedGrant = {
                 ...grantData,
                 // Convert amount to number if it's a string
-                amount: typeof grantData.amount === 'string' ? parseFloat(grantData.amount) : grantData.amount
+                monetaryAmountRequested: typeof grantData.monetaryAmountRequested === 'string' ? parseFloat(grantData.monetaryAmountRequested) : grantData.monetaryAmountRequested
+                // monetaryAmountReceived: typeof grant.monetaryAmounteceived === 'string' ? parseFloat(grant.monetaryAmountReceived) : grant.monetaryAmountReceived,
+                // monetaryAmountSpent: typeof grant.monetaryAmountSpent === 'string' ? parseFloat(grant.monetaryAmountSpent) : grant.monetaryAmountSpent
             };
 
             const response = await fetch(`/api/grants/${id}`, {
@@ -241,3 +247,34 @@ export const useGrants = () => {
         toggleGrantStatus
     };
 };
+
+export function useValidDates() {
+    const getMinStartDate = (proposalDate, awardDate) => {
+        if (!proposalDate && !awardDate) {
+            return null;
+        }
+        else if (!awardDate) {
+            return proposalDate;
+        }
+        else {
+            return awardDate;
+        }
+    };
+
+    const getMinExpirationDate = (proposalDate, awardDate, startDate) => {
+        if (!proposalDate && !awardDate && !startDate) {
+            return null;
+        }
+        else if (!startDate) {
+            return getMinStartDate(proposalDate, awardDate);
+        }
+        else {
+            return startDate;
+        }
+    };
+
+    return {
+        getMinStartDate,
+        getMinExpirationDate
+    };
+}

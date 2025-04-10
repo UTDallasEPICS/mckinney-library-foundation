@@ -16,17 +16,26 @@ export default defineEventHandler(async (event) => {
             const transformedGrants = grants.map(grant => {
                 return {
                     id: grant.grantID,
-                    name: grant.contactInfo.organizationName || 'Unnamed Grant',
-                    contactName: `${grant.contactInfo.firstName} ${grant.contactInfo.lastName}`,
+                    orgName: grant.contactInfo.organizationName || 'Unnamed Grant',
+                    firstName: grant.contactInfo.firstName,
+                    lastName: grant.contactInfo.lastName,
                     email: grant.contactInfo.email,
                     phone: grant.contactInfo.phoneNumber ? String(grant.contactInfo.phoneNumber) : null,
-                    amount: grant.value,
-                    date: grant.date,
+                    address: grant.contactInfo.address,
+                    monetaryAmountRequested: grant.monetaryAmountRequested,
+                    nonmonetaryAmountRequested: grant.nonmonetaryAmountRequested,
+                    monetaryAmountReceived: grant.monetaryAmountReceived || 0,
+                    nonmonetaryAmountReceived: grant.nonmonetaryAmountReceived,
+                    monetaryAmountSpent: grant.monetaryAmountSpent || 0,
                     allocatedFor: grant.allocatedFor,
-                    status: 'Active', // Default status since it's not in the schema
-                    notes: grant.notes || null,
-                    boardMember: false, // Default value since it's not in the schema
-                    link: null, // Default value since it's not in the schema
+                    status: grant.status,
+                    proposalDate: grant.proposalDate,
+                    awardDate: grant.awardDate,
+                    startDate: grant.startDate,
+                    expirationDate: grant.expirationDate,
+                    notes: grant.notes,
+                    boardMember: grant.boardMember,
+                    lastEditor: grant.lastEditor,      //Hardcoded value that will be changed once we offer support for multiple accounts
                     contactInfoID: grant.contactInfoID
                 };
             });
@@ -51,7 +60,7 @@ export default defineEventHandler(async (event) => {
             const body = await readBody(event);
 
             // Validate required fields
-            if (body.amount === undefined || !body.allocatedFor) {
+            if (body.monetaryAmountRequested === undefined || !body.allocatedFor) {
                 throw createError({
                     statusCode: 400,
                     statusMessage: 'Missing required fields (amount, allocatedFor)',
@@ -60,58 +69,86 @@ export default defineEventHandler(async (event) => {
 
             // Create grant and contact info in a transaction
             const result = await prisma.$transaction(async (tx) => {
-                // Split name into first and last name if provided, otherwise use defaults
-                let firstName = 'Anonymous';
-                let lastName = 'Anonymous';
-
-                if (body.contactName) {
-                    const nameParts = body.contactName.split(' ');
-                    firstName = nameParts[0] || 'Anonymous';
-                    lastName = nameParts.slice(1).join(' ') || 'Anonymous';
-                }
+                console.log("Attempting to create contactInfo with data:", {
+                    organizationName: body.orgName,
+                    firstName: body.firstName,
+                    lastName: body.lastName,
+                    email: body.email,
+                    phoneNumber: body.phone ? null : null,
+                    address: body.address,
+                    lastEditor: body.lastEditor,      //Hardcoded value that will be changed once we offer support for multiple accounts
+                    notes: body.notes
+                });
 
                 // Create contact info first
                 const contactInfo = await tx.contactInfo.create({
                     data: {
-                        firstName,
-                        lastName,
+                        organizationName: body.orgName || 'No organization listed',
+                        firstName: body.firstName || 'Anonymous',
+                        lastName: body.lastName || 'Anonymous',
                         email: body.email || 'No email listed',
                         phoneNumber: body.phone ? null : null, // Using null to avoid type conversion issues
                         address: body.address || 'No address listed',
-                        organizationName: body.name || 'No organization listed',
                         notes: body.notes
                     }
                 });
 
+                //console.log("Created contactInfo:", contactInfo);
+                //console.log("contactInfo.contactInfoID:", contactInfo.contactInfoID);
+
                 // Then create grant with reference to contact info
                 const grant = await tx.grants.create({
                     data: {
-                        contactInfoID: contactInfo.contactInfoID,
-                        value: parseFloat(body.amount),
+                        monetaryAmountRequested: parseFloat(body.monetaryAmountRequested),
+                        nonmonetaryAmountRequested: body.nonmonetaryAmountRequested,
                         allocatedFor: body.allocatedFor,
-                        date: body.date || new Date().toISOString().split('T')[0],
-                        notes: body.notes
+                        proposalDate: body.proposalDate || new Date().toISOString().split('T')[0],
+                        awardDate: body.awardDate,
+                        startDate: body.startDate,
+                        expirationDate: body.expirationDate,
+                        status: body.status,
+                        notes: body.notes,
+
+                        lastEditor: {
+                            connect: {
+                                userID: body.lastEditor
+                            }
+                        },
+                        contactInfo: {
+                            connect: {
+                                contactInfoID: contactInfo.contactInfoID
+                            }
+                        }
                     },
                     include: {
-                        contactInfo: true
+                        contactInfo: true,
+                        lastEditor: true
                     }
                 });
+
+                //console.log("Created grant:", grant);
 
                 // Store custom fields in a separate metadata object or table if needed
                 // For now, we'll just return them with the response
 
                 return {
                     id: grant.grantID,
-                    name: contactInfo.organizationName,
-                    contactName: `${contactInfo.firstName} ${contactInfo.lastName}`,
+                    orgName: contactInfo.organizationName,
+                    firstName: contactInfo.firstName,
+                    lastName: contactInfo.lastName,
                     email: contactInfo.email,
                     phone: contactInfo.phoneNumber ? String(contactInfo.phoneNumber) : null,
-                    amount: grant.value,
-                    date: grant.date,
+                    address: contactInfo.address,
+                    monetaryAmountRequested: grant.monetaryAmountRequested,
+                    nonmonetaryAmountRequested: grant.nonmonetaryAmountRequested,
                     allocatedFor: grant.allocatedFor,
-                    status: body.status || 'Active',
-                    boardMember: body.boardMember || false,
-                    link: body.link || null,
+                    status: grant.status,
+                    proposalDate: grant.proposalDate,
+                    awardDate: grant.awardDate,
+                    startDate: grant.startDate,
+                    expirationDate: grant.expirationDate,
+                    boardMember: grant.boardMember,
+                    lastEditor: grant.lastEditor,      //Hardcoded value that will be changed once we offer support for multiple accounts
                     notes: grant.notes
                 };
             });

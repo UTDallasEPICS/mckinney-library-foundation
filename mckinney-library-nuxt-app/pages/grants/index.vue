@@ -1,157 +1,223 @@
 <template>
-  <div class="table-container">
-    <div v-if="isLoading" class="loading-message">Loading grants...</div>
-    <div v-else-if="error" class="error-message">Error: {{ error }}</div>
-    <div v-else>
-      
-      <table v-if="grants.length > 0">
-        <thead>
-          <tr>
-            <th v-for="header in headers" :key="header">{{ header }}</th>
-            <th>Actions</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr v-for="grant in grants" :key="grant.id">
-            <td>{{ grant.name }}</td>
-            <td>{{ grant.contactName || '-' }}</td>
-            <td>
-              <a v-if="grant.link" :href="grant.link" target="_blank" class="grant-link">
-                View
-              </a>
-              <span v-else>-</span>
-            </td>
-            <td>${{ (grant.amount || 0).toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2}) }}</td>
-            <td>{{ formatDate(grant.date) }}</td>
-            <td>{{ grant.allocatedFor }}</td>
-            <td>
-              <span :class="'status-badge ' + (grant.status || 'pending').toLowerCase()">
-                {{ grant.status || 'Pending' }}
-              </span>
-            </td>
-            <td>{{ grant.boardMember ? 'Yes' : 'No' }}</td>
-            <td class="actions-cell">
-              <button @click="editGrant(grant)" class="edit-button">Edit</button>
-              <button @click="confirmDelete(grant)" class="delete-button">Delete</button>
-            </td>
-          </tr>
-        </tbody>
-      </table>
-      
-      <div v-else class="no-data-message">
-        No grants found. Add your first grant!
-      </div>
-    </div>
-    
-    <!-- Delete Confirmation Modal -->
-    <div v-if="showDeleteModal" class="modal">
-      <div class="modal-content">
-        <h3>Confirm Deletion</h3>
-        <p>Are you sure you want to delete the grant "{{ selectedGrant?.name }}"?</p>
-        <div class="modal-actions">
-          <button @click="showDeleteModal = false" class="cancel-button">Cancel</button>
-          <button @click="handleDelete" class="confirm-delete-button">Delete</button>
+  <div id="app" style="width: max-content; min-width: 100%; overflow-x: auto;">
+    <div class="table-container">
+      <div v-if="isLoading" class="loading-message">Loading grants...</div>
+      <div v-else-if="error" class="error-message">Error: {{ error }}</div>
+      <div v-else>
+        
+        <table v-if="grants.length > 0">
+          <thead>
+            <tr>
+              <th v-for="header in headers" :key="header">{{ header }}</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-for="grant in grants" :key="grant.id">
+              <td>{{ grant.orgName }}</td>
+              <td>{{ grant.firstName + " " + grant.lastName }}</td>
+              <td>${{ (grant.monetaryAmountRequested || 0).toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2}) }}</td>
+              <td>{{ grant.nonmonetaryAmountRequested }}</td>
+              <td>${{ (grant.monetaryAmountReceived || 0).toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2}) }}</td>
+              <td>{{ grant.nonmonetaryAmountReceived }}</td>
+              <td>${{ (grant.monetaryAmountSpent || 0).toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2}) }}</td>
+              <td>{{ formatDate(grant.proposalDate) }}</td>
+              <td>{{ formatDate(grant.awardDate) }}</td>
+              <td>{{ formatDate(grant.startDate) }}</td>
+              <td>{{ formatDate(grant.expirationDate) }}</td>
+              <td>{{ grant.allocatedFor }}</td>
+              <td>
+                <span :class="'status-badge ' + (grant.status || 'pending').toLowerCase()">
+                  {{ grant.status || 'Pending' }}
+                </span>
+              </td>
+              <td>{{ grant.boardMember }}</td>
+              <td>{{ grant.notes }}</td>
+              <td class="actions-cell">
+                <button @click="editGrant(grant)" class="edit-button">Edit</button>
+                <button @click="confirmDelete(grant)" class="delete-button">Delete</button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+        
+        <div v-else class="no-data-message">
+          No grants found. Add your first grant!
         </div>
       </div>
-    </div>
-    
-    <!-- Add/Edit Grant Modal -->
-    <div v-if="showAddGrantModal || showEditGrantModal" class="modal">
-      <div class="modal-content grant-form-modal">
-        <h3>{{ showEditGrantModal ? 'Edit' : 'Add' }} Grant</h3>
-        <form @submit.prevent="submitGrantForm">
-          <div class="form-group">
-            <label for="name">Grant/Organization Name *</label>
-            <input id="name" v-model="grantForm.name" type="text" required>
-          </div>
-          
-          <div class="form-group">
-            <label for="contactName">Contact Name</label>
-            <input id="contactName" v-model="grantForm.contactName" type="text">
-          </div>
-          
-          <div class="form-group">
-            <label for="email">Contact Email</label>
-            <input id="email" v-model="grantForm.email" type="email">
-          </div>
-          
-          <div class="form-group">
-            <label for="phone">Contact Phone</label>
-            <input id="phone" v-model="grantForm.phone" type="tel">
-          </div>
-          
-          <div class="form-group">
-            <label for="amount">Grant Amount ($) *</label>
-            <input id="amount" v-model="grantForm.amount" type="number" step="0.01" min="0" required>
-          </div>
-          
-          <div class="form-group">
-            <label for="allocatedFor">Allocation Purpose *</label>
-            <input id="allocatedFor" v-model="grantForm.allocatedFor" type="text" required>
-          </div>
-          
-          <div class="form-group">
-            <label for="date">Grant Date *</label>
-            <input id="date" v-model="grantForm.date" type="date" required>
-          </div>
-          
-          <div class="form-group">
-            <label for="status">Status</label>
-            <select id="status" v-model="grantForm.status">
-              <option value="Active">Active</option>
-              <option value="Pending">Pending</option>
-              <option value="Expired">Expired</option>
-              <option value="Rejected">Rejected</option>
-            </select>
-          </div>
-          
-          <div class="form-group">
-            <label for="boardMember">Board Member</label>
-            <select id="boardMember" v-model="grantForm.boardMember">
-              <option :value="true">Yes</option>
-              <option :value="false">No</option>
-            </select>
-          </div>
-          
-          <div class="form-group">
-            <label for="link">Link (Optional)</label>
-            <input id="link" v-model="grantForm.link" type="url" placeholder="https://example.com">
-          </div>
-          
-          <div class="form-group">
-            <label for="notes">Notes</label>
-            <textarea id="notes" v-model="grantForm.notes" rows="3"></textarea>
-          </div>
-          
+      
+      <!-- Delete Confirmation Modal -->
+      <div v-if="showDeleteModal" class="modal">
+        <div class="modal-content">
+          <h3>Confirm Deletion</h3>
+          <p>Are you sure you want to delete this grant from {{ selectedGrant?.orgName }}?</p>
           <div class="modal-actions">
-            <button type="button" @click="cancelGrantForm" class="cancel-button">Cancel</button>
-            <button type="submit" class="submit-button" :disabled="isSubmitting">
-              {{ isSubmitting ? 'Saving...' : (showEditGrantModal ? 'Update' : 'Add') }}
-            </button>
+            <button @click="showDeleteModal = false" class="cancel-button">Cancel</button>
+            <button @click="handleDelete" class="confirm-delete-button">Delete</button>
           </div>
-        </form>
+        </div>
+      </div>
+      
+      <!-- Add/Edit Grant Modal -->
+      <div v-if="showAddGrantModal || showEditGrantModal" class="modal">
+        <div class="modal-content grant-form-modal">
+          <h3>{{ showEditGrantModal ? 'Edit' : 'Add' }} Grant</h3>
+          <form @submit.prevent="submitGrantForm">
+            <div class="form-group">
+              <label for="name">Grant/Organization Name *</label>
+              <input id="name" v-model="grantForm.orgName" type="text" placeholder="Organization providing the grant" required>
+            </div>
+            
+            <div class="form-group">
+              <label for="firstName">Contact First Name</label>
+              <input id="firstName" v-model="grantForm.firstName" type="text" placeholder="John">
+            </div>
+            
+            <div class="form-group">
+              <label for="lastName">Contact First Name</label>
+              <input id="lastName" v-model="grantForm.lastName" type="text" placeholder="Doe">
+            </div>
+
+            <div class="form-group">
+              <label for="email">Contact Email</label>
+              <input id="email" v-model="grantForm.email" type="email" placeholder="contact@example.com">
+            </div>
+            
+            <div class="form-group">
+              <label for="phone">Contact Phone</label>
+              <input id="phone" v-model="grantForm.phone" type="tel" placeholder="(123) 456-7890">
+            </div>
+
+            <div class="form-group">
+              <label for="address">Contact Address</label>
+              <input id="address" v-model="grantForm.address" type="text">
+            </div>
+            
+            <div class="form-group">
+              <label for="monetaryAmountRequested">Amount Requested ($) *</label>
+              <input id="monetaryAmountRequested" v-model="grantForm.monetaryAmountRequested" type="number" step="0.01" min="0" placeholder="0.00" required>
+            </div>
+
+            <div class="form-group">
+              <label for="nonmonetaryAmountRequested">Nonmonetary Amount Requested *</label>
+              <input id="nonmonetaryAmountRequested" v-model="grantForm.nonmonetaryAmountRequested" type="text" required>
+            </div>
+
+            <div class="form-group">
+              <label for="monetaryAmountReceived">Amount Received ($)</label>
+              <input id="monetaryAmountReceived" v-model="grantForm.monetaryAmountReceived" type="number" step="0.01" min="0" placeholder="0.00">
+            </div>
+
+            <div class="form-group">
+              <label for="nonmonetaryAmountReceived">Nonmonetary Amount Received</label>
+              <input id="nonmonetaryAmountReceived" v-model="grantForm.nonmonetaryAmountReceived" type="text">
+            </div>
+
+            <div class="form-group">
+              <label for="monetaryAmountSpent">Amount Spent</label>
+              <input id="monetaryAmountSpent" v-model="grantForm.monetaryAmountSpent" type="number" step="0.01" min="0" placeholder="0.00" :max="grantForm.monetaryAmountReceived">
+            </div>
+
+            <div class="form-group">
+              <label for="allocatedFor">Allocation Purpose *</label>
+              <input id="allocatedFor" v-model="grantForm.allocatedFor" type="text" placeholder="What the grant will be used for" required>
+            </div>
+            
+            <div class="form-group">
+              <label for="date">Proposal Date *</label>
+              <input id="proposalDate" v-model="grantForm.proposalDate" type="date" required>
+            </div>
+
+            <div class="form-group">
+              <label for="date">Award Date</label>
+              <input id="awardDate" v-model="grantForm.awardDate" type="date" :min="grantForm.proposalDate">
+            </div>            
+
+            <div class="form-group">
+              <label for="date">Start Date</label>
+              <input id="startDate" v-model="grantForm.startDate" type="date" :min="minStartDate">
+            </div>
+
+            <div class="form-group">
+              <label for="date">Expiration Date</label>
+              <input id="expirationDate" v-model="grantForm.expirationDate" type="date" :min="minExpirationDate">
+            </div>
+
+            <div class="form-group">
+              <label for="status">Status</label>
+              <select id="status" v-model="grantForm.status">
+                <option value="Active">Active</option>
+                <option value="Pending">Pending</option>
+                <option value="Expired">Expired</option>
+                <option value="Declined">Declined</option>
+                <option value="Rejected">Rejected</option>
+              </select>
+            </div>
+            
+            <div class="form-group">
+              <label for="boardMember">Board Member</label>
+              <input id="boardMember" v-model="grantForm.boardMember" type="text">
+            </div>
+            
+            <div class="form-group">
+              <label for="notes">Notes</label>
+              <textarea id="notes" v-model="grantForm.notes" rows="3" placeholder="Additional details about this grant"></textarea>
+            </div>
+            
+            <div class="modal-actions">
+              <button type="button" @click="cancelGrantForm" class="cancel-button">Cancel</button>
+              <button type="submit" class="submit-button" :disabled="isSubmitting">
+                {{ isSubmitting ? 'Saving...' : (showEditGrantModal ? 'Update' : 'Add') }}
+              </button>
+            </div>
+          </form>
+        </div>
       </div>
     </div>
   </div>
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, computed } from 'vue';
 import { useGrants } from '~/composables/useGrants';
+import { useValidDates } from '~/composables/useGrants';
 
 const headers = ref([
-  "Name",
-  "Contact",
-  "Link",
-  "Amount",
-  "Date",
+  "Organization",
+  "POC Name",
+  "Funds Requested",
+  "In-Kind Requested",
+  "Funds Received",
+  "In-Kind Received",
+  "Funds Spent",
+  "Proposal Date",
+  "Award Date",
+  "Start Date",
+  "Expiration Date",
   "Allocated For",
   "Status",
-  "Board Member"
+  "Board Member",
+  "Notes"
 ]);
 
 // Get everything we need from the composable
 const { grants, isLoading, error, fetchGrants, addGrant, deleteGrant, updateGrant } = useGrants();
+const { getMinStartDate, getMinExpirationDate } = useValidDates();
+
+const minStartDate = computed(() => 
+  getMinStartDate(
+    grantForm.value.proposalDate, 
+    grantForm.value.awardDate
+  )
+);
+
+const minExpirationDate = computed(() =>
+  getMinExpirationDate(
+    grantForm.value.proposalDate,
+    grantForm.value.awardDate,
+    grantForm.value.startDate
+  )
+);
 
 // State for modals
 const showDeleteModal = ref(false);
@@ -166,12 +232,17 @@ const emptyGrantForm = {
   contactName: '',
   email: '',
   phone: '',
-  amount: 0,
+  address: '',
+  monetaryAmountRequested: 0,
+  nonmonetaryAmountRequested: '',
+  monetaryAmountReceived: 0,
+  nonmonetaryAmountReceived: '',
+  monetaryAmountSpent: 0,
   allocatedFor: '',
-  date: new Date().toISOString().split('T')[0],
+  proposalDate: new Date().toISOString().split('T')[0],
+  awardDate: '',
   status: 'Pending',
-  boardMember: false,
-  link: '',
+  boardMember: '',
   notes: ''
 };
 
@@ -187,25 +258,33 @@ onMounted(() => {
 const formatDate = (dateString) => {
   if (!dateString) return '-';
   // Use local date string to avoid timezone issues
-  const date = new Date(dateString + 'T12:00:00');
-  return date.toLocaleDateString();
+  const proposalDate = new Date(dateString + 'T12:00:00');
+  return proposalDate.toLocaleDateString();
 };
 
 // Show edit modal with grant data
 const editGrant = (grant) => {
   selectedGrant.value = grant;
   grantForm.value = {
-    name: grant.name || '',
-    contactName: grant.contactName || '',
-    email: grant.email || '',
-    phone: grant.phone || '',
-    amount: grant.amount || 0,
-    allocatedFor: grant.allocatedFor || '',
-    date: grant.date || new Date().toISOString().split('T')[0],
-    status: grant.status || 'Pending',
-    boardMember: grant.boardMember || false,
-    link: grant.link || '',
-    notes: grant.notes || ''
+    orgName: grant.orgName,
+    firstName: grant.firstName,
+    lastName: grant.lastName,
+    email: grant.email,
+    phone: grant.phone,
+    address: grant.address,
+    monetaryAmountRequested: grant.monetaryAmountRequested,
+    nonmonetaryAmountRequested: grant.nonmonetaryAmountRequested,
+    monetaryAmountReceived: grant.monetaryAmountReceived || 0,
+    nonmonetaryAmountReceived: grant.nonmonetaryAmountReceived,
+    monetaryAmountSpent: grant.monetaryAmountSpent || 0,
+    allocatedFor: grant.allocatedFor,
+    proposalDate: grant.proposalDate,
+    awardDate: grant.awardDate,
+    startDate: grant.startDate,
+    expirationDate: grant.expirationDate,
+    status: grant.status,
+    boardMember: grant.boardMember,
+    notes: grant.notes
   };
   showEditGrantModal.value = true;
 };
@@ -245,7 +324,9 @@ const submitGrantForm = async () => {
     // Prepare grant data for API
     const grantData = {
       ...grantForm.value,
-      amount: parseFloat(grantForm.value.amount)
+      monetaryAmountRequested: parseFloat(grantForm.value.monetaryAmountRequested),
+      monetaryAmountReceived: parseFloat(grantForm.value.monetaryAmountReceived),
+      monetaryAmountSpent: parseFloat(grantForm.value.monetaryAmountSpent)
     };
     
     if (showEditGrantModal.value) {
@@ -315,17 +396,6 @@ td {
   padding: 10px;
   border: 1px solid #ddd;
   text-align: center;
-}
-
-/* Grant link */
-.grant-link {
-  color: #2196F3;
-  text-decoration: none;
-  font-weight: bold;
-}
-
-.grant-link:hover {
-  text-decoration: underline;
 }
 
 /* Action buttons */

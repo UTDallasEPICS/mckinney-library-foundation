@@ -2,12 +2,19 @@
 CREATE TABLE "donations" (
     "donationID" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
     "donorID" INTEGER,
-    "value" REAL NOT NULL,
+    "monetaryAmount" REAL NOT NULL,
+    "nonmonetaryAmount" TEXT NOT NULL,
+    "amountSpent" REAL NOT NULL,
     "donationMethod" TEXT NOT NULL,
     "allocatedFor" TEXT NOT NULL,
-    "date" TEXT NOT NULL DEFAULT 'DATETIME(''now'')',
+    "date" TEXT NOT NULL,
+    "status" TEXT NOT NULL,
+    "boardMemberID" INTEGER,
+    "lastEditorID" INTEGER NOT NULL,
     "notes" TEXT,
-    CONSTRAINT "donations_donorID_fkey" FOREIGN KEY ("donorID") REFERENCES "donors" ("donorID") ON DELETE NO ACTION ON UPDATE NO ACTION
+    CONSTRAINT "donations_donorID_fkey" FOREIGN KEY ("donorID") REFERENCES "donors" ("donorID") ON DELETE NO ACTION ON UPDATE NO ACTION,
+    CONSTRAINT "donations_boardMemberID_fkey" FOREIGN KEY ("boardMemberID") REFERENCES "users" ("userID") ON DELETE NO ACTION ON UPDATE NO ACTION,
+    CONSTRAINT "donations_lastEditorID_fkey" FOREIGN KEY ("lastEditorID") REFERENCES "users" ("userID") ON DELETE NO ACTION ON UPDATE NO ACTION
 );
 
 -- CreateTable
@@ -17,20 +24,35 @@ CREATE TABLE "donors" (
     "firstDonationDate" TEXT NOT NULL DEFAULT 'DATETIME(''now'')',
     "lastDonationDate" TEXT NOT NULL DEFAULT 'DATETIME(''now'')',
     "lastContacted" TEXT NOT NULL,
+    "numDonations" INTEGER NOT NULL,
     "lifetimeDonations" REAL NOT NULL,
+    "lastEditorID" INTEGER NOT NULL,
     "notes" TEXT,
-    CONSTRAINT "donors_contactInfoID_fkey" FOREIGN KEY ("contactInfoID") REFERENCES "contactInfo" ("contactInfoID") ON DELETE NO ACTION ON UPDATE CASCADE
+    CONSTRAINT "donors_contactInfoID_fkey" FOREIGN KEY ("contactInfoID") REFERENCES "contactInfo" ("contactInfoID") ON DELETE NO ACTION ON UPDATE CASCADE,
+    CONSTRAINT "donors_lastEditorID_fkey" FOREIGN KEY ("lastEditorID") REFERENCES "users" ("userID") ON DELETE NO ACTION ON UPDATE NO ACTION
 );
 
 -- CreateTable
 CREATE TABLE "grants" (
     "grantID" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
     "contactInfoID" INTEGER NOT NULL,
-    "value" REAL NOT NULL,
+    "monetaryAmountRequested" REAL NOT NULL,
+    "nonmonetaryAmountRequested" TEXT NOT NULL,
+    "monetaryAmountReceived" REAL,
+    "nonmonetaryAmountReceived" TEXT,
+    "monetaryAmountSpent" REAL,
     "allocatedFor" TEXT NOT NULL,
-    "date" TEXT NOT NULL DEFAULT 'DATETIME(''now'')',
+    "proposalDate" TEXT NOT NULL,
+    "awardDate" TEXT,
+    "startDate" TEXT,
+    "expirationDate" TEXT,
+    "status" TEXT NOT NULL,
+    "boardMemberID" INTEGER,
+    "lastEditorID" INTEGER NOT NULL,
     "notes" TEXT,
-    CONSTRAINT "grants_contactInfoID_fkey" FOREIGN KEY ("contactInfoID") REFERENCES "contactInfo" ("contactInfoID") ON DELETE NO ACTION ON UPDATE CASCADE
+    CONSTRAINT "grants_contactInfoID_fkey" FOREIGN KEY ("contactInfoID") REFERENCES "contactInfo" ("contactInfoID") ON DELETE NO ACTION ON UPDATE CASCADE,
+    CONSTRAINT "grants_boardMemberID_fkey" FOREIGN KEY ("boardMemberID") REFERENCES "users" ("userID") ON DELETE NO ACTION ON UPDATE NO ACTION,
+    CONSTRAINT "grants_lastEditorID_fkey" FOREIGN KEY ("lastEditorID") REFERENCES "users" ("userID") ON DELETE NO ACTION ON UPDATE NO ACTION
 );
 
 -- CreateTable
@@ -53,7 +75,7 @@ CREATE TABLE "userInvitations" (
     "invitingUserID" INTEGER NOT NULL,
     "invitedUserID" INTEGER NOT NULL,
     "invitationCreationDate" TEXT NOT NULL DEFAULT 'DATETIME(''now'')',
-    "invitationExpirationDate" TEXT NOT NULL DEFAULT 'DATETIME(''now'', ''+72 hours'')',
+    "invitationExpirationDate" TEXT NOT NULL DEFAULT 'DATETIME(''now'', ''+24 hours'')',
     CONSTRAINT "userInvitations_invitingUserID_fkey" FOREIGN KEY ("invitingUserID") REFERENCES "users" ("userID") ON DELETE NO ACTION ON UPDATE NO ACTION,
     CONSTRAINT "userInvitations_invitedUserID_fkey" FOREIGN KEY ("invitedUserID") REFERENCES "users" ("userID") ON DELETE NO ACTION ON UPDATE NO ACTION
 );
@@ -65,7 +87,7 @@ CREATE TABLE "users" (
     "role" TEXT NOT NULL,
     "status" TEXT NOT NULL,
     "creationDate" TEXT NOT NULL DEFAULT 'DATETIME(''now'')',
-    "password" TEXT NOT NULL,
+    "lastEditorID" INTEGER NOT NULL,
     "notes" TEXT,
     CONSTRAINT "users_role_fkey" FOREIGN KEY ("role") REFERENCES "rolePermissions" ("role") ON DELETE NO ACTION ON UPDATE CASCADE,
     CONSTRAINT "users_contactInfoID_fkey" FOREIGN KEY ("contactInfoID") REFERENCES "contactInfo" ("contactInfoID") ON DELETE NO ACTION ON UPDATE CASCADE

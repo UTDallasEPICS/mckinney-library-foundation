@@ -26,21 +26,26 @@ export default defineEventHandler(async (event) => {
             // Transform data to match the format expected by the frontend
             const transformedGrant = {
                 id: grant.grantID,
-                name: grant.contactInfo.organizationName || 'Unnamed Grant',
-                contactName: `${grant.contactInfo.firstName} ${grant.contactInfo.lastName}`,
+                orgName: grant.contactInfo.organizationName,
                 firstName: grant.contactInfo.firstName,
                 lastName: grant.contactInfo.lastName,
                 email: grant.contactInfo.email,
                 phone: grant.contactInfo.phoneNumber ? String(grant.contactInfo.phoneNumber) : null,
                 address: grant.contactInfo.address || null,
-                organization: grant.contactInfo.organizationName || null,
-                amount: grant.value,
-                date: grant.date,
+                monetaryAmountRequested: grant.monetaryAmountRequested,
+                nonmonetaryAmountRequested: grant.nonmonetaryAmountRequested,
+                monetaryAmountReceived: updatedGrantData.monetaryAmountReceived,
+                nonmonetaryAmountReceived: grant.nonmonetaryAmountReceived,
+                monetaryAmountSpent: updatedGrantData.monetaryAmountSpent,
                 allocatedFor: grant.allocatedFor,
-                status: 'Active', // Default since not in schema
-                boardMember: false, // Default since not in schema
-                link: null, // Default since not in schema
-                notes: grant.notes || null
+                status: grant.status,
+                proposalDate: grant.proposalDate,
+                awardDate: grant.awardDate,
+                startDate: grant.startDate,
+                expirationDate: grant.expirationDate,
+                boardMember: grant.boardMember,
+                lastEditor: 1,          //Hardcoded value that we'll change after we offer support for multiple accounts
+                notes: grant.notes
             };
 
             return transformedGrant;
@@ -86,11 +91,6 @@ export default defineEventHandler(async (event) => {
 
                 if (body.firstName !== undefined) contactInfoUpdate.firstName = body.firstName;
                 if (body.lastName !== undefined) contactInfoUpdate.lastName = body.lastName;
-                if (body.contactName !== undefined) {
-                    const nameParts = body.contactName.split(' ');
-                    contactInfoUpdate.firstName = nameParts[0] || 'Anonymous';
-                    contactInfoUpdate.lastName = nameParts.slice(1).join(' ') || 'Anonymous';
-                }
                 if (body.email !== undefined) contactInfoUpdate.email = body.email;
                 // Skip phone number for now to avoid conversion issues
                 if (body.address !== undefined) contactInfoUpdate.address = body.address;
@@ -112,9 +112,18 @@ export default defineEventHandler(async (event) => {
                 // Prepare updates for grant
                 const grantUpdate = {};
 
-                if (body.amount !== undefined) grantUpdate.value = parseFloat(body.amount);
+                if (body.monetaryAmountRequested !== undefined) grantUpdate.monetaryAmountRequested = parseFloat(body.monetaryAmountRequested);
+                if (body.nonmonetaryAmountRequested !== undefined) grantUpdate.nonmonetaryAmountRequested = body.nonmonetaryAmountRequested;
+                if (body.monetaryAmountReceived !== undefined) grantUpdate.monetaryAmountReceived = parseFloat(body.monetaryAmountReceived);
+                if (body.nonmonetaryAmountReceived !== undefined) grantUpdate.nonmonetaryAmountReceived = body.nonmonetaryAmountReceived;
+                if (body.monetaryAmountSpent !== undefined) grantUpdate.monetaryAmountSpent = parseFloat(body.monetaryAmountSpent);
                 if (body.allocatedFor !== undefined) grantUpdate.allocatedFor = body.allocatedFor;
-                if (body.date !== undefined) grantUpdate.date = body.date;
+                if (body.proposalDate !== undefined) grantUpdate.proposalDate = body.proposalDate;
+                if (body.awardDate !== undefined) grantUpdate.awardDate = body.awardDate;
+                if (body.startDate !== undefined) grantUpdate.startDate = body.startDate;
+                if (body.expirationDate !== undefined) grantUpdate.expirationDate = body.expirationDate;
+                if (body.status !== undefined) grantUpdate.status = body.status;
+                //if (body.boardMember !== undefined) grantUpdate.boardMember = body.boardMember;
                 if (body.notes !== undefined) grantUpdate.notes = body.notes;
 
                 // Update grant if there are any changes
@@ -134,20 +143,24 @@ export default defineEventHandler(async (event) => {
                 // Return transformed grant data
                 return {
                     id: updatedGrantData.grantID,
-                    name: updatedGrantData.contactInfo.organizationName || 'Unnamed Grant',
-                    contactName: `${updatedGrantData.contactInfo.firstName} ${updatedGrantData.contactInfo.lastName}`,
+                    orgName: updatedGrantData.contactInfo.organizationName || 'Unnamed Grant',
                     firstName: updatedGrantData.contactInfo.firstName,
                     lastName: updatedGrantData.contactInfo.lastName,
                     email: updatedGrantData.contactInfo.email,
                     phone: updatedGrantData.contactInfo.phoneNumber ? String(updatedGrantData.contactInfo.phoneNumber) : null,
                     address: updatedGrantData.contactInfo.address,
-                    organization: updatedGrantData.contactInfo.organizationName,
-                    amount: updatedGrantData.value,
-                    date: updatedGrantData.date,
+                    monetaryAmountRequested: updatedGrantData.monetaryAmountRequested,
+                    nonmonetaryAmountRequested: updatedGrantData.nonmonetaryAmountRequested,
+                    monetaryAmountReceived: updatedGrantData.monetaryAmountReceived,
+                    monetaryAmountSpent: updatedGrantData.monetaryAmountSpent,
                     allocatedFor: updatedGrantData.allocatedFor,
-                    status: body.status || 'Active',
-                    boardMember: body.boardMember || false,
-                    link: body.link || null,
+                    status: updatedGrantData.status,
+                    proposalDate: updatedGrantData.proposalDate,
+                    awardDate: updatedGrantData.awardDate,
+                    startDate: updatedGrantData.startDate,
+                    expirationDate: updatedGrantData.expirationDate,
+                    boardMember: updatedGrantData.boardMember,
+                    lastEditor: 1,          //Hardcoded value that we'll change after we offer support for multiple accounts
                     notes: updatedGrantData.notes
                 };
             });

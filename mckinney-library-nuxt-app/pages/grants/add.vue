@@ -10,19 +10,29 @@
           <input 
             type="text" 
             id="grantor" 
-            v-model="grantForm.name"
+            v-model="grantForm.orgName"
             required
             placeholder="Organization providing the grant"
           >
         </div>
         
         <div class="form-group">
-          <label for="contactName">Contact Name</label>
+          <label for="firstName">Contact First Name</label>
           <input 
             type="text" 
-            id="contactName" 
-            v-model="grantForm.contactName"
-            placeholder="Primary contact person"
+            id="firstName" 
+            v-model="grantForm.firstName"
+            placeholder="John"
+          >
+        </div>
+
+        <div class="form-group">
+          <label for="lastName">Contact Last Name</label>
+          <input 
+            type="text" 
+            id="lastName" 
+            v-model="grantForm.lastName"
+            placeholder="Doe"
           >
         </div>
         
@@ -44,9 +54,18 @@
             v-model="grantForm.phone"
             placeholder="(123) 456-7890"
           >
-        </div>
       </div>
       
+      <div class="form-group">
+          <label for="address">Contact Address</label>
+          <input 
+            type="text" 
+            id="address" 
+            v-model="grantForm.address"
+          >
+        </div>
+      </div>
+
       <!-- Grant Details Section -->
       <div class="form-fields">
         <div class="form-group">
@@ -54,11 +73,21 @@
           <input 
             type="number" 
             id="amount" 
-            v-model="grantForm.amount"
+            v-model="grantForm.monetaryAmountRequested"
             step="0.01"
             min="0"
             required
             placeholder="0.00"
+          >
+        </div>
+
+        <div class="form-group">
+          <label for="nonmonetaryAmountRequested">Nonmonetary Amount Requested *</label>
+          <input
+            type="text" 
+            id="nonmonetaryAmountRequested" 
+            v-model="grantForm.nonmonetaryAmountRequested"
+            required
           >
         </div>
         
@@ -74,11 +103,11 @@
         </div>
         
         <div class="form-group">
-          <label for="date">Grant Date *</label>
+          <label for="date">Proposal Date *</label>
           <input 
             type="date" 
-            id="date" 
-            v-model="grantForm.date"
+            id="proposalDate" 
+            v-model="grantForm.proposalDate"
             required
           >
         </div>
@@ -89,46 +118,50 @@
             <option value="Pending">Pending</option>
             <option value="Active">Active</option>
             <option value="Expired">Expired</option>
+            <option value="Declined">Declined</option>
             <option value="Rejected">Rejected</option>
           </select>
         </div>
       </div>
       
       <!-- Additional Details Section -->
-      <div class="form-fields">
-        <div class="form-group">
-          <label for="proposalDate">Proposal Date</label>
-          <input 
-            type="date" 
-            id="proposalDate" 
-            v-model="grantForm.proposalDate"
-          >
-        </div>
-        
-        <div class="form-group">
+      <div class="form-group">
           <label for="awardDate">Award Date</label>
           <input 
             type="date" 
             id="awardDate" 
             v-model="grantForm.awardDate"
+            :min="grantForm.proposalDate"
+          >
+        </div>
+
+      <div class="form-fields">
+        <div class="form-group">
+          <label for="startDate">Start Date</label>
+          <input 
+            type="date" 
+            id="startDate" 
+            v-model="grantForm.startDate"
+            :min="minStartDate"
+          >
+        </div>
+
+        <div class="form-group">
+          <label for="expirationDate">Expiration Date</label>
+          <input 
+            type="date" 
+            id="expirationDate" 
+            v-model="grantForm.expirationDate"
+            :min="minExpirationDate"
           >
         </div>
         
         <div class="form-group">
           <label for="boardMember">Board Member</label>
-          <select id="boardMember" v-model="grantForm.boardMember">
-            <option :value="true">Yes</option>
-            <option :value="false">No</option>
-          </select>
-        </div>
-        
-        <div class="form-group">
-          <label for="link">Grant URL</label>
           <input 
-            type="url" 
-            id="link" 
-            v-model="grantForm.link"
-            placeholder="https://example.com/grant"
+            type="text" 
+            id="boardMember" 
+            v-model="grantForm.boardMember"
           >
         </div>
       </div>
@@ -172,8 +205,9 @@
 </template>
 
 <script setup>
-import { ref } from 'vue';
+import { ref, computed } from 'vue';
 import { useGrants } from '~/composables/useGrants';
+import { useValidDates } from '~/composables/useGrants';
 import { useRouter } from 'vue-router';
 
 const router = useRouter();
@@ -184,49 +218,72 @@ const today = new Date().toISOString().split('T')[0];
 
 // Form data with default values
 const grantForm = ref({
-  name: '',                // This maps to organization name
-  contactName: '',
+  orgName: '',
+  firstName: '',
+  lastName: '',
   email: '',
   phone: '',
-  amount: '',
+  address: '',
+  monetaryAmountRequested: '',
+  nonmonetaryAmountRequested: '',
   allocatedFor: '',        // Maps to purpose in your form
-  date: today,             // Default to today
-  proposalDate: '',
+  proposalDate: today,             // Default to today
+  startDate: '',
   awardDate: '',
+  expirationDate: '',
   status: 'Pending',
-  boardMember: false,
-  link: '',
+  boardMember: '',
+  lastEditor: 1,          //Default lastEditor is the Main Admin
   notes: ''
 });
+
+const { getMinStartDate, getMinExpirationDate } = useValidDates();
+
+const minStartDate = computed(() => 
+  getMinStartDate(
+    grantForm.value.proposalDate, 
+    grantForm.value.awardDate
+  )
+);
+
+const minExpirationDate = computed(() =>
+  getMinExpirationDate(
+    grantForm.value.proposalDate,
+    grantForm.value.awardDate,
+    grantForm.value.startDate
+  )
+);
 
 // Handle form submission
 const submitGrant = async () => {
   try {
 
     // Ensure the date is treated as local time by adding a timezone offset
-  const dateObj = new Date(grantForm.value.date + 'T12:00:00'); // Add noon time to avoid any day boundary issues
+  const dateObj = new Date(grantForm.value.proposalDate + 'T12:00:00'); // Add noon time to avoid any day boundary issues
   const formattedDate = dateObj.toISOString().split('T')[0]; // Get YYYY-MM-DD format
 
     // Prepare grant data for API based on our schema
     const grantData = {
       // Core fields from our schema
-      name: grantForm.value.name,
-      contactName: grantForm.value.contactName,
+      orgName: grantForm.value.orgName,
+      firstName: grantForm.value.firstName,
+      lastName: grantForm.value.lastName,
       email: grantForm.value.email,
       phone: grantForm.value.phone,
-      amount: parseFloat(grantForm.value.amount || 0),
+      address: grantForm.value.address,
+      monetaryAmountRequested: parseFloat(grantForm.value.monetaryAmountRequested || 0),
+      nonmonetaryAmountRequested: grantForm.value.nonmonetaryAmountRequested,
       allocatedFor: grantForm.value.allocatedFor,
-      date: formattedDate,
+      status: grantForm.value.status,
+      proposalDate: formattedDate,
+      boardMember: grantForm.value.boardMember,
+      lastEditor: 1,         //Hardcoded value that will be changed when we offer support for multiple accounts
       notes: grantForm.value.notes,
       
-      // Additional fields that will be stored at API level
-      status: grantForm.value.status,
-      boardMember: grantForm.value.boardMember,
-      link: grantForm.value.link,
-      
       // Custom fields specific to grants UI
-      proposalDate: grantForm.value.proposalDate,
-      awardDate: grantForm.value.awardDate
+      awardDate: grantForm.value.awardDate,
+      startDate: grantForm.value.startDate,
+      expirationDate: grantForm.value.expirationDate
     };
     
     await addGrant(grantData);
