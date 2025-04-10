@@ -1,8 +1,8 @@
 // composables/useGrants.js
 import { ref } from 'vue';
 
-// REMOVE Enum constant definition:
-// const validGrantStatuses = ['PENDING', 'ACTIVE', 'EXPIRED', 'DECLINED', 'REJECTED'];
+// Define valid statuses locally (matches GrantStatus enum) - REMOVED as status is now string
+// const validGrantStatuses = ['PENDING', 'ACTIVE', 'EXPIRED', 'DECLINED', 'REJECTED']; 
 
 export const useGrants = () => {
     const grants = ref([]);
@@ -19,7 +19,9 @@ export const useGrants = () => {
                 const errorData = await response.json().catch(() => ({}));
                 throw new Error(errorData.statusMessage || `HTTP error! Status: ${response.status}`);
             }
-            grants.value = await response.json(); // Data now has status as string
+            // Data directly from API reflects the schema (status is string)
+            // REMOVED manual mapping: grants.value = data.map(...)
+            grants.value = await response.json();
         } catch (err) {
             error.value = err.message || 'Failed to fetch grants';
             console.error('fetchGrants Error:', err);
@@ -30,7 +32,6 @@ export const useGrants = () => {
 
     // Fetch a single grant by ID
     const fetchGrant = async (id) => {
-        // ... (no changes needed here for status update) ...
         isLoading.value = true;
         error.value = null;
         try {
@@ -39,7 +40,9 @@ export const useGrants = () => {
                 const errorData = await response.json().catch(() => ({}));
                 throw new Error(errorData.statusMessage || `HTTP error! Status: ${response.status}`);
             }
-            return await response.json(); // Data now has status as string
+            // Data directly from API reflects the schema (status is string)
+            // REMOVED manual mapping: return { ...grant, boardMember: ... }
+            return await response.json();
         } catch (err) {
             error.value = err.message || `Failed to fetch grant ${id}`;
             console.error('fetchGrant Error:', err);
@@ -50,41 +53,37 @@ export const useGrants = () => {
     };
 
     // Add a new grant
+    // Expects 'newGrantData' containing fields matching API/schema
     const addGrant = async (newGrantData) => {
         isLoading.value = true;
         error.value = null;
 
         try {
-            // --- Frontend Validation ---
-            // Required fields check (status is just a string now)
+            // --- Frontend Validation (align with API requirements) ---
             if (!newGrantData.firstName || !newGrantData.lastName ||
                 newGrantData.monetaryAmountRequested === undefined || newGrantData.monetaryAmountRequested === null ||
                 newGrantData.nonmonetaryAmountRequested === undefined ||
                 !newGrantData.allocatedFor ||
                 !newGrantData.proposalDate ||
-                !newGrantData.status) { // Still required, but just needs to be non-empty string maybe
+                !newGrantData.status) {
                 throw new Error('Missing required fields: firstName, lastName, monetaryAmountRequested, nonmonetaryAmountRequested, allocatedFor, proposalDate, status are required.');
             }
-
-            // REMOVE Enum Validation Block:
-            /* if (!validGrantStatuses.includes(newGrantData.status)) {
-                throw new Error(`Invalid status value. Must be one of: ${validGrantStatuses.join(', ')}`);
-            } */
-            // Optional: Add basic string validation if needed
-            // if (!newGrantData.status.trim()) {
-            //     throw new Error('Status cannot be empty');
-            // }
+            // REMOVED Enum validation block
             // --- End Frontend Validation ---
 
-            // Send data (status sent as string)
+            // REMOVED intermediate 'grantData' and 'apiGrant' objects
+            // Directly prepare the body from newGrantData using correct field names
+
             const response = await fetch('/api/grants', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
+                // Body includes all fields expected by the API, directly from input object
                 body: JSON.stringify({
                     // Contact Info fields
                     firstName: newGrantData.firstName,
                     lastName: newGrantData.lastName,
-                    organizationName: newGrantData.organizationName || null,
+                    // Use 'organizationName' matching schema/API, not 'orgName'
+                    organizationName: newGrantData.organizationName || newGrantData.orgName || null,
                     email: newGrantData.email || null,
                     phone: newGrantData.phone || null,
                     address: newGrantData.address || null,
@@ -94,7 +93,7 @@ export const useGrants = () => {
                     nonmonetaryAmountRequested: newGrantData.nonmonetaryAmountRequested || '',
                     allocatedFor: newGrantData.allocatedFor,
                     proposalDate: newGrantData.proposalDate,
-                    status: newGrantData.status, // Pass string directly
+                    status: String(newGrantData.status || ''), // Pass string directly
                     // Grant fields (Optional)
                     monetaryAmountReceived: newGrantData.monetaryAmountReceived ? parseFloat(newGrantData.monetaryAmountReceived) : null,
                     nonmonetaryAmountReceived: newGrantData.nonmonetaryAmountReceived || null,
@@ -102,8 +101,9 @@ export const useGrants = () => {
                     awardDate: newGrantData.awardDate || null,
                     startDate: newGrantData.startDate || null,
                     expirationDate: newGrantData.expirationDate || null,
+                    // Use 'boardMemberId' matching schema/API, not 'boardMember' string
                     boardMemberId: newGrantData.boardMemberId ? parseInt(newGrantData.boardMemberId) : null,
-                    grantNotes: newGrantData.grantNotes || null
+                    grantNotes: newGrantData.grantNotes || newGrantData.notes || null // Accept either key
                 })
             });
 
@@ -126,30 +126,24 @@ export const useGrants = () => {
     };
 
     // Update a grant
+    // Expects 'updateData' object to contain *only* the fields being changed
     const updateGrant = async (id, updateData) => {
         isLoading.value = true;
         error.value = null;
 
         try {
             // --- Frontend Validation ---
-            const validUpdateKeys = [ /* ... all valid keys ... */ 'status'];
+            // REMOVED intermediate 'updatedGrant' object preparation
+            const validUpdateKeys = [ /* ... all valid keys from schema ... */ 'status'];
             const updateKeys = Object.keys(updateData);
             const isValidUpdate = updateKeys.some(key => validUpdateKeys.includes(key) && updateData[key] !== undefined);
             if (!isValidUpdate) {
                 throw new Error('No valid fields provided for update.');
             }
-
-            // REMOVE Enum Validation Block:
-            /* if (updateData.status && !validGrantStatuses.includes(updateData.status)) {
-                 throw new Error(`Invalid status value. Must be one of: ${validGrantStatuses.join(', ')}`);
-             } */
-            // Optional: Add basic string validation for status if included
-            // if (updateData.status !== undefined && !updateData.status.trim()) {
-            //     throw new Error('Status cannot be empty');
-            // }
+            // REMOVED Enum validation block
             // --- End Frontend Validation ---
 
-            // Send data (status sent as string)
+            // Send only the updateData object (status sent as string if present)
             const response = await fetch(`/api/grants/${id}`, {
                 method: 'PUT',
                 headers: { 'Content-Type': 'application/json' },
@@ -176,7 +170,7 @@ export const useGrants = () => {
 
     // Delete a grant
     const deleteGrant = async (id) => {
-        // ... (no changes needed here for status update) ...
+        // ... (no significant changes needed here) ...
         isLoading.value = true;
         error.value = null;
         try {
@@ -186,7 +180,7 @@ export const useGrants = () => {
                 throw new Error(errorData.statusMessage || `HTTP error! Status: ${response.status}`);
             }
             const result = await response.json();
-            await fetchGrants(); // Refresh list
+            await fetchGrants();
             return result;
         } catch (err) {
             error.value = err.message || 'Failed to delete grant';
@@ -202,12 +196,11 @@ export const useGrants = () => {
         isLoading.value = true;
         error.value = null;
         try {
-            // Basic validation that status is a non-empty string
             if (!newStatus || !String(newStatus).trim()) {
                 throw new Error(`Invalid status: Status cannot be empty`);
             }
             // Call updateGrant with only the status field
-            return await updateGrant(id, { status: String(newStatus).trim() }); // Ensure it's a string
+            return await updateGrant(id, { status: String(newStatus).trim() });
         } catch (err) {
             error.value = err.message || `Failed to set status for grant ${id}`;
             console.error('setGrantStatus Error:', err);
@@ -216,6 +209,7 @@ export const useGrants = () => {
             isLoading.value = false;
         }
     };
+    // REMOVED toggleGrantStatus function if setGrantStatus replaces it
 
 
     return {
@@ -227,6 +221,41 @@ export const useGrants = () => {
         addGrant,
         updateGrant,
         deleteGrant,
-        setGrantStatus
+        setGrantStatus // Using the clearer function name
     };
 };
+
+// --- useValidDates Function Definition ---
+// This was included in the file you provided. Decide what to do with it.
+
+export function useValidDates() {
+    const getMinStartDate = (proposalDate, awardDate) => {
+        if (!proposalDate && !awardDate) {
+            return null;
+        }
+        else if (!awardDate) {
+            return proposalDate;
+        }
+        else {
+            return awardDate;
+        }
+    };
+
+    const getMinExpirationDate = (proposalDate, awardDate, startDate) => {
+        if (!proposalDate && !awardDate && !startDate) {
+            return null;
+        }
+        else if (!startDate) {
+            return getMinStartDate(proposalDate, awardDate);
+        }
+        else {
+            return startDate;
+        }
+    };
+
+    return {
+        getMinStartDate,
+        getMinExpirationDate
+    };
+}
+// --- End of useValidDates ---

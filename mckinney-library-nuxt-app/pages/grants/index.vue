@@ -179,8 +179,7 @@
 
 <script setup>
 import { ref, onMounted, computed } from 'vue';
-import { useGrants } from '~/composables/useGrants';
-import { useValidDates } from '~/composables/useGrants';
+import { useGrants, useValidDates } from '~/composables/useGrants';
 
 const headers = ref([
   "Organization",
