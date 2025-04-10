@@ -1,3 +1,5 @@
+#Nuxt folder .gitignore
+
 # Nuxt dev/build outputs
 .output
 .data
@@ -5,6 +7,11 @@
 .nitro
 .cache
 dist
+
+#SQLite temp files
+*.db-journal
+*.db-wal
+*.db-shm
 
 # Node dependencies
 node_modules
@@ -19,6 +26,15 @@ logs
 .idea
 
 # Local env files
-.env
+#.env
 .env.*
 !.env.example
+
+#Root .gitignore file
+node_modules/
+
+package-lock.json
+
+mplf.db
+
+.env

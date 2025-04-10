@@ -1,0 +1,62 @@
+<template>
+    <div class="dashboard">
+
+      <div>
+        <h1> Donations</h1>
+        <a href="/donations"> <button> View Donations </button></a>        
+        <a href="/donations/add"> <button> Add Donation </button></a>        
+        <a href="/donations/donors"> <button> View Donors </button></a>        
+      </div>
+
+      <div >
+        <h1> Grants </h1>
+        <a href="/grants"> <button> View Grants </button></a>        
+        <a href="/grants/add"> <button> Add Grants </button></a>        
+      </div>
+
+      <div>
+        <h1> Settings</h1>
+        <a href="/settings"> <button> Create Account </button></a>        
+        <a href="/settings/roles"> <button> View Roles </button></a>        
+        <a href="/settings/accounts"> <button> Manage Accounts </button></a>        
+      </div>
+
+    </div>
+  </template>
+  
+  <script setup>
+  // This page will automatically use the default layout (with header)
+  </script>
+  
+  <style scoped>
+  h1 {
+    color: #545679;
+    font-family: sans-serif;
+    text-align: center;
+  }
+
+  button { 
+    background-color: #545679; 
+    font-family: sans-serif;
+    border: none; 
+    color: white; 
+    padding: 15px 30px; 
+    text-align: center; 
+    text-decoration: none; 
+    display: inline-block; 
+    font-size: 20px; 
+    margin: 10px; 
+    cursor: pointer; 
+    border-radius: 8px;
+  }
+
+  .dashboard {
+  display: flex;
+  flex-direction: column; /* Stack elements vertically */
+  align-items: center; /* Center items horizontally */
+  gap: 40px; /* Add vertical spacing between sections */
+}
+
+
+  </style>
+  
