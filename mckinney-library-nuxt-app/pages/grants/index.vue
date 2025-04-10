@@ -257,10 +257,16 @@ onMounted(() => {
 // Format date for display
 const formatDate = (dateString) => {
   if (!dateString) return '-';
-  // Use local date string to avoid timezone issues
-  const proposalDate = new Date(dateString + 'T12:00:00');
-  return proposalDate.toLocaleDateString();
+
+  // Validate MM/DD/YYYY
+  const [month, day, year] = dateString.split('/');
+  if (!month || !day || !year) return '-';
+
+  return `${month.padStart(2, '0')}/${day.padStart(2, '0')}/${year}`;
+
 };
+
+
 
 // Show edit modal with grant data
 const editGrant = (grant) => {
@@ -272,6 +278,7 @@ const editGrant = (grant) => {
     email: grant.email,
     phone: grant.phone,
     address: grant.address,
+    date: formatToInputDate(grant.date),
     monetaryAmountRequested: grant.monetaryAmountRequested,
     nonmonetaryAmountRequested: grant.nonmonetaryAmountRequested,
     monetaryAmountReceived: grant.monetaryAmountReceived || 0,
@@ -285,9 +292,28 @@ const editGrant = (grant) => {
     status: grant.status,
     boardMember: grant.boardMember,
     notes: grant.notes
+
   };
   showEditGrantModal.value = true;
 };
+
+// Match Grant Date on Edit Modal
+const formatToInputDate = (dateString) => {
+  if (!dateString || typeof dateString !== 'string') return new Date().toISOString().split('T')[0];
+
+  if (/^\d{4}-\d{2}-\d{2}$/.test(dateString)) return dateString;
+
+  const parts = dateString.split('/');
+  if (parts.length !== 3) return new Date().toISOString().split('T')[0];
+
+  let [month, day, year] = parts;
+
+  if (!month || !day || !year) return new Date().toISOString().split('T')[0];
+
+  return `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`;
+};
+
+
 
 // Show delete confirmation
 const confirmDelete = (grant) => {

@@ -158,9 +158,12 @@ onMounted(() => {
 // Format date for display
 const formatDate = (dateString) => {
   if (!dateString) return '-';
-  // Use local date string to avoid timezone issues
-  const date = new Date(dateString + 'T12:00:00');
-  return date.toLocaleDateString();
+
+  // Validate MM/DD/YYYY
+  const [month, day, year] = dateString.split('/');
+  if (!month || !day || !year) return '-';
+
+  return `${month.padStart(2, '0')}/${day.padStart(2, '0')}/${year}`;
 };
 
 // Open edit modal with donation data
@@ -169,7 +172,7 @@ const editDonation = (donation) => {
   donationForm.value = {
     donor: donation.donor,
     amount: donation.amount,
-    date: donation.date,
+    date: formatToInputDate(donation.date),
     category: donation.category || 'General',
     status: donation.status || 'Received',
     boardMember: donation.boardMember || false,
@@ -182,6 +185,22 @@ const editDonation = (donation) => {
 const confirmDelete = (donation) => {
   selectedDonation.value = donation;
   showDeleteModal.value = true;
+};
+
+// Match Grant Date on Edit Modal
+const formatToInputDate = (dateString) => {
+  if (!dateString || typeof dateString !== 'string') return new Date().toISOString().split('T')[0];
+
+  if (/^\d{4}-\d{2}-\d{2}$/.test(dateString)) return dateString;
+
+  const parts = dateString.split('/');
+  if (parts.length !== 3) return new Date().toISOString().split('T')[0];
+
+  let [month, day, year] = parts;
+
+  if (!month || !day || !year) return new Date().toISOString().split('T')[0];
+
+  return `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`;
 };
 
 // Handle donation deletion
