@@ -182,6 +182,16 @@
             required
           >
         </div>
+
+        <div class="form-group">
+          <label for="nonmonetaryAmount">Non-Monetary Amount/Items</label>
+          <input 
+            type="text" 
+            id="nonmonetaryAmount" 
+            v-model="donationForm.nonmonetaryAmount"
+            placeholder="e.g., Books, Computer, Services" 
+          > 
+          </div>
         
         <div class="form-group">
           <label for="date">Date *</label>
@@ -276,6 +286,7 @@ const donationForm = ref({
   type: 'Individual',
   communicationPreference: 'Email',
   amount: '',
+  nonmonetaryAmount: '',
   date: today,
   donationMethod: '',
   allocatedFor: '',
@@ -382,11 +393,14 @@ const submitDonation = async () => {
     // Prepare donation data for API
     const donationData = {
       ...donorData,
-      amount: parseFloat(donationForm.value.amount),
+      monetaryAmount: parseFloat(donationForm.value.amount) || 0,
+      nonmonetaryAmount: donationForm.value.nonmonetaryAmount || '',
       date: formattedDate,
       donationMethod: donationForm.value.donationMethod,
       allocatedFor: donationForm.value.allocatedFor,
-      notes: donationForm.value.notes || ''
+      notes: donationForm.value.notes || '',
+      amountSpent: 0,
+      status: 'RECEIVED'
     };
     
     console.log("Submitting donation:", donationData);
