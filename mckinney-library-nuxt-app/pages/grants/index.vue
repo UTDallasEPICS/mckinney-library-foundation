@@ -31,7 +31,7 @@
                   {{ grant.status || 'Pending' }}
                 </span>
               </td>
-              <td>{{ grant.boardMember }}</td>
+              <td>{{ grant.boardMember || '-' }}</td>
               <td>{{ grant.notes }}</td>
               <td class="actions-cell">
                 <button @click="editGrant(grant)" class="edit-button">Edit</button>
