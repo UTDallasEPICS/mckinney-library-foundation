@@ -1,110 +1,117 @@
 // composables/useDonations.js
 import { ref } from 'vue';
 
+// REMOVE Enum constant definition:
+// const validDonationStatuses = ['PENDING', 'RECEIVED', 'DECLINED']; 
+
 export const useDonations = () => {
     const donations = ref([]);
     const isLoading = ref(false);
     const error = ref(null);
 
-    // Fetch all donations
+    // Fetch all donations 
     const fetchDonations = async () => {
         isLoading.value = true;
         error.value = null;
-
         try {
-            // Use the standard fetch API
             const response = await fetch('/api/donations');
-
             if (!response.ok) {
-                throw new Error(`HTTP error! Status: ${response.status}`);
+                const errorData = await response.json().catch(() => ({}));
+                throw new Error(errorData.statusMessage || `HTTP error! Status: ${response.status}`);
             }
-
-            donations.value = await response.json();
+            donations.value = await response.json(); // Data now has status as string
         } catch (err) {
             error.value = err.message || 'Failed to fetch donations';
-            console.error(err);
+            console.error('fetchDonations Error:', err);
         } finally {
             isLoading.value = false;
         }
     };
 
     // Add a new donation
-    const addDonation = async (donation) => {
+    const addDonation = async (newDonationData) => {
         isLoading.value = true;
         error.value = null;
 
         try {
-            // Make sure required fields are present according to your Prisma schema
-            if (!donation.amount) {
-                throw new Error('Donation amount is required');
+            // --- Frontend Validation ---
+            // Required fields check (status is just a string now)
+            if (newDonationData.monetaryAmount === undefined || newDonationData.monetaryAmount === null ||
+                newDonationData.nonmonetaryAmount === undefined ||
+                newDonationData.amountSpent === undefined || newDonationData.amountSpent === null ||
+                !newDonationData.donationMethod ||
+                !newDonationData.allocatedFor ||
+                !newDonationData.status) { // Still required, but just needs to be a non-empty string maybe
+                throw new Error('Missing required fields: monetaryAmount, nonmonetaryAmount, amountSpent, donationMethod, allocatedFor, status are required.');
             }
 
-            if (!donation.donationMethod) {
-                // Default if not provided
-                donation.donationMethod = 'Other';
-            }
+            // REMOVE Enum Validation Block:
+            /* if (!validDonationStatuses.includes(newDonationData.status)) {
+                throw new Error(`Invalid status value. Must be one of: ${validDonationStatuses.join(', ')}`);
+            } */
+            // Optional: Add basic string validation if needed
+            // if (!newDonationData.status.trim()) {
+            //     throw new Error('Status cannot be empty');
+            // }
+            // --- End Frontend Validation ---
 
-            if (!donation.allocatedFor && donation.category) {
-                // Use category as allocatedFor if provided
-                donation.allocatedFor = donation.category;
-            } else if (!donation.allocatedFor) {
-                // Default if not provided
-                donation.allocatedFor = 'General';
-            }
 
+            // Send data matching the API structure (status sent as string)
             const response = await fetch('/api/donations', {
                 method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(donation)
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    // Required fields
+                    monetaryAmount: parseFloat(newDonationData.monetaryAmount) || 0,
+                    nonmonetaryAmount: newDonationData.nonmonetaryAmount || '',
+                    amountSpent: parseFloat(newDonationData.amountSpent) || 0,
+                    donationMethod: newDonationData.donationMethod,
+                    allocatedFor: newDonationData.allocatedFor,
+                    status: newDonationData.status, // Pass string directly
+                    // Optional fields
+                    donorId: newDonationData.donorId ? parseInt(newDonationData.donorId) : null,
+                    donorDetails: newDonationData.donorDetails || null,
+                    boardMemberId: newDonationData.boardMemberId ? parseInt(newDonationData.boardMemberId) : null,
+                    date: newDonationData.date || null,
+                    notes: newDonationData.notes || null
+                })
             });
 
-            // Check if the request was successful
             if (!response.ok) {
-                // Try to get more details about the error
                 const errorData = await response.json().catch(() => ({}));
                 throw new Error(errorData.statusMessage || `HTTP error! Status: ${response.status}`);
             }
 
             const result = await response.json();
-
-            // Refresh the donations list
             await fetchDonations();
-
             return result;
+
         } catch (err) {
             error.value = err.message || 'Failed to add donation';
-            console.error('Donation submission error:', err);
+            console.error('addDonation Error:', err);
             throw err;
         } finally {
             isLoading.value = false;
         }
     };
 
-    // Delete a donation
+    // Delete a donation 
     const deleteDonation = async (id) => {
+        // ... (no changes needed here for status update) ...
         isLoading.value = true;
         error.value = null;
-
         try {
-            const response = await fetch(`/api/donations/${id}`, {
-                method: 'DELETE'
-            });
-
+            const response = await fetch(`/api/donations/${id}`, { method: 'DELETE' });
             if (!response.ok) {
-                throw new Error(`HTTP error! Status: ${response.status}`);
+                const errorData = await response.json().catch(() => ({}));
+                throw new Error(errorData.statusMessage || `HTTP error! Status: ${response.status}`);
             }
-
             const result = await response.json();
-
-            // Refresh the donations list
-            await fetchDonations();
-
+            await fetchDonations(); // Refresh list
             return result;
         } catch (err) {
             error.value = err.message || 'Failed to delete donation';
-            console.error(err);
+            console.error('deleteDonation Error:', err);
             throw err;
         } finally {
             isLoading.value = false;
@@ -112,38 +119,48 @@ export const useDonations = () => {
     };
 
     // Update a donation
-    const updateDonation = async (id, donation) => {
+    const updateDonation = async (id, updateData) => {
         isLoading.value = true;
         error.value = null;
 
         try {
-            // Make sure required fields are present for update
-            if (donation.amount === undefined && donation.donationMethod === undefined &&
-                donation.allocatedFor === undefined && donation.date === undefined) {
-                throw new Error('At least one field must be updated');
+            // --- Frontend Validation ---
+            const validUpdateKeys = ['monetaryAmount', 'nonmonetaryAmount', 'amountSpent', 'donationMethod', 'allocatedFor', 'date', 'status', 'boardMemberId', 'notes', 'donorId'];
+            const updateKeys = Object.keys(updateData);
+            const isValidUpdate = updateKeys.some(key => validUpdateKeys.includes(key) && updateData[key] !== undefined);
+            if (!isValidUpdate) {
+                throw new Error('No valid fields provided for update.');
             }
 
+            // REMOVE Enum Validation Block:
+            /* if (updateData.status && !validDonationStatuses.includes(updateData.status)) {
+                throw new Error(`Invalid status value. Must be one of: ${validDonationStatuses.join(', ')}`);
+            } */
+            // Optional: Add basic string validation for status if included
+            // if (updateData.status !== undefined && !updateData.status.trim()) {
+            //     throw new Error('Status cannot be empty');
+            // }
+            // --- End Frontend Validation ---
+
+            // Send data (status sent as string)
             const response = await fetch(`/api/donations/${id}`, {
                 method: 'PUT',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(donation)
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(updateData)
             });
 
             if (!response.ok) {
-                throw new Error(`HTTP error! Status: ${response.status}`);
+                const errorData = await response.json().catch(() => ({}));
+                throw new Error(errorData.statusMessage || `HTTP error! Status: ${response.status}`);
             }
 
             const result = await response.json();
-
-            // Refresh the donations list
             await fetchDonations();
-
             return result;
+
         } catch (err) {
             error.value = err.message || 'Failed to update donation';
-            console.error(err);
+            console.error('updateDonation Error:', err);
             throw err;
         } finally {
             isLoading.value = false;
