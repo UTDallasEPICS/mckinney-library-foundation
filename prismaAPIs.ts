@@ -36,6 +36,15 @@ async function main() {
     const contact14 = await insertTuple('contactInfo', {notes: 'anonymous'});
     const contact15 = await insertTuple('contactInfo', {firstName: 'Samantha', lastName: 'Wilkins', notes: 'atom eve' , phoneNumber: 2147549890, address: '123 right next door st.', organizationName: 'Invincible Inc.', email: 'atomeve@hotmail.com'});
     const contact16 = await insertTuple('contactInfo', {firstName: 'Sue', lastName: 'Storm', organizationName: 'The Fantastic Four', email: 'invisiblewoman@gmail.com'});
+    const contact17 = await insertTuple('contactInfo', {firstName: 'Roben', lastName: 'Closs', organizationName: 'MPLF', email: 'mplfboard@gmail.com'});
+    const contact18 = await insertTuple('contactInfo', {firstName: 'Joe', lastName: 'Closs', organizationName: 'MPLF', email: 'mplfboard@gmail.com'});
+    const contact19 = await insertTuple('contactInfo', {firstName: 'Jonathan', lastName: 'Xu', organizationName: 'EPICS', email: 'personalemailhere'});
+    const contact20 = await insertTuple('contactInfo', {firstName: 'Carlos', lastName: 'Valeriano', organizationName: 'EPICS', email: 'personalemailhere'});
+    const contact21 = await insertTuple('contactInfo', {firstName: 'Janet', lastName: 'Bui', organizationName: 'EPICS', email: 'personalemailhere'});
+    const contact22 = await insertTuple('contactInfo', {firstName: 'Arjun', lastName: 'Kaimal', organizationName: 'EPICS', email: 'personalemailhere'});
+    const contact23 = await insertTuple('contactInfo', {firstName: 'Nihal', lastName: 'Paul', organizationName: 'EPICS', email: 'personalemailhere'});
+    const contact24 = await insertTuple('contactInfo', {firstName: 'Karthik', lastName: 'Bhagavatula', organizationName: 'EPICS', email: 'personalemailhere'});
+
     //const contactInfo = await selectTuple('contactInfo');
     //console.log(contactInfo);
 
@@ -52,8 +61,8 @@ async function main() {
 
     /**
      * Users
-     */
-    await insertTuple('users', { contactInfoID: contact1.contactInfoID, role: 'MAIN_ADMIN', status: 'Active', password: 'georgeyboy101' });
+     */ /**
+    await insertTuple('users', { contactInfoID: contact1.contactInfoID, role: 'MAIN_ADMIN', status: 'Active', password: 'georgeyboy101'});
     await insertTuple('users', { contactInfoID: contact2.contactInfoID, role: 'EDITOR', status: 'Active', password: 'letthetruthbetold' });
     await insertTuple('users', { contactInfoID: contact4.contactInfoID, role: 'ADMIN', status: 'Active', password: 'spidey123', creationDate: '10/20/2004'});
     await insertTuple('users', { contactInfoID: contact5.contactInfoID, role: 'EDITOR', status: 'Active', password: 'iamvengeance'});
@@ -69,7 +78,7 @@ async function main() {
 
     /**
      * Donors
-     */
+     */ /**
     const donor1 = await insertTuple('donors', {contactInfoID: contact1.contactInfoID, lastContacted: '01/01/2003', lifetimeDonations: 100000});
     const donor2 = await insertTuple('donors', {contactInfoID: contact2.contactInfoID, lastContacted: '03/13/2025', lifetimeDonations: 2500});
     const donor3 = await insertTuple('donors', {contactInfoID: contact4.contactInfoID, lastContacted: '03/13/2021', lifetimeDonations: 500, firstDonationDate: '01/04/2020'});
@@ -86,7 +95,7 @@ async function main() {
 
     /**
      * Donations
-     */
+     */ /**
     await insertTuple('donations', {donorID: donor1.donorID, value: 100000, donationMethod: 'Check', allocatedFor: 'Fundraiser', notes: 'biggest donation in mplf history'});
     await insertTuple('donations', {donorID: donor2.donorID, value: 2500, donationMethod: 'GiveButter', allocatedFor: 'Autumn Event'});
     await insertTuple('donations', {donorID: donor3.donorID, value: 250, donationMethod: 'PayPal', allocatedFor: 'Fundraiser', date: '01/04/2020'});
@@ -109,7 +118,7 @@ async function main() {
 
     /**
      * Grants
-     */
+     */ /**
     await insertTuple('grants', {contactInfoID: contact1.contactInfoID, value: 3500, allocatedFor: 'Fundraisers', date: '01/01/2020'});
     await insertTuple('grants', {contactInfoID: contact2.contactInfoID, value: 4000, allocatedFor: 'Events', date: '12/25/2018'});
     await insertTuple('grants', {contactInfoID: contact5.contactInfoID, value: 250000, allocatedFor: 'Renovations', notes: "Bruce Wayne's foundation!"});
