@@ -179,6 +179,7 @@
             id="amount" 
             v-model="donationForm.amount"
             min="0.01"
+            step="0.01"
             required
           >
         </div>
@@ -355,7 +356,7 @@ const selectExistingDonor = (donor) => {
 const submitDonation = async () => {
 
   // Ensure the date is treated as local time by adding a timezone offset
-  const dateObj = new Date(grantForm.value.date + 'T12:00:00'); // Add noon time to avoid any day boundary issues
+  const dateObj = new Date(donationForm.value.date + 'T12:00:00'); // Add noon time to avoid any day boundary issues
   const formattedDate = dateObj.toISOString().split('T')[0]; // Get YYYY-MM-DD format
 
   try {
