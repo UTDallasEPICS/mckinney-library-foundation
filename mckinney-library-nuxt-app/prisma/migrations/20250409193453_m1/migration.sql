@@ -2,7 +2,6 @@
 CREATE TABLE "donations" (
     "donationID" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
     "donorID" INTEGER,
-    "value" REAL NOT NULL,
     "monetaryAmount" REAL NOT NULL,
     "nonmonetaryAmount" TEXT NOT NULL,
     "amountSpent" REAL NOT NULL,
@@ -37,14 +36,12 @@ CREATE TABLE "donors" (
 CREATE TABLE "grants" (
     "grantID" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
     "contactInfoID" INTEGER NOT NULL,
-    "value" REAL NOT NULL,
     "monetaryAmountRequested" REAL NOT NULL,
     "nonmonetaryAmountRequested" TEXT NOT NULL,
     "monetaryAmountReceived" REAL,
     "nonmonetaryAmountReceived" TEXT,
-    "monetaryAmountSpent" REAL NOT NULL,
+    "monetaryAmountSpent" REAL,
     "allocatedFor" TEXT NOT NULL,
-    "date" TEXT NOT NULL,
     "proposalDate" TEXT NOT NULL,
     "awardDate" TEXT,
     "startDate" TEXT,
@@ -92,7 +89,6 @@ CREATE TABLE "users" (
     "creationDate" TEXT NOT NULL DEFAULT 'DATETIME(''now'')',
     "lastEditorID" INTEGER NOT NULL,
     "notes" TEXT,
-    CONSTRAINT "users_lastEditorID_fkey" FOREIGN KEY ("lastEditorID") REFERENCES "users" ("userID") ON DELETE NO ACTION ON UPDATE NO ACTION,
     CONSTRAINT "users_role_fkey" FOREIGN KEY ("role") REFERENCES "rolePermissions" ("role") ON DELETE NO ACTION ON UPDATE CASCADE,
     CONSTRAINT "users_contactInfoID_fkey" FOREIGN KEY ("contactInfoID") REFERENCES "contactInfo" ("contactInfoID") ON DELETE NO ACTION ON UPDATE CASCADE
 );
