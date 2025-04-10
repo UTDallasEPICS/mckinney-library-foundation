@@ -17,7 +17,8 @@
             <td>{{ donation.communicationMethod || '-' }}</td>
             <td>{{ donation.personalInfo || '-' }}</td>
             <td>{{ formatDate(donation.date) }}</td>
-            <td>${{ donation.amount.toFixed(2) }}</td>
+            <td>${{ donation.monetaryAmount?.toFixed(2) || '0.00' }}</td> 
+            <td>{{ donation.nonmonetaryAmount || '-' }}</td> 
             <td>{{ donation.status || 'Received' }}</td>
             <td>{{ donation.category || 'General' }}</td>
             <td>{{ donation.boardMember ? 'Yes' : 'No' }}</td>
@@ -124,7 +125,8 @@ const headers = ref([
   "Communication",
   "Personal Info",
   "Date",
-  "Amount",
+  "Monetary Amount",
+  "Non-Monetary",
   "Status",
   "Type",
   "Board Member"
