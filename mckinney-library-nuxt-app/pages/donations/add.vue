@@ -12,7 +12,7 @@
         >
           Existing
         </button>
-        <button 
+        <button
           type="button" 
           :class="['selection-button', donorType === 'new' ? 'selected' : '']" 
           @click="donorType = 'new'"
@@ -233,6 +233,40 @@
             <option value="Other">Other</option>
           </select>
         </div>
+
+        <div class="form-group">
+          <label for="boardMember">Board Member</label>
+          <input 
+            type="text" 
+            id="boardMember" 
+            v-model="donationForm.boardMember"
+          >
+        </div>
+
+        <div class="form-group">
+          <label for="boardMember">Board Member</label>
+          <div class="search-container">
+            <input 
+              type="text" 
+              id="boardMemberSearch" 
+              v-model="boardMemberSearchQuery" 
+              @input="searchBoardMembers"
+            >
+            <div v-if="showBoardMemberSearchResults" class="search-results">
+              <div 
+                v-for="boardMember in filteredBoardMembersByName"
+                :key="boardMember.id"
+                class="search-result-item"
+                @click="selectBoardMember(boardMember)"
+              >
+                {{ boardMember.name }}
+                <!-- {{ user.name }} -->
+              </div>
+              <div v-if="filteredBoardMembersByName.length === 0" class="no-results">
+                No board members found
+              </div>
+            </div>
+          </div>
         
         <div class="form-group">
           <label for="notes">Notes</label>
@@ -243,6 +277,7 @@
           ></textarea>
         </div>
       </div>
+    </div>
       
       <div v-if="error" class="error-message">
         {{ error }}
@@ -262,10 +297,12 @@
 import { ref, onMounted, computed, watch } from 'vue';
 import { useDonations } from '~/composables/useDonations';
 import { useDonors } from '~/composables/useDonors';
+import { useUsers } from '~/composables/useUsers';
 
 const router = useRouter();
 const { addDonation, isLoading, error } = useDonations();
 const { donors, fetchDonors } = useDonors();
+const { boardMembers, fetchBoardMembers } = useUsers();
 
 // Default date to today
 const today = new Date().toISOString().split('T')[0];
@@ -275,6 +312,10 @@ const donorType = ref('existing');
 const donorSearchQuery = ref('');
 const showDonorSearchResults = ref(false);
 const selectedExistingDonor = ref(null);
+
+const boardMemberSearchQuery = ref('');
+const showBoardMemberSearchResults = ref(false);
+const selectedBoardMember = ref(null);
 
 // Form data
 const donationForm = ref({
@@ -291,12 +332,14 @@ const donationForm = ref({
   date: today,
   donationMethod: '',
   allocatedFor: '',
+  lastEditor: 1, 
   notes: ''
 });
 
 // Fetch all donors when component mounts
 onMounted(async () => {
   await fetchDonors();
+  await fetchBoardMembers();
 });
 
 // Filter donors based on search query
@@ -317,6 +360,21 @@ const filteredDonorsByName = computed(() => {
   return donors.value.filter(donor => {
     return donor.name.toLowerCase().includes(query); 
   }).slice(0, 10); // Limit to 10 results
+});
+
+const filteredBoardMembersByName = computed(() => {
+  if (!boardMemberSearchQuery.value.trim()) return boardMembers.value.slice(0, 5); // Show first 5 by default
+  //if (!boardMemberSearchQuery.value.trim()) return users.value.slice(0, 5); // Show first 5 by default
+
+  const query = boardMemberSearchQuery.value.toLowerCase();
+
+  return boardMembers.value.filter(boardMember => {
+    return boardMember.name.toLowerCase().includes(query); 
+  }).slice(0, 10); // Limit to 10 results
+
+  //return users.value.filter(user => {
+  //  return user.name.toLowerCase().includes(query); 
+  //}).slice(0, 10); // Limit to 10 results
 });
 
 // Clear selection when donor type changes
@@ -351,6 +409,24 @@ const selectExistingDonor = (donor) => {
   donorSearchQuery.value = donor.name;
   showDonorSearchResults.value = false;
 };
+
+const searchBoardMembers = () => {
+  showBoardMemberSearchResults.value = true;
+};
+
+// Select an existing donor
+//const selectBoardMember = (user) => {
+//  selectedBoardMember.value = user;
+//  boardMemberSearchQuery.value = user.name;
+//  showBoardMemberSearchResults.value = false;
+//};
+
+const selectBoardMember = (boardMember) => {
+  selectedBoardMember.value = boardMember;
+  boardMemberSearchQuery.value = boardMember.name;
+  showBoardMemberSearchResults.value = false;
+};
+
 
 // Handle form submission
 const submitDonation = async () => {
@@ -399,6 +475,7 @@ const submitDonation = async () => {
       date: formattedDate,
       donationMethod: donationForm.value.donationMethod,
       allocatedFor: donationForm.value.allocatedFor,
+      lastEditor: 1,
       notes: donationForm.value.notes || '',
       amountSpent: 0,
       status: 'RECEIVED'

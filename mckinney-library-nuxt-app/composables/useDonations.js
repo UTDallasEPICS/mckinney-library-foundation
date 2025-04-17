@@ -73,6 +73,7 @@ export const useDonations = () => {
                     donorDetails: newDonationData.donorDetails || null,
                     boardMemberId: newDonationData.boardMemberId ? parseInt(newDonationData.boardMemberId) : null,
                     date: newDonationData.date || null,
+                    lastEditor: 1, 
                     notes: newDonationData.notes || null
                 })
             });

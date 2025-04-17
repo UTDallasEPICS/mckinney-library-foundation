@@ -1,5 +1,7 @@
 // server/api/donations/index.js
 import prisma from '~/server/utils/prisma'
+import donors from '../donors';
+import Id from './[id]';
 // import { Prisma } from '@prisma/client'; // REMOVE or comment out this line if only used for enums
 
 export default defineEventHandler(async (event) => {
@@ -118,7 +120,8 @@ export default defineEventHandler(async (event) => {
             // Create the donation (pass status string directly)
             const newDonation = await prisma.donations.create({
                 data: {
-                    donorID: donorId,
+                    // donorID: donorId,
+                    donors: {connect: {donorID: donorId}},
                     monetaryAmount: parseFloat(body.monetaryAmount),
                     nonmonetaryAmount: body.nonmonetaryAmount,
                     amountSpent: parseFloat(body.amountSpent),
@@ -126,11 +129,33 @@ export default defineEventHandler(async (event) => {
                     allocatedFor: body.allocatedFor,
                     date: body.date || new Date().toISOString().split('T')[0],
                     status: body.status, // Pass the string directly
-                    boardMemberID: body.boardMemberId ? parseInt(body.boardMemberId) : null,
-                    lastEditorID: currentUserID, // Assuming still required by logic, even if optional on user model
+                    boardMember: body.boardMemberId ? parseInt(body.boardMemberId) : null,
+                    lastEditor: {
+                        connect: {id: currentUserID}
+                     },
+                      // Assuming still required by logic, even if optional on user model
+                    // lastEditorID: {connect: { id: 1} },
                     notes: body.notes || null,
+                },
+                include: {
+                    donors: true,
+                    lastEditor: {
+                        include: {
+                            contactInfo: true
+                        } 
                 }
+            }
+
             });
+
+            // 🔍 Console log the last editor's contact info
+                if (newDonation.lastEditor && newDonation.lastEditor.contactInfo) {
+                    console.log("Last editor contact info:");
+                    console.log("Email:", newDonation.lastEditor.contactInfo.email);
+                    console.log("Phone:", newDonation.lastEditor.contactInfo.phoneNumber);
+                } else {
+                    console.log("No contact info found for last editor.");
+                }
 
             // Update donor's lifetime donations and count if needed (logic remains the same)
             if (donorId) {
