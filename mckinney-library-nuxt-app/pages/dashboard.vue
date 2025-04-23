@@ -1,5 +1,6 @@
 <template>
     <div class="dashboard">
+      <h1 class="main_title">MPLF Donor & Grant Tracker Dashboard</h1>
 
       <div>
         <h1> Donations</h1>
@@ -57,6 +58,9 @@
   gap: 40px; /* Add vertical spacing between sections */
 }
 
+.main_title {
+  font-size: 50px;
+}
 
   </style>
   
