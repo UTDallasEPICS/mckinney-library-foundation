@@ -84,8 +84,9 @@
           <div class="form-group">
             <label for="status">Status</label>
             <select id="status" v-model="donationForm.status">
-              <option value="Received">Received</option>
+              <option value="Requested">Requested</option>
               <option value="Pending">Pending</option>
+              <option value="Received">Received</option>
               <option value="Declined">Declined</option>
             </select>
           </div>

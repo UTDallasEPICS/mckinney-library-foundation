@@ -106,10 +106,10 @@
           <label for="type">Type</label>
           <select id="type" v-model="donationForm.type" required>
             <option value="" disabled>Select</option>
-            <option value="Individual">Individual</option>
-            <option value="Corporation">Corporation</option>
-            <option value="Foundation">Foundation</option>
-            <option value="Government">Government</option>
+            <option value="General Fund">General Fund</option>
+            <option value="Scholarships">Scholarships</option>
+            <option value="Literary Fest">Literary Fest</option>
+            <option value="Any Time Library">Any Time Library</option>
             <option value="Other">Other</option>
           </select>
         </div>
@@ -325,7 +325,7 @@ const donationForm = ref({
   phoneNumber: '',
   email: '',
   address: '',
-  type: 'Individual',
+  type: 'General Fund',
   communicationPreference: 'Email',
   amount: '',
   nonmonetaryAmount: '',
