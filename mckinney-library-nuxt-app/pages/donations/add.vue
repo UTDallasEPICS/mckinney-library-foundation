@@ -438,7 +438,15 @@ const submitDonation = async () => {
   try {
     let donorData = null;
     let donorId = null;
+
+    let boardMemberData = null;
+    let boardMemberId = null;
     
+    boardMemberData = {
+      boardMember: selectedBoardMember.value.name,
+      boardMemberId: selectedBoardMember.value.id
+    };
+
     // Determine donor information based on selection type
     if (donationForm.value.isAnonymous) {
       // Anonymous donation
@@ -467,9 +475,12 @@ const submitDonation = async () => {
       throw new Error('Please select a donor or choose anonymous');
     }
     
+    console.log("DonorData:", donorData);
+    console.log("Board Member Data:", boardMemberData);
     // Prepare donation data for API
     const donationData = {
       ...donorData,
+      ...boardMemberData,
       monetaryAmount: parseFloat(donationForm.value.amount) || 0,
       nonmonetaryAmount: donationForm.value.nonmonetaryAmount || '',
       date: formattedDate,

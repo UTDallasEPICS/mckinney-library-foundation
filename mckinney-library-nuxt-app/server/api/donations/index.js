@@ -2,6 +2,7 @@
 import prisma from '~/server/utils/prisma'
 import donors from '../donors';
 import Id from './[id]';
+import boardMembers from '../boardMembers';
 // import { Prisma } from '@prisma/client'; // REMOVE or comment out this line if only used for enums
 
 export default defineEventHandler(async (event) => {
@@ -117,6 +118,8 @@ export default defineEventHandler(async (event) => {
                 }
             }
 
+             console.log("Donor ID:", donorId);
+            //  console.log("BoardMember Id:", body.boardMemberId);
             // Create the donation (pass status string directly)
             const newDonation = await prisma.donations.create({
                 data: {
@@ -129,7 +132,8 @@ export default defineEventHandler(async (event) => {
                     allocatedFor: body.allocatedFor,
                     date: body.date || new Date().toISOString().split('T')[0],
                     status: body.status, // Pass the string directly
-                    boardMember: body.boardMemberId ? parseInt(body.boardMemberId) : null,
+                    // boardMember: body.boardMemberId ? parseInt(body.boardMemberId) : null,
+                    boardMembers: {connect: {id: boardMemberId}},
                     lastEditor: {
                         connect: {id: currentUserID}
                      },
@@ -139,6 +143,7 @@ export default defineEventHandler(async (event) => {
                 },
                 include: {
                     donors: true,
+                    boardMembers: true,
                     lastEditor: {
                         include: {
                             contactInfo: true
