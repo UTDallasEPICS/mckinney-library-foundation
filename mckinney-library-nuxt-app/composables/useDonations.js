@@ -45,17 +45,6 @@ export const useDonations = () => {
                 throw new Error('Missing required fields: monetaryAmount, nonmonetaryAmount, amountSpent, donationMethod, allocatedFor, status are required.');
             }
 
-            // REMOVE Enum Validation Block:
-            /* if (!validDonationStatuses.includes(newDonationData.status)) {
-                throw new Error(`Invalid status value. Must be one of: ${validDonationStatuses.join(', ')}`);
-            } */
-            // Optional: Add basic string validation if needed
-            // if (!newDonationData.status.trim()) {
-            //     throw new Error('Status cannot be empty');
-            // }
-            // --- End Frontend Validation ---
-
-
             // Send data matching the API structure (status sent as string)
             const response = await fetch('/api/donations', {
                 method: 'POST',
@@ -71,7 +60,8 @@ export const useDonations = () => {
                     // Optional fields
                     donorId: newDonationData.donorId ? parseInt(newDonationData.donorId) : null,
                     donorDetails: newDonationData.donorDetails || null,
-                    boardMemberId: newDonationData.boardMemberId ? parseInt(newDonationData.boardMemberId) : null,
+                    //boardMemberId: newDonationData.boardMemberId ? parseInt(newDonationData.boardMemberId) : null,
+                    boardMemberId: newDonationData.boardMemberId || null,
                     date: newDonationData.date || null,
                     lastEditor: 1, 
                     notes: newDonationData.notes || null

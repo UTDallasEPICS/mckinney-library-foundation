@@ -235,12 +235,14 @@
         </div>
 
         <div class="form-group">
-          <label for="boardMember">Board Member</label>
-          <input 
-            type="text" 
-            id="boardMember" 
-            v-model="donationForm.boardMember"
-          >
+          <label for="status">Status *</label>
+          <select id="status" v-model="donationForm.status" required>
+            <option value="" disabled>Select</option>
+            <option value="Requested">Requested</option>
+            <option value="Received">Received</option>
+            <option value="Pending">Pending</option>
+            <option value="Declined">Declined</option>
+          </select>
         </div>
 
         <div class="form-group">
@@ -260,7 +262,6 @@
                 @click="selectBoardMember(boardMember)"
               >
                 {{ boardMember.name }}
-                <!-- {{ user.name }} -->
               </div>
               <div v-if="filteredBoardMembersByName.length === 0" class="no-results">
                 No board members found
@@ -332,6 +333,7 @@ const donationForm = ref({
   date: today,
   donationMethod: '',
   allocatedFor: '',
+  status: '',
   lastEditor: 1, 
   notes: ''
 });
@@ -371,10 +373,6 @@ const filteredBoardMembersByName = computed(() => {
   return boardMembers.value.filter(boardMember => {
     return boardMember.name.toLowerCase().includes(query); 
   }).slice(0, 10); // Limit to 10 results
-
-  //return users.value.filter(user => {
-  //  return user.name.toLowerCase().includes(query); 
-  //}).slice(0, 10); // Limit to 10 results
 });
 
 // Clear selection when donor type changes
@@ -414,13 +412,6 @@ const searchBoardMembers = () => {
   showBoardMemberSearchResults.value = true;
 };
 
-// Select an existing donor
-//const selectBoardMember = (user) => {
-//  selectedBoardMember.value = user;
-//  boardMemberSearchQuery.value = user.name;
-//  showBoardMemberSearchResults.value = false;
-//};
-
 const selectBoardMember = (boardMember) => {
   selectedBoardMember.value = boardMember;
   boardMemberSearchQuery.value = boardMember.name;
@@ -437,15 +428,16 @@ const submitDonation = async () => {
 
   try {
     let donorData = null;
-    let donorId = null;
-
     let boardMemberData = null;
-    let boardMemberId = null;
     
-    boardMemberData = {
-      boardMember: selectedBoardMember.value.name,
-      boardMemberId: selectedBoardMember.value.id
-    };
+    //If the user hasn't inputted the name of a board member, boardMemberData and boardMemberID will be null, and the
+    //backend won't link the donation to a board member
+    if (selectedBoardMember.value) {
+      boardMemberData = {
+        boardMember: selectedBoardMember.value.name,
+        boardMemberId: selectedBoardMember.value.id
+      };
+    }
 
     // Determine donor information based on selection type
     if (donationForm.value.isAnonymous) {
@@ -475,8 +467,6 @@ const submitDonation = async () => {
       throw new Error('Please select a donor or choose anonymous');
     }
     
-    console.log("DonorData:", donorData);
-    console.log("Board Member Data:", boardMemberData);
     // Prepare donation data for API
     const donationData = {
       ...donorData,
@@ -489,7 +479,7 @@ const submitDonation = async () => {
       lastEditor: 1,
       notes: donationForm.value.notes || '',
       amountSpent: 0,
-      status: 'RECEIVED'
+      status: donationForm.value.status
     };
     
     console.log("Submitting donation:", donationData);

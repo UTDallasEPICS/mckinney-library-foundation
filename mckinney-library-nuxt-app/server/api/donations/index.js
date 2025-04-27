@@ -39,17 +39,21 @@ export default defineEventHandler(async (event) => {
                     allocatedFor: donation.allocatedFor,
                     date: donation.date,
                     status: donation.status, // Now just a string
-                    boardMemberId: donation.boardMemberID,
                     lastEditorId: donation.lastEditorID,
                     notes: donation.notes,
-                    boardMemberName: donation.boardMember ? `${donation.boardMember.contactInfo.firstName} ${donation.boardMember.contactInfo.lastName}` : null,
                     lastEditorName: donation.lastEditor ? `${donation.lastEditor.contactInfo.firstName} ${donation.lastEditor.contactInfo.lastName}` : null,
                 };
+
                 if (donation.donors && donation.donors.contactInfo) {
                     donationData.donor = donation.donors.contactInfo.firstName + ' ' + donation.donors.contactInfo.lastName;
                 } else if (donation.donorID === null) {
                     donationData.donor = 'Anonymous';
                 }
+
+                if (donation.boardMember) {
+                    donationData.boardMember = donation.boardMember.contactInfo.firstName + ' ' + donation.boardMember.contactInfo.lastName;
+                }
+
                 return donationData;
             });
 
@@ -77,21 +81,8 @@ export default defineEventHandler(async (event) => {
                 });
             }
 
-            // REMOVE Enum Validation Block:
-            /* if (!Object.values(Prisma.DonationStatus).includes(body.status)) { 
-                throw createError({
-                    statusCode: 400,
-                    statusMessage: `Invalid status value. Must be one of: ${Object.values(Prisma.DonationStatus).join(', ')}`,
-                });
-            }
-            */
-            // You could add basic string validation if needed, e.g., check if empty:
-            // if (!body.status.trim()) {
-            //     throw createError({ statusCode: 400, statusMessage: 'Status cannot be empty' });
-            // }
-
-
             let donorId = body.donorId ? parseInt(body.donorId) : null;
+            let boardMemberId = body.boardMemberId ? parseInt(body.boardMemberId) : null;
 
             // Handle new donor creation if needed (logic remains the same)
             if (!donorId && body.donorDetails && body.donorDetails.firstName && body.donorDetails.lastName) {
@@ -118,8 +109,6 @@ export default defineEventHandler(async (event) => {
                 }
             }
 
-             console.log("Donor ID:", donorId);
-            //  console.log("BoardMember Id:", body.boardMemberId);
             // Create the donation (pass status string directly)
             const newDonation = await prisma.donations.create({
                 data: {
@@ -132,18 +121,17 @@ export default defineEventHandler(async (event) => {
                     allocatedFor: body.allocatedFor,
                     date: body.date || new Date().toISOString().split('T')[0],
                     status: body.status, // Pass the string directly
-                    // boardMember: body.boardMemberId ? parseInt(body.boardMemberId) : null,
-                    boardMembers: {connect: {id: boardMemberId}},
+                    //If boardMemberID is null, this won't connect to the users table
+                    ...(boardMemberId ? { boardMember: { connect: { userID: boardMemberId } } } : {}),
+
                     lastEditor: {
-                        connect: {id: currentUserID}
+                        connect: {userID: currentUserID}
                      },
-                      // Assuming still required by logic, even if optional on user model
-                    // lastEditorID: {connect: { id: 1} },
                     notes: body.notes || null,
                 },
                 include: {
                     donors: true,
-                    boardMembers: true,
+                    boardMember: true,
                     lastEditor: {
                         include: {
                             contactInfo: true
