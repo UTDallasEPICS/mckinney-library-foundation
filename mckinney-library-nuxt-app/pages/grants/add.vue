@@ -156,12 +156,29 @@
         </div>
         
         <div class="form-group">
-          <label for="boardMember">Board Member</label>
-          <input 
-            type="text" 
-            id="boardMember" 
-            v-model="grantForm.boardMember"
+          <label for="boardMember">Board Member *</label>
+          <div class="select-with-clear">
+            <select id="boardMember" v-model="selectedBoardMember">
+              <option value="" disabled>Select a board member</option>
+              <option 
+                v-for="boardMember in boardMembers" 
+                :key="boardMember.id" 
+                :value="boardMember.id"
+              >
+                {{ boardMember.name }}
+              </option>
+            </select>
+          </div>
+
+          <button 
+            v-if="selectedBoardMember" 
+            type="button" 
+            class="clear-selection" 
+            @click="clearBoardMember" 
+            title="Clear selection"
           >
+            ✕
+          </button>
         </div>
       </div>
       
@@ -204,16 +221,20 @@
 </template>
 
 <script setup>
-import { ref, computed } from 'vue';
+import { ref, onMounted, computed } from 'vue';
 import { useGrants } from '~/composables/useGrants';
+
 import { useValidDates } from '~/composables/useGrants';
 import { useRouter } from 'vue-router';
 
 const router = useRouter();
 const { addGrant, isLoading, error } = useGrants();
+const { boardMembers, fetchBoardMembers } = useUsers();
 
 // Initialize today's date for default values
 const today = new Date().toISOString().split('T')[0];
+
+const selectedBoardMember = ref(null);
 
 // Form data with default values
 const grantForm = ref({
@@ -253,6 +274,14 @@ const minExpirationDate = computed(() =>
   )
 );
 
+onMounted(async () => {
+  await fetchBoardMembers();
+});
+
+const clearBoardMember = () => {
+  selectedBoardMember.value = null;
+};
+
 // Handle form submission
 const submitGrant = async () => {
   try {
@@ -261,8 +290,20 @@ const submitGrant = async () => {
   const dateObj = new Date(grantForm.value.proposalDate + 'T12:00:00'); // Add noon time to avoid any day boundary issues
   const formattedDate = dateObj.toISOString().split('T')[0]; // Get YYYY-MM-DD format
 
+  let boardMemberData = null;
+
+  //If the user hasn't inputted the name of a board member, boardMemberData and boardMemberID will be null, and the
+  //backend won't link the donation to a board member
+  if (selectedBoardMember.value) {
+    boardMemberData = {
+      boardMember: selectedBoardMember.value.name,
+      boardMemberId: selectedBoardMember.value.id
+    };
+  }
+
     // Prepare grant data for API based on our schema
     const grantData = {
+      ...boardMemberData,
       // Core fields from our schema
       orgName: grantForm.value.orgName,
       firstName: grantForm.value.firstName,
@@ -275,7 +316,6 @@ const submitGrant = async () => {
       allocatedFor: grantForm.value.allocatedFor,
       status: grantForm.value.status,
       proposalDate: formattedDate,
-      boardMember: grantForm.value.boardMember,
       lastEditor: 1,         //Hardcoded value that will be changed when we offer support for multiple accounts
       notes: grantForm.value.notes,
       
@@ -369,6 +409,66 @@ const goBack = () => {
 .form-group textarea {
   min-height: 80px;
   resize: vertical;
+}
+
+.search-container {
+  position: relative;
+  width: 100%;
+  max-width: 100%;
+}
+
+.search-results {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  background-color: white;
+  border: 1px solid #ddd;
+  border-radius: 0 0 4px 4px;
+  max-height: 200px;
+  overflow-y: auto;
+  z-index: 10;
+  box-sizing: border-box;
+  width: 100%;
+  max-width: 100%;
+}
+
+.search-result-item {
+  padding: 10px;
+  cursor: pointer;
+  border-bottom: 1px solid #eee;
+  word-break: break-word;
+}
+
+.search-result-item:hover {
+  background-color: #f5f5f5;
+}
+
+.no-results {
+  padding: 10px;
+  color: #999;
+  text-align: center;
+}
+
+.select-with-clear {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.clear-selection {
+  position: relative;
+  left: 230px;
+  bottom: 30px;
+  border: none;
+  background: none;
+  cursor: pointer;
+  font-size: 14px;
+  color: #666;
+}
+
+.clear-selection:hover {
+  color: #f00;
 }
 
 .error-message {

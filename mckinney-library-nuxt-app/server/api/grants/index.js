@@ -20,7 +20,7 @@ export default defineEventHandler(async (event) => {
 
             // Transform data (no changes needed in transformation logic itself for this update)
             const transformedGrants = grants.map(grant => {
-                return {
+                const grantData = {
                     id: grant.grantID,
                     organizationName: grant.contactInfo.organizationName || 'No organization listed',
                     firstName: grant.contactInfo.firstName,
@@ -42,12 +42,16 @@ export default defineEventHandler(async (event) => {
                     startDate: grant.startDate,
                     expirationDate: grant.expirationDate,
                     status: grant.status, // Now just a string
-                    boardMemberId: grant.boardMemberID,
                     lastEditorId: grant.lastEditorID,
                     grantNotes: grant.notes || null,
-                    boardMemberName: grant.boardMember ? `${grant.boardMember.contactInfo.firstName} ${grant.boardMember.contactInfo.lastName}` : null,
                     lastEditorName: grant.lastEditor ? `${grant.lastEditor.contactInfo.firstName} ${grant.lastEditor.contactInfo.lastName}` : null,
                 };
+
+                if (grant.boardMember) {
+                    grantData.boardMember = grant.boardMember.contactInfo.firstName + ' ' + grant.boardMember.contactInfo.lastName;
+                }
+
+                return grantData;
             });
 
             return transformedGrants;
@@ -80,23 +84,12 @@ export default defineEventHandler(async (event) => {
                 });
             }
 
-            // REMOVE Enum Validation Block:
-            /* if (!Object.values(Prisma.GrantStatus).includes(body.status)) {
-                throw createError({
-                    statusCode: 400,
-                    statusMessage: `Invalid status value. Must be one of: ${Object.values(Prisma.GrantStatus).join(', ')}`,
-                });
-            } */
-            // Optional: Add basic string validation for status if needed
-            // if (!body.status.trim()) {
-            //     throw createError({ statusCode: 400, statusMessage: 'Status cannot be empty' });
-            // }
-
-
             // Optional: Check if contact info already exists (logic remains the same)
             if (body.email && body.email !== 'No email listed') {
                 // ... (check logic) ...
             }
+
+            let boardMemberId = body.boardMemberId ? parseInt(body.boardMemberId) : null;
 
             // Create grant and contact info in a transaction (pass status string directly)
             const result = await prisma.$transaction(async (tx) => {
@@ -128,7 +121,8 @@ export default defineEventHandler(async (event) => {
                         startDate: body.startDate || null,
                         expirationDate: body.expirationDate || null,
                         status: body.status, // Pass the string directly
-                        boardMemberID: body.boardMemberId ? parseInt(body.boardMemberId) : null,
+                        //If boardMemberId is null, this won't connect to the users table
+                        ...(boardMemberId ? { boardMember: { connect: { userID: boardMemberId } } } : {}),
                         lastEditorID: currentUserID, // Required
                         notes: body.grantNotes || null
                     },
@@ -162,9 +156,9 @@ export default defineEventHandler(async (event) => {
                     expirationDate: grant.expirationDate,
                     status: grant.status, // String value
                     boardMemberId: grant.boardMemberID,
+                    boardMember: grant.boardMember ? `${grant.boardMember.contactInfo.firstName} ${grant.boardMember.contactInfo.lastName}` : null,
                     lastEditorId: grant.lastEditorID,
                     grantNotes: grant.notes,
-                    boardMemberName: grant.boardMember ? `${grant.boardMember.contactInfo.firstName} ${grant.boardMember.contactInfo.lastName}` : null,
                     lastEditorName: grant.lastEditor ? `${grant.lastEditor.contactInfo.firstName} ${grant.lastEditor.contactInfo.lastName}` : null,
                 };
             });
