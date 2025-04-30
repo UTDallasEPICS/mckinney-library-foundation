@@ -19,9 +19,11 @@
             <td>{{ formatDate(donation.date) }}</td>
             <td>${{ donation.monetaryAmount?.toFixed(2) || '0.00' }}</td> 
             <td>{{ donation.nonmonetaryAmount || '-' }}</td> 
-            <td>{{ donation.status || 'Received' }}</td>
-            <td>{{ donation.category || 'General' }}</td>
-            <td>{{ donation.boardMember ? 'Yes' : 'No' }}</td>
+            <td>${{ donation.amountSpent?.toFixed(2) || '0.00' }}</td> 
+            <td>{{ donation.status }}</td>
+            <td>{{ donation.donationMethod }}</td>
+            <td>{{ donation.allocatedFor }}</td>
+            <td>{{ donation.boardMember || 'None' }}</td>
             <td class="actions-cell">
               <button @click="editDonation(donation)" class="edit-button">Edit</button>
               <button @click="confirmDelete(donation)" class="delete-button">Delete</button>
@@ -58,27 +60,53 @@
           </div>
           
           <div class="form-group">
-            <label for="amount">Amount ($) *</label>
-            <input id="amount" v-model="donationForm.amount" type="number" step="0.01" min="0.01" required>
+            <label for="monetaryAmount">Amount ($) *</label>
+            <input id="monetaryAmount" v-model="donationForm.monetaryAmount" type="number" step="0.01" min="0.01" required>
           </div>
           
+          <div class="form-group">
+            <label for="nonmonetaryAmount">Non-Monetary Amount/Items</label>
+            <input id="nonmonetaryAmount" v-model="donationForm.nonmonetaryAmount" type="text">
+          </div>
+      
+          <div class="form-group">
+            <label for="amountSpent">Amount Spent ($) *</label>
+            <input id="amountSpent" v-model="donationForm.amountSpent" type="number" step="0.01" min="0.00" :max="donationForm.monetaryAmount" required>
+          </div>
+
           <div class="form-group">
             <label for="date">Date *</label>
             <input id="date" v-model="donationForm.date" type="date" required>
           </div>
           
           <div class="form-group">
-            <label for="category">Category *</label>
-            <select id="category" v-model="donationForm.category" required>
-              <option value="" disabled>Select a category</option>
-              <option value="Books">Books</option>
-              <option value="Programs">Programs</option>
-              <option value="Technology">Technology</option>
-              <option value="Furniture">Furniture</option>
-              <option value="Children's Area">Children's Area</option>
-              <option value="General">General</option>
+            <label for="donationMethod">Donation Method *</label>
+            <select id="donationMethod" v-model="donationForm.donationMethod" required>
+              <option value="" disabled>Select</option>
+              <option value="Check">Check</option>
+              <option value="Cash">Cash</option>
+              <option value="Credit Card">Credit Card</option>
+              <option value="Bank Transfer">Bank Transfer</option>
+              <option value="PayPal">PayPal</option>
+              <option value="GiveButter">GiveButter</option>
               <option value="Other">Other</option>
             </select>
+          </div>          
+
+          <div class="form-group">
+            <label for="allocatedFor">Allocated For *</label>
+              <select id="allocatedFor" v-model="donationForm.allocatedFor" required>
+                <option value="" disabled>Select</option>
+                <option value="Books">Books</option>
+                <option value="Programs">Programs</option>
+                <option value="Technology">Technology</option>
+                <option value="Furniture">Furniture</option>
+                <option value="Children's Area">Children's Area</option>
+                <option value="Fundraiser">Fundraiser</option>
+                <option value="Library Event">Library Event</option>
+                <option value="General">General</option>
+                <option value="Other">Other</option>
+              </select>
           </div>
           
           <div class="form-group">
@@ -128,7 +156,9 @@ const headers = ref([
   "Date",
   "Monetary Amount",
   "Non-Monetary",
+  "Amount Spent",
   "Status",
+  "Donation Method",
   "Type",
   "Board Member"
 ]);
@@ -145,11 +175,14 @@ const isSubmitting = ref(false);
 // Donation form data
 const donationForm = ref({
   donor: '',
-  amount: '',
+  monetaryAmount: '',
+  nonmonetaryAmount: '',
+  amountSpent: '',
   date: '',
-  category: '',
+  donationMethod: '',
+  allocatedFor: '',
   status: 'Received',
-  boardMember: false,
+  boardMember: '',
   notes: ''
 });
 
@@ -174,11 +207,14 @@ const editDonation = (donation) => {
   selectedDonation.value = donation;
   donationForm.value = {
     donor: donation.donor,
-    amount: donation.amount,
+    monetaryAmount: donation.monetaryAmount,
+    nonmonetaryAmount: donation.nonmonetaryAmount,
+    amountSpent: donation.amountSpent,
     date: formatToInputDate(donation.date),
-    category: donation.category || 'General',
+    donationMethod: donation.donationMethod, 
+    allocatedFor: donation.allocatedFor,
     status: donation.status || 'Received',
-    boardMember: donation.boardMember || false,
+    boardMember: donation.boardMember || '',
     notes: donation.notes || ''
   };
   showEditModal.value = true;
@@ -226,7 +262,8 @@ const submitEditForm = async () => {
     // Prepare donation data for API
     const donationData = {
       ...donationForm.value,
-      amount: parseFloat(donationForm.value.amount)
+      monetaryAmount: parseFloat(donationForm.value.monetaryAmount),
+      amountSpent: parseFloat(donationForm.value.amountSpent)
     };
     
     await updateDonation(selectedDonation.value.id, donationData);
