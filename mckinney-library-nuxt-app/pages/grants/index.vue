@@ -155,8 +155,29 @@
             </div>
             
             <div class="form-group">
-              <label for="boardMember">Board Member</label>
-              <input id="boardMember" v-model="grantForm.boardMember" type="text">
+              <label for="boardMember">Board Member *</label>
+              <div class="select-with-clear">
+                <select id="boardMember" v-model="selectedBoardMember">
+                  <option value="" disabled>Select a board member</option>
+                  <option 
+                    v-for="boardMember in boardMembers" 
+                    :key="boardMember.id" 
+                    :value="boardMember.id"
+                  >
+                    {{ boardMember.name }}
+                  </option>
+                </select>
+              </div>
+
+              <button 
+                v-if="selectedBoardMember" 
+                type="button" 
+                class="clear-selection" 
+                @click="clearBoardMember" 
+                title="Clear selection"
+              >
+                ✕
+              </button>
             </div>
             
             <div class="form-group">
@@ -180,6 +201,7 @@
 <script setup>
 import { ref, onMounted, computed } from 'vue';
 import { useGrants, useValidDates } from '~/composables/useGrants';
+const { boardMembers, fetchBoardMembers } = useUsers();
 
 const headers = ref([
   "Organization",
@@ -251,6 +273,7 @@ const grantForm = ref({...emptyGrantForm});
 // Fetch grants when the component mounts
 onMounted(() => {
   fetchGrants();
+  fetchBoardMembers();
 });
 
 // Format date for display
@@ -265,7 +288,9 @@ const formatDate = (dateString) => {
 
 };
 
-
+const clearBoardMember = () => {
+  selectedBoardMember.value = null;
+};
 
 // Show edit modal with grant data
 const editGrant = (grant) => {
@@ -546,6 +571,64 @@ td {
   padding: 20px;
   text-align: center;
   font-weight: bold;
+}
+
+.search-container {
+  position: relative;
+  width: 100%;
+  max-width: 100%;
+}
+
+.search-results {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  background-color: white;
+  border: 1px solid #ddd;
+  border-radius: 0 0 4px 4px;
+  max-height: 200px;
+  overflow-y: auto;
+  z-index: 10;
+  box-sizing: border-box;
+  width: 100%;
+  max-width: 100%;
+}
+
+.search-result-item {
+  padding: 10px;
+  cursor: pointer;
+  border-bottom: 1px solid #eee;
+  word-break: break-word;
+}
+
+.search-result-item:hover {
+  background-color: #f5f5f5;
+}
+
+.no-results {
+  padding: 10px;
+  color: #999;
+  text-align: center;
+}
+
+.select-with-clear {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.clear-selection {
+  position: relative;
+  border: none;
+  background: none;
+  cursor: pointer;
+  font-size: 14px;
+  color: #666;
+}
+
+.clear-selection:hover {
+  color: #f00;
 }
 
 .error-message {
