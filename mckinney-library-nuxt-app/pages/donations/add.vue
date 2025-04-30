@@ -247,27 +247,28 @@
 
         <div class="form-group">
           <label for="boardMember">Board Member</label>
-          <div class="search-container">
-            <input 
-              type="text" 
-              id="boardMemberSearch" 
-              v-model="boardMemberSearchQuery" 
-              @input="searchBoardMembers"
-            >
-            <div v-if="showBoardMemberSearchResults" class="search-results">
-              <div 
-                v-for="boardMember in filteredBoardMembersByName"
-                :key="boardMember.id"
-                class="search-result-item"
-                @click="selectBoardMember(boardMember)"
+          <div class="select-with-clear">
+            <select id="boardMember" v-model="selectedBoardMember">
+              <option value="" disabled>Select a board member</option>
+              <option 
+                v-for="boardMember in boardMembers" 
+                :key="boardMember.id" 
+                :value="boardMember"
               >
                 {{ boardMember.name }}
-              </div>
-              <div v-if="filteredBoardMembersByName.length === 0" class="no-results">
-                No board members found
-              </div>
-            </div>
+              </option>
+            </select>
           </div>
+
+          <button 
+            v-if="selectedBoardMember" 
+            type="button" 
+            class="clear-selection" 
+            @click="clearBoardMember" 
+            title="Clear selection"
+          >
+            ✕
+          </button>
         
         <div class="form-group">
           <label for="notes">Notes</label>
@@ -313,9 +314,6 @@ const donorType = ref('existing');
 const donorSearchQuery = ref('');
 const showDonorSearchResults = ref(false);
 const selectedExistingDonor = ref(null);
-
-const boardMemberSearchQuery = ref('');
-const showBoardMemberSearchResults = ref(false);
 const selectedBoardMember = ref(null);
 
 // Form data
@@ -364,17 +362,6 @@ const filteredDonorsByName = computed(() => {
   }).slice(0, 10); // Limit to 10 results
 });
 
-const filteredBoardMembersByName = computed(() => {
-  if (!boardMemberSearchQuery.value.trim()) return boardMembers.value.slice(0, 5); // Show first 5 by default
-  //if (!boardMemberSearchQuery.value.trim()) return users.value.slice(0, 5); // Show first 5 by default
-
-  const query = boardMemberSearchQuery.value.toLowerCase();
-
-  return boardMembers.value.filter(boardMember => {
-    return boardMember.name.toLowerCase().includes(query); 
-  }).slice(0, 10); // Limit to 10 results
-});
-
 // Clear selection when donor type changes
 watch(donorType, () => {
   selectedExistingDonor.value = null;
@@ -408,16 +395,9 @@ const selectExistingDonor = (donor) => {
   showDonorSearchResults.value = false;
 };
 
-const searchBoardMembers = () => {
-  showBoardMemberSearchResults.value = true;
+const clearBoardMember = () => {
+  selectedBoardMember.value = null;
 };
-
-const selectBoardMember = (boardMember) => {
-  selectedBoardMember.value = boardMember;
-  boardMemberSearchQuery.value = boardMember.name;
-  showBoardMemberSearchResults.value = false;
-};
-
 
 // Handle form submission
 const submitDonation = async () => {
@@ -650,6 +630,27 @@ const submitDonation = async () => {
   padding: 10px;
   color: #999;
   text-align: center;
+}
+
+.select-with-clear {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.clear-selection {
+  position: relative;
+  left: 510px;
+  bottom: 30px;
+  border: none;
+  background: none;
+  cursor: pointer;
+  font-size: 14px;
+  color: #666;
+}
+
+.clear-selection:hover {
+  color: #f00;
 }
 
 .selected-donor-info {
