@@ -351,7 +351,11 @@ const submitGrantForm = async () => {
       ...grantForm.value,
       monetaryAmountRequested: parseFloat(grantForm.value.monetaryAmountRequested),
       monetaryAmountReceived: parseFloat(grantForm.value.monetaryAmountReceived),
-      monetaryAmountSpent: parseFloat(grantForm.value.monetaryAmountSpent)
+      monetaryAmountSpent: parseFloat(grantForm.value.monetaryAmountSpent),
+      proposalDate: formatDateForDatabase(grantForm.value.proposalDate),
+      awardDate: formatDateForDatabase(grantForm.value.awardDate),
+      startDate: formatDateForDatabase(grantForm.value.startDate),
+      expirationDate: formatDateForDatabase(grantForm.value.expirationDate),
     };
     
     if (showEditGrantModal.value) {
@@ -478,6 +482,11 @@ td {
 
 .status-badge.rejected {
   background-color: #F44336;
+  color: white;
+}
+
+.status-badge.declined {
+  background-color: #877093;
   color: white;
 }
 

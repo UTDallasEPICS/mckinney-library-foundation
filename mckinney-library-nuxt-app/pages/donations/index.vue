@@ -19,7 +19,9 @@
             <td>{{ formatDate(donation.date) }}</td>
             <td>${{ donation.monetaryAmount?.toFixed(2) || '0.00' }}</td> 
             <td>{{ donation.nonmonetaryAmount || '-' }}</td> 
-            <td>{{ donation.status || 'Received' }}</td>
+            <td :class="['status-cell', `status-${donation.status ? donation.status.toLowerCase() : 'received'}`]">
+            {{ donation.status || 'Received' }}
+          </td>
             <td>{{ donation.category || 'General' }}</td>
             <td>{{ donation.boardMember ? 'Yes' : 'No' }}</td>
             <td class="actions-cell">
@@ -288,6 +290,45 @@ td {
   justify-content: center;
   gap: 5px;
   white-space: nowrap; /* Prevent buttons from wrapping */
+}
+
+/* Status */
+.status-cell {
+  position: relative;
+  padding: 10px 5px;
+  text-align: center; /* Center the status text within the cell */
+}
+
+.status-cell::after {
+  content: '';
+  display: inline-block;
+  padding: 5px 10px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: bold;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  white-space: nowrap;
+}
+
+.status-received::after {
+  content: 'Received';
+  background-color: #4CAF50; /* Green */
+  color: white;
+}
+
+.status-pending::after {
+  content: 'Pending';
+  background-color: #FFC107; /* Yellow */
+  color: black;
+}
+
+.status-declined::after {
+  content: 'Declined';
+  background-color: #9E9E9E; /* Gray */
+  color: white;
 }
 
 .edit-button, .delete-button {
