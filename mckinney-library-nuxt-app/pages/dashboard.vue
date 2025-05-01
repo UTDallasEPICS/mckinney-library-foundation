@@ -30,9 +30,12 @@
   </script>
   
   <style scoped>
+
+@import url('https://fonts.googleapis.com/css2?family=Aclonica&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Alice&display=swap');
   h1 {
     color: #545679;
-    font-family: sans-serif;
+    font-family: 'Alice', sans-serif;
     text-align: center;
   }
 
@@ -60,6 +63,11 @@
 
 .main_title {
   font-size: 50px;
+  text-align: center;
+  color: #42446A;
+  margin-bottom: 10px;
+  font-family: 'Aclonica', san-serif;
+  text-shadow: 3px 3px 3px rgba(0, 0, 0, 0.2)
 }
 
   </style>

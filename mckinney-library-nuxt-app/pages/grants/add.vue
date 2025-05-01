@@ -308,6 +308,8 @@ const goBack = () => {
 </script>
 
 <style scoped>
+@import url('https://fonts.googleapis.com/css2?family=Aclonica&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Alice&display=swap');
 .add-grant-container {
   width: 100%;
   max-width: 100%;
@@ -322,7 +324,9 @@ const goBack = () => {
 
 .grant-title {
   text-align: center;
-  color: #333;
+  color: #42446A;
+  font-family: 'Aclonica', san-serif;
+  text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.2);
   margin-bottom: 30px;
   font-size: 24px;
 }
