@@ -93,13 +93,12 @@
         
         <div class="form-group">
           <label for="allocatedFor">Purpose *</label>
-          <input 
-            type="text" 
-            id="allocatedFor" 
-            v-model="grantForm.allocatedFor"
-            required
-            placeholder="What the grant will be used for"
-          >
+          <select id="allocatedFor" v-model="grantForm.allocatedFor" required>
+            <option value="General">General</option>
+            <option value="MPL Support">MPL Support</option>
+            <option value="Scholarships">Scholarships</option>
+            <option value="Other">Other</option>
+          </select>
         </div>
         
         <div class="form-group">
@@ -226,7 +225,7 @@ const grantForm = ref({
   address: '',
   monetaryAmountRequested: '',
   nonmonetaryAmountRequested: '',
-  allocatedFor: '',        // Maps to purpose in your form
+  allocatedFor: 'General',        // Maps to purpose in your form
   proposalDate: today,             // Default to today
   startDate: '',
   awardDate: '',
