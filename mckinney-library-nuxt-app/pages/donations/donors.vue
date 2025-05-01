@@ -195,7 +195,8 @@ const emptyDonorForm = {
 };
 
 // Donor form data
-const donorForm = ref({...emptyDonorForm});
+const donorForm = ref({...emptyDonorForm,
+});
 
 // Email state
 const selectedDonors = ref([]);
@@ -216,19 +217,17 @@ onMounted(() => {
 const formatDate = (dateString) => {
   if (!dateString) return '-';
   
-  // Add time component to ensure consistent date interpretation
-  // Using noon (12:00) to avoid any potential day boundary issues
-  const date = new Date(`${dateString}T12:00:00`);
-  return date.toLocaleDateString();
+  const [month, day, year] = dateString.split('/');
+  if (!month || !day || !year) return dateString;
+
+  return `${month.padStart(2, '0')}/${day.padStart(2, '0')}/${year}`;
 };
 
 // Function to handle date formatting for API submission
 const formatDateForAPI = (dateString) => {
   if (!dateString) return '';
-  
-  // Add time to ensure proper timezone handling
-  const date = new Date(`${dateString}T12:00:00`);
-  return date.toISOString().split('T')[0]; // Returns YYYY-MM-DD
+  const [month, day, year] = dateString.split('/');
+  return `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`; // format as yyyy-mm-dd
 };
 
 // Safely get donor status with fallback

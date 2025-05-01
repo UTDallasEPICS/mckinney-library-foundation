@@ -93,12 +93,13 @@
         
         <div class="form-group">
           <label for="allocatedFor">Purpose *</label>
-          <select id="allocatedFor" v-model="grantForm.allocatedFor" required>
-            <option value="General">General</option>
-            <option value="MPL Support">MPL Support</option>
-            <option value="Scholarships">Scholarships</option>
-            <option value="Other">Other</option>
-          </select>
+          <input 
+            type="text" 
+            id="allocatedFor" 
+            v-model="grantForm.allocatedFor"
+            required
+            placeholder="What the grant will be used for"
+          >
         </div>
         
         <div class="form-group">
@@ -156,29 +157,12 @@
         </div>
         
         <div class="form-group">
-          <label for="boardMember">Board Member *</label>
-          <div class="select-with-clear">
-            <select id="boardMember" v-model="selectedBoardMember">
-              <option value="" disabled>Select a board member</option>
-              <option 
-                v-for="boardMember in boardMembers" 
-                :key="boardMember.id" 
-                :value="boardMember.id"
-              >
-                {{ boardMember.name }}
-              </option>
-            </select>
-          </div>
-
-          <button 
-            v-if="selectedBoardMember" 
-            type="button" 
-            class="clear-selection" 
-            @click="clearBoardMember" 
-            title="Clear selection"
+          <label for="boardMember">Board Member</label>
+          <input 
+            type="text" 
+            id="boardMember" 
+            v-model="grantForm.boardMember"
           >
-            ✕
-          </button>
         </div>
       </div>
       
@@ -221,20 +205,16 @@
 </template>
 
 <script setup>
-import { ref, onMounted, computed } from 'vue';
+import { ref, computed } from 'vue';
 import { useGrants } from '~/composables/useGrants';
-
 import { useValidDates } from '~/composables/useGrants';
 import { useRouter } from 'vue-router';
 
 const router = useRouter();
 const { addGrant, isLoading, error } = useGrants();
-const { boardMembers, fetchBoardMembers } = useUsers();
 
 // Initialize today's date for default values
 const today = new Date().toISOString().split('T')[0];
-
-const selectedBoardMember = ref(null);
 
 // Form data with default values
 const grantForm = ref({
@@ -246,7 +226,7 @@ const grantForm = ref({
   address: '',
   monetaryAmountRequested: '',
   nonmonetaryAmountRequested: '',
-  allocatedFor: 'General',        // Maps to purpose in your form
+  allocatedFor: '',        // Maps to purpose in your form
   proposalDate: today,             // Default to today
   startDate: '',
   awardDate: '',
@@ -274,36 +254,21 @@ const minExpirationDate = computed(() =>
   )
 );
 
-onMounted(async () => {
-  await fetchBoardMembers();
-});
-
-const clearBoardMember = () => {
-  selectedBoardMember.value = null;
-};
-
 // Handle form submission
 const submitGrant = async () => {
   try {
 
-    // Ensure the date is treated as local time by adding a timezone offset
-  const dateObj = new Date(grantForm.value.proposalDate + 'T12:00:00'); // Add noon time to avoid any day boundary issues
-  const formattedDate = dateObj.toISOString().split('T')[0]; // Get YYYY-MM-DD format
-
-  let boardMemberData = null;
-
-  //If the user hasn't inputted the name of a board member, boardMemberData and boardMemberID will be null, and the
-  //backend won't link the donation to a board member
-  if (selectedBoardMember.value) {
-    boardMemberData = {
-      boardMember: selectedBoardMember.value.name,
-      boardMemberId: selectedBoardMember.value.id
-    };
-  }
-
+  // Ensure the date is treated as local time by adding a timezone offset
+  //const dateObj = new Date(grantForm.value.proposalDate + 'T12:00:00'); // Add noon time to avoid any day boundary issues
+  //const formattedDate = dateObj.toISOString().split('T')[0]; // Get YYYY-MM-DD format
+ 
+  const formatDateForDatabase = (dateString) => {
+  if (!dateString) return null; // Or handle empty dates as needed
+  const [year, month, day] = dateString.split('-');
+  return `${month}/${day}/${year}`;
+};
     // Prepare grant data for API based on our schema
     const grantData = {
-      ...boardMemberData,
       // Core fields from our schema
       orgName: grantForm.value.orgName,
       firstName: grantForm.value.firstName,
@@ -315,14 +280,15 @@ const submitGrant = async () => {
       nonmonetaryAmountRequested: grantForm.value.nonmonetaryAmountRequested,
       allocatedFor: grantForm.value.allocatedFor,
       status: grantForm.value.status,
-      proposalDate: formattedDate,
+      proposalDate: formatDateForDatabase(grantForm.value.proposalDate),
+      boardMember: grantForm.value.boardMember,
       lastEditor: 1,         //Hardcoded value that will be changed when we offer support for multiple accounts
       notes: grantForm.value.notes,
       
       // Custom fields specific to grants UI
-      awardDate: grantForm.value.awardDate,
-      startDate: grantForm.value.startDate,
-      expirationDate: grantForm.value.expirationDate
+      awardDate: formatDateForDatabase(grantForm.value.awardDate),
+      startDate: formatDateForDatabase(grantForm.value.startDate),
+      expirationDate: formatDateForDatabase(grantForm.value.expirationDate),
     };
     
     await addGrant(grantData);
@@ -350,6 +316,8 @@ const goBack = () => {
   font-family: sans-serif;
   background-color: #e6f0ff;
   min-height: calc(100vh - 150px);
+  box-sizing: border-box;
+  overflow-x: hidden;
 }
 
 .grant-title {
@@ -363,6 +331,8 @@ const goBack = () => {
   padding: 20px;
   max-width: 600px;
   margin: 0 auto;
+  box-sizing: border-box;
+  width: 100%;
 }
 
 /* Form fields styling */
@@ -371,10 +341,14 @@ const goBack = () => {
   flex-wrap: wrap;
   gap: 15px;
   margin-bottom: 20px;
+  max-width: 100%;
+  box-sizing: border-box;
 }
 
 .form-group {
   flex: 1 0 100%;
+  max-width: 100%;
+  box-sizing: border-box;
 }
 
 .form-group.full-width {
@@ -396,6 +370,7 @@ const goBack = () => {
   border-radius: 4px;
   font-size: 16px;
   background-color: white;
+  box-sizing: border-box;
 }
 
 .form-group select {
@@ -411,66 +386,6 @@ const goBack = () => {
   resize: vertical;
 }
 
-.search-container {
-  position: relative;
-  width: 100%;
-  max-width: 100%;
-}
-
-.search-results {
-  position: absolute;
-  top: 100%;
-  left: 0;
-  right: 0;
-  background-color: white;
-  border: 1px solid #ddd;
-  border-radius: 0 0 4px 4px;
-  max-height: 200px;
-  overflow-y: auto;
-  z-index: 10;
-  box-sizing: border-box;
-  width: 100%;
-  max-width: 100%;
-}
-
-.search-result-item {
-  padding: 10px;
-  cursor: pointer;
-  border-bottom: 1px solid #eee;
-  word-break: break-word;
-}
-
-.search-result-item:hover {
-  background-color: #f5f5f5;
-}
-
-.no-results {
-  padding: 10px;
-  color: #999;
-  text-align: center;
-}
-
-.select-with-clear {
-  position: relative;
-  display: flex;
-  align-items: center;
-}
-
-.clear-selection {
-  position: relative;
-  left: 230px;
-  bottom: 30px;
-  border: none;
-  background: none;
-  cursor: pointer;
-  font-size: 14px;
-  color: #666;
-}
-
-.clear-selection:hover {
-  color: #f00;
-}
-
 .error-message {
   color: #ff0000;
   font-weight: bold;
@@ -479,6 +394,9 @@ const goBack = () => {
   background-color: #ffeeee;
   border-radius: 4px;
   border: 1px solid #ffcccc;
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
 }
 
 /* Form actions */
@@ -487,6 +405,8 @@ const goBack = () => {
   justify-content: center;
   gap: 15px;
   margin-top: 30px;
+  width: 100%;
+  max-width: 100%;
 }
 
 .submit-button, .cancel-button {
@@ -540,10 +460,12 @@ input[type="number"] {
 @media (min-width: 768px) {
   .form-group {
     flex: 0 0 calc(50% - 15px);
+    max-width: calc(50% - 15px);
   }
   
   .form-group.full-width {
     flex: 1 0 100%;
+    max-width: 100%;
   }
 }
 </style>

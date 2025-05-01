@@ -1,6 +1,7 @@
 // server/api/grants/[id].js
 import prisma from '~/server/utils/prisma'
 // import { Prisma } from '@prisma/client'; // REMOVE or comment out this line if only used for enums
+import { getRouterParam } from 'h3';
 
 export default defineEventHandler(async (event) => {
     const id = parseInt(getRouterParam(event, 'id'));
@@ -202,11 +203,14 @@ export default defineEventHandler(async (event) => {
 
             await prisma.$transaction(async (tx) => {
                 await tx.grants.delete({ where: { grantID: id } });
-                const contactInUse = await tx.contactInfo.findUnique({
-                    where: { contactInfoID: contactInfoIdToDelete },
-                    select: { _count: { select: { donors: true, users: true } } }
+                const donorCount = await tx.donors.count({
+                    where: { contactInfoID: contactInfoIdToDelete }
                 });
-                if (contactInUse && contactInUse._count.donors === 0 && contactInUse._count.users === 0) {
+                const userCount = await tx.users.count({
+                    where: { contactInfoID: contactInfoIdToDelete }
+                });
+                if (donorCount === 0 && userCount === 0) {
+                
                     await tx.contactInfo.delete({ where: { contactInfoID: contactInfoIdToDelete } });
                     console.log(`Deleted associated contactInfo record with ID: ${contactInfoIdToDelete}`);
                 } else {
