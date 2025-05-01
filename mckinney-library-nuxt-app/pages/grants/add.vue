@@ -258,10 +258,15 @@ const minExpirationDate = computed(() =>
 const submitGrant = async () => {
   try {
 
-    // Ensure the date is treated as local time by adding a timezone offset
-  const dateObj = new Date(grantForm.value.proposalDate + 'T12:00:00'); // Add noon time to avoid any day boundary issues
-  const formattedDate = dateObj.toISOString().split('T')[0]; // Get YYYY-MM-DD format
-
+  // Ensure the date is treated as local time by adding a timezone offset
+  //const dateObj = new Date(grantForm.value.proposalDate + 'T12:00:00'); // Add noon time to avoid any day boundary issues
+  //const formattedDate = dateObj.toISOString().split('T')[0]; // Get YYYY-MM-DD format
+ 
+  const formatDateForDatabase = (dateString) => {
+  if (!dateString) return null; // Or handle empty dates as needed
+  const [year, month, day] = dateString.split('-');
+  return `${month}/${day}/${year}`;
+};
     // Prepare grant data for API based on our schema
     const grantData = {
       // Core fields from our schema
@@ -275,15 +280,15 @@ const submitGrant = async () => {
       nonmonetaryAmountRequested: grantForm.value.nonmonetaryAmountRequested,
       allocatedFor: grantForm.value.allocatedFor,
       status: grantForm.value.status,
-      proposalDate: formattedDate,
+      proposalDate: formatDateForDatabase(grantForm.value.proposalDate),
       boardMember: grantForm.value.boardMember,
       lastEditor: 1,         //Hardcoded value that will be changed when we offer support for multiple accounts
       notes: grantForm.value.notes,
       
       // Custom fields specific to grants UI
-      awardDate: grantForm.value.awardDate,
-      startDate: grantForm.value.startDate,
-      expirationDate: grantForm.value.expirationDate
+      awardDate: formatDateForDatabase(grantForm.value.awardDate),
+      startDate: formatDateForDatabase(grantForm.value.startDate),
+      expirationDate: formatDateForDatabase(grantForm.value.expirationDate),
     };
     
     await addGrant(grantData);
