@@ -55,6 +55,9 @@ const roles = ref(["Admin", "Editor", "Main Admin"]);
 </script>
 
 <style scoped>
+
+@import url('https://fonts.googleapis.com/css2?family=Aclonica&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Alice&display=swap');
 /* Match the header navigation styles */
 .table-container {
   width: 100%;
@@ -67,8 +70,11 @@ const roles = ref(["Admin", "Editor", "Main Admin"]);
 
 h1 {
   text-align: center;
-  margin-bottom: 20px;
-  color: #333;
+  color: #42446A;
+  font-family: 'Aclonica', san-serif;
+  text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.2);
+  margin-bottom: 30px;
+  font-size: 30px;
 }
 
 /* Style the table to be consistent with the navigation */
