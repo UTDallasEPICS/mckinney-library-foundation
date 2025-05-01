@@ -316,6 +316,8 @@ const goBack = () => {
   font-family: sans-serif;
   background-color: #e6f0ff;
   min-height: calc(100vh - 150px);
+  box-sizing: border-box;
+  overflow-x: hidden;
 }
 
 .grant-title {
@@ -329,6 +331,8 @@ const goBack = () => {
   padding: 20px;
   max-width: 600px;
   margin: 0 auto;
+  box-sizing: border-box;
+  width: 100%;
 }
 
 /* Form fields styling */
@@ -337,10 +341,14 @@ const goBack = () => {
   flex-wrap: wrap;
   gap: 15px;
   margin-bottom: 20px;
+  max-width: 100%;
+  box-sizing: border-box;
 }
 
 .form-group {
   flex: 1 0 100%;
+  max-width: 100%;
+  box-sizing: border-box;
 }
 
 .form-group.full-width {
@@ -362,6 +370,7 @@ const goBack = () => {
   border-radius: 4px;
   font-size: 16px;
   background-color: white;
+  box-sizing: border-box;
 }
 
 .form-group select {
@@ -385,6 +394,9 @@ const goBack = () => {
   background-color: #ffeeee;
   border-radius: 4px;
   border: 1px solid #ffcccc;
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
 }
 
 /* Form actions */
@@ -393,6 +405,8 @@ const goBack = () => {
   justify-content: center;
   gap: 15px;
   margin-top: 30px;
+  width: 100%;
+  max-width: 100%;
 }
 
 .submit-button, .cancel-button {
@@ -446,10 +460,12 @@ input[type="number"] {
 @media (min-width: 768px) {
   .form-group {
     flex: 0 0 calc(50% - 15px);
+    max-width: calc(50% - 15px);
   }
   
   .form-group.full-width {
     flex: 1 0 100%;
+    max-width: 100%;
   }
 }
 </style>
