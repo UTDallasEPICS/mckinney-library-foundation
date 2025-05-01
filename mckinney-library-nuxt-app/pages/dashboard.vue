@@ -58,14 +58,14 @@
   display: flex;
   flex-direction: column; /* Stack elements vertically */
   align-items: center; /* Center items horizontally */
-  gap: 40px; /* Add vertical spacing between sections */
+  gap: 20px; /* Add vertical spacing between sections */
 }
 
 .main_title {
   font-size: 50px;
   text-align: center;
   color: #42446A;
-  margin-bottom: 10px;
+  margin-bottom: 5px;
   font-family: 'Aclonica', san-serif;
   text-shadow: 3px 3px 3px rgba(0, 0, 0, 0.2)
 }
