@@ -26,7 +26,7 @@ The MPLF Tracking System is designed to:
 | Editor       | Add/edit donors and grants. Cannot delete or manage users.                 |
 | Viewer       | View-only access. Cannot create, edit, or delete records.                  |
 
-Roles are enforced on both frontend and backend. For more details, see the [Roles Wiki Page](https://github.com/UTDallasEPICS/mckinney-library-foundation/wiki/User-Roles-&-Permissions).
+Roles are enforced on both frontend and backend. For more details, see the [Roles Wiki Page](https://github.com/UTDallasEPICS/mckinney-library-foundation/wiki/User-Roles).
 
 ---
 
