@@ -6,7 +6,8 @@
   </template>
   
   <script setup>
-  import Header from '@/components/Header.vue'; // Ensure this path is correct
+  import Header from '@/components/Header.vue'; 
+  //Layout wraps the page with the header
   </script>
   
   

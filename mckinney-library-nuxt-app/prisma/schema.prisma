@@ -1,0 +1,145 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+//If Prisma can't find the database file, check your .env file to see whether the DATABASE_URL is an absolute
+//or relative path. If it's an absolute path, make sure it's the absolute path to the database file for your
+//computer and not on someone else's computer
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+//An ? next to a data type means that the attribute is nullable
+model donations {
+  donationID        Int            @id @default(autoincrement())
+  donorID           Int? //Anonymous donations won't have a donorID and won't be associated with a Donor tuple
+  monetaryAmount    Float
+  nonmonetaryAmount String
+  amountSpent       Float
+  donationMethod    String
+  allocatedFor      String
+  date              String
+  status            String
+  boardMemberID     Int?
+  lastEditorID      Int
+  notes             String?
+
+  donors      donors? @relation(fields: [donorID], references: [donorID], onDelete: NoAction, onUpdate: NoAction)
+  boardMember users?  @relation("donationBoardMember", fields: [boardMemberID], references: [userID], onDelete: NoAction, onUpdate: NoAction)
+  lastEditor  users   @relation("donationLastEditor", fields: [lastEditorID], references: [userID], onDelete: NoAction, onUpdate: NoAction)
+}
+
+//Setting onDelete and onUpdate to NoAction means that if someone tries to update or delete a donorID referenced by
+//a donation, SQLite will throw an error and prevent the donorID from being updated or deleted, either in the donor
+//tuple or the donation tuple. 
+
+model donors {
+  donorID           Int     @id @default(autoincrement())
+  contactInfoID     Int     @unique
+  firstDonationDate String  @default("DATETIME('now')")
+  lastDonationDate  String  @default("DATETIME('now')")
+  lastContacted     String
+  numDonations      Int
+  lifetimeDonations Float
+  lastEditorID      Int
+  notes             String?
+
+  donations   donations[]
+  contactInfo contactInfo @relation(fields: [contactInfoID], references: [contactInfoID], onDelete: NoAction, onUpdate: Cascade)
+  lastEditor  users       @relation("donorLastEditor", fields: [lastEditorID], references: [userID], onDelete: NoAction, onUpdate: NoAction)
+}
+
+model grants {
+  grantID                    Int         @id @default(autoincrement())
+  contactInfoID              Int         @unique
+  monetaryAmountRequested    Float
+  nonmonetaryAmountRequested String
+  monetaryAmountReceived     Float?
+  nonmonetaryAmountReceived  String?
+  monetaryAmountSpent        Float?
+  allocatedFor               String
+  proposalDate               String
+  awardDate                  String?
+  startDate                  String?
+  expirationDate             String?
+  status                     String
+  boardMemberID              Int?
+  lastEditorID               Int
+  notes                      String?
+
+  contactInfo contactInfo @relation(fields: [contactInfoID], references: [contactInfoID], onDelete: NoAction, onUpdate: Cascade)
+  boardMember users?      @relation("grantBoardMember", fields: [boardMemberID], references: [userID], onDelete: NoAction, onUpdate: NoAction)
+  lastEditor  users       @relation("grantLastEditor", fields: [lastEditorID], references: [userID], onDelete: NoAction, onUpdate: NoAction)
+}
+
+model rolePermissions {
+  role                   String   @id @unique
+  viewDonors             Int
+  emailDonors            Int
+  viewDonationsAndGrants Int
+  addDonationsAndGrants  Int
+  viewAccounts           Int
+  addAccounts            Int
+  manageAccounts         Int
+  viewRoles              Int
+  manageRoles            Int
+  users                  users[]
+}
+
+model userInvitations {
+  userInvitationID         Int    @id @default(autoincrement())
+  invitingUserID           Int
+  invitedUserID            Int
+  invitationCreationDate   String @default("DATETIME('now')")
+  invitationExpirationDate String @default("DATETIME('now', '+24 hours')")
+
+  invitingUserID_to_users users @relation("invitingUserID", fields: [invitingUserID], references: [userID], onDelete: NoAction, onUpdate: NoAction)
+  invitedUserID_to_users  users @relation("invitedUserID", fields: [invitedUserID], references: [userID], onDelete: NoAction, onUpdate: NoAction)
+}
+
+//Setting onDelete and onUpdate to NoAction means that if someone tries to update or delete an invitingUserID or invitedUserID referenced by
+//a userInvitation, SQLite will throw an error and prevent the invitingUserID/invitedUserID from being updated or deleted, either in the
+//userInvitation tuple or the user tuple
+
+model users {
+  userID                        Int               @id @default(autoincrement())
+  contactInfoID                 Int               @unique
+  role                          String
+  status                        String
+  creationDate                  String            @default("DATETIME('now')")
+  lastEditorID                  Int?
+  notes                         String?
+
+  invitingUserID_to_invitations userInvitations[] @relation("invitingUserID")
+  invitedUserID_to_invitations  userInvitations[] @relation("invitedUserID")
+  rolePermissions               rolePermissions   @relation(fields: [role], references: [role], onDelete: NoAction, onUpdate: Cascade)
+  contactInfo                   contactInfo       @relation(fields: [contactInfoID], references: [contactInfoID], onDelete: NoAction, onUpdate: Cascade)
+
+  donationBoardMember           donations[]       @relation("donationBoardMember")
+  grantBoardMember              grants[]          @relation("grantBoardMember")
+
+  donationEditor                donations[]       @relation("donationLastEditor")
+  donorLastEditor               donors[]          @relation("donorLastEditor")
+  grantLastEditor               grants[]          @relation("grantLastEditor")
+}
+
+//Setting onDelete to NoAction means that if someone tries to delete a role referenced by a user, SQLite will throw an error and prevent the
+//the role from being deleted, either in the rolePermissions table or the user tuple
+
+//Setting onUpdate to Cascade means that if someone updates a role's permissions in the rolePermissions table, all users that have that role
+//will have their role permissions automatically updated
+
+model contactInfo {
+  contactInfoID    Int     @id @default(autoincrement())
+  firstName        String  @default("Anonymous")
+  lastName         String  @default("Anonymous")
+  organizationName String  @default("No organization listed")
+  email            String  @default("No email listed")
+  phoneNumber      BigInt?
+  address          String  @default("No address listed")
+  notes            String?
+  users            users?
+  donors           donors?
+  grants           grants?
+}
