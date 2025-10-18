@@ -14,19 +14,13 @@
   <!-- Login Form -->
   <div class="container">
     <div class="wrapper">
-      <form @submit.prevent="validateForm" ref="loginForm">
+      <VeeForm :validation-schema="emailSchema" @submit="formSubmit" >
         <h1>Welcome!</h1>
         <h3>Please sign in to continue</h3>
-
-        <div class="input-box">
-          <input type="text" v-model.trim="email" placeholder="Email" required ref="emailInput" />
-        </div>
-        <div class="input-box">
-          <input type="password" v-model.trim="password" placeholder="Password" required ref="passwordInput" />
-        </div>
-
+        <VeeErrorMessage name="email"/>
+        <VeeField class="input-box" name="email" placeholder="enter email" type="email"/>
         <div class="remember-forgot">
-          <label><input type="checkbox" v-model="rememberMe"> Remember me</label>
+          <label><input type="checkbox"> Remember me</label>
           <a href="#">Forgot password?</a>
         </div>
 
@@ -35,88 +29,34 @@
         <div class="request-invitation">
           <p><a href="#">Or Request an Invitation</a></p>
         </div>
-      </form>
+      </VeeForm>
+      
+
     </div>
   </div>
 </template>
 
-<script>
+<script setup lang="ts">
 import { ref, watchEffect } from "vue";
 import { navigateTo } from '#app';
+import * as yup from 'yup';
 
-export default {
-  setup() {
-    const email = ref("");
-    const password = ref("");
-    const rememberMe = ref(false);
-    const emailInput = ref(null);
-    const passwordInput = ref(null);
-    const loginForm = ref(null);
-
-    const validateForm = () => {
-  let isValid = true;
-
-  // Updated email validation pattern
-  const emailPattern = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
-  if (!email.value.trim()) {
-    emailInput.value.setCustomValidity("Please enter your email.");
-    isValid = false;
-  } else if (!emailPattern.test(email.value.trim())) {
-    emailInput.value.setCustomValidity("Please enter a valid email address (example@domain.com).");
-    isValid = false;
-  } else {
-    emailInput.value.setCustomValidity(""); // Reset validation message
-  }
-
-  // Updated password validation pattern
-  const passwordPattern = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,20}$/;
-  if (!password.value) {
-    passwordInput.value.setCustomValidity("Please enter your password.");
-    isValid = false;
-  } else if (!passwordPattern.test(password.value)) {
-    passwordInput.value.setCustomValidity(
-      "Password must be 8-20 characters long, include an uppercase letter, a lowercase letter, and a number."
-    );
-    isValid = false;
-  } else {
-    passwordInput.value.setCustomValidity(""); // Reset validation message
-  }
-
-  // Trigger built-in validation messages
-  emailInput.value.reportValidity();
-  passwordInput.value.reportValidity();
-
-  if (isValid) {
-    loginForm.value.reset();
-    navigateTo("/dashboard");
-  }
-};
-
-// Watch the form fields to reset any validation state when changed
-watchEffect(() => {
-  if (email.value) {
-    emailInput.value.setCustomValidity("");
-  }
-  if (password.value) {
-    passwordInput.value.setCustomValidity("");
-  }
+const emailSchema = yup.object({
+  email: yup.string().required().email(),
 });
 
-    return {
-      email,
-      password,
-      rememberMe,
-      validateForm,
-      emailInput,
-      passwordInput,
-      loginForm,
-    };
-  },
-};
+function formSubmit(values:Record<string, any>){
+  console.log(values);
+  navigateTo("/");
+}
 
 definePageMeta({
   layout: 'login'
 });
+
+
+//goals: finish login auth(might wait for Carlos and Diep), file/tailwind setup, make login page look like Akshay's thing OR whatever other people want help on
+
 </script>
 
 
@@ -293,3 +233,5 @@ nav a {
 }
 
 </style>
+
+
