@@ -27,7 +27,7 @@
         <button type="submit" class="btn">Sign in</button>
 
         <div class="request-invitation">
-          <p><a href="#">Or Request an Invitation</a></p>
+          <p><a href="#">Or Request an Invitatio</a></p>
         </div>
       </VeeForm>
       
