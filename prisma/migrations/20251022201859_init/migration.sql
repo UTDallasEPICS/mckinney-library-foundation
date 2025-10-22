@@ -87,7 +87,7 @@ CREATE TABLE "users" (
     "role" TEXT NOT NULL,
     "status" TEXT NOT NULL,
     "creationDate" TEXT NOT NULL DEFAULT 'DATETIME(''now'')',
-    "lastEditorID" INTEGER NOT NULL,
+    "lastEditorID" INTEGER,
     "notes" TEXT,
     CONSTRAINT "users_role_fkey" FOREIGN KEY ("role") REFERENCES "rolePermissions" ("role") ON DELETE NO ACTION ON UPDATE CASCADE,
     CONSTRAINT "users_contactInfoID_fkey" FOREIGN KEY ("contactInfoID") REFERENCES "contactInfo" ("contactInfoID") ON DELETE NO ACTION ON UPDATE CASCADE

@@ -16,8 +16,8 @@ datasource db {
     - amountSpent should be moved to Expenditures
 */
 model donations {
-  donationID        Int            @id @default(autoincrement())
-  donorID           Int? //Anonymous donations won't have a donorID and won't be associated with a Donor tuple
+  donationID        String            @id @default(cuid())
+  donorID           String? //Anonymous donations won't have a donorID and won't be associated with a Donor tuple
   monetaryAmount    Float
   nonmonetaryAmount String
   amountSpent       Float
@@ -25,8 +25,8 @@ model donations {
   allocatedFor      String
   date              String
   status            String
-  boardMemberID     Int?
-  lastEditorID      Int
+  boardMemberID     String?
+  lastEditorID      String
   notes             String?
 
   donors      donors? @relation(fields: [donorID], references: [donorID], onDelete: NoAction, onUpdate: NoAction)
@@ -39,14 +39,14 @@ model donations {
 //tuple or the donation tuple. 
 
 model donors {
-  donorID           Int     @id @default(autoincrement())
-  contactInfoID     Int     @unique
+  donorID           String     @id @default(cuid())
+  contactInfoID     String     @unique
   firstDonationDate String  @default("DATETIME('now')")
   lastDonationDate  String  @default("DATETIME('now')")
   lastContacted     String
   numDonations      Int
   lifetimeDonations Float
-  lastEditorID      Int
+  lastEditorID      String
   notes             String?
 
   donations   donations[]
@@ -55,8 +55,8 @@ model donors {
 }
 
 model grants {
-  grantID                    Int         @id @default(autoincrement())
-  contactInfoID              Int         @unique
+  grantID                    String         @id @default(cuid())
+  contactInfoID              String         @unique // TODO: understand this architecture decision
   monetaryAmountRequested    Float
   nonmonetaryAmountRequested String
   monetaryAmountReceived     Float?
@@ -68,8 +68,8 @@ model grants {
   startDate                  String?
   expirationDate             String?
   status                     String
-  boardMemberID              Int?
-  lastEditorID               Int
+  boardMemberID              String?
+  lastEditorID               String
   notes                      String?
 
   contactInfo contactInfo @relation(fields: [contactInfoID], references: [contactInfoID], onDelete: NoAction, onUpdate: Cascade)
@@ -92,9 +92,9 @@ model rolePermissions {
 }
 
 model userInvitations {
-  userInvitationID         Int    @id @default(autoincrement())
-  invitingUserID           Int
-  invitedUserID            Int
+  userInvitationID         String    @id @default(cuid())
+  invitingUserID           String
+  invitedUserID            String
   invitationCreationDate   String @default("DATETIME('now')")
   invitationExpirationDate String @default("DATETIME('now', '+24 hours')")
 
@@ -107,12 +107,12 @@ model userInvitations {
 //userInvitation tuple or the user tuple
 
 model users {
-  userID                        Int               @id @default(autoincrement())
-  contactInfoID                 Int               @unique
+  userID                        String               @id @default(cuid())
+  contactInfoID                 String               @unique
   role                          String
   status                        String
   creationDate                  String            @default("DATETIME('now')")
-  lastEditorID                  Int?
+  lastEditorID                  String?
   notes                         String?
 
   invitingUserID_to_invitations userInvitations[] @relation("invitingUserID")
@@ -135,7 +135,7 @@ model users {
 //will have their role permissions automatically updated
 
 model contactInfo {
-  contactInfoID    Int     @id @default(autoincrement())
+  contactInfoID    String     @id @default(cuid()) // TODO: remove autoincrement IDs
   firstName        String  @default("Anonymous")
   lastName         String  @default("Anonymous")
   organizationName String  @default("No organization listed")
