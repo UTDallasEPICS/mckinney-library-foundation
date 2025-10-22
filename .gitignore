@@ -35,6 +35,7 @@ node_modules/
 
 package-lock.json
 
-mplf.db
+*.db
+# do not accept any kind of database file
 
 .env
