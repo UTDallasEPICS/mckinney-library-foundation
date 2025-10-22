@@ -14,7 +14,7 @@ export const useDonations = () => {
         isLoading.value = true;
         error.value = null;
         try {
-            const response = await fetch('/api/donations');
+            const response = await fetch('/api/donations'); // todo: turn this into useFetch instead of fetch
             if (!response.ok) {
                 const errorData = await response.json().catch(() => ({}));
                 throw new Error(errorData.statusMessage || `HTTP error! Status: ${response.status}`);

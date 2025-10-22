@@ -11,6 +11,10 @@ datasource db {
 }
 
 //An ? next to a data type means that the attribute is nullable
+/*
+  TODO:
+    - amountSpent should be moved to Expenditures
+*/
 model donations {
   donationID        Int            @id @default(autoincrement())
   donorID           Int? //Anonymous donations won't have a donorID and won't be associated with a Donor tuple
