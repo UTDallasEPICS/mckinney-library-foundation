@@ -1,301 +1,184 @@
 <!--TODO:
     - make login a separate page
-    - make index the default dashboard 
+    - make index the default dashboard
 -->
 
 <!--Login Page -->
-
 <template>
-  <!-- Header (logo and link to website)-->
-  <header class="navbar">
-    <div class="logo">
-      <img src="/logo.jpg" alt="MPLF Logo" />
+  <div class = "flex min-h-screen min-w-screen">
+    <div class = "basis-1/2 bg-[#34495e]" id="site_info">
+      <div class="w-3/4 mx-auto">
+        <div class="mt-6 mb-6 flex flex-col items-center">
+          <img src="/logo.jpg" alt="MPLF Logo" class="h-24 w-48">
+        </div>
+        <div class = "text-center text-white">
+          <h1 class ="text-[42px] mb-4 leading-tight" style ="font-weight: 700; letter-spacing: -0.5px;" >McKinney Public Library Foundation</h1>
+          <p class ="text-[20px] leading-relaxed opacity-90" style="font-weight: 400;">Empowering Communities Through Knowledge &amp; Strategic Philanthropy</p>
+        </div>
+        <div class = "text-white">
+          <LoginInfoBanner class = "my-5"
+            title="Track Donations &amp; Grants"
+            description="Comprehensive financial management"
+          />
+          <LoginInfoBanner class = "my-5"
+            title="Manage Donor Relationships"
+            description="Build lasting community connections"
+          />
+          <LoginInfoBanner class = "my-5 w-full"
+            title="Generate Insights &amp; Reports"
+            description="Data-driven descision making"
+          />  
+        </div>  
+      </div>
+      
     </div>
-    <nav>
-      <a href="https://mckinneyplf.org" target="_blank">MPLF Website</a>
-    </nav>
-  </header>
-
-  <!-- Login Form -->
-  <div class="container">
-    <div class="wrapper">
-      <form @submit.prevent="validateForm" ref="loginForm">
-        <h1>Welcome!</h1>
-        <h3>Please sign in to continue</h3>
-
-        <div class="input-box">
-          <input type="text" v-model.trim="email" placeholder="Email" required ref="emailInput" />
+    <div class = "flex items-center basis-1/2" id="login">
+      <div class = "bg-white rounded-3xl shadow-2xl p-10 border border-gray-100 w-4/5 mx-auto my">
+        <img src="/logo.jpg" alt="MPLF Logo" class ="h-14 mx-auto" />
+        <div class = "text-center">
+          <h2 class = "text-[36px] text-[#2c3e50] mb-2" style="font-weight: 700;">WELCOME!</h2>
+          <p class = "text-[15px] text-[#6b7785]">Sign in to access the Donor &amp; Grant Tracker</p>
         </div>
-        <div class="input-box">
-          <input type="password" v-model.trim="password" placeholder="Password" required ref="passwordInput" />
-        </div>
-
-        <div class="remember-forgot">
-          <label><input type="checkbox" v-model="rememberMe"> Remember me</label>
-          <a href="#">Forgot password?</a>
-        </div>
-
-        <button type="submit" class="btn">Sign in</button>
-
-        <div class="request-invitation">
-          <p><a href="#">Or Request an Invitation</a></p>
-        </div>
-      </form>
+        <LoginForm 
+          v-if="userEmail === ''" 
+          key="loginForm1" 
+          :message="emailFormProps.message"
+          :field-name="emailFormProps.fieldname"  
+          :placeholder-txt="emailFormProps.placeholderTxt"
+          :validation="emailFormProps.validation"
+          :field-type="emailFormProps.fieldType"
+          :function="emailFormProps.onSubmit"
+        />
+        <LoginForm  
+          key="loginForm2" 
+          v-if="userEmail !== ''"
+          :message="otpFormProps.message"
+          :field-name="otpFormProps.fieldname"  
+          :placeholder-txt="otpFormProps.placeholderTxt"
+          :validation="otpFormProps.validation"
+          :field-type="otpFormProps.fieldType"
+          :function="otpFormProps.onSubmit"
+        />
+        <!-- need to add function to this button -->
+        <span>Don't have an account? </span> <button style = "font-weight: 500;" class ="text-[14px] text-[#4a5f7a] transition-colors" type="button">Request an Invitation</button>
+      </div>
     </div>
+      
+    
   </div>
 </template>
 
-<script>
-import { ref, watchEffect } from "vue";
+<script setup lang="ts">
 import { navigateTo } from '#app';
+import * as yup from 'yup';
+import LoginForm from '~/components/Login/LoginForm.vue';
+import { authClient } from '~/lib/authClient';
 
+const session = await useFetch("/api/auth/session");
 
-export default {
-  setup() {
-    const email = ref("");
-    const password = ref("");
-    const rememberMe = ref(false);
-    const emailInput = ref(null);
-    const passwordInput = ref(null);
-    const loginForm = ref(null);
+if(session.data.value?.user){
+  navigateTo("/dashboard");
+}
 
-    const validateForm = () => {
-  let isValid = true;
+const emailEntered = ref(false);
+const userEmail = ref("");
 
-  // Updated email validation pattern
-  const emailPattern = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
-  if (!email.value.trim()) {
-    emailInput.value.setCustomValidity("Please enter your email.");
-    isValid = false;
-  } else if (!emailPattern.test(email.value.trim())) {
-    emailInput.value.setCustomValidity("Please enter a valid email address (example@domain.com).");
-    isValid = false;
-  } else {
-    emailInput.value.setCustomValidity(""); // Reset validation message
-  }
-
-  // Updated password validation pattern
-  const passwordPattern = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,20}$/;
-  if (!password.value) {
-    passwordInput.value.setCustomValidity("Please enter your password.");
-    isValid = false;
-  } else if (!passwordPattern.test(password.value)) {
-    passwordInput.value.setCustomValidity(
-      "Password must be 8-20 characters long, include an uppercase letter, a lowercase letter, and a number."
-    );
-    isValid = false;
-  } else {
-    passwordInput.value.setCustomValidity(""); // Reset validation message
-  }
-
-  // Trigger built-in validation messages
-  emailInput.value.reportValidity();
-  passwordInput.value.reportValidity();
-
-  if (isValid) {
-    loginForm.value.reset();
-    navigateTo("/dashboard");
-  }
-};
-
-// Watch the form fields to reset any validation state when changed
-watchEffect(() => {
-  if (email.value) {
-    emailInput.value.setCustomValidity("");
-  }
-  if (password.value) {
-    passwordInput.value.setCustomValidity("");
-  }
+const emailSchema = yup.object({
+  email: 
+    yup.string()
+    .required("Email is required")
+    .email("Please enter a valid email address (example@domain.com)"),
+});
+const otpSchema = yup.object({
+  otp_code: 
+    yup.string()
+    .required('Code is requried')
+    .min(6,"Please enter a valid code")
+    .max(6,"Please enter a valid code")
+    .test('type', 'Please enter a valid code', code => {
+    if(!code){
+      return false;
+    }
+    return !isNaN(Number(code)) && code.trim() !== ''
+  })
 });
 
-    return {
-      email,
-      password,
-      rememberMe,
-      validateForm,
-      emailInput,
-      passwordInput,
-      loginForm,
-    };
-  },
-};
+const emailFormProps ={
+  fieldname: 'email',  
+  placeholderTxt: 'Enter your email',  
+  fieldType: 'email',  
+  message: 'Email Address',  
+  validation: emailSchema,  
+  onSubmit: formSubmit
+}
 
-definePageMeta({
-  layout: 'login'
-});
+const otpFormProps ={
+  fieldname: 'otp_code',  
+  placeholderTxt: 'Code',  
+  fieldType: 'otp',  
+  message: 'Enter Code',  
+  validation: otpSchema,    
+  onSubmit: checkCode,
+}
+
+
+
+async function formSubmit(values:Record<string, any>){
+  userEmail.value = values.email;
+   const userExists = await checkEmailExists(values.email);
+   if(userExists){
+     const { data, error } = await authClient.emailOtp.sendVerificationOtp({
+        email: values.email, // required
+        type: "sign-in", // required
+      });
+      if(error){
+       console.log(error);
+      }
+     emailEntered.value=true;
+     alert("otp sent to email");
+    
+   }
+   else{
+     alert("user not found");
+     userEmail.value = '';
+   }
+}
+
+async function checkEmailExists(email:string){
+  const data = await $fetch("/api/auth/user",{
+    query: {
+      email: email
+    }
+  });
+  if(data.name != null){
+    return true;
+  }
+  else{
+    return false;
+  }
+  
+}
+
+async function checkCode(values:Record<string, any>){
+   if(values.otp_code){
+     try{
+       const { data, error } = await authClient.signIn.emailOtp({
+         email: userEmail.value,
+         otp: values.otp_code.trim(), 
+       });
+       navigateTo("/dashboard");
+       if(error){
+         console.error(error)
+       }
+     }
+     catch(error){
+     console.error(error)
+     }
+   }
+}
+
+
+
+
+
 </script>
-
-
-
-<style scoped>
-@import url('https://fonts.googleapis.com/css2?family=Aclonica&display=swap');
-@import url('https://fonts.googleapis.com/css2?family=Alice&display=swap');
-
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-  font-family: 'Alice', sans-serif;
-}
-
-body, .container {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  min-height: 100vh;
-  background: #ECF3FF;
-}
-
-.wrapper {
-  width: 420px;
-  background: #FFFFFF;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  padding: 20px;
-  border-radius: 20px;
-  box-shadow: 0 4px 15px rgba(0,0,0,.1);
-}
-
-.wrapper h1 {
-  font-size: 35px;
-  text-align: center;
-  color: #42446A;
-  margin-bottom: 10px;
-  font-family: 'Aclonica', san-serif;
-}
-
-.wrapper h3 {
-  font-size: 17px;
-  font-weight: 100;
-  text-align: center;
-  color: #42446A;
-}
-
-.wrapper .input-box {
-  width: 100%;
-  height: 50px;
-  margin: 15px 0;
-}
-
-.wrapper .input-box:nth-of-type(2) {
-  margin-bottom: 30px;
-}
-
-.input-box input {
-  width: 100%;
-  height: 100%;
-  background: #ECF3FF;
-  border: none;
-  outline: none;
-  border: 1.5px solid rgba(184, 183, 183, 0.848);
-  border-radius: 10px;
-  font-size: 16px;
-  color: grey;
-  padding: 5px 10px 10px 10px;
-}
-
-.input-box input::placeholder {
-  color: #666;
-}
-
-.wrapper .remember-forgot {
-  display: flex;
-  flex-direction: column;
-  font-size: 15px;
-  margin: -15px 0 15px;
-  align-items: flex-start;
-}
-
-.remember-forgot label {
-  color: #42446A;
-  margin-bottom: 5px;
-}
-
-.remember-forgot label input {
-  accent-color: #fff;
-  margin-right: 3px;
-}
-
-.remember-forgot a {
-  color: #42446A;
-  text-decoration: none;
-}
-
-.remember-forgot a:hover {
-  text-decoration: underline;
-}
-
-.wrapper .btn {
-  width: 40%;
-  height: 45px;
-  background: #ECF3FF;
-  border: none;
-  border-radius: 10px;
-  box-shadow: 0 0 10px rgba(0,0,0,.1);
-  cursor: pointer;
-  font-size: 16px;
-  color: #42446A;
-  font-weight: 600;
-  display: block;
-  margin: 20px auto;
-  font-family: 'Aclonica', sans-serif;
-}
-
-.wrapper .btn:hover {
-  background: #dbe7f9;
-}
-
-.wrapper .request-invitation {
-  font-size: 14.5px;
-  text-align: center;
-  margin-top: 20px;
-}
-
-.request-invitation p a {
-  color: #42446A;
-  text-decoration: none;
-}
-
-.request-invitation p a:hover {
-  text-decoration: underline;
-}
-/* Header Styles */
-.navbar {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  background: #fff;
-  padding: 10px 20px;
-  box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
-}
-
-.logo {
-  display: flex;
-  align-items: center;
-}
-
-.logo img {
-  width: 160px;
-  height: auto;
-  margin-right: 10px;
-}
-
-nav a {
-  margin: 0 10px;
-  text-decoration: underline;
-  color: #333;
-  font-weight: none;
-  font-size: 12px;
-}
-
-.logout {
-  background: #545679;
-  color: white;
-  border: none;
-  padding: 5px 10px;
-  cursor: pointer;
-  border-radius: 8px;
-}
-
-</style>

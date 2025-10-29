@@ -5,28 +5,33 @@
       <div>
         <h1> Donations</h1>
         <a href="/donations"> <button> View Donations </button></a>        
-        <a href="/donations/add"> <button> Add Donation </button></a>        
+        <a v-if="permission > 0" href="/donations/add"> <button> Add Donation </button></a>        
         <a href="/donations/donors"> <button> View Donors </button></a>        
       </div>
 
       <div >
         <h1> Grants </h1>
         <a href="/grants"> <button> View Grants </button></a>        
-        <a href="/grants/add"> <button> Add Grants </button></a>        
+        <a v-if="permission > 0" href="/grants/add"> <button> Add Grants </button></a>        
       </div>
 
       <div>
         <h1> Settings</h1>
-        <a href="/settings"> <button> Create Account </button></a>        
-        <a href="/settings/roles"> <button> View Roles </button></a>        
-        <a href="/settings/accounts"> <button> Manage Accounts </button></a>        
+        <a v-if="permission > 2" href="/settings"> <button> Create Account </button></a>        
+        <a v-if="permission > 1" href="/settings/roles"> <button> View Roles </button></a>        
+        <a v-if="permission > 2" href="/settings/accounts"> <button> Manage Accounts </button></a>        
       </div>
 
     </div>
   </template>
   
   <script setup>
-  // This page will automatically use the default layout (with header)
+const session = await useFetch("/api/auth/session");
+
+if(!session.data.value?.user){
+  navigateTo("/");
+}
+const permission = ref(session.data.value.user.permission);
   </script>
   
   <style scoped>

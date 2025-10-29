@@ -1,3 +1,4 @@
+
 generator client {
   provider = "prisma-client-js"
 }
@@ -5,19 +6,17 @@ generator client {
 //If Prisma can't find the database file, check your .env file to see whether the DATABASE_URL is an absolute
 //or relative path. If it's an absolute path, make sure it's the absolute path to the database file for your
 //computer and not on someone else's computer
+
 datasource db {
   provider = "sqlite"
   url      = env("DATABASE_URL")
 }
 
 //An ? next to a data type means that the attribute is nullable
-/*
-  TODO:
-    - amountSpent should be moved to Expenditures
-*/
+
 model donations {
-  donationID        String            @id @default(cuid())
-  donorID           String? //Anonymous donations won't have a donorID and won't be associated with a Donor tuple
+  donationID        Int     @id @default(autoincrement())
+  donorID           Int? //Anonymous donations won't have a donorID and won't be associated with a Donor tuple
   monetaryAmount    Float
   nonmonetaryAmount String
   amountSpent       Float
@@ -25,8 +24,8 @@ model donations {
   allocatedFor      String
   date              String
   status            String
-  boardMemberID     String?
-  lastEditorID      String
+  boardMemberID     Int?
+  lastEditorID      Int
   notes             String?
 
   donors      donors? @relation(fields: [donorID], references: [donorID], onDelete: NoAction, onUpdate: NoAction)
@@ -39,14 +38,14 @@ model donations {
 //tuple or the donation tuple. 
 
 model donors {
-  donorID           String     @id @default(cuid())
-  contactInfoID     String     @unique
+  donorID           Int     @id @default(autoincrement())
+  contactInfoID     Int     @unique
   firstDonationDate String  @default("DATETIME('now')")
   lastDonationDate  String  @default("DATETIME('now')")
   lastContacted     String
   numDonations      Int
   lifetimeDonations Float
-  lastEditorID      String
+  lastEditorID      Int
   notes             String?
 
   donations   donations[]
@@ -55,8 +54,8 @@ model donors {
 }
 
 model grants {
-  grantID                    String         @id @default(cuid())
-  contactInfoID              String         @unique // TODO: understand this architecture decision
+  grantID                    Int     @id @default(autoincrement())
+  contactInfoID              Int     @unique
   monetaryAmountRequested    Float
   nonmonetaryAmountRequested String
   monetaryAmountReceived     Float?
@@ -68,8 +67,8 @@ model grants {
   startDate                  String?
   expirationDate             String?
   status                     String
-  boardMemberID              String?
-  lastEditorID               String
+  boardMemberID              Int?
+  lastEditorID               Int
   notes                      String?
 
   contactInfo contactInfo @relation(fields: [contactInfoID], references: [contactInfoID], onDelete: NoAction, onUpdate: Cascade)
@@ -78,7 +77,7 @@ model grants {
 }
 
 model rolePermissions {
-  role                   String   @id @unique
+  role                   String  @id @unique
   viewDonors             Int
   emailDonors            Int
   viewDonationsAndGrants Int
@@ -92,9 +91,9 @@ model rolePermissions {
 }
 
 model userInvitations {
-  userInvitationID         String    @id @default(cuid())
-  invitingUserID           String
-  invitedUserID            String
+  userInvitationID         Int    @id @default(autoincrement())
+  invitingUserID           Int
+  invitedUserID            Int
   invitationCreationDate   String @default("DATETIME('now')")
   invitationExpirationDate String @default("DATETIME('now', '+24 hours')")
 
@@ -107,25 +106,25 @@ model userInvitations {
 //userInvitation tuple or the user tuple
 
 model users {
-  userID                        String               @id @default(cuid())
-  contactInfoID                 String               @unique
-  role                          String
-  status                        String
-  creationDate                  String            @default("DATETIME('now')")
-  lastEditorID                  String?
-  notes                         String?
+  userID        Int     @id @default(autoincrement())
+  contactInfoID Int     @unique
+  role          String
+  status        String
+  creationDate  String  @default("DATETIME('now')")
+  lastEditorID  Int?
+  notes         String?
 
   invitingUserID_to_invitations userInvitations[] @relation("invitingUserID")
   invitedUserID_to_invitations  userInvitations[] @relation("invitedUserID")
   rolePermissions               rolePermissions   @relation(fields: [role], references: [role], onDelete: NoAction, onUpdate: Cascade)
   contactInfo                   contactInfo       @relation(fields: [contactInfoID], references: [contactInfoID], onDelete: NoAction, onUpdate: Cascade)
 
-  donationBoardMember           donations[]       @relation("donationBoardMember")
-  grantBoardMember              grants[]          @relation("grantBoardMember")
+  donationBoardMember donations[] @relation("donationBoardMember")
+  grantBoardMember    grants[]    @relation("grantBoardMember")
 
-  donationEditor                donations[]       @relation("donationLastEditor")
-  donorLastEditor               donors[]          @relation("donorLastEditor")
-  grantLastEditor               grants[]          @relation("grantLastEditor")
+  donationEditor  donations[] @relation("donationLastEditor")
+  donorLastEditor donors[]    @relation("donorLastEditor")
+  grantLastEditor grants[]    @relation("grantLastEditor")
 }
 
 //Setting onDelete to NoAction means that if someone tries to delete a role referenced by a user, SQLite will throw an error and prevent the
@@ -135,7 +134,7 @@ model users {
 //will have their role permissions automatically updated
 
 model contactInfo {
-  contactInfoID    String     @id @default(cuid()) // TODO: remove autoincrement IDs
+  contactInfoID    Int     @id @default(autoincrement())
   firstName        String  @default("Anonymous")
   lastName         String  @default("Anonymous")
   organizationName String  @default("No organization listed")
@@ -146,4 +145,65 @@ model contactInfo {
   users            users?
   donors           donors?
   grants           grants?
+}
+
+model User {
+  id            String    @id
+  name          String
+  email         String
+  emailVerified Boolean   @default(false)
+  permission    Int       @default(0)
+  image         String?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @default(now()) @updatedAt
+  sessions      Session[]
+  accounts      Account[]
+
+  @@unique([email])
+  @@map("user")
+}
+
+model Session {
+  id        String   @id
+  expiresAt DateTime
+  token     String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  ipAddress String?
+  userAgent String?
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([token])
+  @@map("session")
+}
+
+model Account {
+  id                    String    @id
+  accountId             String
+  providerId            String
+  userId                String
+  user                  User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  accessToken           String?
+  refreshToken          String?
+  idToken               String?
+  accessTokenExpiresAt  DateTime?
+  refreshTokenExpiresAt DateTime?
+  scope                 String?
+  password              String?
+  createdAt             DateTime  @default(now())
+  updatedAt             DateTime  @updatedAt
+
+  @@map("account")
+}
+
+model Verification {
+  id         String   @id
+  identifier String
+  value      String
+  expiresAt  DateTime
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @default(now()) @updatedAt
+
+  @@map("verification")
 }
