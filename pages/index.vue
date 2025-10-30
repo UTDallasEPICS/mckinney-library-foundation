@@ -2,8 +2,6 @@
     - make login a separate page
     - make index the default dashboard
 -->
-
-<!--Login Page -->
 <template>
   <div class = "flex min-h-screen min-w-screen">
     <div class = "basis-1/2 bg-[#34495e]" id="site_info">
@@ -17,30 +15,36 @@
         </div>
         <div class = "text-white">
           <LoginInfoBanner class = "my-5"
+            image="M9 4.804A7.968 7.968 0 005.5 4c-1.255 0-2.443.29-3.5.804v10A7.969 7.969 0 015.5 14c1.669 0 3.218.51 4.5 1.385A7.962 7.962 0 0114.5 14c1.255 0 2.443.29 3.5.804v-10A7.968 7.968 0 0014.5 4c-1.255 0-2.443.29-3.5.804V12a1 1 0 11-2 0V4.804z"
             title="Track Donations &amp; Grants"
             description="Comprehensive financial management"
           />
           <LoginInfoBanner class = "my-5"
+           image="M9 6a3 3 0 11-6 0 3 3 0 016 0zM17 6a3 3 0 11-6 0 3 3 0 016 0zM12.93 17c.046-.327.07-.66.07-1a6.97 6.97 0 00-1.5-4.33A5 5 0 0119 16v1h-6.07zM6 11a5 5 0 015 5v1H1v-1a5 5 0 015-5z"
             title="Manage Donor Relationships"
             description="Build lasting community connections"
           />
           <LoginInfoBanner class = "my-5 w-full"
+            image="M3 3a1 1 0 000 2v8a2 2 0 002 2h2.586l-1.293 1.293a1 1 0 101.414 1.414L10 15.414l2.293 2.293a1 1 0 001.414-1.414L12.414 15H15a2 2 0 002-2V5a1 1 0 100-2H3zm11.707 4.707a1 1 0 00-1.414-1.414L10 9.586 8.707 8.293a1 1 0 00-1.414 0l-2 2a1 1 0 101.414 1.414L8 10.414l1.293 1.293a1 1 0 001.414 0l4-4z",
             title="Generate Insights &amp; Reports"
             description="Data-driven descision making"
           />  
         </div>  
-      </div>
-      
+      </div>    
     </div>
     <div class = "flex items-center basis-1/2" id="login">
       <div class = "bg-white rounded-3xl shadow-2xl p-10 border border-gray-100 w-4/5 mx-auto my">
         <img src="/logo.jpg" alt="MPLF Logo" class ="h-14 mx-auto" />
-        <div class = "text-center">
+        <div v-if="!reqAccount" class = "text-center">
           <h2 class = "text-[36px] text-[#2c3e50] mb-2" style="font-weight: 700;">WELCOME!</h2>
           <p class = "text-[15px] text-[#6b7785]">Sign in to access the Donor &amp; Grant Tracker</p>
         </div>
+        <div v-if="reqAccount">
+          <h2 class = "text-[36px] text-[#2c3e50] mb-2" style="font-weight: 700;">SIGN UP!</h2>
+          <p class = "text-[15px] text-[#6b7785]">Fill out the form to request an account.</p>
+        </div>
         <LoginForm 
-          v-if="userEmail === ''" 
+          v-if="userEmail === '' && !reqAccount" 
           key="loginForm1" 
           :message="emailFormProps.message"
           :field-name="emailFormProps.fieldname"  
@@ -59,18 +63,23 @@
           :field-type="otpFormProps.fieldType"
           :function="otpFormProps.onSubmit"
         />
-        <!-- need to add function to this button -->
-        <span>Don't have an account? </span> <button style = "font-weight: 500;" class ="text-[14px] text-[#4a5f7a] transition-colors" type="button">Request an Invitation</button>
+        <AccReqForm
+          v-if="reqAccount"
+          :validation = "emailFormProps.validation"
+          
+        />
+        <span>Don't have an account? </span> 
+        <button v-if="!reqAccount" @click="accountRequest" style = "font-weight: 500;" class ="text-[14px] bg-amber-400 text-[#4a5f7a] transition-colors" type="button">Request an Invitation</button>
+        <button v-if="reqAccount" @click="accountRequest" style = "font-weight: 500;" class ="text-[14px] bg-amber-400 text-[#4a5f7a] transition-colors" type="button">Cancel Request</button>
       </div>
     </div>
-      
-    
   </div>
 </template>
 
 <script setup lang="ts">
 import { navigateTo } from '#app';
 import * as yup from 'yup';
+import AccReqForm from '~/components/Login/AccReqForm.vue';
 import LoginForm from '~/components/Login/LoginForm.vue';
 import { authClient } from '~/lib/authClient';
 
@@ -79,9 +88,8 @@ const session = await useFetch("/api/auth/session");
 if(session.data.value?.user){
   navigateTo("/dashboard");
 }
-
-const emailEntered = ref(false);
 const userEmail = ref("");
+const reqAccount = ref(false);
 
 const emailSchema = yup.object({
   email: 
@@ -121,8 +129,6 @@ const otpFormProps ={
   onSubmit: checkCode,
 }
 
-
-
 async function formSubmit(values:Record<string, any>){
   userEmail.value = values.email;
    const userExists = await checkEmailExists(values.email);
@@ -134,7 +140,6 @@ async function formSubmit(values:Record<string, any>){
       if(error){
        console.log(error);
       }
-     emailEntered.value=true;
      alert("otp sent to email");
     
    }
@@ -177,8 +182,8 @@ async function checkCode(values:Record<string, any>){
    }
 }
 
-
-
-
+async function accountRequest(){
+  reqAccount.value = !reqAccount.value;
+}
 
 </script>

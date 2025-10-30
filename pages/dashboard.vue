@@ -24,15 +24,18 @@
 
     </div>
   </template>
+<script setup>
+  const session = await useFetch("/api/auth/session");
+  const permission = ref(50);
+  if(!session.data.value?.user){
+    //navigateTo("/");
+  }
+  else{
+    permission.value = session.data.value.user.permission;
+  }
   
-  <script setup>
-const session = await useFetch("/api/auth/session");
-
-if(!session.data.value?.user){
-  navigateTo("/");
-}
-const permission = ref(session.data.value.user.permission);
-  </script>
+   
+</script>
   
   <style scoped>
 

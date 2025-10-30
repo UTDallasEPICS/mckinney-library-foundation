@@ -1,11 +1,11 @@
 <template>
-    <div>
-      <Header v-if="logedIn" />
-      <NuxtPage />
-    </div>
-  </template>
+  <div>
+    <Header v-if="logedIn" />
+    <NuxtPage />
+  </div>
+</template>
   
-  <script setup>
+<script setup>
   import Header from '@/components/Header.vue'; 
 
 const session = await useFetch("/api/auth/session");
