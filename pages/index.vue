@@ -66,11 +66,11 @@
         <AccReqForm
           v-if="reqAccount"
           :validation = "emailFormProps.validation"
-          
+
         />
         <span>Don't have an account? </span> 
-        <button v-if="!reqAccount" @click="accountRequest" style = "font-weight: 500;" class ="text-[14px] bg-amber-400 text-[#4a5f7a] transition-colors" type="button">Request an Invitation</button>
-        <button v-if="reqAccount" @click="accountRequest" style = "font-weight: 500;" class ="text-[14px] bg-amber-400 text-[#4a5f7a] transition-colors" type="button">Cancel Request</button>
+        <button v-if="!reqAccount" @click="accountRequest" style = "font-weight: 500;" class ="hover:underline text-[14px] text-[#4a5f7a] transition-colors" type="button">Request an Invitation</button>
+        <button v-if="reqAccount" @click="accountRequest" style = "font-weight: 500;" class ="hover:underline text-[14px] text-[#4a5f7a] transition-colors" type="button">Cancel Request</button>
       </div>
     </div>
   </div>
