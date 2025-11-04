@@ -9,7 +9,7 @@ export default defineEventHandler(async (event) =>{
         data:{
              name: body.fname + body.lname,
              email: body.email,
-             id: "asdflkjasdflkjs",
+             id: "some_ID_we_generate",
          }
         
      })

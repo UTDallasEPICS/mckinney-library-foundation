@@ -22,22 +22,12 @@
     const props = defineProps<{
         validation:  yup.AnySchema,
     }>();
-    const submit = createAccount
+    const submit = requestAccount
 
-    async function createAccount(values:Record<string,any>){
+    async function requestAccount(values:Record<string,any>){
         alert("account requested");
         console.log(values);
-        const data = $fetch("/api/auth/user",{
-            method: "POST",
-            body:{
-                fname:values.fName,
-                lname:values.lName,
-                email:values.email,
-            }
-        }
-            
-        ) 
+        //send email with confirmation link to admin
     }
-    
 
 </script>
