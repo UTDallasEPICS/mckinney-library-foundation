@@ -35,13 +35,13 @@
     <div class = "flex items-center basis-1/2" id="login">
       <div class = "bg-white rounded-3xl shadow-2xl p-10 border border-gray-100 w-4/5 mx-auto my">
         <img src="/logo.jpg" alt="MPLF Logo" class ="h-14 mx-auto" />
-        <div v-if="!reqAccount" class = "text-center">
+        <div v-if="!reqAccount || userEmail" class = "text-center">
           <h2 class = "text-[36px] text-[#2c3e50] mb-2" style="font-weight: 700;">WELCOME!</h2>
           <p class = "text-[15px] text-[#6b7785]">Sign in to access the Donor &amp; Grant Tracker</p>
         </div>
-        <div v-if="reqAccount">
-          <h2 class = "text-[36px] text-[#2c3e50] mb-2" style="font-weight: 700;">SIGN UP!</h2>
-          <p class = "text-[15px] text-[#6b7785]">Fill out the form to request an account.</p>
+        <div v-if="reqAccount && !userEmail">
+          <h2 class = "text-[36px] text-[#2c3e50] mb-2 text-center" style="font-weight: 700;">SIGN UP!</h2>
+          <p class = "text-[15px] text-[#6b7785] text-center">Fill out the form to request an account.</p>
         </div>
         <LoginForm 
           v-if="userEmail === '' && !reqAccount" 
@@ -64,13 +64,15 @@
           :function="otpFormProps.onSubmit"
         />
         <AccReqForm
-          v-if="reqAccount"
+          v-if="reqAccount && !userEmail"
           :validation = "emailFormProps.validation"
 
         />
-        <span>Don't have an account? </span> 
-        <button v-if="!reqAccount" @click="accountRequest" style = "font-weight: 500;" class ="hover:underline text-[14px] text-[#4a5f7a] transition-colors" type="button">Request an Invitation</button>
-        <button v-if="reqAccount" @click="accountRequest" style = "font-weight: 500;" class ="hover:underline text-[14px] text-[#4a5f7a] transition-colors" type="button">Cancel Request</button>
+        <div v-if="!userEmail">
+          <span>Don't have an account? </span> 
+          <button v-if="!reqAccount" @click="accountRequest" style = "font-weight: 500;" class ="hover:underline text-[14px] text-[#4a5f7a] transition-colors" type="button">Request an Invitation</button>
+          <button v-if="reqAccount" @click="accountRequest" style = "font-weight: 500;" class ="hover:underline text-[14px] text-[#4a5f7a] transition-colors" type="button">Cancel Request</button>
+        </div>
       </div>
     </div>
   </div>

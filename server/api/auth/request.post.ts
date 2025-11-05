@@ -8,7 +8,7 @@ export default defineEventHandler(async (event) =>{
         data:{
              name: body.name, 
              email: body.email,
-             id: "some_ID_we_generate2",
+             id: "some_ID_we_generate",
          }       
      })   
 });

@@ -157,7 +157,6 @@ model User {
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @default(now()) @updatedAt
   sessions      Session[]
-  accounts      Account[]
 
   @@unique([email])
   @@map("user")
@@ -178,25 +177,6 @@ model Session {
   @@map("session")
 }
 
-model Account {
-  id                    String    @id
-  accountId             String
-  providerId            String
-  userId                String
-  user                  User      @relation(fields: [userId], references: [id], onDelete: Cascade)
-  accessToken           String?
-  refreshToken          String?
-  idToken               String?
-  accessTokenExpiresAt  DateTime?
-  refreshTokenExpiresAt DateTime?
-  scope                 String?
-  password              String?
-  createdAt             DateTime  @default(now())
-  updatedAt             DateTime  @updatedAt
-
-  @@map("account")
-}
-
 model Verification {
   id         String   @id
   identifier String
@@ -211,5 +191,5 @@ model Verification {
 model Request {
   id    String @id
   name String
-  email String
+  email String @unique
 }
