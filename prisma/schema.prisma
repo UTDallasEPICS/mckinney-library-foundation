@@ -207,3 +207,9 @@ model Verification {
 
   @@map("verification")
 }
+
+model Request {
+  id    String @id
+  name String
+  email String
+}

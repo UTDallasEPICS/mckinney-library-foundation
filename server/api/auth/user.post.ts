@@ -7,12 +7,18 @@ export default defineEventHandler(async (event) =>{
     console.log(body)
     await prisma.user.create({
         data:{
-             name: body.fname + body.lname,
+             name: body.name,
              email: body.email,
-             id: "some_ID_we_generate",
+             id: body.id,
          }
         
      })
-    
+    console.log("Account Created");
+    await prisma.request.delete({
+        where:{
+            id:body.id,
+        }
+    })
+    console.log("request deleted");
 });
 

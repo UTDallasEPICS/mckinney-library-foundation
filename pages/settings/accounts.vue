@@ -39,17 +39,78 @@
     <div v-else class="no-data-message">
       No accounts found. Add your first account.
     </div>
+    <!-- please, please do not keep this in the final page - this is ONLY for testing -->
+     <template v-if="requests && requests.length > 0">
+        <h1> Account Requests</h1>
+        <table >
+        <thead>
+           <tr>
+          <th>Name</th>
+          <th>Email</th>
+          <th colspan="2">Actions</th>
+        </tr>
+        </thead>
+        <tbody>
+          <tr v-for="request in requests">
+            <td> {{ request.name }}</td>
+            <td>{{ request.email }} </td> 
+            <td><button class ="font-medium outline-none px-4 py-2 w-full h-12 bg-gradient-to-r from-[#4a5f7a] to-[#3d4d5c] text-white mt-6 text-[15px] shadow-lg 
+                    hover:shadow-xl transition-all rounded-xl" @click="createAccount(request.id,request.email,request.name)"> Accept </button></td>
+            <td><button class ="font-medium outline-none px-4 py-2 w-full h-12 bg-gradient-to-r from-[#964240] to-[#c62929] text-white mt-6 text-[15px] shadow-lg 
+                    hover:shadow-xl transition-all rounded-xl" @click ="removeRequest(request.id)"> Deny </button></td>
+          </tr>
+        </tbody>
+     </table>
+     </template>
+      
+     
+        
   </div>
+
+
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { ref } from 'vue';
+
+async function createAccount(id:string,email:string, name:string){
+  alert("account created for : " + email);
+  await $fetch("/api/auth/user",{
+    method: "POST",
+    body:{
+      name:name,
+      email:email,
+      id:id,
+    }
+  })
+  reloadNuxtApp();
+}
+
+async function removeRequest(id:string){
+  await $fetch("/api/auth/request", {
+    method: 'DELETE',
+    query:{
+      id:id,
+    }
+  })
+  reloadNuxtApp();
+}
 
 const users = ref([
   { firstName: "John", lastName: "Doe", role: "Admin", email: "johndoe@gmail.com", status: "Active" },
   { firstName: "Jane", lastName: "Doe", role: "Editor", email: "janedoe@gmail.com", status: "Frozen" },
   { firstName: "Main", lastName: "Admin", role: "Main Admin", email: "MPLFBoard@gmail.com", status: "Active" }
 ]);
+//logic to check session permission level here
+//
+const requestOBJ = await useFetch("/api/auth/request");
+const requests = requestOBJ.data.value;
+const viewRequest = ref(false);
+if(requests && requests.length > 0){
+  viewRequest.value = true;
+  console.log("on page: " + requests[0]);
+}
+
 
 const roles = ref(["Admin", "Editor", "Main Admin"]);
 </script>
