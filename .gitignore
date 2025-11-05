@@ -26,8 +26,7 @@ logs
 .idea
 
 # Local env files
-#.env
-.env.*
+.env
 !.env.example
 
 #Root .gitignore file
@@ -35,6 +34,5 @@ node_modules/
 
 package-lock.json
 
-mplf.db
-
-.env
+*.db
+# do not accept any kind of database file
