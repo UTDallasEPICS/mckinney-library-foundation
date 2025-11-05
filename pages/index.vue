@@ -1,3 +1,8 @@
+<!--TODO:
+    - make login a separate page
+    - make index the default dashboard 
+-->
+
 <!--Login Page -->
 
 <template>
@@ -43,6 +48,7 @@
 <script>
 import { ref, watchEffect } from "vue";
 import { navigateTo } from '#app';
+
 
 export default {
   setup() {

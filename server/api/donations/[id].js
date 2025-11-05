@@ -1,3 +1,8 @@
+/* TODO:
+    - separate each function into its own file and use TypeScript
+    - i.e. [id].get.ts, [id].put.ts, [id].delete.ts 
+    - repeat with every page
+*/
 // server/api/donations/[id].js
 import prisma from '~/server/utils/prisma'
 // import { Prisma } from '@prisma/client'; // REMOVE or comment out this line if only used for enums
