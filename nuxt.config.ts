@@ -23,5 +23,5 @@ export default defineNuxtConfig({
       user: process.env.NUXT_NODEMAILER_EMAIL,
       pass: process.env.NUXT_NODEMAILER_PASS,
     },
-  }
+  },
 })

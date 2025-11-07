@@ -15,12 +15,13 @@
             <tr class="bg-[#e5e9ec]">
               <td class="px-6 py-4 text-[#2d3e4d]">John</td>
               <td class="px-6 py-4 text-[#2d3e4d]">Doe</td>
-              <td class="px-6 py-4"><select class="w-full px-3 py-2 bg-white border border-gray-300 rounded text-[#2d3e4d] focus:outline-none focus:ring-2 focus:ring-[#5a6a77] cursor-pointer">
-                <option value="Admin">Admin</option>
-                <option value="Editor">Editor</option>
-                <option value="Main Admin">Main Admin</option>
-                <option value="Viewer">Viewer</option>
-              </select>
+              <td class="px-6 py-4">
+                <select class="w-full px-3 py-2 bg-white border border-gray-300 rounded text-[#2d3e4d] focus:outline-none focus:ring-2 focus:ring-[#5a6a77] cursor-pointer">
+                  <option value="Admin">Admin</option>
+                  <option value="Editor">Editor</option>
+                  <option value="Main Admin">Main Admin</option>
+                  <option value="Viewer">Viewer</option>
+                </select>
             </td>
             <td class="px-6 py-4 text-[#2d3e4d]">JohnDoe@gmail.com</td>
             <td class="px-6 py-4">
@@ -114,7 +115,9 @@ async function createAccount(id:string,email:string, name:string){
     body:{
       name:name,
       email:email,
+      permision: 0,
       id:id,
+      isRequest: true,
     }
   })
   reloadNuxtApp();
@@ -142,7 +145,6 @@ const requests = requestOBJ.data.value;
 const viewRequest = ref(false);
 if(requests && requests.length > 0){
   viewRequest.value = true;
-  console.log("on page: " + requests[0]);
 }
 
 

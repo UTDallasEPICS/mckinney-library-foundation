@@ -1,7 +1,3 @@
-<!--TODO:
-    - make login a separate page
-    - make index the default dashboard
--->
 <template>
   <div class = "flex min-h-screen min-w-screen">
     <div class = "basis-1/2 bg-[#34495e]" id="site_info">
@@ -64,14 +60,16 @@
           :function="otpFormProps.onSubmit"
         />
         <AccReqForm
+          key="loginAccReq"
           v-if="reqAccount && !userEmail"
-          :validation = "emailFormProps.validation"
+          :function="AccReqFormProps.function"
+          :request="AccReqFormProps.request"
 
         />
         <div v-if="!userEmail">
           <span>Don't have an account? </span> 
-          <button v-if="!reqAccount" @click="accountRequest" style = "font-weight: 500;" class ="hover:underline text-[14px] text-[#4a5f7a] transition-colors" type="button">Request an Invitation</button>
-          <button v-if="reqAccount" @click="accountRequest" style = "font-weight: 500;" class ="hover:underline text-[14px] text-[#4a5f7a] transition-colors" type="button">Cancel Request</button>
+          <button v-if="!reqAccount" @click="ShowAccountRequest" style = "font-weight: 500;" class ="hover:underline text-[14px] text-[#4a5f7a] transition-colors" type="button">Request an Invitation</button>
+          <button v-if="reqAccount" @click="ShowAccountRequest" style = "font-weight: 500;" class ="hover:underline text-[14px] text-[#4a5f7a] transition-colors" type="button">Cancel Request</button>
         </div>
       </div>
     </div>
@@ -113,6 +111,7 @@ const otpSchema = yup.object({
   })
 });
 
+
 const emailFormProps ={
   fieldname: 'email',  
   placeholderTxt: 'Enter your email',  
@@ -129,6 +128,11 @@ const otpFormProps ={
   message: 'Enter Code',  
   validation: otpSchema,    
   onSubmit: checkCode,
+}
+
+const AccReqFormProps ={
+  function: requestAccount,
+  request: true,
 }
 
 async function formSubmit(values:Record<string, any>){
@@ -184,7 +188,20 @@ async function checkCode(values:Record<string, any>){
    }
 }
 
-async function accountRequest(){
+async function requestAccount(values:Record<string,any>){
+    alert("account requested");
+    console.log(values.permission);
+    const info = await $fetch("/api/auth/request",{
+        method: "POST",
+        body:{
+            name: values.fName + " " + values.lName,
+            email: values.email
+        }
+    });
+    reloadNuxtApp();
+}
+
+async function ShowAccountRequest(){
   reqAccount.value = !reqAccount.value;
 }
 
