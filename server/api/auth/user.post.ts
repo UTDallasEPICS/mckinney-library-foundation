@@ -1,4 +1,5 @@
-import {PrismaClient} from '@prisma/client'
+import {PrismaClient} from '@prisma/client';
+import {v4 as uuidv4} from 'uuid';
 
 const prisma = new PrismaClient();
 
@@ -9,7 +10,7 @@ export default defineEventHandler(async (event) =>{
              name: body.name,
              email: body.email,
              permission: body.permission,
-             id: body.id,
+             id: body.id? body.id : uuidv4(),
          }
         
      })

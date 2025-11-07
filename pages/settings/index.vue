@@ -38,7 +38,6 @@ async function createAccount(values:Record<string,any>){
             name: values.fName + " " + values.lName,
             email: values.email,
             permission: parseInt(values.permission),
-            id:"the_admin_made_this",
             isRequest: false
         }
     });
