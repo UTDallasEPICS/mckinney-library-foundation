@@ -15,7 +15,7 @@
         <h3 v-if="!req">Role</h3>
         <VeeField v-if="!req" v-slot="{field}" name = "permission" value="0" placeholder="Viewer">
             <select v-bind="field" class="w-full px-3 py-2 bg-white border border-gray-300 rounded text-[#2d3e4d] focus:outline-none focus:ring-2 focus:ring-[#5a6a77] cursor-pointer">
-                <option selected value="0">Viewer</option>
+                <option value="0">Viewer</option>
                 <option value="1">Editor</option>
                 <option value="2">Admin</option>
                 <option value="3">Main Admin</option>

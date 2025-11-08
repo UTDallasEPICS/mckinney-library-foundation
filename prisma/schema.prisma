@@ -153,6 +153,7 @@ model User {
   email         String
   emailVerified Boolean   @default(false)
   permission    Int       @default(0)
+  status        Boolean   @default(false)
   image         String?
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @default(now()) @updatedAt
@@ -191,5 +192,7 @@ model Verification {
 model Request {
   id    String @id
   name String
+  permission Int @default(0)
+  status Boolean @default(false)
   email String @unique
 }
