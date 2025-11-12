@@ -81,13 +81,16 @@ import { navigateTo } from '#app';
 import * as yup from 'yup';
 import AccReqForm from '~/components/Login/AccReqForm.vue';
 import LoginForm from '~/components/Login/LoginForm.vue';
+import { useAuth } from '~/composables/auth/useAuth';
 import { authClient } from '~/lib/authClient';
 
-const session = await useFetch("/api/auth/session");
 
-if(session.data.value?.user){
+const {session, getSession} = useAuth();
+await getSession();
+if(session.value?.user){
   navigateTo("/dashboard");
 }
+
 const userEmail = ref("");
 const reqAccount = ref(false);
 
@@ -140,8 +143,8 @@ async function formSubmit(values:Record<string, any>){
    const userExists = await checkEmailExists(values.email);
    if(userExists){
      const { data, error } = await authClient.emailOtp.sendVerificationOtp({
-        email: values.email, // required
-        type: "sign-in", // required
+        email: values.email,
+        type: "sign-in",
       });
       if(error){
        console.log(error);

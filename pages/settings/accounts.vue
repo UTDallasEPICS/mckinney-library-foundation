@@ -10,7 +10,7 @@
   :request="ExistingAccountsProps.request"
 />
 
-<h1 v-if="requests && requests.length > 0" class="text-[36px] text-[#2c3e50] text-center py-5 mb-2"> Manage Accounts </h1>
+<h1 v-if="requests && requests.length > 0" class="text-[36px] text-[#2c3e50] text-center py-5 mb-2">Account Requests </h1>
 <AccountTable v-if="requests && requests.length > 0"
   key= "RequestTable"
   :accounts="requestTableProps.requests"
@@ -108,7 +108,6 @@ async function removeRequest(id:string){
   })
   reloadNuxtApp();
 }
-
 
 const users = ref([
   { firstName: "John", lastName: "Doe", role: "Admin", email: "johndoe@gmail.com", status: "Active" },
