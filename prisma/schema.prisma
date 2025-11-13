@@ -1,170 +1,35 @@
-
 generator client {
   provider = "prisma-client-js"
 }
-
-//If Prisma can't find the database file, check your .env file to see whether the DATABASE_URL is an absolute
-//or relative path. If it's an absolute path, make sure it's the absolute path to the database file for your
-//computer and not on someone else's computer
 
 datasource db {
   provider = "sqlite"
   url      = env("DATABASE_URL")
 }
 
-//An ? next to a data type means that the attribute is nullable
-
-model donations {
-  donationID        Int     @id @default(autoincrement())
-  donorID           Int? //Anonymous donations won't have a donorID and won't be associated with a Donor tuple
-  monetaryAmount    Float
-  nonmonetaryAmount String
-  amountSpent       Float
-  donationMethod    String
-  allocatedFor      String
-  date              String
-  status            String
-  boardMemberID     Int?
-  lastEditorID      Int
-  notes             String?
-
-  donors      donors? @relation(fields: [donorID], references: [donorID], onDelete: NoAction, onUpdate: NoAction)
-  boardMember users?  @relation("donationBoardMember", fields: [boardMemberID], references: [userID], onDelete: NoAction, onUpdate: NoAction)
-  lastEditor  users   @relation("donationLastEditor", fields: [lastEditorID], references: [userID], onDelete: NoAction, onUpdate: NoAction)
-}
-
-//Setting onDelete and onUpdate to NoAction means that if someone tries to update or delete a donorID referenced by
-//a donation, SQLite will throw an error and prevent the donorID from being updated or deleted, either in the donor
-//tuple or the donation tuple. 
-
-model donors {
-  donorID           Int     @id @default(autoincrement())
-  contactInfoID     Int     @unique
-  firstDonationDate String  @default("DATETIME('now')")
-  lastDonationDate  String  @default("DATETIME('now')")
-  lastContacted     String
-  numDonations      Int
-  lifetimeDonations Float
-  lastEditorID      Int
-  notes             String?
-
-  donations   donations[]
-  contactInfo contactInfo @relation(fields: [contactInfoID], references: [contactInfoID], onDelete: NoAction, onUpdate: Cascade)
-  lastEditor  users       @relation("donorLastEditor", fields: [lastEditorID], references: [userID], onDelete: NoAction, onUpdate: NoAction)
-}
-
-model grants {
-  grantID                    Int     @id @default(autoincrement())
-  contactInfoID              Int     @unique
-  monetaryAmountRequested    Float
-  nonmonetaryAmountRequested String
-  monetaryAmountReceived     Float?
-  nonmonetaryAmountReceived  String?
-  monetaryAmountSpent        Float?
-  allocatedFor               String
-  proposalDate               String
-  awardDate                  String?
-  startDate                  String?
-  expirationDate             String?
-  status                     String
-  boardMemberID              Int?
-  lastEditorID               Int
-  notes                      String?
-
-  contactInfo contactInfo @relation(fields: [contactInfoID], references: [contactInfoID], onDelete: NoAction, onUpdate: Cascade)
-  boardMember users?      @relation("grantBoardMember", fields: [boardMemberID], references: [userID], onDelete: NoAction, onUpdate: NoAction)
-  lastEditor  users       @relation("grantLastEditor", fields: [lastEditorID], references: [userID], onDelete: NoAction, onUpdate: NoAction)
-}
-
-model rolePermissions {
-  role                   String  @id @unique
-  viewDonors             Int
-  emailDonors            Int
-  viewDonationsAndGrants Int
-  addDonationsAndGrants  Int
-  viewAccounts           Int
-  addAccounts            Int
-  manageAccounts         Int
-  viewRoles              Int
-  manageRoles            Int
-  users                  users[]
-}
-
-model userInvitations {
-  userInvitationID         Int    @id @default(autoincrement())
-  invitingUserID           Int
-  invitedUserID            Int
-  invitationCreationDate   String @default("DATETIME('now')")
-  invitationExpirationDate String @default("DATETIME('now', '+24 hours')")
-
-  invitingUserID_to_users users @relation("invitingUserID", fields: [invitingUserID], references: [userID], onDelete: NoAction, onUpdate: NoAction)
-  invitedUserID_to_users  users @relation("invitedUserID", fields: [invitedUserID], references: [userID], onDelete: NoAction, onUpdate: NoAction)
-}
-
-//Setting onDelete and onUpdate to NoAction means that if someone tries to update or delete an invitingUserID or invitedUserID referenced by
-//a userInvitation, SQLite will throw an error and prevent the invitingUserID/invitedUserID from being updated or deleted, either in the
-//userInvitation tuple or the user tuple
-
-model users {
-  userID        Int     @id @default(autoincrement())
-  contactInfoID Int     @unique
-  role          String
-  status        String
-  creationDate  String  @default("DATETIME('now')")
-  lastEditorID  Int?
-  notes         String?
-
-  invitingUserID_to_invitations userInvitations[] @relation("invitingUserID")
-  invitedUserID_to_invitations  userInvitations[] @relation("invitedUserID")
-  rolePermissions               rolePermissions   @relation(fields: [role], references: [role], onDelete: NoAction, onUpdate: Cascade)
-  contactInfo                   contactInfo       @relation(fields: [contactInfoID], references: [contactInfoID], onDelete: NoAction, onUpdate: Cascade)
-
-  donationBoardMember donations[] @relation("donationBoardMember")
-  grantBoardMember    grants[]    @relation("grantBoardMember")
-
-  donationEditor  donations[] @relation("donationLastEditor")
-  donorLastEditor donors[]    @relation("donorLastEditor")
-  grantLastEditor grants[]    @relation("grantLastEditor")
-}
-
-//Setting onDelete to NoAction means that if someone tries to delete a role referenced by a user, SQLite will throw an error and prevent the
-//the role from being deleted, either in the rolePermissions table or the user tuple
-
-//Setting onUpdate to Cascade means that if someone updates a role's permissions in the rolePermissions table, all users that have that role
-//will have their role permissions automatically updated
-
-model contactInfo {
-  contactInfoID    Int     @id @default(autoincrement())
-  firstName        String  @default("Anonymous")
-  lastName         String  @default("Anonymous")
-  organizationName String  @default("No organization listed")
-  email            String  @default("No email listed")
-  phoneNumber      BigInt?
-  address          String  @default("No address listed")
-  notes            String?
-  users            users?
-  donors           donors?
-  grants           grants?
-}
-
 model User {
-  id            String    @id
-  name          String
-  email         String
-  emailVerified Boolean   @default(false)
-  permission    Int       @default(0)
-  status        Boolean   @default(false)
+  id            String        @id @default(cuid())
+  name          String        @unique @default("Anonymous")
+  status        Int           @default(0) // 0: active, 1: frozen, 2: deleted
+  phone         String?
+  email         String        @default("mplfboard@gmail.com")
+  emailVerified Boolean       @default(false)
+  permission    Int           @default(0) // main admin, admin, editor, 0: viewer
   image         String?
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @default(now()) @updatedAt
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @default(now()) @updatedAt
   sessions      Session[]
+  accounts      Account[]
+  donations     Donation[]
+  grants        Grant[]
+  expenditures  Expenditure[]
 
   @@unique([email])
   @@map("user")
 }
 
 model Session {
-  id        String   @id
+  id        String   @id @default(cuid())
   expiresAt DateTime
   token     String
   createdAt DateTime @default(now())
@@ -178,8 +43,27 @@ model Session {
   @@map("session")
 }
 
+model Account {
+  id                    String    @id @default(cuid())
+  accountId             String
+  providerId            String
+  userId                String
+  user                  User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  accessToken           String?
+  refreshToken          String?
+  idToken               String?
+  accessTokenExpiresAt  DateTime?
+  refreshTokenExpiresAt DateTime?
+  scope                 String?
+  password              String?
+  createdAt             DateTime  @default(now())
+  updatedAt             DateTime  @updatedAt
+
+  @@map("account")
+}
+
 model Verification {
-  id         String   @id
+  id         String   @id @default(cuid())
   identifier String
   value      String
   expiresAt  DateTime
@@ -187,6 +71,84 @@ model Verification {
   updatedAt  DateTime @default(now()) @updatedAt
 
   @@map("verification")
+}
+
+model AccountCreationRequest {
+  id    String @id @default(cuid())
+  name  String @default("Anonymous")
+  email String
+}
+
+model Donor {
+  id                     String     @id @default(cuid())
+  name                   String     @unique @default("Anonymous")
+  address                String?
+  phone                  String?
+  email                  String?
+  preferredCommunication String? // phone or email
+  notes                  String?
+  webLink                String?
+  organization           String?
+  lastDonationDate       DateTime?
+  firstDonationDate      DateTime?   
+  donations              Donation[]
+}
+
+model Grantor {
+  id           String  @id @default(cuid())
+  name         String  @default("Anonymous")
+  email        String?
+  webLink      String?
+  organization String?
+  grants       Grant[]
+}
+
+model Donation {
+  id                String    @id @default(cuid())
+  boardMemberId     String?
+  boardMember       User?     @relation(fields: [boardMemberId], references: [id], onDelete: Restrict)
+  donorId           String?
+  donor             Donor?    @relation(fields: [donorId], references: [id], onDelete: Restrict)
+  event             String?
+  method            String?
+  monetaryAmount    String?
+  nonMonetaryAmount String?
+  status            Int       @default(0) // 0: pending, 1: completed
+  notes             String?
+  receivedDate      DateTime?
+  lastEditDate      DateTime?
+}
+
+model Grant {
+  id                String    @id @default(cuid())
+  boardMemberId     String?
+  boardMember       User?     @relation(fields: [boardMemberId], references: [id], onDelete: Restrict)
+  grantorId         String?
+  grantor           Grantor?  @relation(fields: [grantorId], references: [id], onDelete: Restrict)
+  purpose           String?
+  method            String?
+  monetaryAmount    String?
+  nonMonetaryAmount String?
+  status            Int?      @default(0) // 0: requested, 1: completed
+  notes             String?
+  proposedDate      DateTime
+  receivedDate      DateTime?
+  startDate         DateTime
+  endDate           DateTime
+  lastEditDate      DateTime
+}
+
+model Expenditure {
+  id                String    @id @default(cuid())
+  boardMemberId     String?
+  boardMember       User?     @relation(fields: [boardMemberId], references: [id], onDelete: Restrict)
+  purpose           String?
+  method            String?
+  monetaryAmount    String?
+  nonMonetaryAmount String?
+  notes             String?
+  spentDate         DateTime?
+  lastEditDate      DateTime
 }
 
 model Request {
