@@ -133,7 +133,7 @@ const groupEmailSchema = yup.object({
 
 
 async function groupEmail(values:Record<string, any>){
-  await $fetch("/api/donors/email",{
+  await $fetch("/api/email",{
     method:"POST",
     body:{
       subject:values.Subject,

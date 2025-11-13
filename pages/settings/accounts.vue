@@ -27,14 +27,14 @@ import { ref } from 'vue';
 import AccountTable from '~/components/accounts/AccountTable.vue';
 
 
-const requestOBJ = await useFetch("/api/auth/request");
+const requestOBJ = await useFetch("/api/request");
 const requests = requestOBJ.data.value;
 const viewRequest = ref(false);
 if(requests && requests.length > 0){
   viewRequest.value = true;
 }
 
-const usersOBJ = await useFetch("/api/users/user");
+const usersOBJ = await useFetch("/api/user");
 const vUsers = usersOBJ.data.value;
 
 
@@ -60,13 +60,13 @@ const ExistingAccountsProps ={
 
 
 async function freezeAccount(account: {id: string, name: string, email: string, permission: number, status: boolean}){
-  //alert("freezing/unfreezing");
   account.status = !account.status;
-  await $fetch("/api/users/status",{
+  const id = account.id;
+  await $fetch(`/api/user/${id}`,{
       method: "PATCH",
       body:{
-        id:account.id,
-        status: account.status
+        status: account.status,
+        permission:account.permission
       }
     }
   )
@@ -74,11 +74,8 @@ async function freezeAccount(account: {id: string, name: string, email: string, 
 }
 
 async function deleteAccount(id:string){
-  await $fetch("/api/users/user",{
+  await $fetch(`/api/user/${id}`,{
     method:"DELETE",
-    body:{
-      id:id
-    }
   })
   reloadNuxtApp();
 }
@@ -86,7 +83,7 @@ async function deleteAccount(id:string){
 
 async function createAccount(account: {id: string, name: string, email: string, permission: number, status: boolean}){
   alert("account created for : " + account.email);
-  await $fetch("/api/auth/user",{
+  await $fetch("/api/user",{
     method: "POST",
     body:{
       name:account.name,
@@ -95,27 +92,14 @@ async function createAccount(account: {id: string, name: string, email: string, 
       id:account.id,
       isRequest: true,
     }
-  })
+  });
   reloadNuxtApp();
 }
 
 async function removeRequest(id:string){
-  await $fetch("/api/auth/request", {
+  await $fetch(`/api/request/${id}`, {
     method: 'DELETE',
-    body:{
-      id:id,
-    }
-  })
+  });
   reloadNuxtApp();
 }
-
-const users = ref([
-  { firstName: "John", lastName: "Doe", role: "Admin", email: "johndoe@gmail.com", status: "Active" },
-  { firstName: "Jane", lastName: "Doe", role: "Editor", email: "janedoe@gmail.com", status: "Frozen" },
-  { firstName: "Main", lastName: "Admin", role: "Main Admin", email: "MPLFBoard@gmail.com", status: "Active" }
-]);
-//logic to check session permission level here
-//
-
-const roles = ref(["Admin", "Editor", "Main Admin"]);
 </script>

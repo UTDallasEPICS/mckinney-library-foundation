@@ -85,12 +85,14 @@ import { useAuth } from '~/composables/auth/useAuth';
 import { authClient } from '~/lib/authClient';
 
 
+const route = useRoute();
+route.params.id
+
 const {session, getSession} = useAuth();
 await getSession();
-if(session.value?.user){
-  navigateTo("/dashboard");
-}
-
+// if(session.value?.user){
+//     navigateTo("/dashboard");
+// }
 const userEmail = ref("");
 const reqAccount = ref(false);
 
@@ -159,11 +161,8 @@ async function formSubmit(values:Record<string, any>){
 }
 
 async function checkEmailExists(email:string){
-  const data = await $fetch("/api/auth/user",{
-    query: {
-      email: email
-    }
-  });
+  const id = email;
+  const data = await $fetch(`/api/user/${id}`);
   if(data.name != null){
     return true;
   }
@@ -180,9 +179,11 @@ async function checkCode(values:Record<string, any>){
          email: userEmail.value,
          otp: values.otp_code.trim(), 
        });
-       navigateTo("/dashboard");
        if(error){
          console.error(error)
+       }
+       else{
+        navigateTo("/dashboard");
        }
      }
      catch(error){
@@ -193,8 +194,7 @@ async function checkCode(values:Record<string, any>){
 
 async function requestAccount(values:Record<string,any>){
     alert("account requested");
-    console.log(values.permission);
-    const info = await $fetch("/api/auth/request",{
+    const info = await $fetch("/api/request",{
         method: "POST",
         body:{
             name: values.fName + " " + values.lName,

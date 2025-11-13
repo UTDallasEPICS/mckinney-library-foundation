@@ -25,7 +25,7 @@
     </div>
   </template>
 <script setup>
-  const session = await useFetch("/api/auth/session");
+  const session = await useFetch("/api/session");
   const permission = ref(50);
   if(!session.data.value?.user){
     //navigateTo("/");

@@ -15,7 +15,7 @@
             <td class="px-6 py-4 text-[#2d3e4d] text-center"> {{ account.name }}</td>
             <td class="px-6 py-4 text-[#2d3e4d] text-center">{{ account.email }} </td> 
             <td class="px-6 py-4">
-                <select v-if="!req" v-model="permissions[index]" @change="updatePermission(account.id,permissions[index])" class="w-full px-3 py-2 bg-white border border-gray-300 rounded text-[#2d3e4d] cursor-pointer">
+                <select v-if="!req" v-model="permissions[index]" @change="updatePermission(account.id,permissions[index],account.status)" class="w-full px-3 py-2 bg-white border border-gray-300 rounded text-[#2d3e4d] cursor-pointer">
                     <option value="0">Viewer</option>
                     <option value="1">Editor</option>
                     <option value="2">Admin</option>
@@ -41,12 +41,12 @@
 
 <script setup lang="ts">
 
-async function updatePermission(id:string,permission:string){
-    await $fetch("/api/users/permission",{
+async function updatePermission(id:string,permission:string, status:boolean){
+    await $fetch(`/api/user/${id}`,{
         method:"PATCH",
         body:{
-            id:id,
-            permission:Number(permission)
+            permission:Number(permission),
+            status:status
         }
     }
     )

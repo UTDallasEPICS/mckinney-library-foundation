@@ -32,7 +32,7 @@ const AccReqFormProps ={
 
 async function createAccount(values:Record<string,any>){
     alert("account created");
-    const info = await $fetch("/api/auth/user",{
+    const info = await $fetch("/api/user",{
         method: "POST",
         body:{
             name: values.fName + " " + values.lName,
@@ -43,4 +43,5 @@ async function createAccount(values:Record<string,any>){
     });
     navigateTo("/settings/accounts");
 }
+
 </script>
