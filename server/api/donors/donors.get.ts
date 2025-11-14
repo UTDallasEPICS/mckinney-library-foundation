@@ -6,3 +6,5 @@ export default defineEventHandler(async () =>{
     const data = await prisma.donor.findMany();
     return data;
 });
+
+// --- IGNORE ---
