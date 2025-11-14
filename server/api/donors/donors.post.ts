@@ -14,6 +14,7 @@ export default defineEventHandler(async (event) =>{
                 notes: body.notes,
                 webLink: body.webLink,
                 organization: body.organization,
+                //last and first donations here is redundant bc already referencing donations below
                 lastDonationDate: body.lastDonationDate,
                 firstDonationDate: body.firstDonationDate,
                 donations: body.donations
