@@ -5,6 +5,7 @@ export default defineNuxtConfig({
     '@vee-validate/nuxt',
     'nuxt-nodemailer',
     '@nuxtjs/tailwindcss',
+    'nuxt-lucide-icons'
   ],
   veeValidate: {
     autoImports: true,

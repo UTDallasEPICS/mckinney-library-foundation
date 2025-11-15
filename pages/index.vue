@@ -3,14 +3,14 @@
     - make index the default dashboard
 -->
 <template>
-  <div class = "flex min-h-screen min-w-screen">
+  <div class = "flex min-h-screen min-w-screen bg-blue-100">
     <div class = "basis-1/2 bg-[#34495e]" id="site_info">
       <div class="w-3/4 mx-auto">
         <div class="mt-6 mb-6 flex flex-col items-center">
           <img src="/logo.jpg" alt="MPLF Logo" class="h-24 w-48">
         </div>
         <div class = "text-center text-white">
-          <h1 class ="text-[42px] mb-4 leading-tight" style ="font-weight: 700; letter-spacing: -0.5px;" >McKinney Public Library Foundation</h1>
+          <h1 className ="text-[42px] bg-red-500 mb-4 leading-tight" style ="font-weight: 700; letter-spacing: -0.5px;" >McKinney Public Library Foundation</h1>
           <p class ="text-[20px] leading-relaxed opacity-90" style="font-weight: 400;">Empowering Communities Through Knowledge &amp; Strategic Philanthropy</p>
         </div>
         <div class = "text-white">
