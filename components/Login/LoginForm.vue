@@ -3,7 +3,7 @@
         <VeeForm :validation-schema="validation" @submit="submitAction">
             <label class="text-[13px] text-[#6b7785] mb-1.5 block" style="font-weight: 500;"> {{ message }}</label>
             <VeeErrorMessage class="text-red-500" :name= "fieldName"/>
-            <VeeField v-slot="{field, meta}" :name="fieldName" :placeholder="placeholderTxt" :type ="fieldType">
+            <VeeField v-slot="{field}" :name="fieldName" :placeholder="placeholderTxt" :type ="fieldType">
                 <input v-bind="field" 
                 class ="font-medium border-gray-200 w-full min-w-0 rounded-md bg-[#f5f6f8] border h-12 text-[15px] px-3 py-1 outline-none"
                 :placeholder="placeholderTxt"></input>

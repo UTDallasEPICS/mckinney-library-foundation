@@ -1,162 +1,121 @@
 <template>
-  <div class="table-container">
-    <h1>Manage Accounts</h1>
+<h1 class="text-[36px] text-[#2c3e50] text-center py-5 mb-2"> Manage Accounts </h1>
+ <AccountTable 
+  key= "ExistingAccounts"
+  :accounts="ExistingAccountsProps.users"
+  :accept-function="ExistingAccountsProps.acceptFunction"
+  :deny-function="ExistingAccountsProps.denyfunciton"
+  :accept-name="ExistingAccountsProps.acceptName"
+  :deny-name="ExistingAccountsProps.denyName"
+  :request="ExistingAccountsProps.request"
+/>
 
-    <table v-if="users.length > 0">
-      <thead>
-        <tr>
-          <th>First Name</th>
-          <th>Last Name</th>
-          <th>Role</th>
-          <th>Email</th>
-          <th colspan="2">Actions</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr v-for="(user, index) in users" :key="index">
-          <td>{{ user.firstName }}</td>
-          <td>{{ user.lastName }}</td>
-          <td>
-            <select v-model="user.role">
-              <option v-for="role in roles" :key="role" :value="role">
-                {{ role }}
-              </option>
-            </select>
-          </td>
-          <td>{{ user.email }}</td>
-          <td class="actions-cell">
-            <button :class="['status-button', user.status === 'Active' ? 'freeze' : 'unfreeze']">
-              {{ user.status === 'Active' ? 'Freeze' : 'Unfreeze' }}
-            </button>
-          </td>
-          <td class="actions-cell">
-            <button class="delete-button">Delete</button>
-          </td>
-        </tr>
-      </tbody>
-    </table>
-    
-    <div v-else class="no-data-message">
-      No accounts found. Add your first account.
-    </div>
-  </div>
+<h1 v-if="requests && requests.length > 0" class="text-[36px] text-[#2c3e50] text-center py-5 mb-2">Account Requests </h1>
+<AccountTable v-if="requests && requests.length > 0"
+  key= "RequestTable"
+  :accounts="requestTableProps.requests"
+  :accept-function="requestTableProps.acceptFunction"
+  :deny-function="requestTableProps.denyfunciton"
+  :accept-name="requestTableProps.acceptName"
+  :deny-name="requestTableProps.denyName"
+  :request="requestTableProps.request"
+  />
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { ref } from 'vue';
+import AccountTable from '~/components/accounts/AccountTable.vue';
+
+
+const requestOBJ = await useFetch("/api/auth/request");
+const requests = requestOBJ.data.value;
+const viewRequest = ref(false);
+if(requests && requests.length > 0){
+  viewRequest.value = true;
+}
+
+const usersOBJ = await useFetch("/api/users/user");
+const vUsers = usersOBJ.data.value;
+
+
+const requestTableProps ={
+  requests: requests,
+  acceptName: "Accept",
+  denyName: "Deny",
+  acceptFunction: createAccount,
+  denyfunciton: removeRequest,
+  request: true
+}
+
+const ExistingAccountsProps ={
+  users: vUsers,
+  acceptName: "Freeze",
+  denyName: "Delete",
+  acceptFunction: freezeAccount,
+  denyfunciton: deleteAccount,
+  request: false
+}
+
+
+
+
+async function freezeAccount(account: {id: string, name: string, email: string, permission: number, status: boolean}){
+  //alert("freezing/unfreezing");
+  account.status = !account.status;
+  await $fetch("/api/users/status",{
+      method: "PATCH",
+      body:{
+        id:account.id,
+        status: account.status
+      }
+    }
+  )
+  refreshNuxtData();
+}
+
+async function deleteAccount(id:string){
+  await $fetch("/api/users/user",{
+    method:"DELETE",
+    body:{
+      id:id
+    }
+  })
+  reloadNuxtApp();
+}
+
+
+async function createAccount(account: {id: string, name: string, email: string, permission: number, status: boolean}){
+  alert("account created for : " + account.email);
+  await $fetch("/api/auth/user",{
+    method: "POST",
+    body:{
+      name:account.name,
+      email:account.email,
+      permision: 0,
+      id:account.id,
+      isRequest: true,
+    }
+  })
+  reloadNuxtApp();
+}
+
+async function removeRequest(id:string){
+  await $fetch("/api/auth/request", {
+    method: 'DELETE',
+    body:{
+      id:id,
+    }
+  })
+  reloadNuxtApp();
+}
 
 const users = ref([
   { firstName: "John", lastName: "Doe", role: "Admin", email: "johndoe@gmail.com", status: "Active" },
   { firstName: "Jane", lastName: "Doe", role: "Editor", email: "janedoe@gmail.com", status: "Frozen" },
   { firstName: "Main", lastName: "Admin", role: "Main Admin", email: "MPLFBoard@gmail.com", status: "Active" }
 ]);
+//logic to check session permission level here
+//
 
 const roles = ref(["Admin", "Editor", "Main Admin"]);
 </script>
-
-<style scoped>
-
-@import url('https://fonts.googleapis.com/css2?family=Aclonica&display=swap');
-@import url('https://fonts.googleapis.com/css2?family=Alice&display=swap');
-/* Match the header navigation styles */
-.table-container {
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  padding: 0;
-  margin: 20px auto;
-}
-
-h1 {
-  text-align: center;
-  color: #42446A;
-  font-family: 'Aclonica', san-serif;
-  text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.2);
-  margin-bottom: 30px;
-  font-size: 30px;
-}
-
-/* Style the table to be consistent with the navigation */
-table {
-  width: 98%;
-  max-width: 1400px;
-  border-collapse: collapse;
-  font-size: 14px;
-  font-weight: bold;
-  font-family: sans-serif;
-  color: #545679;
-}
-
-/* Headers: Blue background with white text */
-th {
-  background-color: #545679;
-  color: white;
-  font-weight: bold;
-  text-transform: uppercase;
-  padding: 15px;
-  text-align: center;
-  border-bottom: 2px solid #ddd;
-}
-
-/* Table body */
-td {
-  background-color: white;
-  padding: 10px;
-  border: 1px solid #ddd;
-  text-align: center;
-}
-
-/* Style the select dropdown */
-select {
-  width: 100%;
-  padding: 8px;
-  border: 1px solid #ddd;
-  border-radius: 4px;
-  font-size: 14px;
-  background-color: white;
-  color: #545679;
-}
-
-/* Action buttons */
-.actions-cell {
-  white-space: nowrap;
-  padding: 15px;
-}
-
-.status-button, .delete-button {
-  padding: 6px 12px;
-  border-radius: 4px;
-  font-size: 12px;
-  font-weight: bold;
-  cursor: pointer;
-  border: none;
-  width: 100%;
-  margin: 0 2px; /* Add small horizontal spacing between buttons */
-  display: inline-block; /* Keep buttons side-by-side */
-}
-
-.freeze {
-  background-color: #FFC107;
-  color: black;
-}
-
-.unfreeze {
-  background-color: #4CAF50;
-  color: white;
-}
-
-.delete-button {
-  background-color: #f44336;
-  color: white;
-}
-
-/* No data message */
-.no-data-message {
-  width: 98%;
-  max-width: 1400px;
-  padding: 20px;
-  text-align: center;
-  font-weight: bold;
-}
-</style>

@@ -1,7 +1,3 @@
-<!--TODO:
-    - make login a separate page
-    - make index the default dashboard
--->
 <template>
   <div class = "flex min-h-screen min-w-screen bg-blue-100">
     <div class = "basis-1/2 bg-[#34495e]" id="site_info">
@@ -35,13 +31,13 @@
     <div class = "flex items-center basis-1/2" id="login">
       <div class = "bg-white rounded-3xl shadow-2xl p-10 border border-gray-100 w-4/5 mx-auto my">
         <img src="/logo.jpg" alt="MPLF Logo" class ="h-14 mx-auto" />
-        <div v-if="!reqAccount" class = "text-center">
+        <div v-if="!reqAccount || userEmail" class = "text-center">
           <h2 class = "text-[36px] text-[#2c3e50] mb-2" style="font-weight: 700;">WELCOME!</h2>
           <p class = "text-[15px] text-[#6b7785]">Sign in to access the Donor &amp; Grant Tracker</p>
         </div>
-        <div v-if="reqAccount">
-          <h2 class = "text-[36px] text-[#2c3e50] mb-2" style="font-weight: 700;">SIGN UP!</h2>
-          <p class = "text-[15px] text-[#6b7785]">Fill out the form to request an account.</p>
+        <div v-if="reqAccount && !userEmail">
+          <h2 class = "text-[36px] text-[#2c3e50] mb-2 text-center" style="font-weight: 700;">SIGN UP!</h2>
+          <p class = "text-[15px] text-[#6b7785] text-center">Fill out the form to request an account.</p>
         </div>
         <LoginForm 
           v-if="userEmail === '' && !reqAccount" 
@@ -64,13 +60,17 @@
           :function="otpFormProps.onSubmit"
         />
         <AccReqForm
-          v-if="reqAccount"
-          :validation = "emailFormProps.validation"
+          key="loginAccReq"
+          v-if="reqAccount && !userEmail"
+          :function="AccReqFormProps.function"
+          :request="AccReqFormProps.request"
 
         />
-        <span>Don't have an account? </span> 
-        <button v-if="!reqAccount" @click="accountRequest" style = "font-weight: 500;" class ="hover:underline text-[14px] text-[#4a5f7a] transition-colors" type="button">Request an Invitation</button>
-        <button v-if="reqAccount" @click="accountRequest" style = "font-weight: 500;" class ="hover:underline text-[14px] text-[#4a5f7a] transition-colors" type="button">Cancel Request</button>
+        <div v-if="!userEmail">
+          <span>Don't have an account? </span> 
+          <button v-if="!reqAccount" @click="ShowAccountRequest" style = "font-weight: 500;" class ="hover:underline text-[14px] text-[#4a5f7a] transition-colors" type="button">Request an Invitation</button>
+          <button v-if="reqAccount" @click="ShowAccountRequest" style = "font-weight: 500;" class ="hover:underline text-[14px] text-[#4a5f7a] transition-colors" type="button">Cancel Request</button>
+        </div>
       </div>
     </div>
   </div>
@@ -81,13 +81,16 @@ import { navigateTo } from '#app';
 import * as yup from 'yup';
 import AccReqForm from '~/components/Login/AccReqForm.vue';
 import LoginForm from '~/components/Login/LoginForm.vue';
+import { useAuth } from '~/composables/auth/useAuth';
 import { authClient } from '~/lib/authClient';
 
-const session = await useFetch("/api/auth/session");
 
-if(session.data.value?.user){
+const {session, getSession} = useAuth();
+await getSession();
+if(session.value?.user){
   navigateTo("/dashboard");
 }
+
 const userEmail = ref("");
 const reqAccount = ref(false);
 
@@ -111,6 +114,7 @@ const otpSchema = yup.object({
   })
 });
 
+
 const emailFormProps ={
   fieldname: 'email',  
   placeholderTxt: 'Enter your email',  
@@ -129,13 +133,18 @@ const otpFormProps ={
   onSubmit: checkCode,
 }
 
+const AccReqFormProps ={
+  function: requestAccount,
+  request: true,
+}
+
 async function formSubmit(values:Record<string, any>){
   userEmail.value = values.email;
    const userExists = await checkEmailExists(values.email);
    if(userExists){
      const { data, error } = await authClient.emailOtp.sendVerificationOtp({
-        email: values.email, // required
-        type: "sign-in", // required
+        email: values.email,
+        type: "sign-in",
       });
       if(error){
        console.log(error);
@@ -182,7 +191,20 @@ async function checkCode(values:Record<string, any>){
    }
 }
 
-async function accountRequest(){
+async function requestAccount(values:Record<string,any>){
+    alert("account requested");
+    console.log(values.permission);
+    const info = await $fetch("/api/auth/request",{
+        method: "POST",
+        body:{
+            name: values.fName + " " + values.lName,
+            email: values.email
+        }
+    });
+    reloadNuxtApp();
+}
+
+async function ShowAccountRequest(){
   reqAccount.value = !reqAccount.value;
 }
 
