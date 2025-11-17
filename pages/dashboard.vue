@@ -15,11 +15,17 @@
         <p class="text-slate-500 mt-1">Manage donation records, track contributions, and view donor information.</p>
       </div>
     </div>
-    <div class="mt-5 grid gap-3">
+    <div  class="mt-5 grid gap-3">
       <NuxtLink to = "/donations">
       <button class="w-full rounded-lg bg-slate-600 px-4 py-3 text-white hover:bg-slate-700">View Donations</button>
     </NuxtLink>
-      <button class="w-full rounded-lg bg-slate-600 px-4 py-3 text-white hover:bg-slate-700">Add Donation</button>
+      <button @click = "showMenu = true" class="w-full rounded-lg bg-slate-600 px-4 py-3 text-white hover:bg-slate-700">Add Donation</button>
+      <div v-if = "showMenu"  >
+      
+        <DonorForm @close="showMenu = false"/>
+     
+      </div>
+     
       <button class="w-full rounded-lg bg-slate-600 px-4 py-3 text-white hover:bg-slate-700">View Donors</button>
     </div>
   </div>
@@ -98,11 +104,20 @@
 </section>
 </main>
 </div>
+
 </template>
 
 <script setup lang="ts">
 
 import {Settings,FileText} from 'lucide-vue-next';
+
+import DonorForm from '~/components/forms/DonorForm.vue';
+import { ref } from 'vue';
+
+
+
+const showMenu = ref(false)
+
 
 </script>
 
