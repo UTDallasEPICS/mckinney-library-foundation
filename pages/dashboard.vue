@@ -1,4 +1,5 @@
 <template>
+  <Header/>
 <div class="min-h-screen bg-slate-50">
 <main class="mx-auto max-w-7xl px-6 mt-10">
 <section class="py-8">
@@ -46,7 +47,10 @@
       <NuxtLink to = "/grants">
       <button class="w-full rounded-lg bg-slate-600 px-4 py-3 text-white hover:bg-slate-700">View Grants</button>
     </NuxtLink>
-      <button class="w-full rounded-lg bg-slate-600 px-4 py-3 text-white hover:bg-slate-700">Add Grant</button>
+      <button @click="showGrantMenu = true" class="w-full rounded-lg bg-slate-600 px-4 py-3 text-white hover:bg-slate-700">Add Grant</button>
+      <div  v-if = "showGrantMenu"> 
+        <GrantForm @close="showGrantMenu = false"/>
+      </div>
     </div>
   </div>
 
@@ -112,11 +116,15 @@
 import {Settings,FileText} from 'lucide-vue-next';
 
 import DonorForm from '~/components/forms/DonorForm.vue';
+import GrantForm from '~/components/forms/GrantForm.vue';
+import Header from '~/components/Header.vue';
 import { ref } from 'vue';
 
 
 
 const showMenu = ref(false)
+
+const showGrantMenu = ref(false)
 
 
 </script>
