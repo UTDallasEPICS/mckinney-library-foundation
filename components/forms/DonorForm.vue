@@ -1,105 +1,67 @@
-<template> 
-<div class="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-<div class="bg-slate-100 w-[30vw] h-[75vh] overflow-y-auto  rounded-xl shadow-xl p-8 relative">
+<template>
+    <div class="bg-[#e5e9ec] p-0 gap-0 border-0 rounded-md">
+        <VeeForm :initial-values="initValues" @submit="submitDonor" class= "w-[800px] max-h-[130vh] overflow-y-auto mx-4">
+            <div class = "flex flex-col gap-2 sm:text-left px-6 pt-6 pb-4 space-y-0">
+              <h1 class = "form-title"> Donor Information</h1>
+            </div>     
+            <VeeField hidden name="id"></VeeField>  
+            <div class="grid grid-cols-2 gap-4">
+                <h2 class = "form-field-label"> first name </h2>
+                <h2 class = "form-field-label"> last name </h2>
+                <VeeField :disabled="viewOnly" name="fName" class="form-input focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px]"></VeeField>
+                <VeeField :disabled="viewOnly" name="lName" class="form-input focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px]"></VeeField>
+            </div>
 
-<div class="flex items-center justify-between mb-6">
-  <h2 class="text-2xl font-semibold text-slate-700">Donor Info</h2>
-  <button @click="emit('close')" class="text-slate-500 hover:text-slate-700">✕</button>
-</div>
-
-<div class="flex flex-col gap-4">
-
-  <div>
-    <label class="text-sm text-slate-600">First Name</label>
-    <input v-model="name" class="w-full mt-1 px-3 py-2 rounded-md border border-slate-300" />
-  </div>
-
-  <div>
-    <label class="text-sm text-slate-600">Last Name</label>
-    <input class="w-full mt-1 px-3 py-2 rounded-md border border-slate-300" />
-  </div>
-
-  <div>
-    <label class="text-sm text-slate-600">Phone Number</label>
-    <input v-model="phone" class="w-full mt-1 px-3 py-2 rounded-md border border-slate-300" />
-  </div>
-
-  <div>
-    <label class="text-sm text-slate-600">Email</label>
-    <input v-model="email" class="w-full mt-1 px-3 py-2 rounded-md border border-slate-300" />
-  </div>
-
-  <div>
-    <label class="text-sm text-slate-600">Address</label>
-    <input v-model="address" class="w-full mt-1 px-3 py-2 rounded-md border border-slate-300" />
-  </div>
-
-  <div>
-    <label class="text-sm text-slate-600">Type</label>
-    <select class="w-full mt-1 px-3 py-2 rounded-md border border-slate-300">
-      <option>Select</option>
-    </select>
-  </div>
-
-  <div>
-    <label class="text-sm text-slate-600">Communication Preference</label>
-    <select v-model="preferredCommunication" class="w-full mt-1 px-3 py-2 rounded-md border border-slate-300">
-      <option value="">Select</option>
-      <option value="email">email</option>
-      <option value="phone">phone</option>
-      <option value="mail">mail</option>
-    </select>
-  </div>
-
-</div>
-
-<div class="flex justify-end gap-3 mt-6">
-  <button class="px-4 py-2 bg-slate-300 text-slate-700 rounded-lg">Cancel</button>
-  <button class="px-4 py-2 bg-slate-700 text-white rounded-lg" @click="submit">Submit</button>
-</div>
-
-</div>
-</div>
+            <div class = "grid grid-cols-3 gap-4">
+                <h2 class = "form-field-label"> phone </h2>
+                <h2 class = "form-field-label"> email </h2>
+                <h2 class = "form-field-label"> Communication Prefrence </h2> 
+                <VeeField :disabled="viewOnly" name="phone" class="form-input focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px]"></VeeField>
+                <VeeField :disabled="viewOnly" name="email" class="form-input focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px]"></VeeField>
+                <VeeField :disabled="viewOnly" name="preferredCommunication"class="form-input focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px]"></VeeField>
+            </div>
+            <div class = "grid grid-cols-3 gap-4">
+                <h2 class = "form-field-label"> organization </h2>
+                <h2 class = "form-field-label"> address </h2>
+                <h2 class = "form-field-label"> web link </h2>
+                <VeeField :disabled="viewOnly" name="organization"></VeeField> 
+                <VeeField :disabled="viewOnly" name="address" class="form-input focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px]"></VeeField> 
+                <VeeField :disabled="viewOnly" name="webLink"class="form-input focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px]"></VeeField>
+            </div>
+            <h2 class = "form-field-label"> notes </h2>
+            <VeeField v-slot="{field}" :disabled="viewOnly" name="notes">
+                <textarea v-bind="field" class="form-field focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px]"></textarea>
+            </VeeField>
+            
+            
+            <div class="flex justify-center gap-4 my-2">
+                <button @click="cancelSubmisison()" class ="form-button bg-gray-600 hover:bg-gray-700">Cancel</button>
+                <button v-if="!viewOnly" class ="form-button bg-blue-600 hover:bg-blue-700">Submit</button>
+            </div>
+            
+        </VeeForm>
+    </div>
 </template>
 
-    
-<script setup>
+<script setup lang="ts">
+import * as yup from "yup";
+    const props = defineProps<{
+        donor:{id:string, name:string, organization:string, email:string, phone:string,address:string, preferredCommunication:string, notes:string,webLink:string},
+        cancelSubmisison:() => void,
+        submitDonor: (values: Record<string,any>) => Promise<void>
+        viewOnly: boolean
+}>();
 
-
-const emit = defineEmits(['close']);
-
-
-const name = ref("")
-const email = ref("")
-const phone = ref("")
-const address = ref("")
-const preferredCommunication = ref("email")
-const notes = ref("")
-
-
-const submit = async () => { 
-
-
-try {
-  
-  const response = await $fetch("/api/donors/donors", { 
-    method: "POST",
-    body: { 
-      name: name.value,
-      email: email.value,
-      phone: phone.value,
-      address: address.value,
-      preferredCommunication: preferredCommunication.value,
-      notes: notes.value
-    }
-  })
-
-
-
-}catch(err) { 
-
-  console.log("error",err)
+const initValues = {
+    id: props.donor.id,
+    fName: props.donor.name.split(' ')[0],
+    lName: props.donor.name.split(' ')[1],
+    organization: props.donor.organization,
+    email: props.donor.email,
+    phone:props.donor.phone,
+    address:props.donor.address,
+    preferredCommunication:props.donor.preferredCommunication,
+    notes:props.donor.notes,
+    webLink:props.donor.webLink
 }
-}
-    
-    </script>
+</script>
