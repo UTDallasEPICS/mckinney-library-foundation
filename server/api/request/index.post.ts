@@ -6,25 +6,44 @@ const prisma = new PrismaClient();
 const {sendMail} = useNodeMailer();
 
 export default defineEventHandler(async (event) =>{
-    const body = await readBody(event);
-
-
-
-    await prisma.request.create({
+    try{
+        const body = await readBody(event);
+        const request = await prisma.request.create({
         data:{
              name: body.name, 
              email: body.email,
-             id: uuidv4(),
-         }       
-     });
-     try{
-        const info = await sendMail({
-            subject: "MPLF Account Request",
-            text: body.email + " sent an account request for " + body.name,
-            to: process.env.NUXT_NODEMAILER_EMAIL
-        });
-        console.log("Email Sent: ", info.messageId);      
+        }       
+        })
+        try{
+            const info = await sendMail({
+                subject: "MPLF Account Request",
+                text: body.email + " sent an account request for " + body.name,
+                to: process.env.NUXT_NODEMAILER_EMAIL
+            })
+            console.log("Email Sent: ", info.messageId);  
+            return{
+                success: true,
+                statusCode: 200,
+                data: request, 
+            }    
+        }catch(error){
+            console.error(error);
+            return{
+                success: false,
+                statusCode: 500,
+                message: "Failed to send email",
+                error: error,
+            }
+        }
     }catch(error){
-        console.error("Error Sending Email: ", error);
+        console.log("error");
+        return{
+            success: false,
+            statusCode: 500,
+            message: "Failed to create request",
+            error: error,
+        }
+    }finally{
+        await prisma.$disconnect()
     }
-});
+})

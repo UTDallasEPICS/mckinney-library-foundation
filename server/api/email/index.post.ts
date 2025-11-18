@@ -11,8 +11,19 @@ export default eventHandler(async (event)=>{
     //         text: body.text,
     //         bcc: body.emails,
     //     });
-    //     console.log("Email Sent: ", info.messageId);      
+    //     console.log("Email Sent: ", info.messageId);   
+    //     return{
+    //         success: true,
+    //         statusCode: 200,
+    //         data: info,
+    //     }   
     // }catch(error){
-    //     console.error("Error Sending Email: ", error);
-    //}
+    //      console.error(error);
+    //     return { 
+    //         success: false,
+    //         statusCode: 500,
+    //         message: "Failed to send email",
+    //         error: error, 
+    //     }
+    // }
 })

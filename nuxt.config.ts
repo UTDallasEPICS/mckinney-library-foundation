@@ -6,6 +6,7 @@ export default defineNuxtConfig({
     'nuxt-nodemailer',
     '@nuxtjs/tailwindcss',
   ],
+  css:['~/assets/css/main.css'],
   veeValidate: {
     autoImports: true,
     componentNames: {

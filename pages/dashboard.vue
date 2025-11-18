@@ -33,7 +33,7 @@
         <DashboardStat />
       </div>
       
-      <div class="bg-white rounded-xl shadow-lg p-6 hover:shadow-xl transition-shadow duration-300">
+      <!-- <div class="bg-white rounded-xl shadow-lg p-6 hover:shadow-xl transition-shadow duration-300">
           <h3 class="text-[#2d3e4d] mb-4">Recent Activity</h3>
           <div class="space-y-4">
               <div class="flex items-center justify-between py-3 border-b border-gray-100 hover:bg-gray-50 px-3 rounded transition-colors">
@@ -58,19 +58,22 @@
                   <div class="text-gray-600">--</div>
               </div>
           </div>
-      </div>
+      </div> -->
     </div>
   </template>
 <script setup lang="ts">
-  import DashboardCard from '~/components/Dashboard/DashboardCard/DashboardCard.vue';
-  import DashboardStat from '~/components/Dashboard/DashboardStat.vue';
-  const session = await useFetch("/api/session");
+  import DashboardCard from '~/components/Cards/DashboardCard/DashboardCard.vue';
+  import DashboardStat from '~/components/Banners/DashboardBanner.vue';
+  import { useAuth } from '~/composables/useAuth';
+  const {session, getSession} = useAuth();
+  await getSession();
+
   const permission = ref(3);
-  if(!session.data.value?.user){
+  if(!session.value?.user){
     //navigateTo("/");
   }
   else{
-    permission.value = session.data.value.user.permission;
+    permission.value = session.value?.user.permission;
   }
 
   const DonationCardProps ={
