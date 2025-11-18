@@ -4,7 +4,8 @@
         <AccReqForm
         key="AdminAccCreate"
         :function="AccReqFormProps.function"
-        :request="AccReqFormProps.request"
+        :type="AccReqFormProps.type"
+        button-text="Create Account"
         />
       </div>
     </div>
@@ -12,7 +13,7 @@
 </template>
 
 <script setup lang="ts">
-import AccReqForm from '~/components/Login/AccReqForm.vue';
+import AccReqForm from '~/components/Forms/AccReqForm.vue';
 import * as yup from "yup";
 
 
@@ -27,12 +28,12 @@ const AccReqFormSchema = yup.object({
 
 const AccReqFormProps ={
   function: createAccount,
-  request: false,
+  type: true,
 }
 
 async function createAccount(values:Record<string,any>){
     alert("account created");
-    const info = await $fetch("/api/auth/user",{
+    const info = await $fetch("/api/user",{
         method: "POST",
         body:{
             name: values.fName + " " + values.lName,
@@ -43,4 +44,5 @@ async function createAccount(values:Record<string,any>){
     });
     navigateTo("/settings/accounts");
 }
+
 </script>

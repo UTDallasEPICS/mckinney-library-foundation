@@ -7,6 +7,7 @@ export default defineNuxtConfig({
     '@nuxtjs/tailwindcss',
     'nuxt-lucide-icons'
   ],
+  css:['~/assets/css/main.css'],
   veeValidate: {
     autoImports: true,
     componentNames: {

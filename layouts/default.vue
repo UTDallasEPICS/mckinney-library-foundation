@@ -8,7 +8,7 @@
 <script setup>
   import Header from '@/components/Header.vue'; 
 
-const session = await useFetch("/api/auth/session");
+const session = await useFetch("/api/session");
   const logedIn = ref(false);
   if(session.data.value?.user){
     logedIn.value = true;

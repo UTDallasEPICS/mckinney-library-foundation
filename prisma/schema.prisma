@@ -10,7 +10,7 @@ datasource db {
 model User {
   id            String        @id @default(cuid())
   name          String        @unique @default("Anonymous")
-  status        Int           @default(0) // 0: active, 1: frozen, 2: deleted
+  status        Boolean       @default(false) // 0: active, 1: frozen, 2: deleted
   phone         String?
   email         String        @default("mplfboard@gmail.com")
   emailVerified Boolean       @default(false)
@@ -149,4 +149,10 @@ model Expenditure {
   notes             String?
   spentDate         DateTime?
   lastEditDate      DateTime
+}
+
+model Request {
+  id                String    @id @default(cuid())
+  name              String
+  email             String    @unique
 }

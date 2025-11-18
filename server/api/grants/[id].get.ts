@@ -13,7 +13,6 @@ export default defineEventHandler(async (event) => {
                 grantor: true,
             }
         });
-
         return { 
             success: true,
             statusCode: 200,
