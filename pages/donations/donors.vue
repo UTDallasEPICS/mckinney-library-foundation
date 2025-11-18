@@ -34,8 +34,8 @@
 
 <script setup lang="ts">
 import DonorTable from '~/components/Tables/DonorTable.vue';
-import EmailForm from '~/components/Forms/EmailForm.vue';
-import DonorForm from '~/components/Forms/DonorForm.vue';
+import EmailForm from '~/components/forms/EmailForm.vue';
+import DonorForm from '~/components/forms/DonorForm.vue';
 
 const sendEmail = ref(false);
 const updateDonor = ref(false);
