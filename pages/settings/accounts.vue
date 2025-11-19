@@ -1,162 +1,86 @@
 <template>
-  <div class="table-container">
-    <h1>Manage Accounts</h1>
-
-    <table v-if="users.length > 0">
-      <thead>
-        <tr>
-          <th>First Name</th>
-          <th>Last Name</th>
-          <th>Role</th>
-          <th>Email</th>
-          <th colspan="2">Actions</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr v-for="(user, index) in users" :key="index">
-          <td>{{ user.firstName }}</td>
-          <td>{{ user.lastName }}</td>
-          <td>
-            <select v-model="user.role">
-              <option v-for="role in roles" :key="role" :value="role">
-                {{ role }}
-              </option>
-            </select>
-          </td>
-          <td>{{ user.email }}</td>
-          <td class="actions-cell">
-            <button :class="['status-button', user.status === 'Active' ? 'freeze' : 'unfreeze']">
-              {{ user.status === 'Active' ? 'Freeze' : 'Unfreeze' }}
-            </button>
-          </td>
-          <td class="actions-cell">
-            <button class="delete-button">Delete</button>
-          </td>
-        </tr>
-      </tbody>
-    </table>
-    
-    <div v-else class="no-data-message">
-      No accounts found. Add your first account.
+<h1 class="text-[36px] text-[#2c3e50] text-center py-5 mb-2"> Manage Accounts </h1>
+ <AccountTable v-if="users && users.length > 0"
+  key= "ExistingAccounts"
+  :accounts="users"
+  :edit-account="PrepEditAccount"
+/>
+<div v-if="showEdit" class="fixed top-0 left-0 w-full h-full flex justify-center items-center z-20 bg-black/50">
+  <div class="bg-[#e5e9ec] p-0 gap-0 border-0 rounded-md">
+    <div class="w-[800px] max-h-[130vh] overflow-y-auto mx-4">
+      <h1 class="form-title mt-4">Edit Account</h1>
+      <AccReqForm
+      :function="editAccount"
+      button-text="Save"
+      :type="false"
+      :account="user"
+      :cancel-funciton="cancelEdit"
+    />
     </div>
   </div>
+  
+
+</div>
+
+
+<h1 v-if="requests && requests.length > 0" class="text-[36px] text-[#2c3e50] text-center py-5 mb-2">Account Requests </h1>
+<RequestTable v-if="requests && requests.length > 0"
+  key= "RequestTable"
+  :requests="requests"
+/>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { ref } from 'vue';
+import AccountTable from '~/components/Tables/AccountTable.vue';
+import RequestTable from '~/components/Tables/RequestTable.vue';
+import AccReqForm from '~/components/Forms/AccReqForm.vue';
+const showEdit = ref(false);
 
-const users = ref([
-  { firstName: "John", lastName: "Doe", role: "Admin", email: "johndoe@gmail.com", status: "Active" },
-  { firstName: "Jane", lastName: "Doe", role: "Editor", email: "janedoe@gmail.com", status: "Frozen" },
-  { firstName: "Main", lastName: "Admin", role: "Main Admin", email: "MPLFBoard@gmail.com", status: "Active" }
-]);
+const requestOBJ = await useFetch("/api/request");
+const requests = requestOBJ.data.value?.data
+const viewRequest = ref(false);
+if(requests && requests.length > 0){
+  viewRequest.value = true;
+}
 
-const roles = ref(["Admin", "Editor", "Main Admin"]);
+const usersOBJ = await useFetch("/api/user");
+const users = usersOBJ.data.value?.data;
+
+const user:Ref<{
+    id: string;
+    name: string;
+    email: string;
+    permission: number;}> = ref({id:"",name:"",email:"",permission:0});
+const userIndex = ref(0);
+async function PrepEditAccount(index:number){
+  if(users){
+    user.value = users[index];
+  }
+  showEdit.value=true
+  userIndex.value=index;
+  console.log(user.value)
+}
+async function editAccount(values: Record<string, any>){
+  const {success} = await $fetch(`/api/user/${user.value.id}`,{
+    method:"PATCH",
+    body:{
+      email:values.email,
+      name:values.fName+ ' ' + values.lName,
+      permission:values.permission
+    }
+  })
+  if(success){
+    if(users){
+      users[userIndex.value].name = values.fName + ' ' + values.lName;
+      users[userIndex.value].email = values.email;
+      users[userIndex.value].permission = values.permision
+    } 
+  }
+  cancelEdit();
+}
+function cancelEdit(){
+  user.value={id:"",name:"",email:"",permission:0}
+  showEdit.value=false
+}
 </script>
-
-<style scoped>
-
-@import url('https://fonts.googleapis.com/css2?family=Aclonica&display=swap');
-@import url('https://fonts.googleapis.com/css2?family=Alice&display=swap');
-/* Match the header navigation styles */
-.table-container {
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  padding: 0;
-  margin: 20px auto;
-}
-
-h1 {
-  text-align: center;
-  color: #42446A;
-  font-family: 'Aclonica', san-serif;
-  text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.2);
-  margin-bottom: 30px;
-  font-size: 30px;
-}
-
-/* Style the table to be consistent with the navigation */
-table {
-  width: 98%;
-  max-width: 1400px;
-  border-collapse: collapse;
-  font-size: 14px;
-  font-weight: bold;
-  font-family: sans-serif;
-  color: #545679;
-}
-
-/* Headers: Blue background with white text */
-th {
-  background-color: #545679;
-  color: white;
-  font-weight: bold;
-  text-transform: uppercase;
-  padding: 15px;
-  text-align: center;
-  border-bottom: 2px solid #ddd;
-}
-
-/* Table body */
-td {
-  background-color: white;
-  padding: 10px;
-  border: 1px solid #ddd;
-  text-align: center;
-}
-
-/* Style the select dropdown */
-select {
-  width: 100%;
-  padding: 8px;
-  border: 1px solid #ddd;
-  border-radius: 4px;
-  font-size: 14px;
-  background-color: white;
-  color: #545679;
-}
-
-/* Action buttons */
-.actions-cell {
-  white-space: nowrap;
-  padding: 15px;
-}
-
-.status-button, .delete-button {
-  padding: 6px 12px;
-  border-radius: 4px;
-  font-size: 12px;
-  font-weight: bold;
-  cursor: pointer;
-  border: none;
-  width: 100%;
-  margin: 0 2px; /* Add small horizontal spacing between buttons */
-  display: inline-block; /* Keep buttons side-by-side */
-}
-
-.freeze {
-  background-color: #FFC107;
-  color: black;
-}
-
-.unfreeze {
-  background-color: #4CAF50;
-  color: white;
-}
-
-.delete-button {
-  background-color: #f44336;
-  color: white;
-}
-
-/* No data message */
-.no-data-message {
-  width: 98%;
-  max-width: 1400px;
-  padding: 20px;
-  text-align: center;
-  font-weight: bold;
-}
-</style>

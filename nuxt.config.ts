@@ -5,7 +5,9 @@ export default defineNuxtConfig({
     '@vee-validate/nuxt',
     'nuxt-nodemailer',
     '@nuxtjs/tailwindcss',
+    'nuxt-lucide-icons'
   ],
+  css:['~/assets/css/main.css'],
   veeValidate: {
     autoImports: true,
     componentNames: {
@@ -23,5 +25,5 @@ export default defineNuxtConfig({
       user: process.env.NUXT_NODEMAILER_EMAIL,
       pass: process.env.NUXT_NODEMAILER_PASS,
     },
-  }
+  },
 })
