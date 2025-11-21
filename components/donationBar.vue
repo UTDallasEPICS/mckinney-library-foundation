@@ -9,16 +9,19 @@
         Add Donation
       </button>
     
+      <NuxtLink to = '/donations/'default>
       <button 
         class="px-3 py-1 rounded hover:bg-slate-600 transition">
         View Donation
       </button>
-    
-      <button 
-        class="px-3 py-1 rounded hover:bg-slate-600 transition">
-        View Donors
-      </button>
-    
+    </NuxtLink>
+
+
+    <NuxtLink to="/donations/donors">
+  <button class="px-3 py-1 rounded hover:bg-slate-600 transition">
+    View Donors
+  </button>
+</NuxtLink>
       <button @click="showDonorForm = true"
         class="px-3 py-1 rounded hover:bg-slate-600 transition">
         Add Donor
@@ -47,6 +50,7 @@
     
     import DonationsForm from '~/components/Forms/DonationsForm.vue';
     import DonorForm from '~/components/Forms/DonorForm.vue';
+
     import { ref } from 'vue';
     
     const showMenu = ref(false)

@@ -108,9 +108,9 @@ async function prepDonorUpdate(donor:{id:string, name:string, organization:strin
   donorData.value = donor;
   updateDonor.value = true;
   console.log("please show up here",donor.id)
-  donorId.value = donor.id;
+   donorId.value = donor.id;
 
-console.log("donorId",donorId.value)
+  console.log("donorId",donorId.value)
 }
 
 async function prepDonorView(donor:{id:string, name:string, organization:string, email:string, phone:string, address:string,webLink:string, notes:string, preferredCommunication:string}){

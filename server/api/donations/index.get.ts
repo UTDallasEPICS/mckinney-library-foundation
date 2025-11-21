@@ -3,9 +3,13 @@ import {PrismaClient} from '@prisma/client'
 const prisma = new PrismaClient();
 
 export default defineEventHandler (async (event)=>{
+
+    console.log("route reached")
 const q = getQuery(event);
 const search = q.search?.toString() || "";
 
+
+// console.log("route reached")
 try{
 const donations = await prisma.donation.findMany({
 where: search
