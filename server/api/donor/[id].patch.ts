@@ -2,10 +2,21 @@ import { PrismaClient } from '@prisma/client';
 
 const prisma = new PrismaClient();
 
-export default defineEventHandler(async (event) => {   
+export default defineEventHandler(async (event) => {  
+    
+    console.log("route reached")
     try {
-        const id = getRouterParam(event, 'id');
+        // const id = getRouterParam(event, 'id');
+
+
+        
         const body = await readBody(event);
+        console.log("id found:", body); 
+        const id = body.donorId
+
+        console.log('body',body)
+
+        console.log("body:", body); 
         const updatedDonor = await prisma.donor.update({
             where: { id },
             data: {
@@ -14,11 +25,15 @@ export default defineEventHandler(async (event) => {
                 phone: body.phone,
                 address: body.address,
                 preferredCommunication: body.preferredCommunication,
-                notes: body.notes,
+                notes: String(body.notes),
                 webLink: body.webLink,
                 organization: body.organization,
             }
         });
+
+
+
+        console.log("updatedDonor:", updatedDonor);
         return{
             success: true,
             statusCode: 200,

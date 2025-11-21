@@ -83,9 +83,9 @@
     </template>
     
     <script setup> 
-    import { ref } from 'vue';
-
+    import { ref,onMounted } from 'vue';
     const emit = defineEmits(['close']);
+
     
     const donor = ref("")
     const event =   ref("")
@@ -98,6 +98,29 @@
     const startDate = ref("")
     const endDate = ref("")
     const status = ref("pending")
+    const boardMemberId = ref("")
+    const boardMember = ref("")
+
+   
+
+
+    onMounted(() => {
+       
+       const getSession = async () => { 
+ 
+         const response = await $fetch('/api/session')
+ 
+         console.log("response",response.data.user)
+
+         boardMemberId.value = response.data.user.id
+         boardMember.value = response.data.user.name
+ 
+        
+       }
+ getSession()
+ 
+
+     })
 
 
     const resetForm = () => {
@@ -136,7 +159,9 @@
                 proposedDate: proposedDate.value,
                 startDate: startDate.value,
                 endDate: endDate.value,
-                status: status.value
+                status: status.value,
+                boardMemberId: boardMemberId.value,
+                boardMember: boardMember.value,
             }
         })
 

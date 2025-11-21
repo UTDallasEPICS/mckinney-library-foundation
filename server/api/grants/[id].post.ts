@@ -9,7 +9,10 @@ export default defineEventHandler(async (event) => {
     try {
         const body = await readBody(event);
 
-        console.log("bodyaa:", body.proposedDate);
+     
+    
+
+        // console.log("bodyaa:", body);
 
         const grant = await prisma.grant.create({
             data: {
@@ -25,6 +28,7 @@ export default defineEventHandler(async (event) => {
                 startDate: new Date(body.startDate),
                 endDate: new Date(body.endDate),
                 lastEditDate:new Date(body.proposedDate),
+                
             }
         })
 

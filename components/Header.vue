@@ -18,10 +18,15 @@
           
             MPLF Website
           </a>
-          <button class="rounded-lg border-[0.5px] px-4 py-2 text-sm hover:bg-slate-600">Log Out</button>
+          <button @click = "signOut()" class="rounded-lg border-[0.5px] px-4 py-2 text-sm hover:bg-slate-600">Log Out</button>
         </div>
       </div>
     </header>
 
 
 </template>
+
+<script setup>
+
+
+</script>

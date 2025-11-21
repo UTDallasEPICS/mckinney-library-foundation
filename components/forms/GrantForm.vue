@@ -72,7 +72,7 @@
 </template>
 
 <script setup> 
-import { ref } from 'vue';
+import { ref,onMounted } from 'vue';
 const emit = defineEmits(['close']);
 
 const granter = ref("")
@@ -85,7 +85,40 @@ const notes = ref("")
 const proposedDate = ref("")
 const startDate = ref("")
 const endDate = ref("")
+const boardMemberId = ref("")
+const boardMember = ref("")
 
+
+
+onMounted(() => { 
+
+    const getSession = async () => { 
+
+        try { 
+
+        const response = await $fetch("/api/session")
+
+        // console.log("response",response.data.user)
+
+        boardMemberId.value = response.data.user.id
+        boardMember.value = response.data.user.name
+
+
+
+        }
+        catch(err) { 
+
+            console.log("error",err)
+        }
+
+    }   
+
+    getSession()
+
+
+
+
+})
 
 
 
@@ -106,7 +139,9 @@ const response = await $fetch("/api/grants/123", {
         notes: notes.value,
         proposedDate: proposedDate.value,
         startDate: startDate.value,
-        endDate: endDate.value 
+        endDate: endDate.value,
+        boardMemberId: boardMemberId.value,
+        boardMember: boardMember.value,
        
     }
 })

@@ -9,6 +9,8 @@ export default defineEventHandler(async (event) =>{
     try{
 
         const body = await readBody(event);
+
+        console.log("body:", body);
         const donor = await prisma.donor.create({
             data:{
                 name: body.name,
@@ -16,7 +18,7 @@ export default defineEventHandler(async (event) =>{
                     phone: body.phone,
                     address: body.address,
                     preferredCommunication: body.preferredCommunication,
-                    notes: body.notes,
+                    notes: String(body.notes),
                     webLink: body.webLink,
                     organization: body.organization,
                     lastDonationDate: new Date(body.lastDonationDate),
@@ -24,6 +26,9 @@ export default defineEventHandler(async (event) =>{
                     donations: body.donations
             }       
         });
+
+
+        console.log("donor created:", donor);
         return{
             success: true,
             statusCode: 200,

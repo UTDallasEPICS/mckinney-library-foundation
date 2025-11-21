@@ -73,6 +73,7 @@
     
     <script setup> 
     import { ref } from 'vue';
+    
     const emit = defineEmits(['close']);
     
     const name = ref('')
@@ -84,15 +85,32 @@
     const organization = ref("")
     const lastDonationDate = ref("")
 
+    const props = defineProps({
+        apiMethod: {
+            type: String,
+            default: 'POST'
+        },
+        donorId: {
+            type: String,
+            default: ""
+        }
+    })
+
+
+
+
+
+
 
 
     const submit = async () => {
         try { 
 
 
-    const response = await $fetch('/api/donor/123',{ 
-        method: 'POST',
-        body: { 
+    const response = await $fetch('/api/donor/124',{ 
+        method: props.apiMethod,
+        body: {
+            ...(props.donorId ? { donorId: props.donorId } : {}),
             name: name.value,
             address: address.value,
             phone: phone.value,
@@ -103,6 +121,10 @@
             lastDonationDate: lastDonationDate.value,
         }
     })
+
+    console.log("api method",props.apiMethod) 
+    
+    console.log('id',props.donorId)
 
     emit('close')
 
