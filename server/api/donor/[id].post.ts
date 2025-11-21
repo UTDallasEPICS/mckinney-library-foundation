@@ -3,7 +3,11 @@ import {PrismaClient} from '@prisma/client';
 const prisma = new PrismaClient();
 
 export default defineEventHandler(async (event) =>{
+
+
+    console.log('donor route reached');
     try{
+
         const body = await readBody(event);
         const donor = await prisma.donor.create({
             data:{
@@ -15,8 +19,8 @@ export default defineEventHandler(async (event) =>{
                     notes: body.notes,
                     webLink: body.webLink,
                     organization: body.organization,
-                    lastDonationDate: body.lastDonationDate,
-                    firstDonationDate: body.firstDonationDate,
+                    lastDonationDate: new Date(body.lastDonationDate),
+                    firstDonationDate: new Date(body.lastDonationDate),
                     donations: body.donations
             }       
         });

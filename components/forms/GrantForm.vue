@@ -15,26 +15,40 @@
 </div>
 
 <div>
-<label class="text-sm text-slate-600">grant</label>
-<input v-model="grant" class="w-full mt-1 px-3 py-2 rounded-md border border-slate-300" />
+<label class="text-sm text-slate-600">purpose</label>
+<input v-model="purpose" class="w-full mt-1 px-3 py-2 rounded-md border border-slate-300" />
 </div>
 
 
 <div>
-<label class="text-sm text-slate-600">amount requested</label>
+<label class="text-sm text-slate-600">method</label>
 <input v-model="amountRequested" class="w-full mt-1 px-3 py-2 rounded-md border border-slate-300" />
 </div>
 
 
 <div>
-<label class="text-sm text-slate-600">Notes</label>
-<textarea v-model="notes" class="w-full mt-1 px-3 py-2 rounded-md border border-slate-300"></textarea>
+<label class="text-sm text-slate-600">nonmonetary amount</label>
+<input v-model="nonMonetaryAmount" type = 'number' class="w-full mt-1 px-3 py-2 rounded-md border border-slate-300"></input>
 </div>
 
 <div>
-<label class="text-sm text-slate-600">Proposed Date</label>
+<label class="text-sm text-slate-600">monetary amount</label>
+<input v-model="monetaryAmount" type ='number' class="w-full mt-1 px-3 py-2 rounded-md border border-slate-300" />
+</div>
+
+<div>
+    <label class="text-sm text-slate-600">Notes</label>
+<select v-model = "status"class="w-full mt-1 px-3 py-2 rounded-md border border-slate-300">
+<option value = 'pending'>pending</option>
+<option value = 'approved'>approved</option>
+</select>
+</div>
+
+<div>
+<label class="text-sm text-slate-600">proposed date</label>
 <input v-model="proposedDate" type="date" class="w-full mt-1 px-3 py-2 rounded-md border border-slate-300" />
 </div>
+
 
 <div>
 <label class="text-sm text-slate-600">Start Date</label>
@@ -50,7 +64,7 @@
 
 <div class="flex justify-end gap-3 mt-6">
 <button class="px-4 py-2 bg-slate-300 text-slate-700 rounded-lg">Cancel</button>
-<button class="px-4 py-2 bg-slate-700 text-white rounded-lg">Submit</button>
+<button @click = "submit()" class="px-4 py-2 bg-slate-700 text-white rounded-lg">Submit</button>
 </div>
 
 </div>
@@ -62,12 +76,51 @@ import { ref } from 'vue';
 const emit = defineEmits(['close']);
 
 const granter = ref("")
-const grant =   ref("")
-const amountRequested = ref("")
+const purpose = ref("")
+const method = ref("")
+const monetaryAmount = ref("")
+const nonMonetaryAmount = ref("")
+const status = ref("pending")
 const notes = ref("")
 const proposedDate = ref("")
 const startDate = ref("")
 const endDate = ref("")
+
+
+
+
+
+const submit = async () => { 
+
+try { 
+
+const response = await $fetch("/api/grants/123", { 
+    method: "POST",
+    body: {
+        grantor: granter.value,
+        purpose: purpose.value,
+        method: method.value,
+        monetaryAmount: String(monetaryAmount.value),
+        nonMonetaryAmount: String(nonMonetaryAmount.value),
+        status: status.value,
+        notes: notes.value,
+        proposedDate: proposedDate.value,
+        startDate: startDate.value,
+        endDate: endDate.value 
+       
+    }
+})
+
+emit('close')
+
+
+
+}catch(Err) {
+
+    console.log("error",err)
+}
+}
+
 
 </script>
     

@@ -27,13 +27,13 @@
 
     <div>
     <label class="text-sm text-slate-600">monetary amount</label>
-    <input v-model="monetaryAmount" class="w-full mt-1 px-3 py-2 rounded-md border border-slate-300" />
+    <input v-model="monetaryAmount" type="number" class="w-full mt-1 px-3 py-2 rounded-md border border-slate-300" />
     </div>
 
 
     <div>
     <label class="text-sm text-slate-600">non monetary amount</label>
-    <input v-model="nonMonetaryAmount" class="w-full mt-1 px-3 py-2 rounded-md border border-slate-300" />
+    <input v-model="nonMonetaryAmount" type="number" class="w-full mt-1 px-3 py-2 rounded-md border border-slate-300" />
     </div>
     
     
@@ -75,7 +75,7 @@
     
     <div class="flex justify-end gap-3 mt-6">
     <button @click = 'resetForm()' class="px-4 py-2 bg-slate-300 text-slate-700 rounded-lg">Cancel</button>
-    <button @click = "emit('close')" class="px-4 py-2 bg-slate-700 text-white rounded-lg">Submit</button>
+    <button @click = "submit()" class="px-4 py-2 bg-slate-700 text-white rounded-lg">Submit</button>
     </div>
     
     </div>
@@ -84,7 +84,7 @@
     
     <script setup> 
     import { ref } from 'vue';
-    // import $fetch from 'ofetch';
+
     const emit = defineEmits(['close']);
     
     const donor = ref("")
@@ -97,6 +97,7 @@
     const proposedDate = ref("")
     const startDate = ref("")
     const endDate = ref("")
+    const status = ref("pending")
 
 
     const resetForm = () => {
@@ -110,37 +111,46 @@
         proposedDate.value = ""
         startDate.value = ""
         endDate.value = ""
+        status.value = "pending"
+    }
+
+    const submit = async () => { 
+
+    if (!donor.value || !event.value || !method.value || !monetaryAmount.value || !nonMonetaryAmount.value || !amountRequested.value || !proposedDate.value || !startDate.value || !endDate.value || !status.value) {
+        alert("Please fill in all required fields.")
+        return
+    }
+
+    try { 
+
+        const response = await $fetch('/api/donations/123', {
+            method: 'POST',
+            body: {
+                donor: donor.value,
+                event: event.value,
+                method: method.value,
+                monetaryAmount: String(monetaryAmount.value),
+                nonMonetaryAmount: String(nonMonetaryAmount.value),
+                amountRequested: amountRequested.value,
+                notes: notes.value,
+                proposedDate: proposedDate.value,
+                startDate: startDate.value,
+                endDate: endDate.value,
+                status: status.value
+            }
+        })
+
+        emit('close')
+
+        }catch(err) { 
+
+            console.log("error",err)
+        }
+
+
     }
     
-    //come back to this later
-    
-//     const submit = async() => { 
-
-// try { 
-
-//     const response = await $fetch('/api/donations/123', {
-//         method: 'POST',
-//         body: {
-//             donor: donor.value,
-//             event: event.value,
-//             method: method.value,
-//             monetaryAmount: monetaryAmount.value,
-//             nonMonetaryAmount: nonMonetaryAmount.value,
-//             amountRequested: amountRequested.value,
-//             notes: notes.value,
-//             proposedDate: proposedDate.value,
-//             startDate: startDate.value,
-//             endDate: endDate.value
-//         }
-//     });
-
-
-// }catch(err) { 
-//     console.log("error",err)
-// }
-
-
-//     }
+ 
 
     
     </script>

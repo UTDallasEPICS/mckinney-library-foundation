@@ -3,18 +3,24 @@ import {PrismaClient} from '@prisma/client'
 const prisma = new PrismaClient();
 
 export default defineEventHandler (async (event)=>{
+console.log('route reached')
+
+
 const body = await readBody(event);
 
-try{
-// Perform role-based API checking here 
-// I.E., does the user have the permision to create?
+console.log("body:", body);
 
-if(!body.monetaryAmount && !body.nonMonetaryAmount){
-throw createError({
-    statusCode: 400,
-    statusMessage: "The donation requires a monetary or non-monetary value"
-});
+if(body.status === 'pending'){
+    body.status = 0
+} else{
+    body.status = 1
 }
+
+
+
+try{
+
+
             
 const donation = await prisma.donation.create({
 data: {
@@ -22,25 +28,27 @@ data: {
     donorId: body.donorId,
     event: body.event,
     method: body.method,
-    monetaryAmount: body. monetaryAmount,
+    monetaryAmount: body.monetaryAmount,
     nonMonetaryAmount: body.nonMonetaryAmount,
     status: body.status ?? 0,
     notes: body.notes,
     receivedDate: new Date(),
     lastEditDate: new Date()
 }
-});
+})
 
-return { 
-success: true
-};
+
+console.log("donation,donation:", donation)
+
+return { success: true}
+
+
 }
 catch(error){
-return{
-success: false,
-statusCode: 500,
-message: "Failed to create donation",
-error: error
-}
+
+
+console.log("error creating donation:", error)
+
+return{success: false,statusCode: 500,message: "Failed to create donation",error: error}
 };
 })

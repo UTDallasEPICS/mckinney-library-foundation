@@ -1,5 +1,6 @@
 <template>
   <div class = "flex min-h-screen min-w-screen bg-blue-100">
+
     <div class = "basis-1/2 bg-[#34495e]" id="site_info">
       <div class="w-3/4 mx-auto">
         <div class="mt-6 mb-6 flex flex-col items-center">
