@@ -4,6 +4,8 @@ export default  defineEventHandler( async (event)=>{
     const session = await auth.api.getSession({
       headers: event.headers
     });
+
+    // console.log("session",session)
     return{
       success: true,
       statusCode: 200,

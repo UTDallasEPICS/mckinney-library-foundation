@@ -1,5 +1,6 @@
-<template>
+<template> 
 
+<donationBar/>
   <DonorTable 
     key="DonoTable"
     :data="DonorTableProps.donors" 
@@ -17,32 +18,29 @@
     />
   </div>
   <div v-if="updateDonor" class="fixed top-0 left-0 w-full h-full flex justify-center items-center z-20 bg-black/50">
-    <DonorForm
-      :donor="donorData"
-      :submit-donor="editDonor"
-      :cancel-submisison="cancelUpdate"
-      :view-only="false" />
+    <DonorForm :donor-id = "donorId"  apiMethod = 'PATCH' @close = "updateDonor = false" />
+
   </div>
   <div v-if="viewDonor" class="fixed top-0 left-0 w-full h-full flex justify-center items-center z-20 bg-black/50">
-    <DonorForm
-      :donor="donorData"
-      :submit-donor="editDonor"
-      :cancel-submisison="cancelUpdate"
-      :view-only="true" />
-  </div> 
+   <viewDonorForm :donor-id = "donorId" @close = "viewDonor = false"/>
+   </div>
 </template>
 
 <script setup lang="ts">
 import DonorTable from '~/components/Tables/DonorTable.vue';
 import EmailForm from '~/components/Forms/EmailForm.vue';
 import DonorForm from '~/components/Forms/DonorForm.vue';
-
+import donationBar from '~/components/donationBar.vue';
+import viewDonorForm from '~/components/Forms/viewDonorForm.vue';
+import { ref } from 'vue';
 const sendEmail = ref(false);
 const updateDonor = ref(false);
 const viewDonor = ref(false);
 const {donors, getDonors} = useDonor();
 const emailList: Ref<string[]> = ref([])
 const nameList = ref("")
+
+const donorId = ref("")
 
 await getDonors();
 
@@ -105,11 +103,20 @@ async function prepEmail(selected:boolean[]) {
 async function prepDonorUpdate(donor:{id:string, name:string, organization:string, email:string, phone:string, address:string,webLink:string, notes:string, preferredCommunication:string}){
   donorData.value = donor;
   updateDonor.value = true;
+  console.log("please show up here",donor.id)
+   donorId.value = donor.id;
+
+  console.log("donorId",donorId.value)
 }
 
 async function prepDonorView(donor:{id:string, name:string, organization:string, email:string, phone:string, address:string,webLink:string, notes:string, preferredCommunication:string}){
   donorData.value = donor;
   viewDonor.value = true;
+  console.log("please show up hee",donor.id,"hi")
+
+ donorId.value = donor.id;
+
+  console.log("donorId",donorId.value)
 }
 
 async function editDonor(values:Record<string,any>) {
