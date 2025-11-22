@@ -1,5 +1,5 @@
 <template> 
-    <div class="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+    <div class="fixed inset-0 bg-black/20 flex items-center justify-center z-50">
     <div class="bg-slate-100  w-[30vw] h-[75vh] overflow-y-auto rounded-xl shadow-xl p-8 relative">
     
     <div class="flex items-center justify-between mb-6">
@@ -101,7 +101,16 @@
     const boardMemberId = ref("")
     const boardMember = ref("")
 
-   
+   const props = defineProps({
+    method: {
+        type: String,
+        default: 'POST'
+    },
+    donationId: {
+        type: String,
+        default: ""
+    }
+   })
 
 
     onMounted(() => {
@@ -147,8 +156,9 @@
     try { 
 
         const response = await $fetch('/api/donations/123', {
-            method: 'POST',
+            method: props.method,
             body: {
+                ...(props.donationId ? { donationId: props.donationId } : null),  
                 donor: donor.value,
                 event: event.value,
                 method: method.value,
@@ -164,6 +174,10 @@
                 boardMember: boardMember.value,
             }
         })
+
+        console.log("api method show up",props.method)
+
+        console.log('id to send to backend ',props.donationId)
 
         emit('close')
 
