@@ -22,13 +22,8 @@
 
   </div>
   <div v-if="viewDonor" class="fixed top-0 left-0 w-full h-full flex justify-center items-center z-20 bg-black/50">
-    <DonorForm
-  
-      :donor="donorData"
-      :submit-donor="editDonor"
-      :cancel-submisison="cancelUpdate"
-      :view-only="true" />
-  </div> 
+   <viewDonorForm :donor-id = "donorId" @close = "viewDonor = false"/>
+   </div>
 </template>
 
 <script setup lang="ts">
@@ -36,6 +31,7 @@ import DonorTable from '~/components/Tables/DonorTable.vue';
 import EmailForm from '~/components/Forms/EmailForm.vue';
 import DonorForm from '~/components/Forms/DonorForm.vue';
 import donationBar from '~/components/donationBar.vue';
+import viewDonorForm from '~/components/Forms/viewDonorForm.vue';
 import { ref } from 'vue';
 const sendEmail = ref(false);
 const updateDonor = ref(false);
@@ -118,7 +114,9 @@ async function prepDonorView(donor:{id:string, name:string, organization:string,
   viewDonor.value = true;
   console.log("please show up hee",donor.id,"hi")
 
- 
+ donorId.value = donor.id;
+
+  console.log("donorId",donorId.value)
 }
 
 async function editDonor(values:Record<string,any>) {
