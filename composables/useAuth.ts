@@ -6,10 +6,8 @@
         const getSession = async () =>{
             const result = await useFetch("/api/session");
             
-            return result
+            return result.data.value?.data
         } 
-
-        // getSession()
         
         return {
             session,

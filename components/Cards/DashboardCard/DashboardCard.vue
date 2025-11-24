@@ -1,5 +1,5 @@
 <template>
-    <div class="bg-white rounded-xl shadow-lg p-6 hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
+    <div v-if="activeButtons.length > 0" class="bg-white rounded-xl shadow-lg p-6 hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
       <div class="flex items-center space-x-3 mb-4">
         <div class="w-12 h-12 bg-[#4a5f6d] rounded-lg flex items-center justify-center">
           <svg
