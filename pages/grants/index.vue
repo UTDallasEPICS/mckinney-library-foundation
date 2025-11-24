@@ -1,7 +1,7 @@
 <template>
 
 
-<grantsBar/>
+<grantsBar v-if="permissionLevel > 0"/>
 
 
 <GrantsTable :grants = "grants" />
@@ -15,6 +15,17 @@
 import grantsBar from '~/components/grantsBar.vue';
 import GrantsTable from '~/components/Tables/GrantsTable.vue';
 import {onMounted,ref} from 'vue';  
+import { useAuth } from '~/composables/useAuth';
+
+const {session, getSession} = useAuth();
+session.value = await getSession();
+const permissionLevel = ref(0);
+if(session.value?.user){
+    permissionLevel.value = session.value.user.permission;
+}
+else{
+  navigateTo("/");
+}
 
 const grants = ref()
 

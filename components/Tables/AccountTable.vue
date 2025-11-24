@@ -15,15 +15,15 @@
             <td class="px-6 py-4 text-[#2d3e4d] text-center"> {{ account.name }}</td>
             <td class="px-6 py-4 text-[#2d3e4d] text-center">{{ account.email }} </td> 
             <td class="px-6 py-4">
-                <select v-model="permissions[index]" @change="updatePermission(account.id,permissions[index],account.status)" class="w-full px-3 py-2 bg-white border border-gray-300 rounded text-[#2d3e4d] cursor-pointer">
+                <select :disabled="(parseInt(permissions[index]) >= permissionLevel) && permissionLevel < 3" v-model="permissions[index]" @change="updatePermission(account.id,permissions[index],account.status)" class="w-full px-3 py-2 bg-white border border-gray-300 rounded text-[#2d3e4d] cursor-pointer">
                     <option value="0">Viewer</option>
                     <option value="1">Editor</option>
-                    <option value="2">Admin</option>
-                    <option value="3">Main Admin</option>
+                    <option :disabled="permissionLevel < 3" value="2">Admin</option>
+                    <option :disabled="permissionLevel < 3" value="3">Main Admin</option>
                 </select>
             </td>
-            <td class="px-6 py-4">
-              <div class="flex justify-evenly">
+            <td  class="px-6 py-4">
+              <div v-if="parseInt(permissions[index]) < permissionLevel" class="flex justify-evenly">
                 <button v-if="!account.status" class ="rounded-md text-sm font-medium outline-none h-9 py-2 bg-blue-600 hover:bg-blue-700 text-white px-6" @click="freezeAccount(account)"> Freeze</button>
                 <button v-else class ="rounded-md text-sm font-medium outline-none h-9 py-2 bg-yellow-600 hover:bg-yellow-700 text-white px-6" @click="freezeAccount(account)"> Unfreeze </button>
                 <button class="rounded-md text-sm font-medium outline-none h-9 py-2 bg-red-600 hover:bg-red-700 text-white px-6" @click ="deleteAccount(account.id,index)"> Delete  </button>
@@ -43,6 +43,7 @@
 const props = defineProps<{
   accounts: {id:string, name:string, email:string, permission:number, status:boolean}[]
   editAccount:(index:number) => void
+  permissionLevel:number
 }>();
 
 async function updatePermission(id:string,permission:string, status:boolean){
