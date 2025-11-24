@@ -33,15 +33,15 @@
     
     <div v-if = "showMenu">
     
-      <DonationsForm @close="showMenu = false"/>
+      <DonationsForm  @add-donation = "addDonation"  @close="showMenu = false"/>
     
-    
+      
     </div>
     
     <div  v-if = "showDonorForm"> 
     
     
-      <DonorForm @close="showDonorForm = false"/>
+      <DonorForm @close="showDonorForm = false" @add-donor = "addDonor"/>
     </div>
     
     
@@ -56,7 +56,22 @@
     const showMenu = ref(false)
     
     const showDonorForm = ref (false) 
-    
+
+    const emit = defineEmits(['add-donation','add-donor']);
+
+
+    const addDonation = (data) => {
+        console.log("dsssata",data)
+
+        emit('add-donation', data);
+    };
+
+    const addDonor = (data) => { 
+
+      console.log('data for the dnoor',data)
+
+      emit('add-donor',data)
+    }
     
     </script>
     

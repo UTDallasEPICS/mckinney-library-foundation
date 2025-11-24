@@ -77,7 +77,7 @@
     <script setup> 
     import { ref,onMounted } from 'vue';
     
-    const emit = defineEmits(['close','update-donors']);
+    const emit = defineEmits(['close','update-donors','add-donor']);
     
     const name = ref('')
     const address = ref("")
@@ -169,6 +169,10 @@ getInfo()
     console.log("api method",props.apiMethod) 
     
     console.log('id',props.donorId)
+
+    emit('add-donor', response.data)
+
+    // console.log("response",response.data)
 
     emit('close')
 

@@ -43,7 +43,7 @@
               {{ donation.notes }}
             </td>
             <td class="px-6 py-4 text-[#2d3e4d] text-left text-sm">
-              {{ donation.boardMember['name'] }}
+              {{ donation.boardMember?.['name'] }}
             </td>
             <td>
               <div class="flex gap-2">

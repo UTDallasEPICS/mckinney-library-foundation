@@ -72,7 +72,7 @@
     
     <script setup> 
     import { ref,onMounted } from 'vue';
-    const emit = defineEmits(['close','update-donation']);
+    const emit = defineEmits(['close','update-donation','add-donation']);
 
     
     const donor = ref("")
@@ -215,6 +215,11 @@ getInfo()
         console.log("response after submit",response.data)
 
         emit('update-donation', response.data)
+
+        console.log("submit",response.data)
+       
+        
+        emit('add-donation', response.data) 
 
         emit('close')
 

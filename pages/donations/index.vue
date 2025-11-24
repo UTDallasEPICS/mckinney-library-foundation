@@ -1,9 +1,13 @@
 
 <template> 
 
-  <donationBar/>
+  <donationBar   @add-donation = "addDonation"/>
    
-  <DonationsTable :donation-info = "donations" @delete-donation="handleDeleteDonation" @update-donation = "updateDonation"/>
+  <DonationsTable :donation-info = "donations" @delete-donation="handleDeleteDonation" @update-donation = "updateDonation"
+  
+  
+
+  />
 
   
   
@@ -75,6 +79,16 @@ donations.value.donations = donations.value.donations.map(donation => {
 
 
 }
+
+
+const addDonation = (data) => {
+  donations.value.donations = [
+    ...donations.value.donations,
+    data
+  ];
+  
+}
+
 
   
 

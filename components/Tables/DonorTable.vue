@@ -16,7 +16,7 @@
 </tr>
 </thead>
 <tbody>
-<tr v-for="(row,idx) in data" :key="idx" class="hover:bg-[#e8f0f7] transition-colors border-b border-gray-200 cursor-pointer">
+<tr v-for="(row,idx) in props.data" :key="idx" class="hover:bg-[#e8f0f7] transition-colors border-b border-gray-200 cursor-pointer">
     <td class="px-6 py-4 text-[#2d3e4d] text-left text-sm">{{ row.name }}</td>
     <td class="px-6 py-4 text-[#2d3e4d] text-left text-sm">{{ row.organization }}</td>
     <td class="px-6 py-4 text-[#2d3e4d] text-left text-sm">{{ row.email }}</td>
@@ -65,7 +65,7 @@ const isEnabled  = computed(() => selectedCount.value > 0);
 
 const emit = defineEmits(['delete-donor']);
 
-
+console.log("donors",props.data)
 
 const deleteFunction = async (data) => { 
 
