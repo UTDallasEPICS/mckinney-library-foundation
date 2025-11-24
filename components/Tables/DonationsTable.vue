@@ -47,13 +47,13 @@
             </td>
             <td>
               <div class="flex gap-2">
-                <button
+                <button v-if="permissionLevel > 0"
                   @click="openEdit(donation.id)"
                   class="rounded-md text-sm font-medium outline-none h-9 py-2 bg-blue-600 hover:bg-blue-700 text-white px-6"
                 >
                   Edit
                 </button>
-                <button
+                <button v-if="permissionLevel > 0"
                   @click="delete_donation(donation.id)"
                   class="rounded-md text-sm font-medium outline-none h-9 py-2 bg-red-600 hover:bg-red-700 text-white px-6"
                 >
@@ -108,11 +108,10 @@
   const showViewDonations = ref(false)
   const activeDonationId = ref<string | number | null>(null)
   
-  const props = defineProps({
-    donationInfo: {
-      type: Object,
-    },
-  })
+  const props = defineProps<{
+    donationInfo: Object,
+    permissionLevel: number
+  }>()
   
   watch(
     () => props.donationInfo,
