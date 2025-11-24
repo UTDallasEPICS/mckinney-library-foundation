@@ -53,7 +53,10 @@
     <label class="text-sm text-slate-600">organization</label>
     <input v-model="organization" class="w-full mt-1 px-3 py-2 rounded-md border border-slate-300" />
     </div>
-
+    <div>
+    <label class="text-sm text-slate-600">weblink</label>
+    <input v-model="webLink" class="w-full mt-1 px-3 py-2 rounded-md border border-slate-300" />
+    </div>
  
     <div>
     <label class="text-sm text-slate-600">Date</label>
@@ -72,9 +75,9 @@
     </template>
     
     <script setup> 
-    import { ref } from 'vue';
+    import { ref,onMounted } from 'vue';
     
-    const emit = defineEmits(['close']);
+    const emit = defineEmits(['close','update-donors']);
     
     const name = ref('')
     const address = ref("")
@@ -84,6 +87,7 @@
     const notes =   ref("")
     const organization = ref("")
     const lastDonationDate = ref("")
+    const webLink = ref("")
 
     const props = defineProps({
         apiMethod: {
@@ -95,6 +99,43 @@
             default: ""
         }
     })
+
+
+    onMounted(() => { 
+
+if(props.apiMethod === 'PATCH' && props.donorId) {
+
+    const getInfo = async () => { 
+
+try { 
+
+    const response = await $fetch(`/api/donor/${props.donorId}`)
+    name.value = response.data.name
+    address.value = response.data.address
+    phone.value = response.data.phone
+    email.value = response.data.email
+    preferredCommunication.value = response.data.preferredCommunication
+    notes.value = response.data.notes
+    organization.value = response.data.organization
+    lastDonationDate.value = response.data.lastDonationDate?.slice(0,10)
+    webLink.value = response.data.webLink
+
+
+
+}catch(err) { 
+
+    console.log("error",err)
+}
+}
+getInfo()
+      
+}
+
+
+    })
+
+
+
 
 
 
@@ -119,8 +160,11 @@
             notes: notes.value,
             organization: organization.value,
             lastDonationDate: lastDonationDate.value,
+            webLink: webLink.value
         }
     })
+
+    emit('update-donors', response.data)
 
     console.log("api method",props.apiMethod) 
     
@@ -153,4 +197,6 @@
     
     
     </script>
+
+
         

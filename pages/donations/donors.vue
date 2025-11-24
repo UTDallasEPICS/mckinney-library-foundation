@@ -8,6 +8,7 @@
     :edit-function="DonorTableProps.editFunction"
     :delete-function="DonorTableProps.deleteFunciton"
     :view-function="DonorTableProps.viewFunction"
+    @delete-donor="deleteDonor"
   />
   <div  v-if="sendEmail" class="fixed top-0 left-0 w-full h-full flex justify-center items-center z-20 bg-black/50">
     <EmailForm
@@ -18,7 +19,7 @@
     />
   </div>
   <div v-if="updateDonor" class="fixed top-0 left-0 w-full h-full flex justify-center items-center z-20 bg-black/50">
-    <DonorForm :donor-id = "donorId"  apiMethod = 'PATCH' @close = "updateDonor = false" />
+    <DonorForm :donor-id = "donorId" @update-donors = "updateDonorForm"  apiMethod = 'PATCH' @close = "updateDonor = false" />
 
   </div>
   <div v-if="viewDonor" class="fixed top-0 left-0 w-full h-full flex justify-center items-center z-20 bg-black/50">
@@ -41,6 +42,29 @@ const emailList: Ref<string[]> = ref([])
 const nameList = ref("")
 
 const donorId = ref("")
+
+
+const updateDonorForm = (data) => { 
+
+
+  donors.value.forEach( (item, index) => {
+    if(item.id === data.id){
+      donors.value[index].name = data.name;
+      donors.value[index].email = data.email;
+      donors.value[index].phone = data.phone;
+      donors.value[index].address = data.address;
+      donors.value[index].preferredCommunication = data.preferredCommunication;
+      donors.value[index].notes = data.notes;
+      donors.value[index].webLink = data.webLink;
+      donors.value[index].organization = data.organization;
+
+    }
+  })
+
+
+
+}
+
 
 await getDonors();
 

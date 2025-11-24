@@ -4,7 +4,7 @@ const prisma = new PrismaClient();
 
 export default defineEventHandler (async (event)=>{
 
-    console.log("route reached")
+    console.log("route reached hi ")
 const q = getQuery(event);
 const search = q.search?.toString() || "";
 

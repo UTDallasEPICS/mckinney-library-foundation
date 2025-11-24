@@ -3,7 +3,17 @@ import {PrismaClient} from '@prisma/client'
 const prisma = new PrismaClient();
 
 export default defineEventHandler (async (event)=>{
-    const body = await readBody(event);
+
+    console.log("donation delete router reached")
+    // const body = await readBody(event);
+
+
+    const params = getRouterParams(event);
+
+    const body = {
+        id: params.id
+    }
+    console.log("body",body)
 
     try{
         // Perform role-based API checking here 
@@ -26,6 +36,9 @@ export default defineEventHandler (async (event)=>{
         };
     }
     catch(error){
+
+
+        console.log("error",error)
         return{
             success: false,
             statusCode: 500,
