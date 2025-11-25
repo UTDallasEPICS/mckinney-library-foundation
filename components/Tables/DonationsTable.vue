@@ -134,6 +134,9 @@
     try {
       await $fetch(`/api/donations/${id}`, {
         method: 'DELETE',
+        body:{
+          permissionLevel:props.permissionLevel
+        }
       })
   
       emit('delete-donation', id)

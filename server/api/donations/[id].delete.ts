@@ -3,41 +3,30 @@ import {PrismaClient} from '@prisma/client'
 const prisma = new PrismaClient();
 
 export default defineEventHandler (async (event)=>{
-
-    console.log("donation delete router reached")
-    // const body = await readBody(event);
-
-
-    const params = getRouterParams(event);
-
-    const body = {
-        id: params.id
-    }
-    console.log("body",body)
-
+    const id = await getRouterParam(event, 'id');
+    const body = await readBody(event);
     try{
-        // Perform role-based API checking here 
-        // I.E., does the user have the permision to delete? 
-
-        if(!body.id){
+        if(!(body.permissionLevel > 0)){
+            throw createError({
+                statusCode: 401,
+                statusMessage:"User not authorized to delete donations"
+            })
+        }
+        if(!id){
             throw createError({
                 statusCode: 400,
                 statusMessage: "A donationId is required to delete an ID"
             });
         }
-
         const deleted = await prisma.donation.delete({
-            where: {id: body.id}
+            where: {id: id}
         });
-
         return{
             success: true,
             deleted 
         };
     }
     catch(error){
-
-
         console.log("error",error)
         return{
             success: false,

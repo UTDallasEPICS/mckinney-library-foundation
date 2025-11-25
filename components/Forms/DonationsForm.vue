@@ -101,63 +101,42 @@
    })
 
 
-    onMounted(() => {
-       
+    onMounted(() => { 
        const getSession = async () => { 
- 
          const response = await $fetch('/api/session')
- 
          console.log("response",response.data.user)
-
          boardMemberId.value = response.data.user.id
          boardMember.value = response.data.user.name
  
         
        }
 
- getSession()
+        getSession()
 
 
  if(props.method === 'PUT' && props.donationId) { 
-
     const getInfo = async() => {
-
         try {
-            
-            
             const response = await $fetch(`/api/donations/${props.donationId}`)
-
-console.log("response",response)
-
             donor.value = response.data.donor
             event.value = response.data.event
             method.value = response.data.method
             monetaryAmount.value = response.data.monetaryAmount
             nonMonetaryAmount.value = response.data.nonMonetaryAmount
-    
             notes.value = response.data.notes
-
             startDate.value = response.data.lastEditDate.slice(0,10)
             endDate.value = response.data.receivedDate.slice(0,10)
-
-
-
             if(response.data.status == 1) {
                 status.value = "received"
             } else {
                 status.value = "pending"
             }
-
-
         } catch(err) { 
             console.log('error',err)
         }
     }
-
-getInfo()
-
-
- }
+    getInfo()
+}
 
 
  
@@ -186,8 +165,14 @@ getInfo()
     }
 
     try { 
-
-        const response = await $fetch('/api/donations/123', {
+        const url = ref('/api/donations');
+        if(props.method == 'PUT'){
+            url.value += `/${props.donationId}`
+        }
+        else{
+            console.log(props.method);
+        }
+        const response = await $fetch(url.value, {
             method: props.method,
             body: {
                 ...(props.donationId ? { donationId: props.donationId } : null),  

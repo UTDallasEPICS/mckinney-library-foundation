@@ -1,5 +1,5 @@
 <template> 
-  <donationBar  @add-donor="addDonor"/>
+  <donationBar :permission-level="permissionLevel"  @add-donor="addDonor"/>
 
   <DonorTable 
     key="DonoTable"
@@ -46,6 +46,18 @@ import DonorForm from '~/components/Forms/DonorForm.vue';
 import donationBar from '~/components/donationBar.vue';
 import viewDonorForm from '~/components/Forms/viewDonorForm.vue';
 import { ref } from 'vue';
+import { useAuth } from '~/composables/useAuth';
+
+  const {session, getSession} = useAuth();
+  session.value = await getSession();
+
+  const permissionLevel = ref(0);
+  if(session.value?.user){
+      permissionLevel.value = session.value.user.permission;
+  }
+  else{
+    navigateTo("/");
+  }
 
 const sendEmail = ref(false);
 const updateDonor = ref(false);
