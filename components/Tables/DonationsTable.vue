@@ -1,122 +1,106 @@
 <template>
-<div class="flex-1 p-8">
-<div class="bg-white rounded-lg shadow-lg overflow-hidden mx-auto">
-<table class="w-full">
-<thead class="bg-[#c5d0d8] sticky top-0 z-10">
+    <div class="flex-1 p-8">
+        <div class="bg-white rounded-lg shadow-lg overflow-hidden mx-auto">
+            <table class="w-full">
+                <thead class="bg-[#c5d0d8] sticky top-0 z-10">
+                    <tr>
+                        <th class="px-4 py-3 text-left text-sm text-[#2d3e4d] border-b-2 border-[#a8b5bf] cursor-pointer"
+                            @click="toggleSearch('donor')"
+                        >
+                            <span v-if="activeSearch !== 'donor'">Donor ↑↓</span>
+                            <input
+                                v-else
+                                v-model="searchInputs.donor"
+                                @click.stop
+                                class="mt-2 w-full px-2 py-1 border rounded"
+                                placeholder="Search donor"
+                            />
+                        </th>
+                        <th class="px-4 py-3 text-left text-sm text-[#2d3e4d] border-b-2 border-[#a8b5bf] cursor-pointer"
+                            @click="toggleSearch('event')"
+                        >
+                            <span v-if="activeSearch !== 'event'">Event ↑↓</span>
+                            <input
+                                v-else
+                                v-model="searchInputs.event"
+                                @click.stop
+                                class="mt-2 w-full px-2 py-1 border rounded"
+                                placeholder="Search event"
+                            />
+                        </th>
+                        <th class="px-4 py-3 text-left text-sm text-[#2d3e4d] border-b-2 border-[#a8b5bf]">
+                            method
+                        </th>
+                        <th class="px-4 py-3 text-left text-sm text-[#2d3e4d] border-b-2 border-[#a8b5bf]">
+                            monetary amount
+                        </th>
+                        <th class="px-4 py-3 text-left text-sm text-[#2d3e4d] border-b-2 border-[#a8b5bf]">
+                            non monetary amount
+                        </th>
+                        <th class="px-4 py-3 text-left text-sm text-[#2d3e4d] border-b-2 border-[#a8b5bf]">
+                            status
+                        </th>
+                        <th class="px-4 py-3 text-center text-sm text-[#2d3e4d] border-b-2 border-[#a8b5bf]">
+                            notes
+                        </th>
+                        <th class="px-4 py-3 text-center text-sm text-[#2d3e4d] border-b-2 border-[#a8b5bf]">
+                            received date
+                        </th>
+                        <th class="px-4 py-3 text-center text-sm text-[#2d3e4d] border-b-2 border-[#a8b5bf] cursor-pointer"
+                            @click="toggleSearch('board')">
+                            <span v-if="activeSearch !== 'board'">Board Member ↑↓</span>
+                            <input
+                                v-else
+                                v-model="searchInputs.board"
+                                @click.stop
+                                class="mt-2 w-full px-2 py-1 border rounded"
+                                placeholder="Search board"
+                            />
+                        </th>
+                        <th class="px-4 py-3 text-center text-sm text-[#2d3e4d] border-b-2 border-[#a8b5bf]">
+                            Actions
+                        </th>
+                    </tr>
+                </thead>
+                <tr
+                    v-for="(donation, index) in filteredAndSorted"
+                    :key="index"
+                    class="hover:bg-[#e8f0f7] transition-colors border-b border-gray-200 cursor-pointer"
+                    >
+                    <td class="px-6 py-4">{{ donation.donor?.['name'] }}</td>
+                    <td class="px-6 py-4">{{ donation.event }}</td>
+                    <td class="px-6 py-4">{{ donation.method }}</td>
+                    <td class="px-6 py-4">{{ donation.monetaryAmount }}</td>
+                    <td class="px-6 py-4">{{ donation.nonMonetaryAmount }}</td>
+                    <td class="px-6 py-4">{{ donation.status == 0 ? 'pending' : 'approved' }}</td>
+                    <td class="px-6 py-4">{{ donation.notes }}</td>
 
-<tr>
-<th class="px-4 py-3 text-left text-sm text-[#2d3e4d] border-b-2 border-[#a8b5bf] cursor-pointer"
-    @click="toggleSearch('donor')">
-<span v-if="activeSearch !== 'donor'">
-    Donor name
-    
-</span>
-<input
-    v-if="activeSearch === 'donor'"
-    v-model="searchInputs.donor"
-    @click.stop
-    class="mt-2 w-full px-2 py-1 border rounded"
-    placeholder="Search donor"
-/>
-</th>
+                    <td class="px-6 py-4 whitespace-nowrap w-[120px] truncate">
+                        {{ donation.receivedDate.slice(0,10) }}
+                    </td>
 
-<th class="px-4 py-3 text-left text-sm text-[#2d3e4d] border-b-2 border-[#a8b5bf] cursor-pointer"
-    @click="toggleSearch('event')">
-<span v-if="activeSearch !== 'event'">
-    event
-    
-</span>
-<input
-    v-if="activeSearch === 'event'"
-    v-model="searchInputs.event"
-    @click.stop
-    class="mt-2 w-full px-2 py-1 border rounded"
-    placeholder="Search event"
-/>
-</th>
+                    <td class="px-6 py-4">{{ donation.boardMember?.['name'] }}</td>
 
-<th class="px-4 py-3 text-left text-sm text-[#2d3e4d] border-b-2 border-[#a8b5bf]">
-    method
-</th>
+                    <td class="px-6 py-4">
+                        <div class="flex gap-2 justify-center">
+                        <button v-if="permissionLevel>0" @click="openEdit(donation.id)" class="rounded-md bg-blue-600 hover:bg-blue-700 text-white px-6 py-2">Edit</button>
+                        <button v-if="permissionLevel>0" @click="delete_donation(donation.id)" class="rounded-md bg-red-600 hover:bg-red-700 text-white px-6 py-2">Delete</button>
+                        <button @click="openView(donation.id)" class="rounded-md bg-green-600 hover:bg-green-700 text-white px-6 py-2">View</button>
+                        </div>
+                    </td>
+                </tr>
 
-<th class="px-4 py-3 text-left text-sm text-[#2d3e4d] border-b-2 border-[#a8b5bf]">
-    monetary amount
-</th>
+            </table>
+        </div>
 
-<th class="px-4 py-3 text-left text-sm text-[#2d3e4d] border-b-2 border-[#a8b5bf]">
-    non monetary amount
-</th>
-
-<th class="px-4 py-3 text-left text-sm text-[#2d3e4d] border-b-2 border-[#a8b5bf]">
-    status
-</th>
-
-<th class="px-4 py-3 text-center text-sm text-[#2d3e4d] border-b-2 border-[#a8b5bf]">
-    notes
-</th>
-<th class="px-4 py-3 text-center text-sm text-[#2d3e4d] border-b-2 border-[#a8b5bf]">
-    received date
-</th>
-
-<th class="px-4 py-3 text-center text-sm text-[#2d3e4d] border-b-2 border-[#a8b5bf] cursor-pointer"
-    @click="toggleSearch('board')">
-<span v-if="activeSearch !== 'board'">
-    Board Member
-</span>
-<input
-    v-if="activeSearch === 'board'"
-    v-model="searchInputs.board"
-    @click.stop
-    class="mt-2 w-full px-2 py-1 border rounded"
-    placeholder="Search board"
-/>
-</th>
-
-<th class="px-4 py-3 text-center text-sm text-[#2d3e4d] border-b-2 border-[#a8b5bf]">
-Actions
-</th>
-</tr>
-</thead>
-
-<tr
-  v-for="(donation, index) in filteredAndSorted"
-  :key="index"
-  class="hover:bg-[#e8f0f7] transition-colors border-b border-gray-200 cursor-pointer"
->
-  <td class="px-6 py-4">{{ donation.donor?.['name'] }}</td>
-  <td class="px-6 py-4">{{ donation.event }}</td>
-  <td class="px-6 py-4">{{ donation.method }}</td>
-  <td class="px-6 py-4">{{ donation.monetaryAmount }}</td>
-  <td class="px-6 py-4">{{ donation.nonMonetaryAmount }}</td>
-  <td class="px-6 py-4">{{ donation.status == 0 ? 'pending' : 'approved' }}</td>
-  <td class="px-6 py-4">{{ donation.notes }}</td>
-
-  <td class="px-6 py-4 whitespace-nowrap w-[120px] truncate">
-    {{ donation.receivedDate.slice(0,10) }}
-  </td>
-
-  <td class="px-6 py-4">{{ donation.boardMember?.['name'] }}</td>
-
-  <td class="px-6 py-4">
-    <div class="flex gap-2 justify-center">
-      <button v-if="permissionLevel>0" @click="openEdit(donation.id)" class="rounded-md bg-blue-600 hover:bg-blue-700 text-white px-6 py-2">Edit</button>
-      <button v-if="permissionLevel>0" @click="delete_donation(donation.id)" class="rounded-md bg-red-600 hover:bg-red-700 text-white px-6 py-2">Delete</button>
-      <button @click="openView(donation.id)" class="rounded-md bg-green-600 hover:bg-green-700 text-white px-6 py-2">View</button>
+    <div v-if="showMenu" class="fixed top-0 left-0 w-full h-full flex justify-center items-center z-20 bg-black/50">
+    <DonationsForm :permission-level="permissionLevel" :donation-id="activeDonationId" method="PUT" @update-donation="handleUpdateDonations" @close="showMenu = false"/>
     </div>
-  </td>
-</tr>
 
-</table>
-</div>
-
-<div v-if="showMenu" class="fixed top-0 left-0 w-full h-full flex justify-center items-center z-20 bg-black/50">
-<DonationsForm :permission-level="permissionLevel" :donation-id="activeDonationId" method="PUT" @update-donation="handleUpdateDonations" @close="showMenu = false"/>
-</div>
-
-<div v-if="showViewDonations" class="fixed top-0 left-0 w-full h-full flex justify-center items-center z-20 bg-black/50">
-<viewDonationsForm :donation-id="activeDonationId" @close="showViewDonations = false"/>
-</div>
-</div>
+    <div v-if="showViewDonations" class="fixed top-0 left-0 w-full h-full flex justify-center items-center z-20 bg-black/50">
+    <viewDonationsForm :donation-id="activeDonationId" @close="showViewDonations = false"/>
+    </div>
+    </div>
 </template>
 
 <script setup lang="ts">

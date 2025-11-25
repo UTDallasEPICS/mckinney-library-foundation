@@ -5,7 +5,10 @@ export default defineEventHandler(async (event) => {
     try {
         const id = getRouterParam(event, 'id');  
         const donation = await prisma.donation.findUnique({
-            where: { id:id }
+            where: { id:id },
+            include:{
+                donor:true,
+            }
         });    
         return {
             success: true,
