@@ -10,30 +10,30 @@
     <div class="flex flex-col gap-4">
     
     <div>
-    <label class="text-sm text-slate-600">donor (name)</label>
+    <label class="text-sm text-slate-600">donor (name) <span class = "text-red-500">*</span></label>
     <input v-model="donor" class="w-full mt-1 px-3 py-2 rounded-md border border-slate-300" />
     </div>
     
     <div>
-    <label class="text-sm text-slate-600">event</label>
+    <label class="text-sm text-slate-600">event <span class = "text-red-500">*</span></label>
     <input v-model="event" class="w-full mt-1 px-3 py-2 rounded-md border border-slate-300" />
     </div>
 
     <div>
-    <label class="text-sm text-slate-600">method</label>
+    <label class="text-sm text-slate-600">method <span class = "text-red-500">*</span></label>
     <input v-model="method" class="w-full mt-1 px-3 py-2 rounded-md border border-slate-300" />
     </div>
 
 
     <div>
-    <label class="text-sm text-slate-600">monetary amount</label>
-    <input v-model="monetaryAmount" type="number" class="w-full mt-1 px-3 py-2 rounded-md border border-slate-300" />
+    <label class="text-sm text-slate-600" >monetary amount</label>
+    <input v-model="monetaryAmount" min = "0" onkeydown="return event.key !== '-'" type="number" class="w-full mt-1 px-3 py-2 rounded-md border border-slate-300" />
     </div>
 
 
     <div>
     <label class="text-sm text-slate-600">non monetary amount</label>
-    <input v-model="nonMonetaryAmount" type="number" class="w-full mt-1 px-3 py-2 rounded-md border border-slate-300" />
+    <input v-model="nonMonetaryAmount" min = "0" onkeydown="return event.key !== '-'" type="number" class="w-full mt-1 px-3 py-2 rounded-md border border-slate-300" />
     </div>
       
     <div>
@@ -62,7 +62,7 @@
     </div>
     
     <div class="flex justify-end gap-3 mt-6">
-    <button @click = 'resetForm()' class="px-4 py-2 bg-slate-300 text-slate-700 rounded-lg">Cancel</button>
+    <button @click = 'resetForm()' class="px-4 py-2 bg-slate-300 text-slate-700 rounded-lg">Clear</button>
     <button @click = "submit()" class="px-4 py-2 bg-slate-700 text-white rounded-lg">Submit</button>
     </div>
     
@@ -159,7 +159,7 @@
 
     const submit = async () => { 
 
-    if (!donor.value || !event.value || !method.value || !monetaryAmount.value || !nonMonetaryAmount.value  || !startDate.value || !endDate.value || !status.value) {
+    if (!donor.value || !event.value || !method.value  || !status.value) {
         alert("Please fill in all required fields.")
         return
     }

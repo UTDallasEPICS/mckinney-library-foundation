@@ -24,7 +24,6 @@ export default defineEventHandler(async (event) =>{
                     lastDonationDate: new Date(body.lastDonationDate),
                     firstDonationDate: new Date(body.lastDonationDate),
                     donations: body.donations,
-                    webLink: body.webLink
             }       
         });
 
