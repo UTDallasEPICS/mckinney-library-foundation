@@ -232,7 +232,7 @@ async function groupEmail(values: Record<string, any>) {
 }
 
 const addDonor = (data) => { 
-  console.log("data to fucking reached");
+//hi there
 
 
   console.log("donros",donors)
