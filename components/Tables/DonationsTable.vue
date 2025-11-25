@@ -99,8 +99,8 @@ Actions
 
   <td class="px-6 py-4">
     <div class="flex gap-2 justify-center">
-      <button @click="openEdit(donation.id)" class="rounded-md bg-blue-600 hover:bg-blue-700 text-white px-6 py-2">Edit</button>
-      <button @click="delete_donation(donation.id)" class="rounded-md bg-red-600 hover:bg-red-700 text-white px-6 py-2">Delete</button>
+      <button v-if="permissionLevel>0" @click="openEdit(donation.id)" class="rounded-md bg-blue-600 hover:bg-blue-700 text-white px-6 py-2">Edit</button>
+      <button v-if="permissionLevel>0" @click="delete_donation(donation.id)" class="rounded-md bg-red-600 hover:bg-red-700 text-white px-6 py-2">Delete</button>
       <button @click="openView(donation.id)" class="rounded-md bg-green-600 hover:bg-green-700 text-white px-6 py-2">View</button>
     </div>
   </td>
@@ -110,7 +110,7 @@ Actions
 </div>
 
 <div v-if="showMenu" class="fixed top-0 left-0 w-full h-full flex justify-center items-center z-20 bg-black/50">
-<DonationsForm :donation-id="activeDonationId" method="PUT" @update-donation="handleUpdateDonations" @close="showMenu = false"/>
+<DonationsForm :permission-level="permissionLevel" :donation-id="activeDonationId" method="PUT" @update-donation="handleUpdateDonations" @close="showMenu = false"/>
 </div>
 
 <div v-if="showViewDonations" class="fixed top-0 left-0 w-full h-full flex justify-center items-center z-20 bg-black/50">
@@ -126,10 +126,10 @@ import viewDonationsForm from '@/components/Forms/viewDonationsForm.vue'
 
 const emit = defineEmits(['delete-donation', 'update-donation'])
     
-const props = defineProps({
-donationInfo: { type: Object }
-})
-
+const props = defineProps<{
+    donationInfo:Object
+    permissionLevel:number
+}>()
 const showMenu = ref(false)
 const showViewDonations = ref(false)
 const activeDonationId = ref(null)
@@ -175,7 +175,12 @@ showViewDonations.value = true
 }
 
 const delete_donation = async (id) => {
-await $fetch(`/api/donations/${id}`, { method: 'DELETE' })
+await $fetch(`/api/donation/${id}`, { 
+    method: 'DELETE',
+    body:{
+        permissionLevel:props.permissionLevel
+    } 
+})
 emit('delete-donation', id)
 }
 

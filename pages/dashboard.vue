@@ -38,7 +38,7 @@
       <DashboardStat />
     </div>
 
-    <DonationsForm v-if="showDonationForm" @close="showDonationForm = false" />
+    <DonationsForm v-if="showDonationForm" :permission-level="permission" @close="showDonationForm = false" />
     <GrantForm v-if="showGrantForm" @close="showGrantForm = false" />
   </div>
 </template>

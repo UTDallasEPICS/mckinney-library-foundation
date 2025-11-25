@@ -33,7 +33,7 @@
     
     <div v-if = "showMenu">
     
-      <DonationsForm  @add-donation = "addDonation"  @close="showMenu = false"/>
+      <DonationsForm :permission-level="permissionLevel" @add-donation = "addDonation"  @close="showMenu = false"/>
     
       
     </div>
@@ -41,7 +41,7 @@
     <div  v-if = "showDonorForm"> 
     
     
-      <DonorForm @close="showDonorForm = false" @add-donor = "addDonor"/>
+      <DonorForm :permission-level="permissionLevel" @close="showDonorForm = false" @add-donor = "addDonor"/>
     </div>
     
     

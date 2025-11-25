@@ -11,6 +11,12 @@ export default defineEventHandler (async (event)=>{
         body.status = 1
     }
     try{
+        if(body.permissionLevel < 1){
+            throw createError({
+                statusCode: 401,
+                statusMessage:"User not authorized to edit donations"
+            });
+        }
         const updateDonation = await prisma.donation.update({
         where: { id: id },
         data: {

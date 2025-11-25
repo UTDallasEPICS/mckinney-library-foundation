@@ -51,7 +51,8 @@ async function updatePermission(id:string,permission:string, status:boolean){
         method:"PATCH",
         body:{
             permission:Number(permission),
-            status:status
+            status:status,
+            permissionLevel:props.permissionLevel
         }
     }
     )
@@ -62,7 +63,8 @@ async function freezeAccount(account: {id: string, name: string, email: string, 
       method: "PATCH",
       body:{
         status: !account.status,
-        permission:account.permission
+        permission:account.permission,
+        permissionLevel:props.permissionLevel
       }
     });
     if(success){
@@ -72,16 +74,15 @@ async function freezeAccount(account: {id: string, name: string, email: string, 
 async function deleteAccount(id:string, index:number){
   const {success} = await $fetch(`/api/user/${id}`,{
     method:"DELETE",
+    body:{
+      permissionLevel:props.permissionLevel
+    }
   })
   if(success){
     props.accounts.splice(index,1);
   }
   
 }
-
-
-
-
 const permissions = ref(["1"]);
 if(props.accounts){
     for(let i = 0; i < props.accounts.length; i++){

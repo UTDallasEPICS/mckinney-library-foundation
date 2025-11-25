@@ -83,7 +83,8 @@ async function editAccount(values: Record<string, any>){
     body:{
       email:values.email,
       name:values.fName+ ' ' + values.lName,
-      permission:values.permission
+      permission:values.permission,
+      permissionLevel:permissionLevel.value
     }
   })
   if(success){

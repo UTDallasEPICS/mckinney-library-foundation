@@ -6,8 +6,7 @@ export default defineEventHandler(async (event) => {
         const id = getRouterParam(event, 'id');  
         const donation = await prisma.donation.findUnique({
             where: { id:id }
-        });
-        console.log("donation found:", donation);      
+        });    
         return {
             success: true,
             statusCode: 200,

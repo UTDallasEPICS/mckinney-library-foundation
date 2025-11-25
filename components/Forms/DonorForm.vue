@@ -72,9 +72,9 @@
     
     </div>
     </div>
-    </template>
+</template>
     
-    <script setup> 
+<script setup> 
     import { ref,onMounted } from 'vue';
     
     const emit = defineEmits(['close','update-donors','add-donor']);
@@ -97,67 +97,58 @@
         donorId: {
             type: String,
             default: ""
+        },
+        permissionLevel:{
+            default:0
         }
     })
-
-
+    console.log("props permission level" + props.permissionLevel)
     onMounted(() => { 
-
-if(props.apiMethod === 'PATCH' && props.donorId) {
-
-    const getInfo = async () => { 
-
-try { 
-
-    const response = await $fetch(`/api/donor/${props.donorId}`)
-    name.value = response.data.name
-    address.value = response.data.address
-    phone.value = response.data.phone
-    email.value = response.data.email
-    preferredCommunication.value = response.data.preferredCommunication
-    notes.value = response.data.notes
-    organization.value = response.data.organization
-    lastDonationDate.value = response.data.lastDonationDate?.slice(0,10)
-    webLink.value = response.data.webLink
-
-
-
-}catch(err) { 
-
-    console.log("error",err)
-}
-}
-getInfo()
+        if(props.apiMethod === 'PATCH' && props.donorId) {
+            const getInfo = async () => { 
+                try { 
+                    const response = await $fetch(`/api/donor/${props.donorId}`)
+                    name.value = response.data.name
+                    address.value = response.data.address
+                    phone.value = response.data.phone
+                    email.value = response.data.email
+                    preferredCommunication.value = response.data.preferredCommunication
+                    notes.value = response.data.notes
+                    organization.value = response.data.organization
+                    lastDonationDate.value = response.data.lastDonationDate?.slice(0,10)
+                    webLink.value = response.data.webLink
+                }catch(err) { 
+                    console.log("error",err)
+                }
+            }       
+            getInfo()
       
-}
-
-
+        }
     })
-
-
     const submit = async () => {
         try { 
-
             if(!name.value || !address.value || !email.value || !lastDonationDate.value) { 
-        alert("Please fill in all required fields")
-        return
-    }
-
-
-    const response = await $fetch('/api/donor/124',{ 
-        method: props.apiMethod,
-        body: {
-            ...(props.donorId ? { donorId: props.donorId } : {}),
-            name: name.value,
-            address: address.value,
-            phone: `${phone.value}`,
-            email: email.value,
-            preferredCommunication: preferredCommunication.value,
-            notes: notes.value,
-            organization: organization.value,
-            lastDonationDate: lastDonationDate.value,
-            webLink: webLink.value
-        }
+                alert("Please fill in all required fields")
+                return
+            }
+            const url = ref("/api/donor/");
+            if(props.apiMethod == 'PATCH'){
+                url.value += `${props.donorId}`
+            }
+            const response = await $fetch(url.value,{ 
+                method: props.apiMethod,
+                body: {
+                    permissionLevel:props.permissionLevel,
+                    name: name.value,
+                    address: address.value,
+                    phone: `${phone.value}`,
+                    email: email.value,
+                    preferredCommunication: preferredCommunication.value,
+                    notes: notes.value,
+                    organization: organization.value,
+                    lastDonationDate: lastDonationDate.value,
+                    webLink: webLink.value
+                }
     })
 
 

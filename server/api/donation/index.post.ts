@@ -10,6 +10,12 @@ export default defineEventHandler(async (event) => {
     body.status = 1
   }
   try {
+    if(body.permissionLevel < 1){
+            throw createError({
+                statusCode: 401,
+                statusMessage:"User not authorized to create donations"
+            });
+        }
     let donorRecord = await prisma.donor.findFirst({
       where: {
         name: body.donor

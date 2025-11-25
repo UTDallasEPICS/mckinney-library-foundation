@@ -70,7 +70,7 @@
     </div>
     </template>
     
-    <script setup> 
+    <script setup lang="ts"> 
     import { ref,onMounted } from 'vue';
     const emit = defineEmits(['close','update-donation','add-donation']);
 
@@ -97,10 +97,12 @@
     donationId: {
         type: String,
         default: ""
+    },
+    permissionLevel:{
+        default:0
     }
    })
-
-
+   console.log("prop permission level:" +props.permissionLevel)
     onMounted(() => { 
        const getSession = async () => { 
          const response = await $fetch('/api/session')
@@ -181,7 +183,7 @@
                 method: method.value,
                 monetaryAmount: String(monetaryAmount.value),
                 nonMonetaryAmount: String(nonMonetaryAmount.value),
-  
+                permissionLevel:props.permissionLevel,
                 notes: notes.value,
            
                 startDate: startDate.value,

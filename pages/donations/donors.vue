@@ -3,6 +3,7 @@
 
   <DonorTable 
     key="DonoTable"
+    :permission-level="permissionLevel"
     :data="donors" 
     :email-function="DonorTableProps.emailFunction"
     :edit-function="DonorTableProps.editFunction"
@@ -23,6 +24,7 @@
 
   <div v-if="updateDonor" class="fixed top-0 left-0 w-full h-full flex justify-center items-center z-20 bg-black/50">
     <DonorForm
+      :permission-level="permissionLevel"
       :donor-id="donorId"
       @update-donors="updateDonorForm"
       apiMethod="PATCH"
@@ -192,25 +194,6 @@ async function prepDonorView(donor: {
   donorId.value = donor.id;
 }
 
-async function editDonor(values: Record<string, any>) {
-  await $fetch(`/api/donor/${values.id}`, {
-    method: "PATCH",
-    body: {
-      name: values.fName + " " + values.lName,
-      email: values.email,
-      phone: values.phone,
-      address: values.address,
-      preferredCommunication: values.preferredCommunication,
-      notes: values.notes,
-      webLink: values.webLink,
-      organization: values.organization,
-    }
-  });
-  await getDonors();
-  cancelUpdate();
-  reloadNuxtApp();
-}
-
 async function deleteDonor(donor: {
   id: string;
   name: string;
@@ -223,6 +206,9 @@ async function deleteDonor(donor: {
 }) {
   await $fetch(`/api/donor/${donor.id}`, {
     method: "DELETE",
+    body:{
+      permissionLevel:permissionLevel.value
+    }
   });
   await getDonors();
   reloadNuxtApp();
@@ -232,6 +218,7 @@ async function groupEmail(values: Record<string, any>) {
   await $fetch("/api/email", {
     method: "POST",
     body: {
+      permissionLevel: permissionLevel.value,
       subject: values.Subject,
       text: values.Message,
       emails: emailList.value,
@@ -244,14 +231,6 @@ async function groupEmail(values: Record<string, any>) {
 }
 
 const addDonor = (data) => { 
-  console.log("data to fucking reached");
-
-
-  console.log("donros",donors)
   donors.value.push(data);
-
-
-
-
 };
 </script>

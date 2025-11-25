@@ -6,7 +6,7 @@ export default defineEventHandler (async (event)=>{
     const id = await getRouterParam(event, 'id');
     const body = await readBody(event);
     try{
-        if(!(body.permissionLevel > 0)){
+        if(body.permissionLevel < 1){
             throw createError({
                 statusCode: 401,
                 statusMessage:"User not authorized to delete donations"
