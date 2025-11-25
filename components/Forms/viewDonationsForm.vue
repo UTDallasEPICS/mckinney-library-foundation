@@ -50,14 +50,11 @@
     </div>
     
     <div>
-    <label  class="text-sm text-slate-600">Start Date</label>
-    <input disabled v-model = "startDate" type="date" class="w-full mt-1 px-3 py-2 rounded-md border border-slate-300" />
+    <label  class="text-sm text-slate-600">Received</label>
+    <input disabled v-model = "receivedDate" type="date" class="w-full mt-1 px-3 py-2 rounded-md border border-slate-300" />
     </div>
     
-    <div>
-    <label class="text-sm text-slate-600">End Date</label>
-    <input disabled v-model = "endDate"  type="date" class="w-full mt-1 px-3 py-2 rounded-md border border-slate-300" />
-    </div>
+ 
     
     </div>
     
@@ -78,8 +75,8 @@
     const nonMonetaryAmount = ref(0)
     const notes = ref("")
     const status = ref("pending")
-    const startDate = ref("")
-    const endDate = ref("")
+    const receivedDate = ref("")
+
 
 
     const props = defineProps({
@@ -101,16 +98,16 @@
 
         const response = await $fetch(`/api/donations/${props.donationId}`)  
 
+console.log("response",response.data.donor.name)
 
-
-        // donor.value = response.data.donor.name
+        donor.value = response.data.donor.name
         event.value = response.data?.event
         method.value = response.data?.method
         monetaryAmount.value = response.data?.monetaryAmount
         nonMonetaryAmount.value = response.data?.nonMonetaryAmount
         notes.value = response.data?.notes
 
-        startDate.value = response.data.receivedDate.split("T")[0]
+        receivedDate.value = response.data.receivedDate.split("T")[0]
         endDate.value = response.data.lastEditDate.split("T")[0]
 
         if(response.data?.status == 1) { 
@@ -118,6 +115,8 @@
         } else { 
             status.value = "pending"
         }
+
+        console.log("donoree date.value",receivedDate.value)
 
 
 

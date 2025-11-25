@@ -12,14 +12,14 @@ Email Donors
 class="px-4 py-3 text-left text-sm text-[#2d3e4d] border-b-2 border-[#a8b5bf] cursor-pointer"
 @click="toggleSearch('name')"
 >
-<span v-if="activeSearch !== 'name'">Name</span>
+<span v-if="activeSearch !== 'name'">Name ↑↓</span>
 <input v-else v-model="searchInputs.name" @click.stop class="mt-2 w-full px-2 py-1 border rounded"
 placeholder="Search name"
 />
 </th>
 
 <th class="px-4 py-3 text-left text-sm text-[#2d3e4d] border-b-2 border-[#a8b5bf] cursor-pointer" @click="toggleSearch('organization')">
-<span v-if="activeSearch !== 'organization'">Organization</span>
+<span v-if="activeSearch !== 'organization'">Organization ↑↓</span>
 <input v-else v-model="searchInputs.organization" @click.stop class="mt-2 w-full px-2 py-1 border rounded" placeholder="Search organization"/>
 </th>
 

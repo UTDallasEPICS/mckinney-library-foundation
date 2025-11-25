@@ -9,7 +9,10 @@ try {
 
     // console.log("id found:", id);   
     const donation = await prisma.donation.findUnique({
-        where: { id }
+        where: { id },
+        include: {
+            donor: true,
+        },
     });
     console.log("donation found:", donation);      
     return {

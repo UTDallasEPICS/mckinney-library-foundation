@@ -50,14 +50,11 @@
     </div>
     
     <div>
-    <label class="text-sm text-slate-600">Start Date</label>
-    <input v-model="startDate" type="date" class="w-full mt-1 px-3 py-2 rounded-md border border-slate-300" />
+    <label class="text-sm text-slate-600">Received Date</label>
+    <input v-model="receivedDate" type="date" class="w-full mt-1 px-3 py-2 rounded-md border border-slate-300" />
     </div>
     
-    <div>
-    <label class="text-sm text-slate-600">End Date</label>
-    <input v-model="endDate" type="date" class="w-full mt-1 px-3 py-2 rounded-md border border-slate-300" />
-    </div>
+   
     
     </div>
     
@@ -83,8 +80,8 @@
 
     const notes = ref("")
 
-    const startDate = ref("")
-    const endDate = ref("")
+    const receivedDate = ref("")
+  
     const status = ref("pending")
     const boardMemberId = ref("")
     const boardMember = ref("")
@@ -127,9 +124,9 @@
             
             const response = await $fetch(`/api/donations/${props.donationId}`)
 
-console.log("response",response)
+console.log("responsess",response.data.donor.name)
 
-            donor.value = response.data.donor
+            donor.value = response.data.donor.name
             event.value = response.data.event
             method.value = response.data.method
             monetaryAmount.value = response.data.monetaryAmount
@@ -137,8 +134,8 @@ console.log("response",response)
     
             notes.value = response.data.notes
 
-            startDate.value = response.data.lastEditDate.slice(0,10)
-            endDate.value = response.data.receivedDate.slice(0,10)
+            receivedDate.value = response.data.lastEditDate.slice(0,10)
+         
 
 
 
@@ -173,8 +170,7 @@ getInfo()
        
         notes.value = ""
         proposedDate.value = ""
-        startDate.value = ""
-        endDate.value = ""
+        receivedDate.value = ""
         status.value = "pending"
     }
 
@@ -199,8 +195,8 @@ getInfo()
   
                 notes: notes.value,
            
-                startDate: startDate.value,
-                endDate: endDate.value,
+                receivedDate: receivedDate.value,
+        
                 status: status.value,
                 boardMemberId: boardMemberId.value,
                 boardMember: boardMember.value,

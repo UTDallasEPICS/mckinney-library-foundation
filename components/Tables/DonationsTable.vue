@@ -2,81 +2,82 @@
 <div class="flex-1 p-8">
 <div class="bg-white rounded-lg shadow-lg overflow-hidden mx-auto">
 <table class="w-full">
-<thead class="bg-[#c5d0d8] sticky top-0 z-10">
+    <thead class="bg-[#c5d0d8] sticky top-0 z-10">
+<tr class="whitespace-nowrap">
 
-<tr>
-<th class="px-4 py-3 text-left text-sm text-[#2d3e4d] border-b-2 border-[#a8b5bf] cursor-pointer"
-    @click="toggleSearch('donor')">
-<span v-if="activeSearch !== 'donor'">
-    Donor name
-    
-</span>
-<input
-    v-if="activeSearch === 'donor'"
-    v-model="searchInputs.donor"
-    @click.stop
-    class="mt-2 w-full px-2 py-1 border rounded"
-    placeholder="Search donor"
-/>
-</th>
+  <th 
+    class="px-4 py-3 text-left text-sm text-[#2d3e4d] border-b-2 border-[#a8b5bf] cursor-pointer"
+    @click="toggleSearch('donor')"
+  >
+    <span v-if="activeSearch !== 'donor'">Donor ↑↓</span>
+    <input
+      v-else
+      v-model="searchInputs.donor"
+      @click.stop
+      class="mt-2 w-full px-2 py-1 border rounded"
+      placeholder="Search donor"
+    />
+  </th>
 
-<th class="px-4 py-3 text-left text-sm text-[#2d3e4d] border-b-2 border-[#a8b5bf] cursor-pointer"
-    @click="toggleSearch('event')">
-<span v-if="activeSearch !== 'event'">
-    event
-    
-</span>
-<input
-    v-if="activeSearch === 'event'"
-    v-model="searchInputs.event"
-    @click.stop
-    class="mt-2 w-full px-2 py-1 border rounded"
-    placeholder="Search event"
-/>
-</th>
+  <th 
+    class="px-4 py-3 text-left text-sm text-[#2d3e4d] border-b-2 border-[#a8b5bf] cursor-pointer"
+    @click="toggleSearch('event')"
+  >
+    <span v-if="activeSearch !== 'event'">Event ↑↓</span>
+    <input
+      v-else
+      v-model="searchInputs.event"
+      @click.stop
+      class="mt-2 w-full px-2 py-1 border rounded"
+      placeholder="Search event"
+    />
+  </th>
 
-<th class="px-4 py-3 text-left text-sm text-[#2d3e4d] border-b-2 border-[#a8b5bf]">
-    method
-</th>
+  <th class="px-4 py-3 text-left text-sm text-[#2d3e4d] border-b-2 border-[#a8b5bf]">
+    Method
+  </th>
 
-<th class="px-4 py-3 text-left text-sm text-[#2d3e4d] border-b-2 border-[#a8b5bf]">
-    monetary amount
-</th>
+  <th class="px-4 py-3 text-left text-sm text-[#2d3e4d] border-b-2 border-[#a8b5bf]">
+    Monetary Amount
+  </th>
 
-<th class="px-4 py-3 text-left text-sm text-[#2d3e4d] border-b-2 border-[#a8b5bf]">
-    non monetary amount
-</th>
+  <th class="px-4 py-3 text-left text-sm text-[#2d3e4d] border-b-2 border-[#a8b5bf]">
+    Non-Monetary Amount
+  </th>
 
-<th class="px-4 py-3 text-left text-sm text-[#2d3e4d] border-b-2 border-[#a8b5bf]">
-    status
-</th>
+  <th class="px-4 py-3 text-left text-sm text-[#2d3e4d] border-b-2 border-[#a8b5bf]">
+    Status
+  </th>
 
-<th class="px-4 py-3 text-center text-sm text-[#2d3e4d] border-b-2 border-[#a8b5bf]">
-    notes
-</th>
-<th class="px-4 py-3 text-center text-sm text-[#2d3e4d] border-b-2 border-[#a8b5bf]">
-    received date
-</th>
+  <th class="px-4 py-3 text-center text-sm text-[#2d3e4d] border-b-2 border-[#a8b5bf]">
+    Notes
+  </th>
 
-<th class="px-4 py-3 text-center text-sm text-[#2d3e4d] border-b-2 border-[#a8b5bf] cursor-pointer"
-    @click="toggleSearch('board')">
-<span v-if="activeSearch !== 'board'">
-    Board Member
-</span>
-<input
-    v-if="activeSearch === 'board'"
-    v-model="searchInputs.board"
-    @click.stop
-    class="mt-2 w-full px-2 py-1 border rounded"
-    placeholder="Search board"
-/>
-</th>
+  <th class="px-4 py-3 text-center text-sm text-[#2d3e4d] border-b-2 border-[#a8b5bf]">
+    Received Date
+  </th>
 
-<th class="px-4 py-3 text-center text-sm text-[#2d3e4d] border-b-2 border-[#a8b5bf]">
-Actions
-</th>
+  <th 
+    class="px-4 py-3 text-center text-sm text-[#2d3e4d] border-b-2 border-[#a8b5bf] cursor-pointer"
+    @click="toggleSearch('board')"
+  >
+    <span v-if="activeSearch !== 'board'">Board Member ↑↓</span>
+    <input
+      v-else
+      v-model="searchInputs.board"
+      @click.stop
+      class="mt-2 w-full px-2 py-1 border rounded"
+      placeholder="Search board"
+    />
+  </th>
+
+  <th class="px-4 py-3 text-center text-sm text-[#2d3e4d] border-b-2 border-[#a8b5bf]">
+    Actions
+  </th>
+
 </tr>
 </thead>
+
 
 <tr
   v-for="(donation, index) in filteredAndSorted"
