@@ -117,7 +117,7 @@
  if(props.method === 'PUT' && props.donationId) { 
     const getInfo = async() => {
         try {
-            const response = await $fetch(`/api/donations/${props.donationId}`)
+            const response = await $fetch(`/api/donation/${props.donationId}`)
             donor.value = response.data.donor
             event.value = response.data.event
             method.value = response.data.method
@@ -165,7 +165,7 @@
     }
 
     try { 
-        const url = ref('/api/donations');
+        const url = ref('/api/donation');
         if(props.method == 'PUT'){
             url.value += `/${props.donationId}`
         }

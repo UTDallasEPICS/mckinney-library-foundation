@@ -99,7 +99,7 @@
 
     try { 
 
-        const response = await $fetch(`/api/donations/${props.donationId}`)  
+        const response = await $fetch(`/api/donation/${props.donationId}`)  
 
 
 

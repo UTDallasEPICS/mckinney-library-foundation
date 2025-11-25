@@ -25,7 +25,7 @@
   onMounted(() => { 
     const getDonations = async () => {
       try { 
-        const response = await $fetch('/api/donations',{
+        const response = await $fetch('/api/donation',{
           method:"GET",
         })
         donations.value = response

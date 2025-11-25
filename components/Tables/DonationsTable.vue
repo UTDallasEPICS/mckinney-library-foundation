@@ -132,7 +132,7 @@
   
   const delete_donation = async (id: string | number) => {
     try {
-      await $fetch(`/api/donations/${id}`, {
+      await $fetch(`/api/donation/${id}`, {
         method: 'DELETE',
         body:{
           permissionLevel:props.permissionLevel
