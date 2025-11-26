@@ -50,24 +50,19 @@
     </div>
     
     <div>
-    <label  class="text-sm text-slate-600">Received</label>
-    <input disabled v-model = "receivedDate" type="date" class="w-full mt-1 px-3 py-2 rounded-md border border-slate-300" />
+        <label  class="text-sm text-slate-600">Received</label>
+        <input disabled v-model = "receivedDate" type="date" class="w-full mt-1 px-3 py-2 rounded-md border border-slate-300" />
     </div>
     
- 
-    
     </div>
-    
-  
     </div>
     </div>
     </template>
     
     <script setup> 
     import {ref,onMounted} from 'vue';  
+
     const emit = defineEmits(['close']);
-
-
     const donor = ref("")
     const event = ref("")
     const method = ref("")
@@ -78,57 +73,32 @@
     const receivedDate = ref("")
 
 
-
     const props = defineProps({
         donationId: {
             type: String,
            default: ""
         }
     }); 
-    // pass props from parent left to do and the delete button 
-
-
     onMounted(() => { 
-
-
         const getInfo = async () => { 
-
-
-    try { 
-
-        const response = await $fetch(`/api/donations/${props.donationId}`)  
-
-console.log("response",response.data.donor.name)
-
-        donor.value = response.data.donor.name
-        event.value = response.data?.event
-        method.value = response.data?.method
-        monetaryAmount.value = response.data?.monetaryAmount
-        nonMonetaryAmount.value = response.data?.nonMonetaryAmount
-        notes.value = response.data?.notes
-
-        receivedDate.value = response.data.receivedDate.split("T")[0]
-        endDate.value = response.data.lastEditDate.split("T")[0]
-
-        if(response.data?.status == 1) { 
-            status.value = "received"
-        } else { 
-            status.value = "pending"
+            try { 
+                const response = await $fetch(`/api/donation/${props.donationId}`)  
+                event.value = response.data?.event
+                method.value = response.data?.method
+                monetaryAmount.value = response.data?.monetaryAmount
+                nonMonetaryAmount.value = response.data?.nonMonetaryAmount
+                notes.value = response.data?.notes
+                receivedDate.value = response.data.receivedDate.split("T")[0]
+                if(response.data?.status == 1) { 
+                    status.value = "received"
+                } else { 
+                    status.value = "pending"
+                }
+            }catch(err) { 
+                console.log("error",err)
+            }
         }
-
-        console.log("donoree date.value",receivedDate.value)
-
-
-
-       
-
-    }catch(err) { 
-        console.log("error",err)
-    }
-        }
-
         getInfo()
-
     })
 
 

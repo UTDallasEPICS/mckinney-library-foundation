@@ -11,11 +11,10 @@ export default defineEventHandler(async (event) => {
 
         console.log("id found:", id);   
         const donor = await prisma.donor.findUnique({
-            where: { id },
-            include: {
-                donations: true,
-            },
-
+            where: { id:id },
+            include:{
+                donations:true
+            }
         });      
         return {
             success: true,

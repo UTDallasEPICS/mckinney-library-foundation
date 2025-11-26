@@ -1,56 +1,42 @@
 
 <template> 
-
-  <donationBar   @add-donation = "addDonation"/>
-   
-  <DonationsTable :donation-info = "donations" @delete-donation="handleDeleteDonation" @update-donation = "updateDonation"  />
-
+  <donationBar  :permission-level="permissionLevel" @add-donation = "addDonation"/>  
+  <DonationsTable :permission-level="permissionLevel" :donation-info = "donations" @delete-donation="handleDeleteDonation" @update-donation = "updateDonation"/>
+</template>
   
-  
-  
-  
-  </template>
-  
-  <script setup lang="ts">
-import DonationsTable from '~/components/Tables/DonationsTable.vue';
-
-
+<script setup lang="ts">
+  import DonationsTable from '~/components/Tables/DonationsTable.vue';
   import donationBar from '~/components/donationBar.vue';
   import { ref,onMounted } from 'vue';
+  import { useAuth } from '~/composables/useAuth';
 
+  const {session, getSession} = useAuth();
+  session.value = await getSession();
+
+  const permissionLevel = ref(0);
+  if(session.value?.user){
+      permissionLevel.value = session.value.user.permission;
+  }
+  else{
+    navigateTo("/");
+  }
   const donations = ref()
 
+  onMounted(() => { 
+    const getDonations = async () => {
+      try { 
+        const response = await $fetch('/api/donation',{
+          method:"GET",
+        })
+        donations.value = response
+      }catch(err) { 
+        console.log("error",err)
+      }
+    };
+    getDonations()
+  });
 
-
-onMounted(() => { 
-
-  const getDonations = async () => {
-    
-    try { 
-
-
-      const response = await $fetch('/api/donations',{
-        method:"GET",
-      })
-
-
-      donations.value = response
-
-
-      console.log("response",response)
-
-
-    }catch(err) { 
-
-      console.log("error",err)
-    }
-  };
-
-getDonations()
-
-})
-
-const handleDeleteDonation = (id) => {   
+const handleDeleteDonation = (id:string) => {   
   if (!donations.value || !donations.value.donations) return;
 
   donations.value.donations = donations.value.donations.filter(
@@ -77,7 +63,7 @@ donations.value.donations = donations.value.donations.map(donation => {
 }
 
 
-const addDonation = (data) => {
+const addDonation = (data:Object) => {
   donations.value.donations = [
     ...donations.value.donations,
     data

@@ -1,25 +1,27 @@
 <template>
-<div class="flex-1 p-8">
-<button :disabled="!isEnabled" @click="emailFunction(isChecked)" class="disabled:bg-slate-300 rounded-md text-sm font-medium outline-none h-9 py-2 bg-blue-600 hover:bg-blue-700 text-white px-6 my-3">
-Email Donors
-</button>
-  
-<div class="bg-white rounded-lg shadow-lg overflow-hidden mx-auto">
-<table class="w-full">
-<thead class="bg-[#c5d0d8] sticky top-0 z-10">
-<tr>
-<th
-class="px-4 py-3 text-left text-sm text-[#2d3e4d] border-b-2 border-[#a8b5bf] cursor-pointer"
-@click="toggleSearch('name')"
->
-<span v-if="activeSearch !== 'name'">Name ↑↓</span>
-<input v-else v-model="searchInputs.name" @click.stop class="mt-2 w-full px-2 py-1 border rounded"
-placeholder="Search name"
-/>
-</th>
+  <div class="flex-1 p-8">
+  <button 
+    v-if="permissionLevel>1" 
+    :disabled="!isEnabled" 
+    @click="emailFunction(isChecked)" 
+    class="disabled:bg-slate-300 rounded-md text-sm font-medium outline-none h-9 py-2 bg-blue-600 hover:bg-blue-700 text-white px-6 my-3"
+  >Email Donors</button>
+    <div class="bg-white rounded-lg shadow-lg overflow-hidden mx-auto">
+      <table class="w-full">
+        <thead class="bg-[#c5d0d8] sticky top-0 z-10">
+          <tr>
+            <th
+              class="px-4 py-3 text-left text-sm text-[#2d3e4d] border-b-2 border-[#a8b5bf] cursor-pointer"
+              @click="toggleSearch('name')"
+            >
+              <span v-if="activeSearch !== 'name'">Name ↑↓</span>
+              <input v-else v-model="searchInputs.name" @click.stop class="mt-2 w-full px-2 py-1 border rounded"
+                placeholder="Search name"
+              />
+            </th>
 
 <th class="px-4 py-3 text-left text-sm text-[#2d3e4d] border-b-2 border-[#a8b5bf] cursor-pointer" @click="toggleSearch('organization')">
-<span v-if="activeSearch !== 'organization'">Organization ↑↓</span>
+<span v-if="activeSearch !== 'organization'">Organization</span>
 <input v-else v-model="searchInputs.organization" @click.stop class="mt-2 w-full px-2 py-1 border rounded" placeholder="Search organization"/>
 </th>
 
@@ -42,8 +44,8 @@ class="hover:bg-[#e8f0f7] transition-colors border-b border-gray-200 cursor-poin
 <td class="px-6 py-4 text-[#2d3e4d] text-left text-sm">{{ props.data[idx].organization }}</td>
 <td class="px-6 py-4 text-[#2d3e4d] text-left text-sm">{{ props.data[idx].email }}</td>
 <td class="px-6 py-4 text-[#2d3e4d] text-left text-sm">{{ props.data[idx].phone }}</td>
-<td class="px-6 py-4 text-[#2d3e4d] text-left text-sm">{{ props.data[idx].firstDonationDate?.slice(0,10)}}</td>
-<td class="px-6 py-4 text-[#2d3e4d] text-left text-sm">{{ props.data[idx]?.lastDonationDate?.slice(0,10) }}</td>
+<td class="px-6 py-4 text-[#2d3e4d] text-left text-sm">{{ props.data[idx].firstDonationDate }}</td>
+<td class="px-6 py-4 text-[#2d3e4d] text-left text-sm">{{ props.data[idx].lastDonationDate }}</td>
 <td class="px-6 py-4">
 <div class="flex justify-evenly">
 <button
@@ -90,7 +92,8 @@ type="checkbox"
     emailFunction: (selected: boolean[]) => Promise<void>
     editFunction: (donor: { id: string, name: string, organization: string, email: string, phone: string, address: string, preferredCommunication: string, webLink: string, notes: string, firstDonationDate: Date, lastDonationDate: Date }) => Promise<void>
     viewFunction: (donor: { id: string, name: string, organization: string, email: string, phone: string, address: string, preferredCommunication: string, webLink: string, notes: string, firstDonationDate: Date, lastDonationDate: Date }) => Promise<void>
-  }>()
+    permissionLevel:number
+    }>()
   
   const emit = defineEmits(['delete-donor'])
   

@@ -5,7 +5,7 @@ const prisma = new PrismaClient();
 export default defineEventHandler(async (event) =>{
     try{
         const id = getRouterParam(event, 'id');
-        const request = await prisma.request.delete({
+        const request = await prisma.accountCreationRequest.delete({
             where:{
                 id: id
             }

@@ -50,11 +50,9 @@
     </div>
     
     <div>
-    <label class="text-sm text-slate-600">Received Date</label>
-    <input v-model="receivedDate" type="date" class="w-full mt-1 px-3 py-2 rounded-md border border-slate-300" />
+        <label class="text-sm text-slate-600">Received Date</label>
+        <input v-model="receivedDate" type="date" class="w-full mt-1 px-3 py-2 rounded-md border border-slate-300" />
     </div>
-    
-   
     
     </div>
     
@@ -67,7 +65,7 @@
     </div>
     </template>
     
-    <script setup> 
+    <script setup lang="ts"> 
     import { ref,onMounted } from 'vue';
     const emit = defineEmits(['close','update-donation','add-donation']);
 
@@ -79,9 +77,7 @@
     const nonMonetaryAmount = ref("")
 
     const notes = ref("")
-
     const receivedDate = ref("")
-  
     const status = ref("pending")
     const boardMemberId = ref("")
     const boardMember = ref("")
@@ -94,82 +90,49 @@
     donationId: {
         type: String,
         default: ""
+    },
+    permissionLevel:{
+        default:0
     }
    })
-
-
-    onMounted(() => {
-       
-       const getSession = async () => { 
- 
+    onMounted(() => { 
+        const getSession = async () => { 
          const response = await $fetch('/api/session')
- 
          console.log("response",response.data.user)
-
          boardMemberId.value = response.data.user.id
          boardMember.value = response.data.user.name
- 
-        
-       }
-
- getSession()
-
-
- if(props.method === 'PUT' && props.donationId) { 
-
-    const getInfo = async() => {
-
-        try {
-            
-            
-            const response = await $fetch(`/api/donations/${props.donationId}`)
-
-console.log("responsess",response.data.donor.name)
-
-            donor.value = response.data.donor.name
-            event.value = response.data.event
-            method.value = response.data.method
-            monetaryAmount.value = response.data.monetaryAmount
-            nonMonetaryAmount.value = response.data.nonMonetaryAmount
-    
-            notes.value = response.data.notes
-
-            receivedDate.value = response.data.lastEditDate.slice(0,10)
-         
-
-
-
-            if(response.data.status == 1) {
-                status.value = "received"
-            } else {
-                status.value = "pending"
-            }
-
-
-        } catch(err) { 
-            console.log('error',err)
         }
-    }
-
-getInfo()
-
-
- }
-
-
- 
+        getSession()
+        if(props.method === 'PUT' && props.donationId) { 
+            const getInfo = async() => {
+                try {
+                    const response = await $fetch(`/api/donation/${props.donationId}`)
+                    donor.value = response.data.donor
+                    event.value = response.data.event
+                    method.value = response.data.method
+                    monetaryAmount.value = response.data.monetaryAmount
+                    nonMonetaryAmount.value = response.data.nonMonetaryAmount
+                    notes.value = response.data.notes
+                    receivedDate.value = response.data.receivedDate.slice(0,10)
+                    if(response.data.status == 1) {
+                        status.value = "received"
+                    } else {
+                        status.value = "pending"
+                    }
+                } catch(err) { 
+                    console.log('error',err)
+                }
+            }
+            getInfo()
+        }
      })
-
-
     const resetForm = () => {
         donor.value = ""
         event.value = ""
         method.value = ""
         monetaryAmount.value = ""
-        nonMonetaryAmount.value = ""
-       
+        nonMonetaryAmount.value = ""     
         notes.value = ""
-        proposedDate.value = ""
         receivedDate.value = ""
         status.value = "pending"
     }
@@ -182,8 +145,14 @@ getInfo()
     }
 
     try { 
-
-        const response = await $fetch('/api/donations/123', {
+        const url = ref('/api/donation');
+        if(props.method == 'PUT'){
+            url.value += `/${props.donationId}`
+        }
+        else{
+            console.log(props.method);
+        }
+        const response = await $fetch(url.value, {
             method: props.method,
             body: {
                 ...(props.donationId ? { donationId: props.donationId } : null),  
@@ -192,11 +161,9 @@ getInfo()
                 method: method.value,
                 monetaryAmount: String(monetaryAmount.value),
                 nonMonetaryAmount: String(nonMonetaryAmount.value),
-  
+                permissionLevel:props.permissionLevel,
                 notes: notes.value,
-           
                 receivedDate: receivedDate.value,
-        
                 status: status.value,
                 boardMemberId: boardMemberId.value,
                 boardMember: boardMember.value,

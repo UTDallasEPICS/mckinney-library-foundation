@@ -3,14 +3,14 @@ import {PrismaClient} from '@prisma/client';
 const prisma = new PrismaClient();
 
 export default defineEventHandler(async (event) =>{
-
-
-    // console.log('donor route reached');
     try{
-
         const body = await readBody(event);
-
-        // console.log("body:", body);
+        if(body.permissionLevel < 1){
+            throw createError({
+                statusCode: 401,
+                statusMessage:"User not authorized to create donors"
+            })
+        }
         const donor = await prisma.donor.create({
             data:{
                 name: body.name,
@@ -26,9 +26,6 @@ export default defineEventHandler(async (event) =>{
                     donations: body.donations,
             }       
         });
-
-
-        // console.log("donor created:", donor);
         return{
             success: true,
             statusCode: 200,

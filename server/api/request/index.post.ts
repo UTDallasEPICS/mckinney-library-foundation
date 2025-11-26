@@ -8,7 +8,7 @@ const {sendMail} = useNodeMailer();
 export default defineEventHandler(async (event) =>{
     try{
         const body = await readBody(event);
-        const request = await prisma.request.create({
+        const request = await prisma.accountCreationRequest.create({
         data:{
              name: body.name, 
              email: body.email,

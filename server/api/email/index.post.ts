@@ -6,6 +6,12 @@ export default eventHandler(async (event)=>{
     console.log(body);
 
     // try{
+    //      if(body.permissionLevel < 2){
+    //         throw createError({
+    //             statusCode: 401,
+    //             statusMessage:"User not authorized to send group emails"
+    //         })
+    //     }
     //     const info = await sendMail({
     //         subject: body.subject,
     //         text: body.text,

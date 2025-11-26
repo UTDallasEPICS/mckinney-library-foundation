@@ -5,13 +5,19 @@ const prisma = new PrismaClient();
 
 export default defineEventHandler(async (event) =>{
     try{
-        const id = getRouterParam(event, 'id');
+        const id = await getRouterParam(event, 'id');
+        const body = await readBody(event);
+         if(body.permissionLevel < 2){
+            throw createError({
+                statusCode: 401,
+                statusMessage:"User not authorized to delete users"
+            })
+        }
         const user = await prisma.user.delete({
             where:{
                 id:id
             }
         })
-        console.log("Account deleted");
         return{
             success: true,
             statusCode: 200,

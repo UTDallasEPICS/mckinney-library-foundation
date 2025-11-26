@@ -1,5 +1,3 @@
-
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -92,7 +90,7 @@ model Donor {
   webLink                String?
   organization           String?
   lastDonationDate       DateTime?
-  firstDonationDate      DateTime?   
+  firstDonationDate      DateTime?
   donations              Donation[]
 }
 
@@ -151,10 +149,4 @@ model Expenditure {
   notes             String?
   spentDate         DateTime?
   lastEditDate      DateTime
-}
-
-model Request {
-  id                String    @id @default(cuid())
-  name              String
-  email             String    @unique
 }
