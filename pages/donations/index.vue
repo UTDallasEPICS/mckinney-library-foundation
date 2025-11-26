@@ -1,55 +1,34 @@
-
 <template> 
 
   <donationBar/>
    
-  <DonationsTable :donation-info = "donations"/>
-
+  <DonationsTable :donation-info = "donations"/>  
   
+</template>
   
-  
-  
-  </template>
-  
-  <script setup lang="ts">
-import DonationsTable from '~/components/Tables/DonationsTable.vue';
-
-
+<script setup lang="ts">
+  import DonationsTable from '~/components/Tables/DonationsTable.vue';
   import donationBar from '~/components/donationBar.vue';
   import { ref,onMounted } from 'vue';
 
   const donations = ref()
 
-
-
-onMounted(() => { 
-
+  onMounted(() => { 
   const getDonations = async () => {
-    
     try { 
-
-
       const response = await $fetch('/api/donations',{
         method:"GET",
       })
 
-
       donations.value = response
 
-
       console.log("response",response)
-
-
     }catch(err) { 
-
       console.log("error",err)
     }
   };
 
-getDonations()
+  getDonations()
 
-})
-  
-
-  </script>
-
+  })
+</script>

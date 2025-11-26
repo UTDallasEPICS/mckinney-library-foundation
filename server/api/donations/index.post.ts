@@ -3,8 +3,9 @@ import {PrismaClient} from '@prisma/client'
 const prisma = new PrismaClient();
 
 export default defineEventHandler (async (event)=>{
+    const body = await readBody(event);
+
     try{
-        const body = await readBody(event);
         // Perform role-based API checking here 
         // I.E., does the user have the permision to create?
 
@@ -13,7 +14,8 @@ export default defineEventHandler (async (event)=>{
                 statusCode: 400,
                 statusMessage: "The donation requires a monetary or non-monetary value"
             });
-        }                       
+        }
+                        
         const donation = await prisma.donation.create({
             data: {
                 boardMemberId: body.boardMemberId,
@@ -28,10 +30,9 @@ export default defineEventHandler (async (event)=>{
                 lastEditDate: new Date()
             }
         });
+
         return { 
-            success: true,
-            statusCode: 200,
-            data: donation,
+            success: true
         };
     }
     catch(error){
@@ -41,7 +42,7 @@ export default defineEventHandler (async (event)=>{
             message: "Failed to create donation",
             error: error
         }
-    } finally {
-        await prisma.$disconnect()
+    }finally{
+        await prisma.$disconnect();
     }
-})
+});

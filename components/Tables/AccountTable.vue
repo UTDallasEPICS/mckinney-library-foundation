@@ -78,9 +78,6 @@ async function deleteAccount(id:string, index:number){
   
 }
 
-
-
-
 const permissions = ref(["1"]);
 if(props.accounts){
     for(let i = 0; i < props.accounts.length; i++){

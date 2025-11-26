@@ -32,5 +32,7 @@ export default defineEventHandler (async (event)=>{
             message: "Failed to delete donation",
             error: error
         }
+    }finally{
+        await prisma.$disconnect();
     }
-})
+});
