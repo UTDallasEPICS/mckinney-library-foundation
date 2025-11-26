@@ -23,21 +23,29 @@ export default defineEventHandler (async (event)=>{
             });
         }
 
-        const updateDonation = await prisma.donation.update({
-            where: { id: body.id },
-            data: {
-                boardMemberId: body.boardMemberId,
-                donorId: body.donorId,
-                event: body.event,
-                method: body.method,
-                monetaryAmount: body. monetaryAmount,
-                nonMonetaryAmount: body.nonMonetaryAmount,
-                status: body.status ?? 0,
-                notes: body.notes,
-                receivedDate: body.receivedDate,
-                lastEditDate: new Date()
-            }
-        });
+const updateDonation = await prisma.donation.update({
+where: { id: donationId },
+data: {
+   
+    boardMemberId: body.boardMemberId,
+    donorId: body.donorId,
+    event: body.event,
+    method: body.method,
+    monetaryAmount: body. monetaryAmount,
+    nonMonetaryAmount: body.nonMonetaryAmount,
+    status: body.status ?? 0,
+    notes: body.notes,
+    receivedDate: body.receivedDate,
+    lastEditDate: new Date()
+}
+});
+
+return { success: true,
+statusCode: 200,
+data: updateDonation,
+}
+
+
     }
     catch(error){
         return{

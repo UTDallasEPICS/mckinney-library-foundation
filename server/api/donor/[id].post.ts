@@ -5,12 +5,12 @@ const prisma = new PrismaClient();
 export default defineEventHandler(async (event) =>{
 
 
-    console.log('donor route reached');
+    // console.log('donor route reached');
     try{
 
         const body = await readBody(event);
 
-        console.log("body:", body);
+        // console.log("body:", body);
         const donor = await prisma.donor.create({
             data:{
                 name: body.name,
@@ -23,12 +23,12 @@ export default defineEventHandler(async (event) =>{
                     organization: body.organization,
                     lastDonationDate: new Date(body.lastDonationDate),
                     firstDonationDate: new Date(body.lastDonationDate),
-                    donations: body.donations
+                    donations: body.donations,
             }       
         });
 
 
-        console.log("donor created:", donor);
+        // console.log("donor created:", donor);
         return{
             success: true,
             statusCode: 200,

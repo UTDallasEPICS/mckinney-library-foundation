@@ -10,39 +10,32 @@
     <div class="flex flex-col gap-4">
     
     <div>
-    <label class="text-sm text-slate-600">donor (name)</label>
+    <label class="text-sm text-slate-600">donor (name) <span class = "text-red-500">*</span></label>
     <input v-model="donor" class="w-full mt-1 px-3 py-2 rounded-md border border-slate-300" />
     </div>
     
     <div>
-    <label class="text-sm text-slate-600">event</label>
+    <label class="text-sm text-slate-600">event <span class = "text-red-500">*</span></label>
     <input v-model="event" class="w-full mt-1 px-3 py-2 rounded-md border border-slate-300" />
     </div>
 
     <div>
-    <label class="text-sm text-slate-600">method</label>
+    <label class="text-sm text-slate-600">method <span class = "text-red-500">*</span></label>
     <input v-model="method" class="w-full mt-1 px-3 py-2 rounded-md border border-slate-300" />
     </div>
 
 
     <div>
-    <label class="text-sm text-slate-600">monetary amount</label>
-    <input v-model="monetaryAmount" type="number" class="w-full mt-1 px-3 py-2 rounded-md border border-slate-300" />
+    <label class="text-sm text-slate-600" >monetary amount</label>
+    <input v-model="monetaryAmount" min = "0" onkeydown="return event.key !== '-'" type="number" class="w-full mt-1 px-3 py-2 rounded-md border border-slate-300" />
     </div>
 
 
     <div>
     <label class="text-sm text-slate-600">non monetary amount</label>
-    <input v-model="nonMonetaryAmount" type="number" class="w-full mt-1 px-3 py-2 rounded-md border border-slate-300" />
+    <input v-model="nonMonetaryAmount" min = "0" onkeydown="return event.key !== '-'" type="number" class="w-full mt-1 px-3 py-2 rounded-md border border-slate-300" />
     </div>
-    
-    
-    <div>
-    <label class="text-sm text-slate-600">amount requested</label>
-    <input v-model="amountRequested" class="w-full mt-1 px-3 py-2 rounded-md border border-slate-300" />
-    </div>
-    
-    
+      
     <div>
     <label class="text-sm text-slate-600">Notes</label>
     <textarea v-model="notes" class="w-full mt-1 px-3 py-2 rounded-md border border-slate-300"></textarea>
@@ -57,24 +50,16 @@
     </div>
     
     <div>
-    <label class="text-sm text-slate-600">Proposed Date</label>
-    <input v-model="proposedDate" type="date" class="w-full mt-1 px-3 py-2 rounded-md border border-slate-300" />
+    <label class="text-sm text-slate-600">Received Date</label>
+    <input v-model="receivedDate" type="date" class="w-full mt-1 px-3 py-2 rounded-md border border-slate-300" />
     </div>
     
-    <div>
-    <label class="text-sm text-slate-600">Start Date</label>
-    <input v-model="startDate" type="date" class="w-full mt-1 px-3 py-2 rounded-md border border-slate-300" />
-    </div>
-    
-    <div>
-    <label class="text-sm text-slate-600">End Date</label>
-    <input v-model="endDate" type="date" class="w-full mt-1 px-3 py-2 rounded-md border border-slate-300" />
-    </div>
+   
     
     </div>
     
     <div class="flex justify-end gap-3 mt-6">
-    <button @click = 'resetForm()' class="px-4 py-2 bg-slate-300 text-slate-700 rounded-lg">Cancel</button>
+    <button @click = 'resetForm()' class="px-4 py-2 bg-slate-300 text-slate-700 rounded-lg">Clear</button>
     <button @click = "submit()" class="px-4 py-2 bg-slate-700 text-white rounded-lg">Submit</button>
     </div>
     
@@ -84,7 +69,7 @@
     
     <script setup> 
     import { ref,onMounted } from 'vue';
-    const emit = defineEmits(['close']);
+    const emit = defineEmits(['close','update-donation','add-donation']);
 
     
     const donor = ref("")
@@ -92,11 +77,11 @@
     const method = ref("")
     const monetaryAmount = ref("")
     const nonMonetaryAmount = ref("")
-    const amountRequested = ref("")
+
     const notes = ref("")
-    const proposedDate = ref("")
-    const startDate = ref("")
-    const endDate = ref("")
+
+    const receivedDate = ref("")
+  
     const status = ref("pending")
     const boardMemberId = ref("")
     const boardMember = ref("")
@@ -126,9 +111,53 @@
  
         
        }
- getSession()
- 
 
+ getSession()
+
+
+ if(props.method === 'PUT' && props.donationId) { 
+
+    const getInfo = async() => {
+
+        try {
+            
+            
+            const response = await $fetch(`/api/donations/${props.donationId}`)
+
+console.log("responsess",response.data.donor.name)
+
+            donor.value = response.data.donor.name
+            event.value = response.data.event
+            method.value = response.data.method
+            monetaryAmount.value = response.data.monetaryAmount
+            nonMonetaryAmount.value = response.data.nonMonetaryAmount
+    
+            notes.value = response.data.notes
+
+            receivedDate.value = response.data.lastEditDate.slice(0,10)
+         
+
+
+
+            if(response.data.status == 1) {
+                status.value = "received"
+            } else {
+                status.value = "pending"
+            }
+
+
+        } catch(err) { 
+            console.log('error',err)
+        }
+    }
+
+getInfo()
+
+
+ }
+
+
+ 
      })
 
 
@@ -138,17 +167,16 @@
         method.value = ""
         monetaryAmount.value = ""
         nonMonetaryAmount.value = ""
-        amountRequested.value = ""
+       
         notes.value = ""
         proposedDate.value = ""
-        startDate.value = ""
-        endDate.value = ""
+        receivedDate.value = ""
         status.value = "pending"
     }
 
     const submit = async () => { 
 
-    if (!donor.value || !event.value || !method.value || !monetaryAmount.value || !nonMonetaryAmount.value || !amountRequested.value || !proposedDate.value || !startDate.value || !endDate.value || !status.value) {
+    if (!donor.value || !event.value || !method.value  || !status.value) {
         alert("Please fill in all required fields.")
         return
     }
@@ -164,22 +192,34 @@
                 method: method.value,
                 monetaryAmount: String(monetaryAmount.value),
                 nonMonetaryAmount: String(nonMonetaryAmount.value),
-                amountRequested: amountRequested.value,
+  
                 notes: notes.value,
-                proposedDate: proposedDate.value,
-                startDate: startDate.value,
-                endDate: endDate.value,
+           
+                receivedDate: receivedDate.value,
+        
                 status: status.value,
                 boardMemberId: boardMemberId.value,
                 boardMember: boardMember.value,
             }
         })
 
+
         console.log("api method show up",props.method)
 
         console.log('id to send to backend ',props.donationId)
 
+        console.log("response after submit",response.data)
+
+        emit('update-donation', response.data)
+
+        console.log("submit",response.data)
+       
+        
+        emit('add-donation', response.data) 
+
         emit('close')
+
+       
 
         }catch(err) { 
 
@@ -188,8 +228,9 @@
 
 
     }
-    
+
  
 
-    
+  
+
     </script>

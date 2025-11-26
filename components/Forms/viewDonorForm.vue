@@ -53,6 +53,11 @@
     <label class="text-sm text-slate-600">organization</label>
     <input disabled  v-model="organization" class="w-full mt-1 px-3 py-2 rounded-md border border-slate-300" />
     </div>
+    <div>
+    
+        <label class="text-sm text-slate-600">webLink</label>
+    <input disabled  v-model="webLink" class="w-full mt-1 px-3 py-2 rounded-md border border-slate-300" />
+    </div>
 
  
     <div>
@@ -80,6 +85,7 @@
     const preferredCommunication = ref("")
     const notes = ref("")
     const organization = ref("")
+    const webLink = ref("")
     const lastDonationDate = ref("")
 
     
@@ -124,6 +130,7 @@ watch(() => info.value, (newVal) => {
         preferredCommunication.value = newVal.preferredCommunication
         notes.value = newVal.notes
         organization.value = newVal.organization
+        webLink.value = newVal.webLink
         lastDonationDate.value = newVal.lastDonationDate.slice(0,10)
   }
 })
