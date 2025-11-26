@@ -3,11 +3,7 @@
 
   <donationBar   @add-donation = "addDonation"/>
    
-  <DonationsTable :donation-info = "donations" @delete-donation="handleDeleteDonation" @update-donation = "updateDonation"
-  
-  
-
-  />
+  <DonationsTable :donation-info = "donations" @delete-donation="handleDeleteDonation" @update-donation = "updateDonation"  />
 
   
   
