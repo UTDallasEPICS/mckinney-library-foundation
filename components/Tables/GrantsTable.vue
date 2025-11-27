@@ -1,13 +1,12 @@
 <template>
     <div class="flex-1 p-8 ">
-  
-    <div class = "bg-white rounded-lg shadow-lg overflow-hidden mx-auto">       
+    <button class="ml-6 px-1.5 py-1.5 bg-[#c5d0d8] font-bold shadow-[0_3px_0_#2d3e4d] rounded-lg text-[#2d3e4d] mb-3 mt-.5" @click="toggleSort('grantor')"> Aa </button>
+    <div class = "bg-white rounded-lg shadow-lg overflow-hidden mx-auto">  
     <table class="w-full">
     <thead  class="bg-[#c5d0d8] sticky top-0 z-10">
     <tr>
         <th class="px-4 py-3 text-left text-sm text-[#2d3e4d] border-b-2 border-[#a8b5bf] cursor-pointer"
-                            @click="toggleSearch('grantor')"
-                        >
+                            @click="toggleSearch('grantor')"> 
                             <span v-if="activeSearch !== 'grantor'">Grantor ↑↓</span>
                             <input
                                 v-else
@@ -18,8 +17,7 @@
                             />
         </th>
         <th class="px-4 py-3 text-left text-sm text-[#2d3e4d] border-b-2 border-[#a8b5bf] cursor-pointer"
-                            @click="toggleSearch('email')"
-                        >
+                            @click="toggleSearch('email')">
                             <span v-if="activeSearch !== 'email'">Email ↑↓</span>
                             <input
                                 v-else
@@ -34,7 +32,8 @@
         <th class="px-4 py-3 text-left text-sm text-[#2d3e4d] border-b-2 border-[#a8b5bf] cursor-pointer transition-colors">End Date</th>
         <th class="px-4 py-3 text-left text-sm text-[#2d3e4d] border-b-2 border-[#a8b5bf] cursor-pointer transition-colors">Purpose</th>
         <th class="px-4 py-3 text-left text-sm text-[#2d3e4d] border-b-2 border-[#a8b5bf] cursor-pointer transition-colors">Method</th>
-        <th class="px-4 py-3 text-left text-sm text-[#2d3e4d] border-b-2 border-[#a8b5bf] cursor-pointer transition-colors">Monetary amount</th>
+        <th class="px-4 py-3 text-left text-sm text-[#2d3e4d] border-b-2 border-[#a8b5bf] cursor-pointer transition-colors"
+                            @click="toggleSort('amount')">Monetary Amount ↑↓</th>
         <th class="px-4 py-3 text-left text-sm text-[#2d3e4d] border-b-2 border-[#a8b5bf] cursor-pointer transition-colors">Nonmonetary amount</th>
         <th class="px-4 py-3 text-left text-sm text-[#2d3e4d] border-b-2 border-[#a8b5bf] cursor-pointer transition-colors">Status</th>
         <th class="px-4 py-3 text-center text-sm text-[#2d3e4d] border-b-2 border-[#a8b5bf] cursor-pointer transition-colors">Notes</th>
@@ -48,7 +47,7 @@
                                 class="mt-2 w-full px-2 py-1 border rounded"
                                 placeholder="Search board"
                             />
-                        </th>
+        </th>
         <th class="px-4 py-3 text-center text-sm text-[#2d3e4d] border-b-2 border-[#a8b5bf] cursor-pointer transition-colors">Actions</th>
     </tr>
     </thead>
@@ -67,20 +66,12 @@
             <td class="px-6 py-4 text-[#2d3e4d] text-left text-sm">{{ grant.status == 0 ? 'pending': 'approved'}}</td>
             <td class="px-6 py-4 text-[#2d3e4d] text-left text-sm">{{ grant.notes}}</td>
             <td class="px-6 py-4 text-[#2d3e4d] text-left text-sm">{{ grant.boardMember.name}}</td>
-
             <td>
                 <div>
-            <button   class ="rounded-md mt-2 text-sm font-medium outline-none h-9 py-2 bg-blue-600 hover:bg-blue-700 text-white px-6"> Edit </button>
-
-</div>
+                    <button   class ="rounded-md mt-2 text-sm font-medium outline-none h-9 py-2 bg-blue-600 hover:bg-blue-700 text-white px-6"> Edit </button>
+                </div>
             </td>
-
         </tr>
-
-         
-                
-
- 
     </tbody>
     </table>
     </div>
@@ -104,12 +95,33 @@ const searchInputs = ref({
     board: '',
 })
 
+const SORT_STATES = ["asc", "desc", "none"];
+
+const sortField = ref(null);
+const sortIndex = ref(0);      
+
+const sortDir = computed(() => SORT_STATES[sortIndex.value]);
+
 const toggleSearch = (field) => {
-    
     if (['grantor', 'email', 'board'].includes(field)) {
         activeSearch.value = activeSearch.value === field ? null : field
     }
 }
+
+const toggleSort = (field) => {
+    if (sortField.value !== field) {
+        sortField.value = field;
+        sortIndex.value = 0;
+        return;
+    }
+
+    sortIndex.value = (sortIndex.value + 1) % 3;
+
+    if (SORT_STATES[sortIndex.value] === "none") {
+        sortField.value = null;
+        sortIndex.value = 0;
+    }
+};
 
 const filteredAndSorted = computed(() => {
     let list = props.grants?.data || []
@@ -121,9 +133,28 @@ list = list.filter((g) => {
         (g.boardMember?.name || '').toLowerCase().includes(searchInputs.value.board.toLowerCase())
     )
 })
-return list
-})
 
+if (!sortField.value || sortDir.value === "none") {
+    return list;
+}
+
+return list.sort((a, b) => {
+    const field = sortField.value;
+
+    if (field === "grantor") {
+      return sortDir.value === "asc"
+        ? (a.grantor?.name ?? "").localeCompare(b.grantor?.name ?? "")
+        : (b.grantor?.name ?? "").localeCompare(a.grantor?.name ?? "");
+    }
+
+    if (field === "amount") {
+      const x = Number(a.monetaryAmount ?? 0);
+      const y = Number(b.monetaryAmount ?? 0);
+
+      return sortDir.value === "asc" ? x - y : y - x;
+    }
+  });
+})
     
 watch(() => props.grants, (newVal) => { 
     console.log("Grants data updated:", newVal);
