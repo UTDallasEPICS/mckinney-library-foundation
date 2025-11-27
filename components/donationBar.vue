@@ -1,7 +1,6 @@
 
 
 <template>
-
     <div class="w-full bg-slate-500 text-white px-6 py-3 flex justify-center ">
     <div class = "w-[90vw] flex justify-between">
       <button v-if="permissionLevel>0" @click="showMenu = true"
