@@ -1,5 +1,8 @@
 <template>
-
+<DonationBar 
+  :user="user"
+  :donors="donors"
+/>
   <DonorTable 
     key="DonoTable"
     :data="DonorTableProps.donors" 
@@ -36,6 +39,20 @@
 import DonorTable from '~/components/Tables/DonorTable.vue';
 import EmailForm from '~/components/Forms/EmailForm.vue';
 import DonorForm from '~/components/Forms/DonorForm.vue';
+import DonationBar from '~/components/Bars/DonationBar.vue'
+import { useAuth } from '~/composables/useAuth';
+
+const {session, getSession} = useAuth();
+session.value = await getSession();
+
+const user:Ref<{id:string,permissionLevel:number}> = ref({id:"",permissionLevel:0});
+if(session.value?.user){
+  user.value.permissionLevel = session.value.user.permission;
+  user.value.id = session.value.user.id;
+}
+else{
+  navigateTo("/");
+}
 
 const sendEmail = ref(false);
 const updateDonor = ref(false);
@@ -43,6 +60,7 @@ const viewDonor = ref(false);
 const {donors, getDonors} = useDonor();
 const emailList: Ref<string[]> = ref([])
 const nameList = ref("")
+const donorIndex = ref(0);
 
 await getDonors();
 
@@ -102,9 +120,10 @@ async function prepEmail(selected:boolean[]) {
   });
 }
 
-async function prepDonorUpdate(donor:{id:string, name:string, organization:string, email:string, phone:string, address:string,webLink:string, notes:string, preferredCommunication:string}){
+async function prepDonorUpdate(donor:{id:string, name:string, organization:string, email:string, phone:string, address:string,webLink:string, notes:string, preferredCommunication:string},index:number){
   donorData.value = donor;
   updateDonor.value = true;
+  donorIndex.value = index;
 }
 
 async function prepDonorView(donor:{id:string, name:string, organization:string, email:string, phone:string, address:string,webLink:string, notes:string, preferredCommunication:string}){
@@ -113,7 +132,7 @@ async function prepDonorView(donor:{id:string, name:string, organization:string,
 }
 
 async function editDonor(values:Record<string,any>) {
-  await $fetch(`/api/donor/${values.id}`,{
+  const result = await $fetch(`/api/donor/${values.id}`,{
     method:"PATCH",
     body:{
       name:values.fName + " " + values.lName,
@@ -127,17 +146,19 @@ async function editDonor(values:Record<string,any>) {
 
     }
   })
-  await getDonors();
-  cancelUpdate();
-  reloadNuxtApp();
+  if(result.success){
+    donors.value[donorIndex.value]=result.data
+  }
+  updateDonor.value = false;
 }
 
-async function deleteDonor(donor:{id:string, name:string, organization:string, email:string, phone:string,address:string, firstDonationDate:Date, lastDonationDate:Date}) {
-  await $fetch(`/api/donor/${donor.id}`,{
+async function deleteDonor(donor:{id:string, name:string, organization:string, email:string, phone:string,address:string, firstDonationDate:Date, lastDonationDate:Date},index:number) {
+  const result = await $fetch(`/api/donor/${donor.id}`,{
     method:"DELETE",
   })
-  await getDonors();
-  reloadNuxtApp();
+  if(result.success){
+    donors.value.splice(index,1);
+  }
 }
 
 

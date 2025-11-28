@@ -150,9 +150,3 @@ model Expenditure {
   spentDate         DateTime?
   lastEditDate      DateTime
 }
-
-model Request {
-  id                String    @id @default(cuid())
-  name              String
-  email             String    @unique
-}

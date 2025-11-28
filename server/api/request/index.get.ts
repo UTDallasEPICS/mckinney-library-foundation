@@ -4,7 +4,7 @@ const prisma = new PrismaClient();
 
 export default defineEventHandler(async () =>{
     try{
-        const data = await prisma.request.findMany();
+        const data = await prisma.accountCreationRequest.findMany();
         return{
             data: data,
             sucess: true,

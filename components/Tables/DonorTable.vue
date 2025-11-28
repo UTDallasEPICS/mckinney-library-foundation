@@ -25,16 +25,15 @@
                         <td class="px-6 py-4 text-[#2d3e4d] text-left text-sm">{{ row.lastDonationDate }}</td>
                         <td class="px-6 py-4">
                             <div class="flex justify-evenly">
-                                <button class ="rounded-md text-sm font-medium outline-none h-9 py-2 bg-blue-600 hover:bg-blue-700 text-white px-6" @click="editFunction(row)"> Edit </button>
-                                <button class ="rounded-md text-sm font-medium outline-none h-9 py-2 bg-red-600 hover:bg-red-700 text-white px-6" @click ="deleteFunction(row)"> Delete </button>
-                                <button class ="rounded-md text-sm font-medium outline-none h-9 py-2 bg-green-600 hover:bg-green-700 text-white px-6" @click ="viewFunction(row)"> View </button>
+                                <button class ="rounded-md text-sm font-medium outline-none h-9 py-2 bg-blue-600 hover:bg-blue-700 text-white px-6" @click="editFunction(row,idx)"> Edit </button>
+                                <button class ="rounded-md text-sm font-medium outline-none h-9 py-2 bg-red-600 hover:bg-red-700 text-white px-6" @click ="deleteFunction(row,idx)"> Delete </button>
+                                <button class ="rounded-md text-sm font-medium outline-none h-9 py-2 bg-green-600 hover:bg-green-700 text-white px-6" @click ="viewFunction(row,idx)"> View </button>
                             </div>
                         </td>
                         <td>
                             <div class="flex justify-center">
                                 <input v-if="row.email" v-model="isChecked[idx]" type="checkbox"></input>
-                            </div>
-                             
+                            </div>     
                         </td>
                     </tr>
                 </tbody>
@@ -47,9 +46,9 @@
 const props = defineProps<{
     data:{id:string, name:string, organization:string, email:string, phone:string,address:string, preferredCommunication:string, notes:string,webLink:string, firstDonationDate:Date, lastDonationDate:Date}[]
     emailFunction: (selected:boolean[]) => Promise<void>
-    editFunction: (donor:{id:string, name:string, organization:string, email:string, phone:string,address:string, preferredCommunication:string,webLink:string, notes:string, firstDonationDate:Date, lastDonationDate:Date}) => Promise<void>
-    deleteFunction: (donor:{id:string, name:string, organization:string, email:string, phone:string,address:string, firstDonationDate:Date, lastDonationDate:Date}) => Promise<void>
-    viewFunction: (donor:{id:string, name:string, organization:string, email:string, phone:string,address:string, preferredCommunication:string,webLink:string, notes:string, firstDonationDate:Date, lastDonationDate:Date}) => Promise<void>
+    editFunction: (donor:{id:string, name:string, organization:string, email:string, phone:string,address:string, preferredCommunication:string,webLink:string, notes:string, firstDonationDate:Date, lastDonationDate:Date},idx:number) => Promise<void>
+    deleteFunction: (donor:{id:string, name:string, organization:string, email:string, phone:string,address:string, firstDonationDate:Date, lastDonationDate:Date},idx:number) => Promise<void>
+    viewFunction: (donor:{id:string, name:string, organization:string, email:string, phone:string,address:string, preferredCommunication:string,webLink:string, notes:string, firstDonationDate:Date, lastDonationDate:Date},idx:number) => Promise<void>
     }>();
 
 const isChecked: Ref<boolean[]> = ref([])

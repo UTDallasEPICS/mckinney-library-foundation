@@ -3,7 +3,7 @@ export const useAuth = () => {
 
     const getSession = async () =>{
         const result = await useFetch("/api/session");
-        session.value = result.data.value?.data;
+        return result.data.value?.data;
     } 
     return {
         getSession,

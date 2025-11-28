@@ -7,17 +7,17 @@ export default defineEventHandler(async (event) =>{
         const body = await readBody(event);
         const donor = await prisma.donor.create({
             data:{
-                name: body.name,
-                    email: body.email,
-                    phone: body.phone,
-                    address: body.address,
-                    preferredCommunication: body.preferredCommunication,
-                    notes: body.notes,
-                    webLink: body.webLink,
-                    organization: body.organization,
-                    lastDonationDate: body.lastDonationDate,
-                    firstDonationDate: body.firstDonationDate,
-                    donations: body.donations
+                name:       body.name,
+                email:      body.email,
+                phone:      body.phone,
+                address:    body.address,
+                preferredCommunication: body.preferredCommunication,
+                notes: body.notes,
+                webLink: body.webLink,
+                organization: body.organization,
+                lastDonationDate: body.lastDonationDate,
+                firstDonationDate: body.firstDonationDate,
+                donations: body.donations
             }       
         });
         return{
@@ -32,6 +32,7 @@ export default defineEventHandler(async (event) =>{
             statusCode: 500,
             message: "Failed to create donor",
             error: error, 
+            data:null
         }
     }finally{
         await prisma.$disconnect();

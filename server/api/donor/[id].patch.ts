@@ -31,6 +31,7 @@ export default defineEventHandler(async (event) => {
             statusCode: 500,
             message: "Failed to update donor",
             error: error, 
+            data:null
         }
     } finally {
         await prisma.$disconnect()

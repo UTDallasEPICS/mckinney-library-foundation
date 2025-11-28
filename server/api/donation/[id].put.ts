@@ -5,9 +5,8 @@ const prisma = new PrismaClient();
 export default defineEventHandler (async (event)=>{   
     try{
         const body = await readBody(event);
-        // Perform role-based API checking here 
-        // I.E., does the user have the permision to update?
-        if(!body.id){
+        const id = await getRouterParam(event,'id');
+        if(!id){
             throw createError({
                 statusCode: 400,
                 statusMessage: "A donationId is required to update a donation"
@@ -20,7 +19,7 @@ export default defineEventHandler (async (event)=>{
             });
         }
         const updateDonation = await prisma.donation.update({
-            where: { id: body.id },
+            where: { id: id },
             data: {
                 boardMemberId: body.boardMemberId,
                 donorId: body.donorId,
@@ -30,14 +29,25 @@ export default defineEventHandler (async (event)=>{
                 nonMonetaryAmount: body.nonMonetaryAmount,
                 status: body.status ?? 0,
                 notes: body.notes,
-                receivedDate: body.receivedDate,
+                receivedDate: new Date(body.receivedDate),
                 lastEditDate: new Date()
+            }
+        });
+        const fullDonation = await prisma.donation.findUnique({
+            where: { id:id },
+            include:{
+                donor:true,
+                boardMember:{
+                    select:{
+                        name:true
+                    }
+                }
             }
         });
         return {
             success: true,
             statusCode: 200,
-            data: updateDonation,
+            data: fullDonation,
         }
     }
     catch(error){
@@ -45,7 +55,8 @@ export default defineEventHandler (async (event)=>{
             success: false,
             statusCode: 500,
             message: "Failed to update donation",
-            error: error
+            error: error,
+            data: null
         }
     }finally{
         await prisma.$disconnect();
