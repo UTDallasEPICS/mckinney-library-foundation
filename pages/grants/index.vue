@@ -33,25 +33,24 @@ const grants = ref()
 onMounted(() => { 
   const getGrants = async () => { 
 
-try { 
+    try { 
 
-const response = await $fetch('/api/grants',{
-  method:"GET",})
+      const response = await $fetch('/api/grants',{
+        method:"GET",})
 
-console.log("response",response)
+      console.log("response",response)
 
-grants.value = response
+      grants.value = response
 
+    }
+    catch(err) { 
 
-}
-catch(err) { 
+      console.log("error",err)  
+    }
 
-  console.log("error",err)  
-}
+  }
 
-}
-
-getGrants()
+  getGrants()
 })
 
 
