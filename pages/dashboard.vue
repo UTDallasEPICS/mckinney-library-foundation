@@ -1,8 +1,8 @@
 <template>
   <div class="container mx-auto px-6 py-12 max-w-full">
-    <div class="mb-8">
-      <h2 class="text-[#2d3e4d] mb-2">MPLF Donor Dashboard</h2>
-      <p class="text-gray-600">Manage your donations, grants, and system settings</p>
+    <div class="mb-8 text-center w-full">
+      <h1 class="text-[#2d3e4d] mb-2 text-xl">MPLF Donor Dashboard</h1>
+      <p class="text-gray-600 text-lg">Manage your donations, grants, and system settings</p>
     </div>
 
     <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
@@ -47,6 +47,10 @@
       />
     </div>
 
+    <div v-if="showGrantForm">
+      <GrantsForm />
+    </div>
+
   </div>
 </template>
 
@@ -55,6 +59,7 @@ import { ref } from 'vue'
 import DashboardCard from '~/components/Cards/DashboardCard/DashboardCard.vue'
 import DashboardStat from '~/components/Banners/DashboardBanner.vue'
 import DonationForm from '~/components/Forms/DonationForm.vue'
+import GrantsForm from '~/components/Forms/GrantsForm.vue'
 import { useAuth } from '~/composables/useAuth'
 import { useDonor } from '#imports'
 import { navigateTo } from '#app'

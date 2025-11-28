@@ -1,6 +1,6 @@
 <template>
     <div class="flex-1 p-8 ">
-        <button :disabled="!isEnabled" @click="emailFunction(isChecked)" class ="disabled:bg-slate-300 rounded-md text-sm font-medium outline-none h-9 py-2 bg-blue-600 hover:bg-blue-700 text-white px-6 my-3 ">Email Donors</button>
+        <button v-if="permissionLevel>1" :disabled="!isEnabled" @click="emailFunction(isChecked)" class ="disabled:bg-slate-300 rounded-md text-sm font-medium outline-none h-9 py-2 bg-blue-600 hover:bg-blue-700 text-white px-6 my-3 ">Email Donors</button>
         <div class = "bg-white rounded-lg shadow-lg overflow-hidden mx-auto">       
             <table class="w-full">
                 <thead  class="bg-[#c5d0d8] sticky top-0 z-10">
@@ -12,7 +12,7 @@
                         <th class="px-4 py-3 text-left text-sm text-[#2d3e4d] border-b-2 border-[#a8b5bf] cursor-pointer transition-colors">First Donation</th>
                         <th class="px-4 py-3 text-left text-sm text-[#2d3e4d] border-b-2 border-[#a8b5bf] cursor-pointer transition-colors">Last Donation</th>
                         <th class="px-4 py-3 text-center text-sm text-[#2d3e4d] border-b-2 border-[#a8b5bf] cursor-pointer transition-colors">Actions</th>
-                        <th class="px-4 py-3 text-center text-sm text-[#2d3e4d] border-b-2 border-[#a8b5bf] cursor-pointer transition-colors">Select</th>
+                        <th v-if="permissionLevel>1" class="px-4 py-3 text-center text-sm text-[#2d3e4d] border-b-2 border-[#a8b5bf] cursor-pointer transition-colors">Select</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -25,12 +25,12 @@
                         <td class="px-6 py-4 text-[#2d3e4d] text-left text-sm">{{ row.lastDonationDate }}</td>
                         <td class="px-6 py-4">
                             <div class="flex justify-evenly">
-                                <button class ="rounded-md text-sm font-medium outline-none h-9 py-2 bg-blue-600 hover:bg-blue-700 text-white px-6" @click="editFunction(row,idx)"> Edit </button>
-                                <button class ="rounded-md text-sm font-medium outline-none h-9 py-2 bg-red-600 hover:bg-red-700 text-white px-6" @click ="deleteFunction(row,idx)"> Delete </button>
+                                <button v-if="permissionLevel > 0" class ="rounded-md text-sm font-medium outline-none h-9 py-2 bg-blue-600 hover:bg-blue-700 text-white px-6" @click="editFunction(row,idx)"> Edit </button>
+                                <button v-if="permissionLevel > 0" class ="rounded-md text-sm font-medium outline-none h-9 py-2 bg-red-600 hover:bg-red-700 text-white px-6" @click ="deleteFunction(row,idx)"> Delete </button>
                                 <button class ="rounded-md text-sm font-medium outline-none h-9 py-2 bg-green-600 hover:bg-green-700 text-white px-6" @click ="viewFunction(row,idx)"> View </button>
                             </div>
                         </td>
-                        <td>
+                        <td v-if="permissionLevel>1">
                             <div class="flex justify-center">
                                 <input v-if="row.email" v-model="isChecked[idx]" type="checkbox"></input>
                             </div>     
@@ -49,8 +49,8 @@ const props = defineProps<{
     editFunction: (donor:{id:string, name:string, organization:string, email:string, phone:string,address:string, preferredCommunication:string,webLink:string, notes:string, firstDonationDate:Date, lastDonationDate:Date},idx:number) => Promise<void>
     deleteFunction: (donor:{id:string, name:string, organization:string, email:string, phone:string,address:string, firstDonationDate:Date, lastDonationDate:Date},idx:number) => Promise<void>
     viewFunction: (donor:{id:string, name:string, organization:string, email:string, phone:string,address:string, preferredCommunication:string,webLink:string, notes:string, firstDonationDate:Date, lastDonationDate:Date},idx:number) => Promise<void>
+    permissionLevel:number
     }>();
-
 const isChecked: Ref<boolean[]> = ref([])
 
 props.data.forEach( (item,index) =>{

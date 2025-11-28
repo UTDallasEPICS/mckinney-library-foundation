@@ -4,6 +4,7 @@
   key= "ExistingAccounts"
   :accounts="users"
   :edit-account="PrepEditAccount"
+  :permission-level="permissionLevel"
 />
 <div v-if="showEdit" class="fixed top-0 left-0 w-full h-full flex justify-center items-center z-20 bg-black/50">
   <div class="bg-[#e5e9ec] p-0 gap-0 border-0 rounded-md">
@@ -23,10 +24,11 @@
 </div>
 
 
-<h1 v-if="requests && requests.length > 0" class="text-[36px] text-[#2c3e50] text-center py-5 mb-2">Account Requests </h1>
-<RequestTable v-if="requests && requests.length > 0"
+<h1 v-if="requests && requests.length > 0 && permissionLevel > 1" class="text-[36px] text-[#2c3e50] text-center py-5 mb-2">Account Requests </h1>
+<RequestTable v-if="requests && requests.length > 0 && permissionLevel > 1"
   key= "RequestTable"
   :requests="requests"
+  :permission-level="permissionLevel"
 />
 </template>
 
@@ -35,6 +37,20 @@ import { ref } from 'vue';
 import AccountTable from '~/components/Tables/AccountTable.vue';
 import RequestTable from '~/components/Tables/RequestTable.vue';
 import AccReqForm from '~/components/Forms/AccReqForm.vue';
+import { useAuth } from '~/composables/useAuth';
+
+const {session, getSession} = useAuth();
+session.value = await getSession();
+
+const permissionLevel = ref(0);
+
+if(session.value?.user){
+  permissionLevel.value = session.value.user.permission;
+}
+else{
+  navigateTo("/");
+}
+
 const showEdit = ref(false);
 
 const requestOBJ = await useFetch("/api/request");

@@ -9,6 +9,7 @@
     :edit-function="prepDonationUpdate"
     :view-function="prepDonationView"
     :delete-function="deleteDonation"
+    :permission-level="user.permissionLevel"
 />
 
 <div v-if="showUpdateDonation" class="fixed top-0 left-0 w-full h-full flex justify-center items-center z-20 bg-black/50">

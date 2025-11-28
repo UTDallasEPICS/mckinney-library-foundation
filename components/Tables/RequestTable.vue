@@ -6,15 +6,15 @@
             <tr>
               <th class="px-6 py-4 text-center text-sm">Name</th>
               <th class="px-6 py-4 text-center text-sm"> Email</th>
-              <th class="px-6 py-4 text-center text-sm">Actions</th>
+              <th v-if="permissionLevel > 2" class="px-6 py-4 text-center text-sm">Actions</th>
             </tr>
           </thead>
           <tbody>
           <tr v-for="(request,index) in requests" :key=index class="bg-[#e5e9ec]">
             <td class="px-6 py-4 text-[#2d3e4d] text-center"> {{ request.name }}</td>
             <td class="px-6 py-4 text-[#2d3e4d] text-center">{{ request.email }} </td> 
-            <td class="px-6 py-4">
-              <div class="flex justify-evenly">
+            <td v-if="permissionLevel > 2" class="px-6 py-4">
+              <div  class="flex justify-evenly">
                 <button class ="rounded-md text-sm font-medium outline-none h-9 py-2 bg-blue-600 hover:bg-blue-700 text-white px-6" @click="createAccount(request,index)"> Accept</button>
                 <button class ="rounded-md text-sm font-medium outline-none h-9 py-2 bg-red-600 hover:bg-red-700 text-white px-6" @click ="removeRequest(request.id,index)"> Deny  </button>
               </div>
@@ -30,6 +30,7 @@
 
 const props = defineProps<{
         requests: {id: string;name: string;email: string;}[] | null
+        permissionLevel:number
 }>();
 async function createAccount(account: {id:string, name: string, email: string},index:number){
   alert("account created for : " + account.email);

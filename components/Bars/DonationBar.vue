@@ -52,7 +52,6 @@ const addDonor = ref(false);
 
 const props = defineProps<{
     user:{id:string, permissionLevel:number}
-   
     donors:{id:string , name:string, organization:string|null, email:string|null, phone:string|null,address:string|null, preferredCommunication:string|null, notes:string|null,webLink:string|null}[]
     donations?:{
         id: string,

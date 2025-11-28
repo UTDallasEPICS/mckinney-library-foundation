@@ -49,44 +49,21 @@
   </div>
 </template>
 
-<style scoped>
-/* Match the header navigation styles */
-.table-roles {
-width: 100%;
-display: flex;
-flex-direction: column;
-align-items: center;
-padding: 0;
-margin: 20px auto;
+<script setup lang="ts">
+import { useAuth } from '~/composables/useAuth';
+
+const {session, getSession} = useAuth();
+session.value = await getSession();
+
+const permissionLevel = ref(0);
+if(session.value?.user){
+  permissionLevel.value = session.value.user.permission;
+  if(permissionLevel.value < 1){
+    navigateTo("/dashboard");
+  }
+}
+else{
+  navigateTo("/");
 }
 
-/* Style the table to be consistent with the navigation */
-table {
-width: 98%;
-max-width: 1400px;
-border-collapse: collapse;
-font-size: 14px;
-font-weight: bold;
-font-family: sans-serif;
-color: #545679;
-}
-
-/* Headers: Blue background with white text */
-th {
-background-color: #545679;
-color: white;
-font-weight: bold;
-text-transform: uppercase;
-padding: 15px;
-text-align: center;
-border-bottom: 2px solid #ddd;
-}
-
-/* Table body */
-td {
-background-color: white;
-padding: 10px;
-border: 1px solid #ddd;
-text-align: center;
-}
-</style>
+</script>

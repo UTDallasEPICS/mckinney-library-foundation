@@ -25,8 +25,8 @@
                         <td class="px-6 py-4 text-[#2d3e4d] text-left text-sm">{{ row.boardMember?.name }}</td>
                         <td class="px-6 py-4">
                             <div class="flex justify-evenly">
-                                <button class ="rounded-md text-sm font-medium outline-none h-9 py-2 bg-blue-600 hover:bg-blue-700 text-white px-6" @click="editFunction(row,idx)"> Edit </button>
-                                <button class ="rounded-md text-sm font-medium outline-none h-9 py-2 bg-red-600 hover:bg-red-700 text-white px-6"@click=deleteFunction(row.id,idx) > Delete </button>
+                                <button v-if="permissionLevel > 0" class ="rounded-md text-sm font-medium outline-none h-9 py-2 bg-blue-600 hover:bg-blue-700 text-white px-6" @click="editFunction(row,idx)"> Edit </button>
+                                <button v-if="permissionLevel > 0" class ="rounded-md text-sm font-medium outline-none h-9 py-2 bg-red-600 hover:bg-red-700 text-white px-6"@click=deleteFunction(row.id,idx) > Delete </button>
                                 <button class ="rounded-md text-sm font-medium outline-none h-9 py-2 bg-green-600 hover:bg-green-700 text-white px-6" @click="viewFunction(row,idx)" > View </button>
                             </div>
                         </td>     
@@ -61,7 +61,8 @@ const props = defineProps<{
     viewFunction: (donation:{id: string, boardMemberId: string | null, donorId: string | null,event: string | null, method: string | null, monetaryAmount: string | null, 
     nonMonetaryAmount: string | null, status: number, notes: string | null, receivedDate: Date | null,lastEditDate: Date | null, boardMember:{name:string | null}| null, donor: {name: string | null} | null},
     index:number) => Promise<void>,
-    deleteFunction: (id:string,index:number) => Promise<void>
+    deleteFunction: (id:string,index:number) => Promise<void>,
+    permissionLevel:number
 }>();
 
 

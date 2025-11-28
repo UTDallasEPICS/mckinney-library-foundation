@@ -145,15 +145,15 @@ const AccReqFormProps ={
 async function formSubmit(values:Record<string, any>){
   userEmail.value = values.email;
    const userExists = await checkEmailExists(values.email);
-   if(userExists){
-     const { data, error } = await authClient.emailOtp.sendVerificationOtp({
+    if(userExists){
+      alert("otp sent to email");
+      const { data, error } = await authClient.emailOtp.sendVerificationOtp({
         email: values.email,
         type: "sign-in",
       });
       if(error){
        console.log(error);
       }
-     alert("otp sent to email");
     
    }
    else{
