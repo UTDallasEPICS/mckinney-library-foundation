@@ -115,6 +115,8 @@ async function createDonation(values:Record<string,any>){
             receivedDate: result.data.receivedDate ? new Date(result.data.receivedDate) : null,
             lastEditDate: result.data.lastEditDate ? new Date(result.data.lastEditDate) : null,
         })
+    }else{
+        console.error(result.error);
     }
     addDonation.value = false;
 }

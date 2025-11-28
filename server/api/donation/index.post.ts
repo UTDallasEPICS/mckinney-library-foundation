@@ -26,6 +26,7 @@ export default defineEventHandler(async (event) => {
           phone: "",
           preferredCommunication: "",
           notes: "",
+          firstDonationDate: new Date()
         }
       })
     }
@@ -49,6 +50,14 @@ export default defineEventHandler(async (event) => {
                 name:true
             }
         }
+      }
+    })
+    const updateDonor = await prisma.donor.update({
+      where:{
+        name:body.donor
+      },
+      data:{
+        lastDonationDate: new Date(body.receivedDate)
       }
     })
     return {

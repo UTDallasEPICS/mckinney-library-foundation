@@ -6,13 +6,13 @@
             </div>         
             <div class = "px-6 pb-6 space-y-4">
               <div class="p-2.5 rounded-md mb-4 bg-[#f5f5f5]">
-                <p>Recipients: {{ nameList }}</p>
+                <p>Recipients: {{ props.nameList }}</p>
               </div>
               <div>
                 <h2 class = "form-field-label">Subject</h2>
                 <VeeErrorMessage name="Subject"/>
                 <VeeField v-slot="{field}" name="Subject">
-                  <input v-bind="field" class="form-field"></input>
+                  <input v-bind="field" class="form-input"></input>
                 </VeeField>
               </div>
               <div>
@@ -39,7 +39,7 @@ import * as yup from "yup";
         groupEmail: (values: Record<string, any>) => Promise<void>,
         cancelEmail: () => void
     }>();
-
+    console.log("name list in component" + props.nameList);
 const groupEmailSchema = yup.object({
   Subject: yup.string().required(),
   Message: yup.string().required(),

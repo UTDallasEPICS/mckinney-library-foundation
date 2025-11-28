@@ -25,7 +25,7 @@ export default defineEventHandler (async (event)=>{
             });
         }
         const updateDonation = await prisma.donation.update({
-            where: { id: id },
+            where: { id:id },
             data: {
                 boardMemberId: body.boardMemberId,
                 donorId: body.donorId,
@@ -39,6 +39,7 @@ export default defineEventHandler (async (event)=>{
                 lastEditDate: new Date()
             }
         });
+        
         const fullDonation = await prisma.donation.findUnique({
             where: { id:id },
             include:{

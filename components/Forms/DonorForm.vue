@@ -25,7 +25,7 @@
                 <h2 class = "form-field-label"> organization </h2>
                 <h2 class = "form-field-label"> address </h2>
                 <h2 class = "form-field-label"> web link </h2>
-                <VeeField :disabled="viewOnly" name="organization"></VeeField> 
+                <VeeField :disabled="viewOnly" name="organization" class="form-input focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px]"></VeeField> 
                 <VeeField :disabled="viewOnly" name="address" class="form-input focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px]"></VeeField> 
                 <VeeField :disabled="viewOnly" name="webLink"class="form-input focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px]"></VeeField>
             </div>

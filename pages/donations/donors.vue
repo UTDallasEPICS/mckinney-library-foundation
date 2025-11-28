@@ -14,7 +14,7 @@
   />
   <div  v-if="sendEmail" class="fixed top-0 left-0 w-full h-full flex justify-center items-center z-20 bg-black/50">
     <EmailForm
-      :name-list="emailFormProps.names"
+      :name-list="nameList"
       :email-list="emailFormProps.emails"
       :group-email="emailFormProps.groupEmail"
       :cancel-email="emailFormProps.cancelEmail"
@@ -80,6 +80,7 @@ const emailFormProps ={
   cancelEmail:cancelEmail,
 
 }
+
 const donorData:Ref<{id:string, name:string, organization:string, email:string, phone:string,address:string, notes:string, webLink:string, preferredCommunication:string}> = ref({
   id:"",
   name:"",
@@ -162,6 +163,8 @@ async function deleteDonor(donor:{id:string, name:string, organization:string, e
   })
   if(result.success){
     donors.value.splice(index,1);
+  }else if(result.error.code == 'P2003'){
+    alert("Cannot delete donor with donations"); 
   }
 }
 

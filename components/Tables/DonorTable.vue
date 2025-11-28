@@ -5,8 +5,24 @@
             <table class="w-full">
                 <thead  class="bg-[#c5d0d8] sticky top-0 z-10">
                     <tr>
-                        <th class="px-4 py-3 text-left text-sm text-[#2d3e4d] border-b-2 border-[#a8b5bf] cursor-pointer transition-colors">Name</th>
-                        <th class="px-4 py-3 text-left text-sm text-[#2d3e4d] border-b-2 border-[#a8b5bf] cursor-pointer transition-colors">Organization</th>
+                        <th class="px-4 py-3 text-left text-sm text-[#2d3e4d] border-b-2 border-[#a8b5bf] cursor-pointer transition-colors">
+                            <div class = w-full>
+                                <span @click="toggleSearch('name')" v-if="activeSearch !== 'name'">Name ↑↓</span>
+                                <div  v-else>
+                                    <input v-model="searchInputs.name" @click.stop class="mt-2 px-2 py-1 border rounded"placeholder="Search name"/>
+                                    <button class="text-lg" @click="toggleSearch('name')">&#x24E7;</button>
+                                </div>
+                            </div>
+                        </th>
+                        <th class="px-4 py-3 text-left text-sm text-[#2d3e4d] border-b-2 border-[#a8b5bf] cursor-pointer transition-colors">
+                             <div class = w-full>
+                                <span @click="toggleSearch('organization')" v-if="activeSearch !== 'organization'">Organization ↑↓</span>
+                                <div  v-else>
+                                    <input v-model="searchInputs.name" @click.stop class="mt-2 px-2 py-1 border rounded"placeholder="Search Organization"/>
+                                    <button class="text-lg" @click="toggleSearch('organization')">&#x24E7;</button>
+                                </div>
+                            </div>
+                        </th>
                         <th class="px-4 py-3 text-left text-sm text-[#2d3e4d] border-b-2 border-[#a8b5bf] cursor-pointer transition-colors">Email</th>
                         <th class="px-4 py-3 text-left text-sm text-[#2d3e4d] border-b-2 border-[#a8b5bf] cursor-pointer transition-colors">Phone</th>
                         <th class="px-4 py-3 text-left text-sm text-[#2d3e4d] border-b-2 border-[#a8b5bf] cursor-pointer transition-colors">First Donation</th>
@@ -16,23 +32,23 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <tr v-for="(row,idx) in data" :key="idx" class="hover:bg-[#e8f0f7] transition-colors border-b border-gray-200 cursor-pointer">
-                        <td class="px-6 py-4 text-[#2d3e4d] text-left text-sm">{{ row.name }}</td>
-                        <td class="px-6 py-4 text-[#2d3e4d] text-left text-sm">{{ row.organization }}</td>
-                        <td class="px-6 py-4 text-[#2d3e4d] text-left text-sm">{{ row.email }}</td>
-                        <td class="px-6 py-4 text-[#2d3e4d] text-left text-sm">{{ row.phone }}</td>
-                        <td class="px-6 py-4 text-[#2d3e4d] text-left text-sm">{{ row.firstDonationDate }}</td>
-                        <td class="px-6 py-4 text-[#2d3e4d] text-left text-sm">{{ row.lastDonationDate }}</td>
+                    <tr v-for="idx in visibleIndices" :key="idx" class="hover:bg-[#e8f0f7] transition-colors border-b border-gray-200 cursor-pointer">
+                        <td class="px-6 py-4 text-[#2d3e4d] text-left text-sm">{{ props.data[idx].name }}</td>
+                        <td class="px-6 py-4 text-[#2d3e4d] text-left text-sm">{{ props.data[idx].organization }}</td>
+                        <td class="px-6 py-4 text-[#2d3e4d] text-left text-sm">{{ props.data[idx].email }}</td>
+                        <td class="px-6 py-4 text-[#2d3e4d] text-left text-sm">{{ props.data[idx].phone }}</td>
+                        <td class="px-6 py-4 text-[#2d3e4d] text-left text-sm">{{ props.data[idx].firstDonationDate? props.data[idx].firstDonationDate.toString().split('T')[0] : "" }}</td>
+                        <td class="px-6 py-4 text-[#2d3e4d] text-left text-sm">{{ props.data[idx].lastDonationDate? props.data[idx].lastDonationDate.toString().split('T')[0] : ""}}</td>
                         <td class="px-6 py-4">
                             <div class="flex justify-evenly">
-                                <button v-if="permissionLevel > 0" class ="rounded-md text-sm font-medium outline-none h-9 py-2 bg-blue-600 hover:bg-blue-700 text-white px-6" @click="editFunction(row,idx)"> Edit </button>
-                                <button v-if="permissionLevel > 0" class ="rounded-md text-sm font-medium outline-none h-9 py-2 bg-red-600 hover:bg-red-700 text-white px-6" @click ="deleteFunction(row,idx)"> Delete </button>
-                                <button class ="rounded-md text-sm font-medium outline-none h-9 py-2 bg-green-600 hover:bg-green-700 text-white px-6" @click ="viewFunction(row,idx)"> View </button>
+                                <button v-if="permissionLevel > 0" class ="rounded-md text-sm font-medium outline-none h-9 py-2 bg-blue-600 hover:bg-blue-700 text-white px-6" @click="editFunction(props.data[idx],idx)"> Edit </button>
+                                <button v-if="permissionLevel > 0" class ="rounded-md text-sm font-medium outline-none h-9 py-2 bg-red-600 hover:bg-red-700 text-white px-6" @click ="deleteFunction(props.data[idx],idx)"> Delete </button>
+                                <button class ="rounded-md text-sm font-medium outline-none h-9 py-2 bg-green-600 hover:bg-green-700 text-white px-6" @click ="viewFunction(props.data[idx],idx)"> View </button>
                             </div>
                         </td>
                         <td v-if="permissionLevel>1">
                             <div class="flex justify-center">
-                                <input v-if="row.email" v-model="isChecked[idx]" type="checkbox"></input>
+                                <input v-if="props.data[idx].email" v-model="isChecked[idx]" type="checkbox"></input>
                             </div>     
                         </td>
                     </tr>
@@ -61,5 +77,29 @@ const selectedCount = computed(() =>
   isChecked.value.filter(Boolean).length
 );
 const isEnabled  = computed(() => selectedCount.value > 0);
+
+const activeSearch = ref<'name' | 'organization' | null>(null)
+const searchInputs = ref({ name: '', organization: ''})
+const searchFields = ['name', 'organization'] as const
+  
+  const toggleSearch = (field: 'name' | 'organization') => {
+    activeSearch.value = activeSearch.value === field ? null : field
+    searchInputs.value = {name:'',organization:''};
+  }
+
+const visibleIndices = computed(() => {
+    return props.data
+      .map((row, idx) => ({ row, idx }))
+      .filter(({ row }) =>
+        searchFields.every((field) => {
+          const search = searchInputs.value[field].toLowerCase().trim()
+          if (!search) return true
+          
+          const value = (row[field] || '').toString().toLowerCase()
+          return value.includes(search)
+        })
+      )
+      .map(({ idx }) => idx)
+  })
 
 </script>

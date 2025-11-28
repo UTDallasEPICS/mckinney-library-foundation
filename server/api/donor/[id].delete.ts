@@ -1,4 +1,4 @@
-import { PrismaClient } from '@prisma/client';
+import { Prisma, PrismaClient } from '@prisma/client';
 
 const prisma = new PrismaClient();
 
@@ -19,6 +19,7 @@ export default defineEventHandler(async (event) => {
             success: true,
             statusCode: 200,
             data: deletedDonor,
+            error:{code: ""}
         }
     } catch (error) {
         console.error(error);

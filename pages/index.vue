@@ -166,7 +166,14 @@ async function checkEmailExists(email:string){
   const id = email;
   const user = await $fetch(`/api/user/${id}`);
   if(user.data){
-    return true;
+    if(!user.data.status){
+      return true;
+    } 
+    else{
+      alert("Your account is frozen, contact admin for more details")
+      return false;
+    }
+    
   }
   else{
     return false;

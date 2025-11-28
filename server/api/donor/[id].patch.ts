@@ -12,6 +12,25 @@ export default defineEventHandler(async (event) => {
                 statusMessage:"User does not have permission to update donors"
             })
         }
+        let donations = await prisma.donation.findMany({
+            where:{donorId:id}
+        })
+
+        
+
+        const sortedItems = donations.toSorted((a, b) => {
+            if (a.receivedDate === null && b.receivedDate === null) {
+                return 0; 
+            }
+            if (a.receivedDate === null) {
+                return 1; 
+            }
+            if (b.receivedDate === null) {
+                return -1; 
+            }
+            return a.receivedDate.getTime() - b.receivedDate.getTime();
+        });
+
         const updatedDonor = await prisma.donor.update({
             where: { id },
             data: {
@@ -23,6 +42,8 @@ export default defineEventHandler(async (event) => {
                 notes: body.notes,
                 webLink: body.webLink,
                 organization: body.organization,
+                firstDonationDate: sortedItems[0].receivedDate,
+                lastDonationDate: sortedItems[sortedItems.length-1].receivedDate
             }
         });
         return{

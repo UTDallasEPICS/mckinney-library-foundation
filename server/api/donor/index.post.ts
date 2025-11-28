@@ -21,8 +21,8 @@ export default defineEventHandler(async (event) =>{
                 notes: body.notes,
                 webLink: body.webLink,
                 organization: body.organization,
-                lastDonationDate: body.lastDonationDate,
-                firstDonationDate: body.firstDonationDate,
+                lastDonationDate: new Date(body.lastDonationDate),
+                firstDonationDate: new Date(body.firstDonationDate),
                 donations: body.donations
             }       
         });
