@@ -92,10 +92,10 @@
   import { ref, computed, type Ref } from 'vue'
   
   const props = defineProps<{
-    data: { id: string, name: string, organization: string, email: string, phone: string, address: string, preferredCommunication: string, notes: string, webLink: string, firstDonationDate: Date, lastDonationDate: Date }[]
+    data: { id: string, name: string, organization: string, email: string, phone: string, address: string, preferredCommunication: string, notes: string, webLink: string, firstDonationDate: any, lastDonationDate: any }[]
     emailFunction: (selected: boolean[]) => Promise<void>
-    editFunction: (donor: { id: string, name: string, organization: string, email: string, phone: string, address: string, preferredCommunication: string, webLink: string, notes: string, firstDonationDate: Date, lastDonationDate: Date }) => Promise<void>
-    viewFunction: (donor: { id: string, name: string, organization: string, email: string, phone: string, address: string, preferredCommunication: string, webLink: string, notes: string, firstDonationDate: Date, lastDonationDate: Date }) => Promise<void>
+    editFunction: (donor: { id: string, name: string, organization: string, email: string, phone: string, address: string, preferredCommunication: string, webLink: string, notes: string, firstDonationDate: any, lastDonationDate: any }) => Promise<void>
+    viewFunction: (donor: { id: string, name: string, organization: string, email: string, phone: string, address: string, preferredCommunication: string, webLink: string, notes: string, firstDonationDate: any, lastDonationDate: any }) => Promise<void>
     permissionLevel:number
     }>()
   
