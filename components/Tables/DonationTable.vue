@@ -21,7 +21,7 @@
                         <td class="px-6 py-4 text-[#2d3e4d] text-left text-sm">{{ row.monetaryAmount }}</td>
                         <td class="px-6 py-4 text-[#2d3e4d] text-left text-sm">{{ row.nonMonetaryAmount }}</td>
                         <td class="px-6 py-4 text-[#2d3e4d] text-left text-sm">{{ row.status == 0? "pending" : "recieved" }}</td>             
-                        <td v-if="row.receivedDate" class="px-6 py-4 text-[#2d3e4d] text-left text-sm">{{row.receivedDate?.getMonth() +1}}/{{row.receivedDate?.getDate() }}/{{ row.receivedDate?.getFullYear() }}</td>
+                        <td v-if="row.receivedDate" class="px-6 py-4 text-[#2d3e4d] text-left text-sm">{{row.receivedDate?.getMonth() +1}}/{{row.receivedDate?.getDate() +1 }}/{{ row.receivedDate?.getFullYear() }}</td>
                         <td class="px-6 py-4 text-[#2d3e4d] text-left text-sm">{{ row.boardMember?.name }}</td>
                         <td class="px-6 py-4">
                             <div class="flex justify-evenly">

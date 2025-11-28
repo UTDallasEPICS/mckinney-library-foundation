@@ -15,7 +15,7 @@
 
 const props = defineProps<{
     name:string
-    link:string
+    link?:string
     paths:string[]
     circles?:string[][]
 }>();
