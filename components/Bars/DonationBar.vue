@@ -80,6 +80,7 @@ async function createDonor(values:Record<string,any>){
             notes: values.notes,
             webLink: values.webLink,
             organization: values.organization,
+            permissionLevel:props.user.permissionLevel
         }
     })
     if(result.data.value?.data){

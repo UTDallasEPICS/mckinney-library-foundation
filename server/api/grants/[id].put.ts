@@ -6,7 +6,12 @@ export default defineEventHandler(async (event) => {
     try {
         const grantId = getRouterParam(event, 'id');
         const body = await readBody(event);
-
+        if(body.permissionLevel < 1){
+            throw createError({
+                statusCode:401,
+                statusMessage:"User does not have permission to update grants"
+            })
+        }
         const grant = await prisma.grant.update({
             where: { id: grantId },
             data: {

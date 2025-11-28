@@ -12,6 +12,12 @@ export default defineEventHandler (async (event)=>{
                 statusMessage: "A donationId is required to update a donation"
             });
         }
+        if(body.permissionLevel < 1){
+            throw createError({
+                statusCode:401,
+                statusMessage:"User does not have permission to update donations"
+            })
+        }
         if(!body.monetaryAmount && !body.nonMonetaryAmount){
             throw createError({
                 statusCode: 400,

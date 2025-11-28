@@ -40,6 +40,7 @@ async function createAccount(account: {id:string, name: string, email: string},i
       name:account.name,
       email:account.email,
       permision: 0,
+      permissionLevel:props.permissionLevel
     }
   });
   if(success){
@@ -51,6 +52,9 @@ async function createAccount(account: {id:string, name: string, email: string},i
 async function removeRequest(id:string,index:number){
   const {success} = await $fetch(`/api/request/${id}`, {
     method: 'DELETE',
+    body:{
+      permissonLevel:props.permissionLevel
+    }
   });
   if(success){
     props.requests?.splice(index,1);

@@ -5,6 +5,12 @@ const prisma = new PrismaClient();
 export default defineEventHandler(async (event) =>{
     try{
         const body = await readBody(event);
+        if(body.permissionLevel < 1){
+            throw createError({
+                statusCode:401,
+                statusMessage:"User does not have permission to create donors"
+            })
+        }
         const donor = await prisma.donor.create({
             data:{
                 name:       body.name,

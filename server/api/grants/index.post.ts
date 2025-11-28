@@ -5,7 +5,12 @@ const prisma = new PrismaClient()
 export default defineEventHandler(async (event) => {
     try {
         const body = await readBody(event);
-
+        if(body.permissionLevel < 1){
+            throw createError({
+                statusCode:401,
+                statusMessage:"User does not have permission to create grants"
+            })
+        }
         const grant = await prisma.grant.create({
             data: {
                 boardMemberId: body.boardMemberId,

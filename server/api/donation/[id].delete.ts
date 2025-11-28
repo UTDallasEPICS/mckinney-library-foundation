@@ -7,8 +7,6 @@ export default defineEventHandler (async (event)=>{
 
         const body = await readBody(event);
         const id = await getRouterParam(event, 'id');
-        // Perform role-based API checking here 
-        // I.E., does the user have the permision to delete? 
         if(body.permissionLevel < 1){
             throw createError({
                 statusCode:401,

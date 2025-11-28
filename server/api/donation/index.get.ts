@@ -4,8 +4,6 @@ const prisma = new PrismaClient();
 
 export default defineEventHandler (async (event)=>{
     try{
-        const q = getQuery(event);
-        const search = q.search?.toString() || "";
         const donations = await prisma.donation.findMany({
             include: {
                 boardMember: {

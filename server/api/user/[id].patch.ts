@@ -6,6 +6,12 @@ export default defineEventHandler(async (event) =>{
     try{
         const id = getRouterParam(event, 'id');
         const body = await readBody(event);
+        if(body.permissionLevel < 2){
+            throw createError({
+                statusCode:401,
+                statusMessage:"User does not have permission to edit users"
+            })
+        }
         const data = await prisma.user.update({
             where: {
                 id: id,

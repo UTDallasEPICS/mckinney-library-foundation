@@ -34,7 +34,7 @@ else{
 
 const AccReqFormProps ={
   function: createAccount,
-  type: true,
+  type: false,
 }
 
 async function createAccount(values:Record<string,any>){
@@ -45,7 +45,7 @@ async function createAccount(values:Record<string,any>){
             name: values.fName + " " + values.lName,
             email: values.email,
             permission: parseInt(values.permission),
-            isRequest: false
+            permissionLevel:permissionLevel.value
         }
     });
     navigateTo("/settings/accounts");

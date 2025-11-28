@@ -144,7 +144,7 @@ async function editDonor(values:Record<string,any>) {
       notes: values.notes,
       webLink: values.webLink,
       organization: values.organization,
-
+      permissonLevel: user.value.permissionLevel
     }
   })
   if(result.success){
@@ -156,6 +156,9 @@ async function editDonor(values:Record<string,any>) {
 async function deleteDonor(donor:{id:string, name:string, organization:string, email:string, phone:string,address:string, firstDonationDate:Date, lastDonationDate:Date},index:number) {
   const result = await $fetch(`/api/donor/${donor.id}`,{
     method:"DELETE",
+    body:{
+      permissionLevel:user.value.permissionLevel
+    }
   })
   if(result.success){
     donors.value.splice(index,1);
@@ -168,6 +171,7 @@ async function groupEmail(values:Record<string, any>){
   await $fetch("/api/email",{
     method:"POST",
     body:{
+      permissionLevel:user.value.permissionLevel,
       subject:values.Subject,
       text:values.Message,
       emails:emailList.value,
