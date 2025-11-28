@@ -1,0 +1,17 @@
+ALL:
+    Determine and implement error codes
+
+GET:
+
+    Check for filters
+
+POST & PUT:
+
+    User privilege validation:
+        const user = ? from auth implementation
+        if (user.type != "editor"), return error
+
+    Input validation for front-end: 
+        check for presence of necessary fields
+        check if id matches entry (have grant ids visible to users?)
+        match boardMember & donor/grantor by name
