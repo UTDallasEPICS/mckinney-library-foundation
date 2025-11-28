@@ -48,8 +48,8 @@
         <td class="px-6 py-4 text-[#2d3e4d] text-left text-sm">{{ props.data[idx].organization }}</td>
         <td class="px-6 py-4 text-[#2d3e4d] text-left text-sm">{{ props.data[idx].email }}</td>
         <td class="px-6 py-4 text-[#2d3e4d] text-left text-sm">{{ props.data[idx].phone }}</td>
-        <td class="px-6 py-4 text-[#2d3e4d] text-left text-sm">{{ props.data[idx].firstDonationDate }}</td>
-        <td class="px-6 py-4 text-[#2d3e4d] text-left text-sm">{{ props.data[idx].lastDonationDate }}</td>
+        <td class="px-6 py-4 text-[#2d3e4d] text-left text-sm">{{ props.data[idx].firstDonationDate?.slice(0,10)}}</td>
+        <td class="px-6 py-4 text-[#2d3e4d] text-left text-sm">{{ props.data[idx].lastDonationDate?.slice(0,10) }}</td>
         <td class="px-6 py-4">
         <div class="flex justify-evenly">
         <button v-if="permissionLevel>0"

@@ -3,6 +3,8 @@ import {PrismaClient} from '@prisma/client'
 const prisma = new PrismaClient();
 
 export default defineEventHandler (async (event)=>{
+
+    console.log("update donation reached")
     const body = await readBody(event);
     const id = await getRouterParam(event, 'id');
     if(body.status === 'pending'){ 
@@ -28,7 +30,7 @@ export default defineEventHandler (async (event)=>{
             nonMonetaryAmount: body.nonMonetaryAmount,
             status: body.status ?? 0,
             notes: body.notes,
-            receivedDate: body.receivedDate,
+            receivedDate: new Date(body.receivedDate),
             lastEditDate: new Date()
         }
     });

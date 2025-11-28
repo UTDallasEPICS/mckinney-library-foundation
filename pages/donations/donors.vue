@@ -72,8 +72,8 @@ const nameList = ref("");
 
 const donorId = ref("");
 
-const updateDonorForm = (data) => { 
-  donors.value.forEach((item, index) => {
+const updateDonorForm = (data: any) => { 
+  donors.value.forEach((item: any, index: any) => {
     if (item.id === data.id) {
       donors.value[index].name = data.name;
       donors.value[index].email = data.email;
@@ -230,7 +230,7 @@ async function groupEmail(values: Record<string, any>) {
   nameList.value = "";
 }
 
-const addDonor = (data) => { 
+const addDonor = (data: any) => { 
 //hi there
 
 

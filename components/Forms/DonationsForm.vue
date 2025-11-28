@@ -67,7 +67,7 @@
     </div>
     </template>
     
-    <script setup lang="ts"> 
+    <script setup > 
     import { ref,onMounted } from 'vue';
     const emit = defineEmits(['close','update-donation','add-donation']);
 

@@ -1,7 +1,7 @@
   export const getSession = async () => {
       const result = await useFetch('/api/session');
-        if (!result.success) {
-            throw new Error(result.message || 'Failed to fetch session');
+        if (!result.data.value?.success) {
+            throw new Error('Failed to fetch session');
         } 
 
         console.log("result from getSession:", result); 

@@ -127,13 +127,17 @@ import viewDonationsForm from '@/components/Forms/viewDonationsForm.vue'
 
 const emit = defineEmits(['delete-donation', 'update-donation'])
     
+interface DonationInfo {
+    donations: Array<any>;
+}
+
 const props = defineProps<{
-    donationInfo:Object
-    permissionLevel:number
+    donationInfo: DonationInfo;
+    permissionLevel: number;
 }>()
 const showMenu = ref(false)
 const showViewDonations = ref(false)
-const activeDonationId = ref(null)
+const activeDonationId = ref<string | undefined>('')
 
 const activeSearch = ref(null)
 
@@ -143,7 +147,7 @@ const searchInputs = ref({
     board: ''
 })
     
-const toggleSearch = (field) => {
+const toggleSearch = (field: any) => {
     
     if (['donor', 'event', 'board'].includes(field)) {
         activeSearch.value = activeSearch.value === field ? null : field
@@ -155,7 +159,7 @@ const filteredAndSorted = computed(() => {
 let list = props.donationInfo?.donations || []
 
 
-list = list.filter((d) => {
+list = list.filter((d: any) => {
     return (
         (d.donor?.name || '').toLowerCase().includes(searchInputs.value.donor.toLowerCase()) &&
         (d.event || '').toLowerCase().includes(searchInputs.value.event.toLowerCase()) &&
@@ -165,17 +169,17 @@ list = list.filter((d) => {
 return list
 })
     
-const openEdit = (id) => {
+const openEdit = (id: any) => {
 activeDonationId.value = id
 showMenu.value = true
 }
 
-const openView = (id) => {
+const openView = (id: any) => {
 activeDonationId.value = id
 showViewDonations.value = true
 }
 
-const delete_donation = async (id) => {
+const delete_donation = async (id: any) => {
 await $fetch(`/api/donation/${id}`, { 
     method: 'DELETE',
     body:{
@@ -185,7 +189,7 @@ await $fetch(`/api/donation/${id}`, {
 emit('delete-donation', id)
 }
 
-const handleUpdateDonations = (data) => {
+const handleUpdateDonations = (data: any) => {
 emit('update-donation', data)
 }
 </script>

@@ -40,14 +40,14 @@ const handleDeleteDonation = (id:string) => {
   if (!donations.value || !donations.value.donations) return;
 
   donations.value.donations = donations.value.donations.filter(
-    donation => donation.id !== id
+    (donation: { id: string }) => donation.id !== id
   );
 };
 
-const updateDonation = (data) => {
+const updateDonation = (data: any) => {
   
   console.log("data in index.vue",data) 
-donations.value.donations = donations.value.donations.map(donation => {
+donations.value.donations = donations.value.donations.map((donation: { id: string }) => {
     if (donation.id === data.id) {
       return { ...donation, ...data };
     }

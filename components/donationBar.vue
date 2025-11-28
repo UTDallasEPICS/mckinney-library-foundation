@@ -64,13 +64,13 @@
     const emit = defineEmits(['add-donation','add-donor']);
 
 
-    const addDonation = (data) => {
+    const addDonation = (data: any) => {
         console.log("dsssata",data)
 
         emit('add-donation', data);
     };
 
-    const addDonor = (data) => { 
+    const addDonor = ( data: any) => { 
 
       console.log('data for the dnoor',data)
 

@@ -3,9 +3,13 @@ import { PrismaClient } from '@prisma/client';
 const prisma = new PrismaClient();
 
 export default defineEventHandler(async (event) => {  
+
+    console.log("hi the")
     try {
         const id = getRouterParam(event, 'id');
         const body = await readBody(event);
+
+        console.log("body", body)
          if(body.permissionLevel < 1){
             throw createError({
                 statusCode: 401,
@@ -23,6 +27,7 @@ export default defineEventHandler(async (event) => {
                 notes: String(body.notes),
                 webLink: body.webLink,
                 organization: body.organization,
+                
             }
         });
         return{
