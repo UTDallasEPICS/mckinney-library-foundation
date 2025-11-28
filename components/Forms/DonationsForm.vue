@@ -67,7 +67,7 @@
     </div>
     </template>
     
-    <script setup> 
+    <script setup lang="ts"> 
     import { ref,onMounted } from 'vue';
     const emit = defineEmits(['close','update-donation','add-donation']);
 
@@ -94,18 +94,15 @@
     donationId: {
         type: String,
         default: ""
+    },
+    permissionLevel:{
+        default:0
     }
    })
-
-
-    onMounted(() => {
-       
-       const getSession = async () => { 
- 
+    onMounted(() => { 
+        const getSession = async () => { 
          const response = await $fetch('/api/session')
- 
          console.log("response",response.data.user)
-
          boardMemberId.value = response.data.user.id
          boardMember.value = response.data.user.name
  
@@ -159,15 +156,12 @@ getInfo()
 
  
      })
-
-
     const resetForm = () => {
         donor.value = ""
         event.value = ""
         method.value = ""
         monetaryAmount.value = ""
-        nonMonetaryAmount.value = ""
-       
+        nonMonetaryAmount.value = ""     
         notes.value = ""
         proposedDate.value = ""
         receivedDate.value = ""
@@ -182,8 +176,14 @@ getInfo()
     }
 
     try { 
-
-        const response = await $fetch('/api/donations/123', {
+        const url = ref('/api/donation');
+        if(props.method == 'PUT'){
+            url.value += `/${props.donationId}`
+        }
+        else{
+            console.log(props.method);
+        }
+        const response = await $fetch(url.value, {
             method: props.method,
             body: {
                 ...(props.donationId ? { donationId: props.donationId } : null),  
@@ -192,7 +192,7 @@ getInfo()
                 method: method.value,
                 monetaryAmount: String(monetaryAmount.value),
                 nonMonetaryAmount: String(nonMonetaryAmount.value),
-  
+                permissionLevel:props.permissionLevel,
                 notes: notes.value,
            
                 receivedDate: receivedDate.value,

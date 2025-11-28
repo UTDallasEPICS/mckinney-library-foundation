@@ -92,7 +92,7 @@ const route = useRoute();
 route.params.id
 
 const {session, getSession} = useAuth();
-await getSession();
+session.value = await getSession();
 if(session.value?.user){
     navigateTo("/dashboard");
 }

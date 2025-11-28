@@ -38,7 +38,7 @@
       <DashboardStat />
     </div>
 
-    <DonationsForm v-if="showDonationForm" @close="showDonationForm = false" />
+    <DonationsForm v-if="showDonationForm" :permission-level="permission" @close="showDonationForm = false" />
     <GrantForm v-if="showGrantForm" @close="showGrantForm = false" />
   </div>
 </template>
@@ -53,11 +53,14 @@ import { useAuth } from '~/composables/useAuth'
 import { navigateTo } from '#app'
 
 const { session, getSession } = useAuth()
-await getSession()
+session.value = await getSession()
 
-const permission = ref(3)
+const permission = ref(0);
 if (session.value?.user) {
   permission.value = session.value.user.permission
+}
+else{
+  navigateTo("/");
 }
 
 const showDonationForm = ref(false)
@@ -104,7 +107,7 @@ const SettingsCardProps = {
   description:"Configure system settings, Manage user accounts, and control access.",
   buttons: [
     { name:"Create Accounts", link:"/settings", paths:['M5 12h14','M12 5v14'], accessLevel:3 },
-    { name:"View Roles", link:"/settings/roles", paths:['M2.062 12.348a1 1 0 0 1 0-.696 10.75 10.75 0 0 1 19.876 0 1 1 0 0 1 0 .696 10.75 10.75 0 0 1-19.876 0'], circles:[['12','12','3']], accessLevel:0 },
+    { name:"View Roles", link:"/settings/roles", paths:['M2.062 12.348a1 1 0 0 1 0-.696 10.75 10.75 0 0 1 19.876 0 1 1 0 0 1 0 .696 10.75 10.75 0 0 1-19.876 0'], circles:[['12','12','3']], accessLevel:1 },
     { name:"View Accounts", link:"/settings/accounts", paths:['M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2','M16 3.128a4 4 0 0 1 0 7.744', 'M22 21v-2a4 4 0 0 0-3-3.87'], circles:[['9','7','4']], accessLevel:2 }
   ]
 }

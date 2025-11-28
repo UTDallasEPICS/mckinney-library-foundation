@@ -12,7 +12,7 @@
                 <h2 class = "form-field-label">Subject</h2>
                 <VeeErrorMessage name="Subject"/>
                 <VeeField v-slot="{field}" name="Subject">
-                  <input v-bind="field" class="form-field"></input>
+                  <input v-bind="field" class="form-input"></input>
                 </VeeField>
               </div>
               <div>

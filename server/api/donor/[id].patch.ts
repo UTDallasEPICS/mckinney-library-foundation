@@ -3,22 +3,17 @@ import { PrismaClient } from '@prisma/client';
 const prisma = new PrismaClient();
 
 export default defineEventHandler(async (event) => {  
-    
-    console.log("route reached")
     try {
-        // const id = getRouterParam(event, 'id');
-
-
-        
+        const id = getRouterParam(event, 'id');
         const body = await readBody(event);
-        console.log("id found:", body); 
-        const id = body.donorId
-
-        console.log('body',body)
-
-        console.log("body:", body); 
+         if(body.permissionLevel < 1){
+            throw createError({
+                statusCode: 401,
+                statusMessage:"User not authorized to edit donors"
+            })
+        }
         const updatedDonor = await prisma.donor.update({
-            where: { id },
+            where: { id:id },
             data: {
                 name: body.name,
                 email: body.email,
@@ -30,10 +25,6 @@ export default defineEventHandler(async (event) => {
                 organization: body.organization,
             }
         });
-
-
-
-        console.log("updatedDonor:", updatedDonor);
         return{
             success: true,
             statusCode: 200,

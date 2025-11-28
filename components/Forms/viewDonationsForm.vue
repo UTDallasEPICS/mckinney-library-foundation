@@ -57,17 +57,14 @@
  
     
     </div>
-    
-  
     </div>
     </div>
     </template>
     
     <script setup> 
     import {ref,onMounted} from 'vue';  
+
     const emit = defineEmits(['close']);
-
-
     const donor = ref("")
     const event = ref("")
     const method = ref("")
@@ -85,12 +82,7 @@
            default: ""
         }
     }); 
-    // pass props from parent left to do and the delete button 
-
-
     onMounted(() => { 
-
-
         const getInfo = async () => { 
 
 
@@ -126,9 +118,7 @@ console.log("response",response.data.donor.name)
         console.log("error",err)
     }
         }
-
         getInfo()
-
     })
 
 

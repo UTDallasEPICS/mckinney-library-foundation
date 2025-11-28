@@ -2,46 +2,68 @@ import {PrismaClient} from '@prisma/client'
 
 const prisma = new PrismaClient();
 
-export default defineEventHandler (async (event)=>{
-    try{
-        const body = await readBody(event);
-        // Perform role-based API checking here 
-        // I.E., does the user have the permision to create?
-
-        if(!body.monetaryAmount && !body.nonMonetaryAmount){
+export default defineEventHandler(async (event) => {
+  const body = await readBody(event);
+  if (body.status === 'pending') {
+    body.status = 0
+  } else {
+    body.status = 1
+  }
+  try {
+    if(body.permissionLevel < 1){
             throw createError({
-                statusCode: 400,
-                statusMessage: "The donation requires a monetary or non-monetary value"
+                statusCode: 401,
+                statusMessage:"User not authorized to create donations"
             });
-        }                       
-        const donation = await prisma.donation.create({
-            data: {
-                boardMemberId: body.boardMemberId,
-                donorId: body.donorId,
-                event: body.event,
-                method: body.method,
-                monetaryAmount: body. monetaryAmount,
-                nonMonetaryAmount: body.nonMonetaryAmount,
-                status: body.status ?? 0,
-                notes: body.notes,
-                receivedDate: new Date(),
-                lastEditDate: new Date()
-            }
-        });
-        return { 
-            success: true,
-            statusCode: 200,
-            data: donation,
-        };
+        }
+    let donorRecord = await prisma.donor.findFirst({
+      where: {
+        name: body.donor
+      }
+    })
+
+    if (!donorRecord) {      
+      donorRecord = await prisma.donor.create({
+        data: {
+          name: body.donor,
+          address: "",
+          email: "",
+          phone: "",
+          preferredCommunication: "",
+          notes: "",
+        }
+      })
     }
-    catch(error){
-        return{
+    const donation = await prisma.donation.create({
+      data: {
+        boardMemberId: body.boardMemberId,
+        donorId: donorRecord.id,
+        event: body.event,
+        method: body.method,
+        monetaryAmount: body.monetaryAmount,
+        nonMonetaryAmount: body.nonMonetaryAmount,
+        status: body.status ?? 0,
+        notes: body.notes,
+        receivedDate: new Date(),
+        lastEditDate: new Date()
+      },
+      include: {
+        donor: true
+      }
+    })
+    return {
+      success: true,
+      statusCode: 200,
+      data: donation
+    }
+  } catch (error) {
+        console.log("error creating donation:", error)
+        return {
             success: false,
             statusCode: 500,
             message: "Failed to create donation",
             error: error
         }
-    } finally {
-        await prisma.$disconnect()
-    }
+  }
 })
+
