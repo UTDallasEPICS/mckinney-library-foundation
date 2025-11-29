@@ -7,16 +7,16 @@ export default defineEventHandler(async (event) => {
 
     const currentApprovedAwards = await prisma.grant.count({
       where: {
-        status: 1, // 1: completed/approved
+        status: 1, 
         endDate: {
-          gte: today, // End Date must be Greater Than or Equal to today
+          gte: today, 
         },
       },
     });
 
     return {
       activeGrants: currentApprovedAwards,
-      description: "Currently approved and active awards",
+      description: "Currently approved and active grants",
     };
   } catch (backendIssue) {
     console.error("Critical error fetching active grants:", backendIssue);

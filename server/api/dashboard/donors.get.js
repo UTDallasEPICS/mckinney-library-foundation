@@ -10,6 +10,7 @@ export default defineEventHandler(async (event) => {
       description: "All-time total count of unique contributors",
     };
   } catch (backendIssue) {
+    
     console.error("Critical error fetching donor count:", backendIssue);
     throw createError({
       statusCode: 500,

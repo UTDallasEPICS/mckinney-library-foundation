@@ -22,7 +22,7 @@ export default defineEventHandler(async (event) => {
     }, 0);
 
     return {
-      totalDonations: Math.round(totalMonetaryAmount), // Rounding to the nearest dollar
+      totalDonations: Math.round(totalMonetaryAmount),
       description: "Total funding received across all time",
     };
   } catch (backendIssue) {
