@@ -4,6 +4,8 @@ const prisma = new PrismaClient();
 
 export default defineEventHandler(async (event) => {
   const body = await readBody(event);
+
+  console.log("bdoy", body) 
   if (body.status === 'pending') {
     body.status = 0
   } else {
@@ -21,6 +23,15 @@ export default defineEventHandler(async (event) => {
         name: body.donor
       }
     })
+
+    const updateDonor = await prisma.donor.update({
+      where: {
+        name: body.donor
+      },
+      data: {
+        lastDonationDate: new Date()
+      }
+     })
 
     if (!donorRecord) {      
       donorRecord = await prisma.donor.create({
@@ -44,7 +55,7 @@ export default defineEventHandler(async (event) => {
         nonMonetaryAmount: body.nonMonetaryAmount,
         status: body.status ?? 0,
         notes: body.notes,
-        receivedDate: new Date(),
+        receivedDate: new Date(body.receivedDate) ||new Date(),
         lastEditDate: new Date()
       },
       include: {
