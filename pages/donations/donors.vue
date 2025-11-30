@@ -1,11 +1,11 @@
 <template>
 <DonationBar 
   :user="user"
-  :donors="donors"
+  :donors="donorTableData"
 />
   <DonorTable 
     key="DonoTable"
-    :data="DonorTableProps.donors" 
+    :data="DonorTableProps.donorTableData" 
     :email-function="DonorTableProps.emailFunction"
     :edit-function="DonorTableProps.editFunction"
     :delete-function="DonorTableProps.deleteFunciton"
@@ -22,14 +22,14 @@
   </div>
   <div v-if="updateDonor" class="fixed top-0 left-0 w-full h-full flex justify-center items-center z-20 bg-black/50">
     <DonorForm
-      :donor="donorData"
+      :donor="donorFormData.donor"
       :submit-donor="editDonor"
       :cancel-submisison="cancelUpdate"
       :view-only="false" />
   </div>
   <div v-if="viewDonor" class="fixed top-0 left-0 w-full h-full flex justify-center items-center z-20 bg-black/50">
     <DonorForm
-      :donor="donorData"
+      :donor="donorFormData.donor"
       :submit-donor="editDonor"
       :cancel-submisison="cancelUpdate"
       :view-only="true" />
@@ -42,6 +42,7 @@ import EmailForm from '~/components/Forms/EmailForm.vue';
 import DonorForm from '~/components/Forms/DonorForm.vue';
 import DonationBar from '~/components/Bars/DonationBar.vue'
 import { useAuth } from '~/composables/useAuth';
+import type { Donation, Donor } from '@prisma/client';
 
 const {session, getSession} = useAuth();
 session.value = await getSession();
@@ -65,8 +66,29 @@ const donorIndex = ref(0);
 
 await getDonors();
 
+const donorTableData:Ref<{donor:Donor, donations:Donation[]}[]> = ref([]);
+
+const donorFormData:Ref<{donor:Donor}> = ref({
+  donor:{
+  id:"",
+  name:"",
+  organization:"",
+  email:"",
+  phone:"",
+  address:"",
+  notes:"",
+  webLink:"",
+  firstDonationDate:null,
+  lastDonationDate:null,
+  preferredCommunication:""}
+});
+
+donors.value.map((thisDonor:Donor,index:number) => {
+  donorTableData.value.push({donor:thisDonor,donations:donors.value[index].donations })
+})
+
 const DonorTableProps ={
-  donors:donors.value,
+  donorTableData:donorTableData.value,
   emailFunction: prepEmail,
   editFunction:prepDonorUpdate,
   deleteFunciton:deleteDonor,
@@ -81,26 +103,25 @@ const emailFormProps ={
 
 }
 
-const donorData:Ref<{id:string, name:string, organization:string, email:string, phone:string,address:string, notes:string, webLink:string, preferredCommunication:string}> = ref({
-  id:"",
-  name:"",
-  organization:"",
-  email:"",
-  phone:"",
-  address:"",
-  notes:"",
-  webLink:"",
-  preferredCommunication:""
-});
-
-
 function cancelEmail(){
   sendEmail.value=false;
   emailList.value = [];
   nameList.value = "";
 }
 function cancelUpdate(){
-  donorData.value = {id:"",name:"",organization:"",email:"",phone:"",address:"", notes:"",webLink:"",preferredCommunication:"",};
+  donorFormData.value = {donor:
+    {id:"",
+    name:"",
+    organization:"",
+    email:"",
+    phone:"",
+    address:"",
+    notes:"",
+    webLink:"",
+    preferredCommunication:"",
+    firstDonationDate:null,
+    lastDonationDate:null,
+  }};
   updateDonor.value= false;
   viewDonor.value=false;
 }
@@ -122,14 +143,14 @@ async function prepEmail(selected:boolean[]) {
   });
 }
 
-async function prepDonorUpdate(donor:{id:string, name:string, organization:string, email:string, phone:string, address:string,webLink:string, notes:string, preferredCommunication:string},index:number){
-  donorData.value = donor;
+async function prepDonorUpdate(donor:Donor,index:number){
+  donorFormData.value.donor = donor;
   updateDonor.value = true;
   donorIndex.value = index;
 }
 
-async function prepDonorView(donor:{id:string, name:string, organization:string, email:string, phone:string, address:string,webLink:string, notes:string, preferredCommunication:string}){
-  donorData.value = donor;
+async function prepDonorView(donor:Donor){
+  donorFormData.value.donor = donor;
   viewDonor.value = true;
 }
 
@@ -137,24 +158,29 @@ async function editDonor(values:Record<string,any>) {
   const result = await $fetch(`/api/donor/${values.id}`,{
     method:"PATCH",
     body:{
-      name:values.fName + " " + values.lName,
-      email: values.email,
-      phone: values.phone,
-      address: values.address,
-      preferredCommunication: values.preferredCommunication,
+      name:values.fName.trim() + " " + values.lName.trim(),
+      email: values.email.trim(),
+      phone: values.phone.trim(),
+      address: values.address.trim(),
+      preferredCommunication: values.preferredCommunication.trim(),
       notes: values.notes,
-      webLink: values.webLink,
-      organization: values.organization,
+      webLink: values.webLink.trim(),
+      organization: values.organization.trim(),
       permissonLevel: user.value.permissionLevel
     }
   })
-  if(result.success){
-    donors.value[donorIndex.value]=result.data
+  if(result.success && result.data){
+    donorTableData.value[donorIndex.value].donor={
+      ...result.data,
+      lastDonationDate: result.data.lastDonationDate? new Date(result.data.lastDonationDate): new Date(),
+      firstDonationDate: result.data.firstDonationDate? new Date(result.data.firstDonationDate): new Date()
+    }
   }
   updateDonor.value = false;
 }
 
-async function deleteDonor(donor:{id:string, name:string, organization:string, email:string, phone:string,address:string, firstDonationDate:Date, lastDonationDate:Date},index:number) {
+async function deleteDonor(donor:Donor,index:number) {
+  console.log(donor)
   const result = await $fetch(`/api/donor/${donor.id}`,{
     method:"DELETE",
     body:{
@@ -162,7 +188,7 @@ async function deleteDonor(donor:{id:string, name:string, organization:string, e
     }
   })
   if(result.success){
-    donors.value.splice(index,1);
+    donorTableData.value.splice(index,1);
   }else if(result.error.code == 'P2003'){
     alert("Cannot delete donor with donations"); 
   }

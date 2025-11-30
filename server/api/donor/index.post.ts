@@ -21,8 +21,6 @@ export default defineEventHandler(async (event) =>{
                 notes: body.notes,
                 webLink: body.webLink,
                 organization: body.organization,
-                lastDonationDate: new Date(body.lastDonationDate),
-                firstDonationDate: new Date(body.firstDonationDate),
                 donations: body.donations
             }       
         });
@@ -30,6 +28,7 @@ export default defineEventHandler(async (event) =>{
             success: true,
             statusCode: 200,
             data: donor,
+            error: {code: ""}
         }
     }catch(error){
         console.error(error);

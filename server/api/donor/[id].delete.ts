@@ -13,7 +13,7 @@ export default defineEventHandler(async (event) => {
             })
         }
         const deletedDonor = await prisma.donor.delete({
-            where: { id }
+            where: { id:id }
         });
         return{
             success: true,

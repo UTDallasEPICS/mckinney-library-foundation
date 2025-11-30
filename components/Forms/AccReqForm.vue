@@ -2,18 +2,18 @@
     <VeeForm :initial-values="initalVals" :validation-schema="AccReqFormSchema" @submit="submit">
         <h3 class="form-field-label">First Name</h3>
         <VeeErrorMessage class="text-red-500" name= "fName"/>
-        <VeeField name="fName" placeholder="First" 
+        <VeeField autocomplete="off" name="fName" placeholder="First" 
         class ="form-input bg-[#f5f6f8]"/>
         <h3 class="form-field-label">Last Name</h3>
         <VeeErrorMessage class="text-red-500" name= "lName"/>
-        <VeeField name="lName" placeholder="Last"
+        <VeeField autocomplete="off" name="lName" placeholder="Last"
         class ="form-input bg-[#f5f6f8]"/>
         <h3 class="form-field-label">Email</h3>
         <VeeErrorMessage class="text-red-500" name= "email"/>
-        <VeeField name="email" placeholder="Email"
+        <VeeField autocomplete="off" name="email" placeholder="Email"
         class ="form-input bg-[#f5f6f8]"/>
         <h3 v-if="type" class="form-field-label">Role</h3>
-        <VeeField v-if="type" v-slot="{field}" name="permission">
+        <VeeField autocomplete="off" v-if="type" v-slot="{field}" name="permission">
             <select v-bind="field" class="w-full px-3 py-2 bg-white border border-gray-300 rounded text-[#2d3e4d] focus:outline-none focus:ring-2 focus:ring-[#5a6a77] cursor-pointer">
                 <option value="0">Viewer</option>
                 <option value="1">Editor</option>

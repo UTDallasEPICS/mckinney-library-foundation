@@ -13,14 +13,14 @@ export default defineEventHandler(async (event) => {
         }
     let donorRecord = await prisma.donor.findFirst({
       where: {
-        name: body.donor
+        name: body.donor? body.donor : "anonymous"
       }
     })
 
     if (!donorRecord) {      
       donorRecord = await prisma.donor.create({
         data: {
-          name: body.donor,
+          name: body.donor? body.donor: "anonymous",
           address: "",
           email: "",
           phone: "",
@@ -50,14 +50,6 @@ export default defineEventHandler(async (event) => {
                 name:true
             }
         }
-      }
-    })
-    const updateDonor = await prisma.donor.update({
-      where:{
-        name:body.donor
-      },
-      data:{
-        lastDonationDate: new Date(body.receivedDate)
       }
     })
     return {

@@ -33,9 +33,21 @@
     </div>
 
     <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
-      <DashboardStat />
-      <DashboardStat />
-      <DashboardStat />
+      <DashboardStat
+        title="Total Donations"
+        :value="totalDonations"
+        description="All time total ammount"
+      />
+      <DashboardStat
+        title="Total Grants"
+        :value="totalGrants"
+        description="All grants added"
+      />
+      <DashboardStat
+        title="Total Donors"
+        :value="totalDonors.length.toLocaleString()"
+        description="Unique donors count"
+      />
     </div>
 
     <div v-if="showDonationForm" class="fixed top-0 left-0 w-full h-full flex justify-center items-center z-20 bg-black/50">
@@ -43,7 +55,7 @@
         :submit-donation="createDonation"
         :cancel-submisison="cancelDonation"
         :view-only="false"
-        :donors="donors"
+        :donors="donorTableData"
       />
     </div>
 
@@ -63,12 +75,21 @@ import GrantsForm from '~/components/Forms/GrantsForm.vue'
 import { useAuth } from '~/composables/useAuth'
 import { useDonor } from '#imports'
 import { navigateTo } from '#app'
+import type { Donation, Donor } from '@prisma/client'
 
 const { session, getSession } = useAuth()
 session.value = await getSession()
 
 const {donors, getDonors} = useDonor();
 await getDonors();
+
+const donorTableData:Ref<{donor:Donor, donations:Donation[]}[]> = ref([]);
+donors.value.map((thisDonor:Donor,index:number) => {
+  donorTableData.value.push({donor:thisDonor,donations:donors.value[index].donations })
+})
+
+const totalDonors = donors.value
+
 
 const user:Ref<{id:string, permissionLevel:number}> = ref({id:"",permissionLevel:0});
 if (session.value?.user) {
@@ -152,5 +173,24 @@ async function createDonation(values:Record<string,any>){
 function cancelDonation(){
     showDonationForm.value = false;
 }
+
+const donationsRes = await $fetch("/api/donation");
+const donationsArray = donationsRes?.data || [];
+
+const totalDonations = new Intl.NumberFormat("en-US", {
+  style: "currency",
+  currency: "USD",
+  maximumFractionDigits: 0
+}).format(
+  donationsArray.reduce((sum, d) => {
+    const amount = parseFloat(d.monetaryAmount || "0");
+    return sum + (isNaN(amount) ? 0 : amount);
+  }, 0)
+);
+
+const grantsRes = await $fetch("/api/grant");
+const grantsArray = grantsRes?.data || [];
+
+const totalGrants = grantsArray.length.toLocaleString();
 
 </script>

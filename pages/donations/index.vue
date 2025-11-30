@@ -1,9 +1,10 @@
 <template>
 <DonationBar
     :user="user"
-    :donors="donors"
+    :donors="donorTableData"
     :donations="donationsData"
 />
+
 <DonationTable
     :data="donationsData"
     :edit-function="prepDonationUpdate"
@@ -14,21 +15,22 @@
 
 <div v-if="showUpdateDonation" class="fixed top-0 left-0 w-full h-full flex justify-center items-center z-20 bg-black/50">
     <DonationForm 
-        :donors="donors"
+        :donors="donorTableData"
         :view-only="false"
         :submit-donation="updateDonation"
         :cancel-submisison="cancelUpdate"
-        :donation="donationData"
+        :data="donationData"
+        :index="donationIndex"
     />
 </div>
 
 <div v-if="showViewDonation" class="fixed top-0 left-0 w-full h-full flex justify-center items-center z-20 bg-black/50">
     <DonationForm 
-        :donors="donors"
+        :donors="donorTableData"
         :view-only="true"
         :submit-donation="updateDonation"
         :cancel-submisison="cancelUpdate"
-        :donation="donationData"
+        :data="donationData"
     />
 </div>
 
@@ -40,6 +42,7 @@ import DonationTable from '~/components/Tables/DonationTable.vue';
 import DonationForm from '~/components/Forms/DonationForm.vue';
 import { useAuth } from '~/composables/useAuth';
 import { useDonor } from '~/composables/useDonor';
+import type { Donation, Donor } from '@prisma/client';
 
 
 const {session, getSession} = useAuth();
@@ -62,42 +65,39 @@ const showViewDonation = ref(false);
 const {donors, getDonors} = useDonor();
 await getDonors();
 
-const donationsData:Ref<{
-        id: string,
-        boardMemberId: string | null, 
-        donorId: string | null,event: string | null, 
-        method: string | null, 
-        monetaryAmount: string | null, 
-        nonMonetaryAmount: string | null, 
-        status: number, notes: string | null, 
-        receivedDate: Date | null,
-        lastEditDate: Date | null
-        boardMember:{name:string}| null, 
-        donor: {name: string} | null}[]> = ref([])
+const donationsData:Ref<{donation: Donation, donor: {name: string} | null, boardMember: {name:string} | null}[]> = ref([])
 
 const donations = await $fetch('/api/donation');
 
 if(donations.success && donations.data){
-    donationsData.value = donations.data.map( (donation) =>({
-        ...donation,
-        receivedDate: donation.receivedDate ? new Date(donation.receivedDate) : null,
-        lastEditDate: donation.lastEditDate ? new Date(donation.lastEditDate) : null,
-    }));
+    const tempDonations:Ref<Donation[]> = ref([])
+    donations.data.map((donation) =>{
+        tempDonations.value.push({
+                ...donation,
+                 receivedDate: donation.receivedDate? new Date(donation.receivedDate) : null,
+                lastEditDate: donation.lastEditDate? new Date(donation.lastEditDate) : null,
+            }
+        )
+    })
+    tempDonations.value.map((thisDonation:Donation, index:number) => {  
+        donationsData.value.push({
+            donation:{
+                ...thisDonation,
+                receivedDate: thisDonation.receivedDate? new Date(thisDonation.receivedDate) : null,
+                lastEditDate: thisDonation.lastEditDate? new Date(thisDonation.lastEditDate) : null,
+            },
+            donor: donations.data[index].donor,
+            boardMember:donations.data[index].boardMember            
+        })
+    });
 }
 
+
 const donationData:Ref<{ 
-    id: string,
-    boardMemberId: string | null, 
-    donorId: string | null,event: string | null, 
-    method: string | null, 
-    monetaryAmount: string | null, 
-    nonMonetaryAmount: string | null, 
-    status: number, 
-    notes: string | null, 
-    receivedDate: Date | null,
-    lastEditDate: Date | null
-    boardMember:{name:string | null}| null, 
-    donor: {name: string | null} | null}> = ref({
+    donation:Donation,
+    boardMember:{name:string}| null, 
+    donor: {name: string } | null}> = ref({
+        donation:{
         id:"",
         boardMemberId:"",
         donorId:"",
@@ -109,22 +109,30 @@ const donationData:Ref<{
         notes:"",
         receivedDate:null,
         lastEditDate:null,
+        },
         boardMember:null,
         donor:null
     });
 const donationIndex = ref(0);
-async function prepDonationUpdate( donation:{id: string, boardMemberId: string | null, donorId: string | null,event: string | null, method: string | null, monetaryAmount: string | null, 
-    nonMonetaryAmount: string | null, status: number, notes: string | null, receivedDate: Date | null,lastEditDate: Date | null, boardMember:{name:string | null}| null, donor: {name: string | null} | null},
-    index:number){
-    donationData.value = donation;
+
+
+const donorTableData:Ref<{donor:Donor, donations:Donation[]}[]> = ref([]);
+donors.value.map((thisDonor:Donor,index:number) => {
+  donorTableData.value.push({donor:thisDonor,donations:donors.value[index].donations })
+})
+
+async function prepDonationUpdate(donationInfo:{donation:Donation,boardMember:{name:string}| null, donor: {name: string} | null},index:number){
+    donationData.value.donation = donationInfo.donation;
+    donationData.value.boardMember = donationInfo.boardMember? donationInfo.boardMember : null
+    donationData.value.donor =  donationInfo.donor? donationInfo.donor : null
     donationIndex.value = index
     showUpdateDonation.value = true;
 }
 
-async function prepDonationView( donation:{id: string, boardMemberId: string | null, donorId: string | null,event: string | null, method: string | null, monetaryAmount: string | null, 
-    nonMonetaryAmount: string | null, status: number, notes: string | null, receivedDate: Date | null,lastEditDate: Date | null, boardMember:{name:string | null}| null, donor: {name: string | null} | null},
-    index:number){
-    donationData.value = donation;
+async function prepDonationView(donationInfo:{donation:Donation,boardMember:{name:string}| null, donor: {name: string} | null},index:number){
+    donationData.value.donation = donationInfo.donation;
+    donationData.value.boardMember = donationInfo.boardMember? donationInfo.boardMember : null
+    donationData.value.donor =  donationInfo.donor? donationInfo.donor : null
     donationIndex.value = index
     showViewDonation.value = true;
 }
@@ -147,7 +155,7 @@ async function updateDonation(values:Record<string, any>){
         }
     })
     if(result.data){
-        donationsData.value[values.index] ={
+        donationsData.value[values.index].donation ={
             ...result.data, 
             receivedDate: result.data.receivedDate ? new Date(result.data.receivedDate) : null,
             lastEditDate: result.data.lastEditDate ? new Date(result.data.lastEditDate) : null,
@@ -161,7 +169,7 @@ function cancelUpdate(){
     showUpdateDonation.value = false;
     showViewDonation.value = false;
     donationData.value = {
-        id:"",
+        donation:{id:"",
         boardMemberId:"",
         donorId:"",
         method:"",
@@ -172,6 +180,7 @@ function cancelUpdate(){
         notes:"",
         receivedDate:null,
         lastEditDate:null,
+        },
         boardMember:null,
         donor:null
     }

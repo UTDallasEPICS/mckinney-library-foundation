@@ -43,7 +43,7 @@
 </template>
 
 <script setup lang="ts">
-import type { Donor } from '@prisma/client';
+import type { Donation, Donor } from '@prisma/client';
 import DonationForm from '../Forms/DonationForm.vue';
 import DonorForm from '../Forms/DonorForm.vue';
 
@@ -52,40 +52,41 @@ const addDonor = ref(false);
 
 const props = defineProps<{
     user:{id:string, permissionLevel:number}
-    donors:{id:string , name:string, organization:string|null, email:string|null, phone:string|null,address:string|null, preferredCommunication:string|null, notes:string|null,webLink:string|null}[]
+    donors:{donor:Donor, donations:Donation[]}[],
     donations?:{
-        id: string,
-        boardMemberId: string | null, 
-        donorId: string | null,event: string | null, 
-        method: string | null, 
-        monetaryAmount: string | null, 
-        nonMonetaryAmount: string | null, 
-        status: number, notes: string | null, 
-        receivedDate: Date | null,
-        lastEditDate: Date | null
+        donation:Donation
         boardMember:{name:string}| null, 
         donor: {name: string | null} | null,
     }[]
 }>();
 
 async function createDonor(values:Record<string,any>){
-    const result = await useFetch('/api/donor',{
+    const {data, error} = await $fetch('/api/donor',{
         method:"POST",
         body:{
-            name:values.fName + " " + values.lName,
-            email: values.email,
-            phone: values.phone,
-            address: values.address,
-            preferredCommunication: values.preferredCommunication,
+            name:values.fName.trim() + " " + values.lName.trim(),
+            email: values.email? values.email.trim(): "",
+            phone: values.phone? values.phone.trim(): "",
+            address: values.address? values.address.trim(): "",
+            preferredCommunication: values.preferredCommunication? values.preferredCommunication.trim(): "",
             notes: values.notes,
-            webLink: values.webLink,
-            organization: values.organization,
+            webLink: values.webLink? values.webLink.trim() : "",
+            organization: values.organization? values.organization.trim() : "",
             permissionLevel:props.user.permissionLevel
         }
     })
-    if(result.data.value?.data){
+    if(error.code === 'P2002'){
+        alert('Donor already exists');
+    }
+    else if(data){
         if(props.donors){
-            props.donors.push(result.data.value.data)
+            props.donors.push({
+                donor:{
+                ...data,
+                lastDonationDate: data.lastDonationDate? new Date(data.lastDonationDate): new Date(),
+                firstDonationDate: data.firstDonationDate? new Date(data.firstDonationDate): new Date()},
+                donations:[]
+            })
         }
     }
     addDonor.value=false;
@@ -112,8 +113,11 @@ async function createDonation(values:Record<string,any>){
     if(result.data){
         props.donations?.push({
             ...result.data, 
-            receivedDate: result.data.receivedDate ? new Date(result.data.receivedDate) : null,
-            lastEditDate: result.data.lastEditDate ? new Date(result.data.lastEditDate) : null,
+            donation:{
+                ...result.data,
+                receivedDate: result.data.receivedDate ? new Date(result.data.receivedDate) : null,
+                lastEditDate: result.data.lastEditDate ? new Date(result.data.lastEditDate) : null,
+            }        
         })
     }else{
         console.error(result.error);
