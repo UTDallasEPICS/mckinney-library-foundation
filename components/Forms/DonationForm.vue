@@ -103,6 +103,10 @@ const initValues = props.data?{
     receivedDate: props.data.donation.receivedDate? props.data.donation.receivedDate.toISOString().split('T')[0] : '',
 }: undefined
 
+if(initValues && initValues.receivedDate != ''){
+    recievedDateRef.value = initValues.receivedDate;
+}
+
 const schema = yup.object({
     donorName: yup.string().required('Enter anonymous if donor unknown'),
     event: yup.string().required('Enter "none" if not associated with an event'),

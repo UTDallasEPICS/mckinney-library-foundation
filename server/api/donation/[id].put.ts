@@ -33,28 +33,17 @@ export default defineEventHandler (async (event)=>{
                 method: body.method,
                 monetaryAmount: body. monetaryAmount,
                 nonMonetaryAmount: body.nonMonetaryAmount,
-                status: body.status ?? 0,
+                status: body.status,
                 notes: body.notes,
                 receivedDate: new Date(body.receivedDate),
                 lastEditDate: new Date()
             }
-        });
-        
-        const fullDonation = await prisma.donation.findUnique({
-            where: { id:id },
-            include:{
-                donor:true,
-                boardMember:{
-                    select:{
-                        name:true
-                    }
-                }
-            }
-        });
+        })
         return {
             success: true,
             statusCode: 200,
-            data: fullDonation,
+            data: updateDonation,
+            error: null
         }
     }
     catch(error){

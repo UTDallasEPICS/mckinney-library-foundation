@@ -145,7 +145,7 @@ async function updateDonation(values:Record<string, any>){
             donor: values.donorName,
             boardMemberId: user.value.id,
             permissionLevel: user.value.permissionLevel,
-            status: values.status,
+            status: parseInt(values.status),
             event: values.event,
             method:values.method,
             monetaryAmount: values.monetaryAmount,
