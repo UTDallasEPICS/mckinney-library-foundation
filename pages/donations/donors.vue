@@ -66,11 +66,12 @@ const donorIndex = ref(0);
 
 await getDonors();
 
-const donorTableData:Ref<{donor:Donor, donations:Donation[]}[]> = ref([]);
+const donorTableData:Ref<{donor:Donor, donations:Donation[], boardMember:{name:string} | null}[]> = ref([]);
 
 const donorFormData:Ref<{donor:Donor}> = ref({
   donor:{
   id:"",
+  boardMemberId:"",
   name:"",
   organization:"",
   email:"",
@@ -78,13 +79,11 @@ const donorFormData:Ref<{donor:Donor}> = ref({
   address:"",
   notes:"",
   webLink:"",
-  firstDonationDate:null,
-  lastDonationDate:null,
   preferredCommunication:""}
 });
 
 donors.value.map((thisDonor:Donor,index:number) => {
-  donorTableData.value.push({donor:thisDonor,donations:donors.value[index].donations })
+  donorTableData.value.push({donor:thisDonor,donations:donors.value[index].donations,boardMember:donors.value[index].boardMember})
 })
 
 const DonorTableProps ={
@@ -111,6 +110,7 @@ function cancelEmail(){
 function cancelUpdate(){
   donorFormData.value = {donor:
     {id:"",
+    boardMemberId:"",
     name:"",
     organization:"",
     email:"",
@@ -119,8 +119,7 @@ function cancelUpdate(){
     notes:"",
     webLink:"",
     preferredCommunication:"",
-    firstDonationDate:null,
-    lastDonationDate:null,
+
   }};
   updateDonor.value= false;
   viewDonor.value=false;
@@ -159,6 +158,7 @@ async function editDonor(values:Record<string,any>) {
     method:"PATCH",
     body:{
       name:values.fName.trim() + " " + values.lName.trim(),
+      boardMemberId: user.value.id,
       email: values.email.trim(),
       phone: values.phone.trim(),
       address: values.address.trim(),
@@ -172,9 +172,8 @@ async function editDonor(values:Record<string,any>) {
   if(result.success && result.data){
     donorTableData.value[donorIndex.value].donor={
       ...result.data,
-      lastDonationDate: result.data.lastDonationDate? new Date(result.data.lastDonationDate): new Date(),
-      firstDonationDate: result.data.firstDonationDate? new Date(result.data.firstDonationDate): new Date()
     }
+    donorTableData.value[donorIndex.value].boardMember = result.data.boardMember? result.data.boardMember : null
   }
   updateDonor.value = false;
 }

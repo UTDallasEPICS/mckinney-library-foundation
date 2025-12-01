@@ -26,7 +26,7 @@ export default defineEventHandler(async (event) => {
           phone: "",
           preferredCommunication: "",
           notes: "",
-          firstDonationDate: new Date()
+          boardMemberId: body.boardMemberId
         }
       })
     }

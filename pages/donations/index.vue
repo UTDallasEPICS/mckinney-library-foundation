@@ -116,9 +116,9 @@ const donationData:Ref<{
 const donationIndex = ref(0);
 
 
-const donorTableData:Ref<{donor:Donor, donations:Donation[]}[]> = ref([]);
+const donorTableData:Ref<{donor:Donor, donations:Donation[],boardMember:{name:string} }[]> = ref([]);
 donors.value.map((thisDonor:Donor,index:number) => {
-  donorTableData.value.push({donor:thisDonor,donations:donors.value[index].donations })
+  donorTableData.value.push({donor:thisDonor,donations:donors.value[index].donations, boardMember:{name:donors.value[index].boardMember.name} })
 })
 
 async function prepDonationUpdate(donationInfo:{donation:Donation,boardMember:{name:string}| null, donor: {name: string} | null},index:number){
@@ -160,6 +160,8 @@ async function updateDonation(values:Record<string, any>){
             receivedDate: result.data.receivedDate ? new Date(result.data.receivedDate) : null,
             lastEditDate: result.data.lastEditDate ? new Date(result.data.lastEditDate) : null,
         }
+        donationsData.value[values.index].boardMember = result.data.boardMember
+        donationsData.value[values.index].donor = result.data.donor
     }
     showUpdateDonation.value = false;
 }

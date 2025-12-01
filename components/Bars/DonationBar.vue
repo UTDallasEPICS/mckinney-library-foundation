@@ -52,7 +52,7 @@ const addDonor = ref(false);
 
 const props = defineProps<{
     user:{id:string, permissionLevel:number}
-    donors:{donor:Donor, donations:Donation[]}[],
+    donors:{donor:Donor, donations:Donation[],boardMember:{name:string}|null}[],
     donations?:{
         donation:Donation
         boardMember:{name:string}| null, 
@@ -72,7 +72,8 @@ async function createDonor(values:Record<string,any>){
             notes: values.notes,
             webLink: values.webLink? values.webLink.trim() : "",
             organization: values.organization? values.organization.trim() : "",
-            permissionLevel:props.user.permissionLevel
+            permissionLevel:props.user.permissionLevel,
+            boardMemberId:props.user.id
         }
     })
     if(error.code === 'P2002'){
@@ -81,15 +82,14 @@ async function createDonor(values:Record<string,any>){
     else if(data){
         if(props.donors){
             props.donors.push({
-                donor:{
-                ...data,
-                lastDonationDate: data.lastDonationDate? new Date(data.lastDonationDate): new Date(),
-                firstDonationDate: data.firstDonationDate? new Date(data.firstDonationDate): new Date()},
-                donations:[]
+                donor:{...data},
+                donations: [],
+                boardMember: data.boardMember? data.boardMember : null
             })
+                   
         }
-    }
     addDonor.value=false;
+    }
 }
 function cancelDonor(){
     addDonor.value = false;

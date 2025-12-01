@@ -4,10 +4,8 @@
             <div class = "flex flex-col gap-2 sm:text-left px-6 pt-6 pb-4 space-y-0">
               <h1 class = "form-title"> Donation Information</h1>
             </div>
-            <VeeField autocomplete="off" hidden name="boardMember"></VeeField>
-            <VeeField autocomplete="off" hidden name="donor"></VeeField>
-            <VeeField autocomplete="off" hidden name="id"></VeeField>
-            <VeeField autocomplete="off" hidden name="index"></VeeField> 
+            <VeeField hidden name="id"></VeeField>
+            <VeeField  hidden name="index"></VeeField> 
             <div  class="grid grid-cols-2 gap-4">
                 <h2 class="form-field-label">donor (name) <span class = "text-red-500">*</span></h2>
                 <h2 class="form-field-label">event <span class = "text-red-500">*</span></h2>      
@@ -89,6 +87,7 @@ const props = defineProps<{
     donors:{donor:Donor, donations:Donation[]}[]
     data?:{donation:Donation,boardMember:{name:string}| null, donor: {name: string | null} | null}
 }>();
+    console.log(props.donors)
 const recievedDateRef = ref('');
 const initValues = props.data?{
     index:props.index, 

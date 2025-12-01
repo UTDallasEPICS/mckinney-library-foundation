@@ -16,6 +16,7 @@ export default defineEventHandler(async (event) => {
             where: { id },
             data: {
                 name: body.name,
+                boardMemberId: body.boardMemberId,
                 email: body.email,
                 phone: body.phone,
                 address: body.address,
@@ -23,7 +24,14 @@ export default defineEventHandler(async (event) => {
                 notes: body.notes,
                 webLink: body.webLink,
                 organization: body.organization,
-            }
+            },
+            include: {
+                boardMember:{
+                    select:{
+                        name:true
+                    }
+                }
+            } 
         });
         return{
             success: true,

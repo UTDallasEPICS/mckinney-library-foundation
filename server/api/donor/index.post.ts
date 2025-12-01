@@ -14,6 +14,7 @@ export default defineEventHandler(async (event) =>{
         const donor = await prisma.donor.create({
             data:{
                 name:       body.name,
+                boardMemberId: body.boardMemberId,
                 email:      body.email,
                 phone:      body.phone,
                 address:    body.address,
@@ -22,6 +23,13 @@ export default defineEventHandler(async (event) =>{
                 webLink: body.webLink,
                 organization: body.organization,
                 donations: body.donations
+            },
+            include: {
+                boardMember:{
+                    select:{
+                        name:true
+                    }
+                }
             }       
         });
         return{

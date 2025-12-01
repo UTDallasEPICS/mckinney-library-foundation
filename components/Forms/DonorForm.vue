@@ -41,7 +41,7 @@
                     </select>
                 </VeeField>
             </div>
-            <div class = "grid grid-cols-3 gap-4">
+            <div class = "mt-5 grid grid-cols-3 gap-4">
                 <h2 class = "form-field-label"> organization </h2>
                 <h2 class = "form-field-label"> address </h2>
                 <h2 class = "form-field-label"> web link </h2>

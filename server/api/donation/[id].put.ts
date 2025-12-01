@@ -24,11 +24,30 @@ export default defineEventHandler (async (event)=>{
                 statusMessage: "The donation requires a monetary or non-monetary value"
             });
         }
+        let donorRecord = await prisma.donor.findFirst({
+            where: {
+                name: body.donor? body.donor : "anonymous"
+            }
+            })
+
+            if (!donorRecord) {      
+            donorRecord = await prisma.donor.create({
+                data: {
+                name: body.donor? body.donor: "anonymous",
+                address: "",
+                email: "",
+                phone: "",
+                preferredCommunication: "",
+                notes: "",
+                boardMemberId: body.boardMemberId
+                }
+            })
+            }
         const updateDonation = await prisma.donation.update({
             where: { id:id },
             data: {
                 boardMemberId: body.boardMemberId,
-                donorId: body.donorId,
+                donorId: donorRecord.id,
                 event: body.event,
                 method: body.method,
                 monetaryAmount: body. monetaryAmount,
@@ -37,6 +56,14 @@ export default defineEventHandler (async (event)=>{
                 notes: body.notes,
                 receivedDate: new Date(body.receivedDate),
                 lastEditDate: new Date()
+            },
+            include: {
+                donor: true,
+                boardMember:{
+                    select:{
+                        name:true
+                    }
+                }
             }
         })
         return {

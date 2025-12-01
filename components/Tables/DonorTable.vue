@@ -27,7 +27,7 @@
                         <th class="px-4 py-3 text-left text-sm text-[#2d3e4d] border-b-2 border-[#a8b5bf] cursor-pointer transition-colors">Phone</th>
                         <th class="px-4 py-3 text-left text-sm text-[#2d3e4d] border-b-2 border-[#a8b5bf] cursor-pointer transition-colors">First Donation</th>
                         <th class="px-4 py-3 text-left text-sm text-[#2d3e4d] border-b-2 border-[#a8b5bf] cursor-pointer transition-colors">Last Donation</th>
-                        <!-- <th class="px-4 py-3 text-left text-sm text-[#2d3e4d] border-b-2 border-[#a8b5bf] cursor-pointer transition-colors">Board Member</th> -->
+                        <th class="px-4 py-3 text-left text-sm text-[#2d3e4d] border-b-2 border-[#a8b5bf] cursor-pointer transition-colors">Last Editor</th> 
                         <th class="px-4 py-3 text-center text-sm text-[#2d3e4d] border-b-2 border-[#a8b5bf] cursor-pointer transition-colors">Actions</th>
                         <th v-if="permissionLevel>1" class="px-4 py-3 text-center text-sm text-[#2d3e4d] border-b-2 border-[#a8b5bf] cursor-pointer transition-colors">Select</th>
                     </tr>
@@ -40,6 +40,7 @@
                         <td class="px-6 py-4 text-[#2d3e4d] text-left text-sm">{{ row.donor.phone }}</td>
                         <td class="px-6 py-4 text-[#2d3e4d] text-left text-sm">{{ row?.donations?.[0]?.receivedDate?  row?.donations?.[0]?.receivedDate.toString().split('T')[0] : "" }}</td>
                         <td class="px-6 py-4 text-[#2d3e4d] text-left text-sm">{{ row?.donations?.[row.donations.length-1]?.receivedDate?  row?.donations?.[row.donations.length-1]?.receivedDate?.toString().split('T')[0] : "" }}</td>
+                        <td class="px-6 py-4 text-[#2d3e4d] text-left text-sm">{{ row.boardMember? row.boardMember.name : "" }}</td>
                         <td class="px-6 py-4">
                             <div class="flex justify-evenly">
                                 <button v-if="permissionLevel > 0" class ="rounded-md text-sm font-medium outline-none h-9 py-2 bg-blue-600 hover:bg-blue-700 text-white px-6" @click="editFunction(props.data[idx].donor,idx)"> Edit </button>
@@ -63,7 +64,7 @@
 import type { Donation, Donor } from '@prisma/client';
 
 const props = defineProps<{
-    data:{donor:Donor, donations:Donation[]}[]
+    data:{donor:Donor, donations:Donation[], boardMember:{name:string} | null}[]
     emailFunction: (selected:boolean[]) => Promise<void>
     editFunction: (donor:Donor,idx:number) => Promise<void>
     deleteFunction: (donor:Donor,idx:number) => Promise<void>

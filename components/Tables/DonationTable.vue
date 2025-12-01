@@ -76,7 +76,7 @@
                         </th>
                         <th class="px-4 py-3 text-left text-sm text-[#2d3e4d] border-b-2 border-[#a8b5bf] cursor-pointer transition-colors">
                             <div class = w-full>
-                                <span @click="toggleSearch('boardName')" v-if="activeSearch !== 'boardName'">Board Member ↑↓</span>
+                                <span @click="toggleSearch('boardName')" v-if="activeSearch !== 'boardName'">Last Editor ↑↓</span>
                                 <div  v-else>
                                     <input autocomplete="off" v-model="searchInputs.boardName" @click.stop class="mt-2 px-2 py-1 border rounded"placeholder="Search Board Members"/>
                                     <button class="text-lg" @click="toggleSearch('boardName')">&#x24E7;</button>

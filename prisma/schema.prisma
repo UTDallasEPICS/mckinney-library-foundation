@@ -21,6 +21,7 @@ model User {
   sessions      Session[]
   accounts      Account[]
   donations     Donation[]
+  donors        Donor[]
   grants        Grant[]
   expenditures  Expenditure[]
 
@@ -81,6 +82,8 @@ model AccountCreationRequest {
 
 model Donor {
   id                     String     @id @default(cuid())
+  boardMemberId          String?
+  boardMember            User?      @relation(fields: [boardMemberId], references: [id], onDelete: Restrict)
   name                   String     @unique @default("Anonymous")
   address                String?
   phone                  String?
@@ -89,8 +92,6 @@ model Donor {
   notes                  String?
   webLink                String?
   organization           String?
-  lastDonationDate       DateTime?
-  firstDonationDate      DateTime?   
   donations              Donation[]
 }
 

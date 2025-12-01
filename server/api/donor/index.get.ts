@@ -10,6 +10,11 @@ export default defineEventHandler(async () =>{
                     orderBy:{
                         receivedDate: 'asc'
                     }
+                },
+                boardMember:{
+                    select:{
+                        name:true
+                    }
                 }
             }
         });

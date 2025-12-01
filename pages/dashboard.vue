@@ -85,9 +85,8 @@ await getDonors();
 
 const donorTableData:Ref<{donor:Donor, donations:Donation[]}[]> = ref([]);
 donors.value.map((thisDonor:Donor,index:number) => {
-  donorTableData.value.push({donor:thisDonor,donations:donors.value[index].donations })
+  donorTableData.value.push({donor:thisDonor,donations:donors.value[index].donations})
 })
-
 const totalDonors = donors.value
 
 
