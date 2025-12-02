@@ -28,7 +28,7 @@
                         </th>
                         <th class="px-4 py-3 text-left text-sm text-[#2d3e4d] border-b-2 border-[#a8b5bf] cursor-pointer transition-colors">
                             <div class="w-full flex gap-2">
-                                <span @click="toggleSearch(2)" v-if="!activeSearch[2].active"">Monetary Amount ↑↓</span>
+                                <span @click="toggleSearch(2)" v-if="!activeSearch[2].active">Monetary Amount ↑↓</span>
                                 <div  v-else>
                                     <input autocomplete="off" v-model="minMoney"  @click.stop class="mt-2 px-2 py-1 border rounded"placeholder="minimum"/>
                                     <input autocomplete="off" v-model="maxMoney" @click.stop class="mt-2 px-2 py-1 border rounded"placeholder="maximum"/>
@@ -115,9 +115,9 @@
                         <td class="px-6 py-4 text-[#2d3e4d] text-left text-sm">{{ row.boardMember?.name }}</td>
                         <td class="px-6 py-4">
                             <div class="flex justify-evenly">
-                                <button v-if="permissionLevel > 0" class ="rounded-md text-sm font-medium outline-none h-9 py-2 bg-blue-600 hover:bg-blue-700 text-white px-6" @click="editFunction(props.data[idx],idx)"> Edit </button>
-                                <button v-if="permissionLevel > 0" class ="rounded-md text-sm font-medium outline-none h-9 py-2 bg-red-600 hover:bg-red-700 text-white px-6"@click=deleteFunction(row.donation.id,idx) > Delete </button>
-                                <button class ="rounded-md text-sm font-medium outline-none h-9 py-2 bg-green-600 hover:bg-green-700 text-white px-6" @click="viewFunction(props.data[idx],idx)" > View </button>
+                                <button v-if="permissionLevel > 0" class ="rounded-md text-sm font-medium outline-none h-9 py-2 bg-blue-600 hover:bg-blue-700 text-white px-6" @click="editFunction(row,props.data.indexOf(row))"> Edit </button>
+                                <button v-if="permissionLevel > 0" class ="rounded-md text-sm font-medium outline-none h-9 py-2 bg-red-600 hover:bg-red-700 text-white px-6"@click=deleteFunction(row.donation.id,props.data.indexOf(row)) > Delete </button>
+                                <button class ="rounded-md text-sm font-medium outline-none h-9 py-2 bg-green-600 hover:bg-green-700 text-white px-6" @click="viewFunction(row,props.data.indexOf(row))" > View </button>
                             </div>
                         </td>     
                     </tr>

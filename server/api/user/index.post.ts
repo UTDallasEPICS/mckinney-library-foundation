@@ -32,6 +32,7 @@ export default defineEventHandler(async (event) =>{
             statusCode: 500,
             message: "Failed to create user",
             error: error, 
+            data: null
         }
     }finally{
         await prisma.$disconnect();

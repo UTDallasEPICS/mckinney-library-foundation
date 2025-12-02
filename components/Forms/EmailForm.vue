@@ -39,7 +39,6 @@ import * as yup from "yup";
         groupEmail: (values: Record<string, any>) => Promise<void>,
         cancelEmail: () => void
     }>();
-    console.log("name list in component" + props.nameList);
 const groupEmailSchema = yup.object({
   Subject: yup.string().required(),
   Message: yup.string().required(),

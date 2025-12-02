@@ -29,12 +29,13 @@
 <script setup lang="ts">
 
 const props = defineProps<{
-        requests: {id: string;name: string;email: string;}[] | null
-        permissionLevel:number
+  requests: {id: string;name: string;email: string;}[] | null
+  permissionLevel:number,
+  accounts: {id:string, name:string, email:string, permission:number, status:boolean}[]
 }>();
 async function createAccount(account: {id:string, name: string, email: string},index:number){
   alert("account created for : " + account.email);
-  const {success} = await $fetch("/api/user",{
+  const result = await $fetch("/api/user",{
     method: "POST",
     body:{
       name:account.name,
@@ -43,8 +44,9 @@ async function createAccount(account: {id:string, name: string, email: string},i
       permissionLevel:props.permissionLevel
     }
   });
-  if(success){
+  if(result.data){
     await removeRequest(account.id,index);
+    props.accounts.push(result.data)
   }
   
 }

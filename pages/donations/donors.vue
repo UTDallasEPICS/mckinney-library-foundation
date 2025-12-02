@@ -154,7 +154,6 @@ async function prepDonorView(donor:Donor){
 }
 
 async function editDonor(values:Record<string,any>) {
-  console.log("edit Donor called");
   const result = await $fetch(`/api/donor/${values.id}`,{
     method:"PATCH",
     body:{
@@ -180,7 +179,6 @@ async function editDonor(values:Record<string,any>) {
 }
 
 async function deleteDonor(donor:Donor,index:number) {
-  console.log(donor)
   const result = await $fetch(`/api/donor/${donor.id}`,{
     method:"DELETE",
     body:{

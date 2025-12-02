@@ -53,9 +53,9 @@
                 </div>
                 <VeeField autocomplete="off" :disabled="viewOnly"name="method" class="form-input focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px]"/>
                 <VeeField autocomplete="off" :disabled="viewOnly" v-slot="{field}" class="form-input focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px]" name="status">
-                    <select v-bind="field" class="w-full px-3 py-2 bg-white border border-gray-300 rounded text-[#2d3e4d] focus:outline-none focus:ring-2 focus:ring-[#5a6a77] cursor-pointer">
-                        <option value = 0> Pending </option>
-                        <option value = 1> Recieved </option>
+                    <select :disabled="viewOnly" v-bind="field" class="w-full px-3 py-2 bg-white border border-gray-300 rounded text-[#2d3e4d] focus:outline-none focus:ring-2 focus:ring-[#5a6a77] cursor-pointer">
+                        <option :disabled="viewOnly" value = 0> Pending </option>
+                        <option :disabled="viewOnly" value = 1> Recieved </option>
                     </select>
                 </VeeField>
                 <VeeField v-slot="{field}" autocomplete="off" :disabled="viewOnly" class="form-input focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px]" name="receivedDate">
@@ -87,7 +87,6 @@ const props = defineProps<{
     donors:{donor:Donor, donations:Donation[]}[]
     data?:{donation:Donation,boardMember:{name:string}| null, donor: {name: string | null} | null}
 }>();
-    console.log(props.donors)
 const recievedDateRef = ref('');
 const initValues = props.data?{
     index:props.index, 

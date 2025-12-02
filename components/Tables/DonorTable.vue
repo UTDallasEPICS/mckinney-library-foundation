@@ -108,9 +108,9 @@
                         <td class="px-6 py-4 text-[#2d3e4d] text-left text-sm">{{ row.boardMember? row.boardMember.name : "" }}</td>
                         <td class="px-6 py-4">
                             <div class="flex justify-evenly">
-                                <button v-if="permissionLevel > 0" class ="rounded-md text-sm font-medium outline-none h-9 py-2 bg-blue-600 hover:bg-blue-700 text-white px-6" @click="editFunction(props.data[idx].donor,idx)"> Edit </button>
-                                <button v-if="permissionLevel > 0" class ="rounded-md text-sm font-medium outline-none h-9 py-2 bg-red-600 hover:bg-red-700 text-white px-6" @click ="deleteFunction(props.data[idx].donor,idx)"> Delete </button>
-                                <button class ="rounded-md text-sm font-medium outline-none h-9 py-2 bg-green-600 hover:bg-green-700 text-white px-6" @click ="viewFunction(props.data[idx].donor,idx)"> View </button>
+                                <button v-if="permissionLevel > 0" class ="rounded-md text-sm font-medium outline-none h-9 py-2 bg-blue-600 hover:bg-blue-700 text-white px-6" @click="editFunction(row.donor,props.data.indexOf(row))"> Edit </button>
+                                <button v-if="permissionLevel > 0" class ="rounded-md text-sm font-medium outline-none h-9 py-2 bg-red-600 hover:bg-red-700 text-white px-6" @click ="deleteFunction(row.donor,props.data.indexOf(row))"> Delete </button>
+                                <button class ="rounded-md text-sm font-medium outline-none h-9 py-2 bg-green-600 hover:bg-green-700 text-white px-6" @click ="viewFunction(row.donor,props.data.indexOf(row))"> View </button>
                             </div>
                         </td>
                         <td v-if="permissionLevel>1">
