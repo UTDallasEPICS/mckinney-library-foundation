@@ -45,7 +45,14 @@
                 <h2 class = "form-field-label"> organization </h2>
                 <h2 class = "form-field-label"> address </h2>
                 <h2 class = "form-field-label"> web link </h2>
-                <VeeField autocomplete="off" :disabled="viewOnly" name="organization" class="form-input focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px]"></VeeField> 
+                <VeeField v-slot="{field}" autocomplete="off" :disabled="viewOnly" name="organization" class="form-input focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px]">
+                    <input :disabled="viewOnly" autocomplete="off" v-bind="field" list="method-list" class="w-full px-3 py-2 bg-white border border-gray-300 rounded text-[#2d3e4d] focus:outline-none focus:ring-2 focus:ring-[#5a6a77] cursor-pointer">
+                        <datalist id="method-list">
+                            <option></option>
+                            <option v-if="organizations.length > 0" v-for="organization in organizations" :value="organization"></option>
+                        </datalist>
+                    </input>
+                </VeeField> 
                 <VeeField autocomplete="off" :disabled="viewOnly" name="address" class="form-input focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px]"></VeeField> 
                 <VeeField autocomplete="off" :disabled="viewOnly" name="webLink"class="form-input focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px]"></VeeField>
             </div>
@@ -71,6 +78,7 @@ import * as yup from 'yup';
         donor?:Donor,
         cancelSubmisison:() => void,
         submitDonor: (values: Record<string,any>) => Promise<void>
+        organizations:string[],
         viewOnly: boolean
         index?:number
 }>();

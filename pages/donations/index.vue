@@ -21,6 +21,8 @@
         :cancel-submisison="cancelUpdate"
         :data="donationData"
         :index="donationIndex"
+        :events="events"
+        :methods="methods"
     />
 </div>
 
@@ -31,6 +33,8 @@
         :submit-donation="updateDonation"
         :cancel-submisison="cancelUpdate"
         :data="donationData"
+        :events="events"
+        :methods="methods"
     />
 </div>
 
@@ -66,7 +70,6 @@ const {donors, getDonors} = useDonor();
 await getDonors();
 
 const donationsData:Ref<{donation: Donation, donor: {name: string} | null, boardMember: {name:string} | null}[]> = ref([])
-
 const donations = await $fetch('/api/donation');
 
 if(donations.success && donations.data){
@@ -78,6 +81,7 @@ if(donations.success && donations.data){
                 lastEditDate: donation.lastEditDate? new Date(donation.lastEditDate) : null,
             }
         )
+
     })
     tempDonations.value.map((thisDonation:Donation, index:number) => {  
         donationsData.value.push({
@@ -91,6 +95,24 @@ if(donations.success && donations.data){
         })
     });
 }
+const events: ComputedRef<string[]> = computed(() => {
+    if (donationsData) {
+        const uniqueEvents = new Set(
+            donationsData.value.map(donation => donation.donation.event).filter((event) => event != null)
+        )
+        return Array.from(uniqueEvents)
+    }
+    return []
+})
+const methods: ComputedRef<string[]> = computed(() => {
+    if (donationsData) {
+        const uniqueEvents = new Set(
+            donationsData.value.map(donation => donation.donation.method).filter((method) => method != null)
+        )
+        return Array.from(uniqueEvents)
+    }
+    return []
+})
 
 
 const donationData:Ref<{ 
@@ -120,6 +142,11 @@ const donorTableData:Ref<{donor:Donor, donations:Donation[],boardMember:{name:st
 donors.value.map((thisDonor:Donor,index:number) => {
   donorTableData.value.push({donor:thisDonor,donations:donors.value[index].donations, boardMember:{name:donors.value[index].boardMember.name} })
 })
+
+
+
+
+
 
 async function prepDonationUpdate(donationInfo:{donation:Donation,boardMember:{name:string}| null, donor: {name: string} | null},index:number){
     donationData.value.donation = donationInfo.donation;

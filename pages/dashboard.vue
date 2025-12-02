@@ -56,6 +56,8 @@
         :cancel-submisison="cancelDonation"
         :view-only="false"
         :donors="donorTableData"
+        :events="events"
+        :methods="methods"
       />
     </div>
 
@@ -88,6 +90,52 @@ donors.value.map((thisDonor:Donor,index:number) => {
   donorTableData.value.push({donor:thisDonor,donations:donors.value[index].donations})
 })
 const totalDonors = donors.value
+
+const donationsData:Ref<{donation: Donation, donor: {name: string} | null, boardMember: {name:string} | null}[]> = ref([])
+const donations = await $fetch('/api/donation');
+
+if(donations.success && donations.data){
+    const tempDonations:Ref<Donation[]> = ref([])
+    donations.data.map((donation) =>{
+        tempDonations.value.push({
+                ...donation,
+                 receivedDate: donation.receivedDate? new Date(donation.receivedDate) : null,
+                lastEditDate: donation.lastEditDate? new Date(donation.lastEditDate) : null,
+            }
+        )
+
+    })
+    tempDonations.value.map((thisDonation:Donation, index:number) => {  
+        donationsData.value.push({
+            donation:{
+                ...thisDonation,
+                receivedDate: thisDonation.receivedDate? new Date(thisDonation.receivedDate) : null,
+                lastEditDate: thisDonation.lastEditDate? new Date(thisDonation.lastEditDate) : null,
+            },
+            donor: donations.data[index].donor,
+            boardMember:donations.data[index].boardMember            
+        })
+    });
+}
+const events: ComputedRef<string[]> = computed(() => {
+    if (donationsData) {
+        const uniqueEvents = new Set(
+            donationsData.value.map(donation => donation.donation.event).filter((event) => event != null)
+        )
+        return Array.from(uniqueEvents)
+    }
+    return []
+})
+const methods: ComputedRef<string[]> = computed(() => {
+    if (donationsData) {
+        const uniqueEvents = new Set(
+            donationsData.value.map(donation => donation.donation.method).filter((method) => method != null)
+        )
+        return Array.from(uniqueEvents)
+    }
+    return []
+})
+
 
 
 const user:Ref<{id:string, permissionLevel:number}> = ref({id:"",permissionLevel:0});

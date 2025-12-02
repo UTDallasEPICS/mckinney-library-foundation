@@ -2,6 +2,7 @@
 <DonationBar 
   :user="user"
   :donors="donorTableData"
+  :donations="donationsData"
 />
   <DonorTable 
     key="DonoTable"
@@ -25,14 +26,18 @@
       :donor="donorFormData.donor"
       :submit-donor="editDonor"
       :cancel-submisison="cancelUpdate"
-      :view-only="false" />
+      :view-only="false" 
+      :organizations="organizations"  
+    />
   </div>
   <div v-if="viewDonor" class="fixed top-0 left-0 w-full h-full flex justify-center items-center z-20 bg-black/50">
     <DonorForm
       :donor="donorFormData.donor"
       :submit-donor="editDonor"
       :cancel-submisison="cancelUpdate"
-      :view-only="true" />
+      :view-only="true" 
+      :organizations="organizations"
+    />
   </div> 
 </template>
 
@@ -85,6 +90,43 @@ const donorFormData:Ref<{donor:Donor}> = ref({
 donors.value.map((thisDonor:Donor,index:number) => {
   donorTableData.value.push({donor:thisDonor,donations:donors.value[index].donations,boardMember:donors.value[index].boardMember})
 })
+
+const organizations: ComputedRef<string[]> = computed(() => {
+    if (donorTableData) {
+        const uniqueEvents = new Set(
+            donorTableData.value.map(donor => donor.donor.organization).filter((organization) => organization != null)
+        )
+        return Array.from(uniqueEvents)
+    }
+    return []
+})
+
+const donationsData:Ref<{donation: Donation, donor: {name: string} | null, boardMember: {name:string} | null}[]> = ref([])
+const donations = await $fetch('/api/donation');
+
+if(donations.success && donations.data){
+    const tempDonations:Ref<Donation[]> = ref([])
+    donations.data.map((donation) =>{
+        tempDonations.value.push({
+                ...donation,
+                 receivedDate: donation.receivedDate? new Date(donation.receivedDate) : null,
+                lastEditDate: donation.lastEditDate? new Date(donation.lastEditDate) : null,
+            }
+        )
+
+    })
+    tempDonations.value.map((thisDonation:Donation, index:number) => {  
+        donationsData.value.push({
+            donation:{
+                ...thisDonation,
+                receivedDate: thisDonation.receivedDate? new Date(thisDonation.receivedDate) : null,
+                lastEditDate: thisDonation.lastEditDate? new Date(thisDonation.lastEditDate) : null,
+            },
+            donor: donations.data[index].donor,
+            boardMember:donations.data[index].boardMember            
+        })
+    });
+}
 
 const DonorTableProps ={
   donorTableData:donorTableData.value,

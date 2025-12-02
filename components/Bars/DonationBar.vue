@@ -28,7 +28,9 @@
             :submit-donation="createDonation"
             :cancel-submisison="cancelDonation"
             :view-only="false"
+            :events="events"
             :donors="donors"
+            :methods="methods"
         />
     </div>
     <div  v-if = "addDonor"> 
@@ -36,6 +38,7 @@
             :submit-donor="createDonor"
             :cancel-submisison="cancelDonor"
             :view-only="false"
+            :organizations="organizations"
         />
     </div>
   </div> 
@@ -59,6 +62,34 @@ const props = defineProps<{
         donor: {name: string | null} | null,
     }[]
 }>();
+
+const events: ComputedRef<string[]> = computed(() => {
+    if (props.donations) {
+        const uniqueEvents = new Set(
+            props.donations.map(donation => donation.donation.event).filter((event) => event != null)
+        )
+        return Array.from(uniqueEvents)
+    }
+    return []
+})
+const methods:ComputedRef<string[]> = computed(() => {
+    if (props.donations) {
+        const uniqueEvents = new Set(
+            props.donations.map(donation => donation.donation.method).filter((method) => method != null)
+        )
+        return Array.from(uniqueEvents)
+    }
+    return []
+})
+const organizations:ComputedRef<string[]> = computed(() => {
+    if (props.donations) {
+        const uniqueEvents = new Set(
+            props.donors.map(donor => donor.donor.organization).filter((organization) => organization != null)
+        )
+        return Array.from(uniqueEvents)
+    }
+    return []
+})
 
 async function createDonor(values:Record<string,any>){
     const {data, error} = await $fetch('/api/donor',{

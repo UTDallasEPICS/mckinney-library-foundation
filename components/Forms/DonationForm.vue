@@ -23,7 +23,14 @@
                         </datalist>
                     </input>
                 </VeeField>  
-                <VeeField autocomplete="off" :disabled="viewOnly" name="event" class="form-input focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px]"/>                       
+                <VeeField autocomplete="off" :disabled="viewOnly" v-slot="{field}" name="event" class="form-input focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px]">
+                    <input :disabled="viewOnly" autocomplete="off" v-bind="field" list="event-list" class="w-full px-3 py-2 bg-white border border-gray-300 rounded text-[#2d3e4d] focus:outline-none focus:ring-2 focus:ring-[#5a6a77] cursor-pointer">
+                        <datalist id="event-list">
+                            <option></option>
+                            <option v-if="events.length > 0" v-for="event in events" :value="event"></option>
+                        </datalist>
+                    </input>
+                </VeeField>                       
             </div>
             
             <div class="grid grid-cols-2 gap-4">
@@ -51,7 +58,14 @@
                 <div>
                     <VeeErrorMessage class="text-red-500" name="recievedDate" />
                 </div>
-                <VeeField autocomplete="off" :disabled="viewOnly"name="method" class="form-input focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px]"/>
+                <VeeField v-slot="{field}" autocomplete="off" :disabled="viewOnly"name="method" class="form-input focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px]">
+                    <input :disabled="viewOnly" autocomplete="off" v-bind="field" list="method-list" class="w-full px-3 py-2 bg-white border border-gray-300 rounded text-[#2d3e4d] focus:outline-none focus:ring-2 focus:ring-[#5a6a77] cursor-pointer">
+                        <datalist id="method-list">
+                            <option></option>
+                            <option v-if="methods.length > 0" v-for="method in methods" :value="method"></option>
+                        </datalist>
+                    </input>
+                </VeeField>
                 <VeeField autocomplete="off" :disabled="viewOnly" v-slot="{field}" class="form-input focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px]" name="status">
                     <select :disabled="viewOnly" v-bind="field" class="w-full px-3 py-2 bg-white border border-gray-300 rounded text-[#2d3e4d] focus:outline-none focus:ring-2 focus:ring-[#5a6a77] cursor-pointer">
                         <option :disabled="viewOnly" value = 0> Pending </option>
@@ -83,10 +97,13 @@ const props = defineProps<{
     cancelSubmisison:() => void,
     submitDonation: (values: Record<string,any>) => Promise<void>         
     viewOnly: boolean
-    index?:number
+    index?:number,
+    events: string[],
+    methods: string[],
     donors:{donor:Donor, donations:Donation[]}[]
     data?:{donation:Donation,boardMember:{name:string}| null, donor: {name: string | null} | null}
 }>();
+
 const recievedDateRef = ref('');
 const initValues = props.data?{
     index:props.index, 
