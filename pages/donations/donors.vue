@@ -154,18 +154,19 @@ async function prepDonorView(donor:Donor){
 }
 
 async function editDonor(values:Record<string,any>) {
+  console.log("edit Donor called");
   const result = await $fetch(`/api/donor/${values.id}`,{
     method:"PATCH",
     body:{
       name:values.fName.trim() + " " + values.lName.trim(),
       boardMemberId: user.value.id,
-      email: values.email.trim(),
-      phone: values.phone.trim(),
-      address: values.address.trim(),
-      preferredCommunication: values.preferredCommunication.trim(),
+      email: values.email? values.email.trim() : "",
+      phone: values.phone? values.phone.trim(): "",
+      address: values.address? values.address.trim(): "",
+      preferredCommunication: values.preferredCommunication? values.preferredCommunication.trim(): "",
       notes: values.notes,
-      webLink: values.webLink.trim(),
-      organization: values.organization.trim(),
+      webLink: values.webLink? values.webLink.trim(): "",
+      organization: values.organization? values.organization.trim() : "",
       permissonLevel: user.value.permissionLevel
     }
   })

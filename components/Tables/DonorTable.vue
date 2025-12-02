@@ -18,16 +18,62 @@
                              <div class = w-full>
                                 <span @click="toggleSearch('organization')" v-if="activeSearch !== 'organization'">Organization ↑↓</span>
                                 <div  v-else>
-                                    <input autocomplete="off" v-model="searchInputs.name" @click.stop class="mt-2 px-2 py-1 border rounded"placeholder="Search Organization"/>
+                                    <input autocomplete="off" v-model="searchInputs.organization" @click.stop class="mt-2 px-2 py-1 border rounded"placeholder="Search Organization"/>
                                     <button class="text-lg" @click="toggleSearch('organization')">&#x24E7;</button>
                                 </div>
                             </div>
                         </th>
-                        <th class="px-4 py-3 text-left text-sm text-[#2d3e4d] border-b-2 border-[#a8b5bf] cursor-pointer transition-colors">Email</th>
-                        <th class="px-4 py-3 text-left text-sm text-[#2d3e4d] border-b-2 border-[#a8b5bf] cursor-pointer transition-colors">Phone</th>
-                        <th class="px-4 py-3 text-left text-sm text-[#2d3e4d] border-b-2 border-[#a8b5bf] cursor-pointer transition-colors">First Donation</th>
-                        <th class="px-4 py-3 text-left text-sm text-[#2d3e4d] border-b-2 border-[#a8b5bf] cursor-pointer transition-colors">Last Donation</th>
-                        <th class="px-4 py-3 text-left text-sm text-[#2d3e4d] border-b-2 border-[#a8b5bf] cursor-pointer transition-colors">Last Editor</th> 
+                        <th class="px-4 py-3 text-left text-sm text-[#2d3e4d] border-b-2 border-[#a8b5bf] cursor-pointer transition-colors">
+                             <div class = w-full>
+                                <span @click="toggleSearch('email')" v-if="activeSearch !== 'email'">Email ↑↓</span>
+                                <div  v-else>
+                                    <input autocomplete="off" v-model="searchInputs.email" @click.stop class="mt-2 px-2 py-1 border rounded"placeholder="Search Emaiils"/>
+                                    <button class="text-lg" @click="toggleSearch('email')">&#x24E7;</button>
+                                </div>
+                            </div>
+                        </th>
+                        <th class="px-4 py-3 text-left text-sm text-[#2d3e4d] border-b-2 border-[#a8b5bf] cursor-pointer transition-colors">
+                             <div class = w-full>
+                                <span @click="toggleSearch('phone')" v-if="activeSearch !== 'phone'">Phone ↑↓</span>
+                                <div  v-else>
+                                    <input autocomplete="off" v-model="searchInputs.phone" @click.stop class="mt-2 px-2 py-1 border rounded"placeholder="Search Emaiils"/>
+                                    <button class="text-lg" @click="toggleSearch('phone')">&#x24E7;</button>
+                                </div>
+                            </div>
+                        </th>
+                        <th class="px-4 py-3 text-left text-sm text-[#2d3e4d] border-b-2 border-[#a8b5bf] cursor-pointer transition-colors">
+                            <div class = w-full>
+                                <span @click="toggleSearch('firstDonoDate')" v-if="activeSearch !== 'firstDonoDate'">First Donation ↑↓</span>
+                                <div  v-else>
+                                    <p>start date</p>
+                                    <input autocomplete="off" v-model="earliestFirstDono" type="date"  @click.stop class="mt-2 px-2 py-1 border rounded"placeholder="minimum"/>
+                                    <p>end date</p>
+                                    <input autocomplete="off" v-model="latestFirstDono" type="date" @click.stop class="mt-2 px-2 py-1 border rounded"placeholder="maximum"/>
+                                    <button class="text-lg" @click="toggleSearch('firstDonoDate')">&#x24E7;</button>
+                                </div>
+                            </div>
+                        </th>
+                         <th class="px-4 py-3 text-left text-sm text-[#2d3e4d] border-b-2 border-[#a8b5bf] cursor-pointer transition-colors">
+                            <div class = w-full>
+                                <span @click="toggleSearch('lastDonoDate')" v-if="activeSearch !== 'lastDonoDate'">Last Donation ↑↓</span>
+                                <div  v-else>
+                                    <p>start date</p>
+                                    <input autocomplete="off" v-model="earliestLastDono" type="date"  @click.stop class="mt-2 px-2 py-1 border rounded"placeholder="minimum"/>
+                                    <p>end date</p>
+                                    <input autocomplete="off" v-model="latestLastDono" type="date" @click.stop class="mt-2 px-2 py-1 border rounded"placeholder="maximum"/>
+                                    <button class="text-lg" @click="toggleSearch('lastDonoDate')">&#x24E7;</button>
+                                </div>
+                            </div>
+                        </th>
+                        <th class="px-4 py-3 text-left text-sm text-[#2d3e4d] border-b-2 border-[#a8b5bf] cursor-pointer transition-colors">
+                            <div class = w-full>
+                                <span @click="toggleSearch('boardMember')" v-if="activeSearch !== 'boardMember'">Last Editor ↑↓</span>
+                                <div  v-else>
+                                    <input autocomplete="off" v-model="searchInputs.boardMember" @click.stop class="mt-2 px-2 py-1 border rounded"placeholder="Search Board Members"/>
+                                    <button class="text-lg" @click="toggleSearch('boardMember')">&#x24E7;</button>
+                                </div>
+                            </div>
+                        </th> 
                         <th class="px-4 py-3 text-center text-sm text-[#2d3e4d] border-b-2 border-[#a8b5bf] cursor-pointer transition-colors">Actions</th>
                         <th v-if="permissionLevel>1" class="px-4 py-3 text-center text-sm text-[#2d3e4d] border-b-2 border-[#a8b5bf] cursor-pointer transition-colors">Select</th>
                     </tr>
@@ -82,23 +128,74 @@ const selectedCount = computed(() =>
 );
 const isEnabled  = computed(() => selectedCount.value > 0);
 
-const activeSearch = ref<'name' | 'organization' | null>(null)
-const searchInputs = ref({ name: '', organization: ''})
-const searchFields = ['name', 'organization'] as const
+const activeSearch = ref<'name' | 'organization' | 'boardMember' | 'firstDonoDate' | 'lastDonoDate' | 'email' | 'phone' |null>(null)
+const searchInputs = ref({ name: '', organization: '', boardMember:'', firstDonoDate:'', lastDonoDate:'', email:'', phone:''})
+const searchFields = ['name', 'organization', 'boardMember','firstDonoDate', 'lastDonoDate', 'email','phone'] as const
   
-  const toggleSearch = (field: 'name' | 'organization') => {
+  const toggleSearch = (field: 'name' | 'organization' | 'boardMember'|'firstDonoDate'| 'lastDonoDate' | 'email' | 'phone') => {
     activeSearch.value = activeSearch.value === field ? null : field
-    searchInputs.value = {name:'',organization:''};
+    searchInputs.value[field] = '';
   }
+
+const earliestFirstDono = ref("");
+const latestFirstDono= ref("");
+const earliestLastDono = ref("");
+const latestLastDono= ref("");
 
 const visibleIndices = computed(() => {
   return props.data.filter((row) =>
     searchFields.every((field) => {
-      const search = searchInputs.value[field].toLowerCase().trim()
-      if (!search) return true
+        const search = searchInputs.value[field].toLowerCase().trim()
+        if (activeSearch.value == null || (!search && !['firstDonoDate', 'lastDonoDate','email','phone'].includes(activeSearch.value) )) return true
+        const value = ref("");
+        switch(field){
+            case 'boardMember' : value.value = row?.boardMember? row?.boardMember['name']?.toString().toLowerCase() ?? "" : ''; break;
+
+            case 'firstDonoDate' : if(row.donations.length > 0){
+                value.value = row?.donations[0].receivedDate?.toString().toLowerCase() ?? "";
+                if(earliestFirstDono.value && latestFirstDono.value && earliestFirstDono.value < latestFirstDono.value){
+                    const donationDate = new Date(value.value).toISOString().split('T')[0];
+                    return (earliestFirstDono.value <= donationDate && donationDate <= latestFirstDono.value)
+                }
+                else{
+                    return true;
+                }
+                }else if(activeSearch.value == 'firstDonoDate'){
+                    return false;
+                } 
+                break;
+            case 'lastDonoDate' : if(row.donations.length > 0){
+                value.value = row?.donations[0].receivedDate?.toString().toLowerCase() ?? "";
+                if(earliestLastDono.value && latestLastDono.value && earliestLastDono.value < latestLastDono.value){
+                    const donationDate = new Date(value.value).toISOString().split('T')[0];
+                    return (earliestLastDono.value <= donationDate && donationDate <= latestLastDono.value)
+                }
+                else{
+                    return true;
+                }
+                }else if(activeSearch.value == 'lastDonoDate'){
+                    return false;
+                } 
+                break;
+            case 'email' : value.value = row?.donor['email']?.toString().toLowerCase() ?? ""
+                if(activeSearch.value == 'email'){
+                    if(value.value == ""){
+                        return false;
+                    }
+                } 
+                break;
+            case 'phone' : value.value = row?.donor['phone']?.toString().toLowerCase() ?? ""
+                if(activeSearch.value == 'phone'){
+                    if(value.value == ""){
+                        return false;
+                    }
+                } 
+                break;  
+            default : value.value = row?.donor[field]?.toString().toLowerCase() ?? ""; break;
+        }
+
       
-      const value = (row.donor[field] || '').toString().toLowerCase()
-      return value.includes(search)
+      return value.value.includes(search)
     })
   )
 })

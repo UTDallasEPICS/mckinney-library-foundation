@@ -167,7 +167,6 @@ const visibleIndices = computed(() => {
             case 'receivedDate' : value.value = row?.donation[field]?.toString().toLowerCase() ?? "";                                    
                                     if(earliestDono.value && latestDono.value && earliestDono.value < latestDono.value){
                                         const donationDate = new Date(value.value).toISOString().split('T')[0];
-                                        console.log(donationDate)
                                         return (earliestDono.value <= donationDate && donationDate <= latestDono.value)
                                     }
                                     else{
