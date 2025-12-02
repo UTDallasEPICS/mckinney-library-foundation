@@ -265,9 +265,9 @@ const sortedIndices = computed(() => {
                         comparison = aMethod.localeCompare(bMethod); 
                         break;
                     case 'status':
-                        const aStatus = a.donation.method || 'ZZZZZZZZZZZZZZZZZZZZZZZ';
-                        const bStatus = b.donation.method || 'ZZZZZZZZZZZZZZZZZZZZZZZ';
-                        comparison = aStatus.localeCompare(bStatus); 
+                        const aStatus = a.donation.status || 100000;
+                        const bStatus = b.donation.status || 100000;
+                        comparison = aStatus - bStatus; 
                         break;
                     case 'receivedDate':
                         const aDate = a.donation.receivedDate?.toISOString().split('T')[0] || ''
