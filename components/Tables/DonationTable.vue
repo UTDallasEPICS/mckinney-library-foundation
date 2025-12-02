@@ -5,89 +5,106 @@
                 <thead  class="bg-[#c5d0d8] sticky top-0 z-10">
                     <tr>
                         <th class="px-4 py-3 text-left text-sm text-[#2d3e4d] border-b-2 border-[#a8b5bf] cursor-pointer transition-colors">
-                            <div class = w-full>
-                                <span @click="toggleSearch('donorName')" v-if="activeSearch !== 'donorName'">Donor ↑↓</span>
+                            <div class="w-full flex gap-2">
+                                <span @click="toggleSearch(0)" v-if="!activeSearch[0].active">Donor ↑↓</span>
                                 <div  v-else>
                                     <input autocomplete="off" v-model="searchInputs.donorName" @click.stop class="mt-2 px-2 py-1 border rounded"placeholder="Search Donors"/>
-                                    <button class="text-lg" @click="toggleSearch('donorName')">&#x24E7;</button>
+                                    <button class="text-lg" @click="toggleSearch(0)">&#x24E7;</button>
                                 </div>
-                            </div>
+                                <button v-if="activeSorts[0].active" @click="toggleSort(0)" class="bg-[#c8c9c9] outline-double outline-black">A-Z &#8595;</button>
+                                <button v-else @click="toggleSort(0)">A-Z &#8595;</button>
+                            </div>  
                         </th>
                         <th class="px-4 py-3 text-left text-sm text-[#2d3e4d] border-b-2 border-[#a8b5bf] cursor-pointer transition-colors">
-                            <div class = w-full>
-                                <span @click="toggleSearch('event')" v-if="activeSearch !== 'event'">Event ↑↓</span>
+                            <div class="w-full flex gap-2">
+                                <span @click="toggleSearch(1)" v-if="!activeSearch[1].active">Event ↑↓</span>
                                 <div  v-else>
                                     <input autocomplete="off" v-model="searchInputs.event" @click.stop class="mt-2 px-2 py-1 border rounded"placeholder="Search event"/>
-                                    <button class="text-lg" @click="toggleSearch('event')">&#x24E7;</button>
+                                    <button class="text-lg" @click="toggleSearch(1)">&#x24E7;</button>                               
                                 </div>
+                                <button v-if="activeSorts[1].active" @click="toggleSort(1)" class="bg-[#c8c9c9] outline-double outline-black">A-Z &#8595;</button>
+                                <button v-else @click="toggleSort(1)">A-Z &#8595;</button>
                             </div>
                         </th>
                         <th class="px-4 py-3 text-left text-sm text-[#2d3e4d] border-b-2 border-[#a8b5bf] cursor-pointer transition-colors">
-                            <div class = w-full>
-                                <span @click="toggleSearch('monetaryAmount')" v-if="activeSearch !== 'monetaryAmount'">Monetary Amount ↑↓</span>
+                            <div class="w-full flex gap-2">
+                                <span @click="toggleSearch(2)" v-if="!activeSearch[2].active"">Monetary Amount ↑↓</span>
                                 <div  v-else>
                                     <input autocomplete="off" v-model="minMoney"  @click.stop class="mt-2 px-2 py-1 border rounded"placeholder="minimum"/>
                                     <input autocomplete="off" v-model="maxMoney" @click.stop class="mt-2 px-2 py-1 border rounded"placeholder="maximum"/>
-                                    <button class="text-lg" @click="toggleSearch('monetaryAmount')">&#x24E7;</button>
+                                    <button class="text-lg" @click="toggleSearch(2)">&#x24E7;</button>
                                 </div>
+                                <button v-if="activeSorts[2].active" @click="toggleSort(2)" class="bg-[#c8c9c9] outline-double outline-black">#&#8595;</button>
+                                <button v-else @click="toggleSort(2)">#&#8595;</button>
                             </div>
                         </th>
                         <th class="px-4 py-3 text-left text-sm text-[#2d3e4d] border-b-2 border-[#a8b5bf] cursor-pointer transition-colors">
-                            <div class = w-full>
-                                <span @click="toggleSearch('nonMonetaryAmount')" v-if="activeSearch !== 'nonMonetaryAmount'">Non-Monetary Amount ↑↓</span>
+                            <div class="w-full flex gap-2">
+                                <span @click="toggleSearch(3)" v-if="!activeSearch[3].active">Non-Monetary Amount ↑↓</span>
                                 <div  v-else>
                                     <input autocomplete="off" v-model="searchInputs.nonMonetaryAmount" @click.stop class="mt-2 px-2 py-1 border rounded"placeholder="Search"/>
-                                    <button class="text-lg" @click="toggleSearch('nonMonetaryAmount')">&#x24E7;</button>
+                                    <button class="text-lg" @click="toggleSearch(3)">&#x24E7;</button>
                                 </div>
+                                <button v-if="activeSorts[3].active" @click="toggleSort(3)" class="bg-[#c8c9c9] outline-double outline-black">A-Z &#8595;</button>
+                                <button v-else @click="toggleSort(3)">A-Z &#8595;</button>
                             </div>
                         </th>
                         <th class="px-4 py-3 text-left text-sm text-[#2d3e4d] border-b-2 border-[#a8b5bf] cursor-pointer transition-colors">
-                            <div class = w-full>
-                                <span @click="toggleSearch('method')" v-if="activeSearch !== 'method'">Payment Method ↑↓</span>
+                            <div class="w-full flex gap-2">
+                                <span @click="toggleSearch(4)" v-if="!activeSearch[4].active">Payment Method ↑↓</span>
                                 <div  v-else>
                                     <input autocomplete="off" v-model="searchInputs.method" @click.stop class="mt-2 px-2 py-1 border rounded"placeholder="Search method"/>
-                                    <button class="text-lg" @click="toggleSearch('method')">&#x24E7;</button>
+                                    <button class="text-lg" @click="toggleSearch(4)">&#x24E7;</button>
                                 </div>
+                                <button v-if="activeSorts[4].active" @click="toggleSort(4)" class="bg-[#c8c9c9] outline-double outline-black">A-Z &#8595;</button>
+                                <button v-else @click="toggleSort(4)">A-Z &#8595;</button>
+                                
                             </div>
                         </th>
                         <th class="px-4 py-3 text-left text-sm text-[#2d3e4d] border-b-2 border-[#a8b5bf] cursor-pointer transition-colors">
-                            <div class = w-full>
-                                <span @click="toggleSearch('status')" v-if="activeSearch !== 'status'">Status ↑↓</span>
+                            <div class="w-full flex gap-2">
+                                <span @click="toggleSearch(5)" v-if="!activeSearch[5].active">Status ↑↓</span>
                                 <div  v-else>
                                     <select autocomplete="off" v-model="searchInputs.status" @click.stop class="mt-2 px-2 py-1 border rounded">
                                         <option value=0>Pending</option>
                                         <option value=1>Recieved</option>
                                     </select>
-                                    <button class="text-lg" @click="toggleSearch('status')">&#x24E7;</button>
+                                    <button class="text-lg" @click="toggleSearch(5)">&#x24E7;</button>
                                 </div>
+                                <button v-if="activeSorts[5].active" @click="toggleSort(5)" class="bg-[#c8c9c9] outline-double outline-black">A-Z &#8595;</button>
+                                <button v-else @click="toggleSort(5)">A-Z &#8595;</button>
                             </div>
                         </th>
                         <th class="px-4 py-3 text-left text-sm text-[#2d3e4d] border-b-2 border-[#a8b5bf] cursor-pointer transition-colors">
-                            <div class = w-full>
-                                <span @click="toggleSearch('receivedDate')" v-if="activeSearch !== 'receivedDate'">Recieved Date ↑↓</span>
+                            <div class="w-full flex gap-2">
+                                <span @click="toggleSearch(6)" v-if="!activeSearch[6].active">Recieved Date ↑↓</span>
                                 <div  v-else>
                                     <p>start date</p>
                                     <input autocomplete="off" v-model="earliestDono" type="date"  @click.stop class="mt-2 px-2 py-1 border rounded"placeholder="minimum"/>
                                     <p>end date</p>
                                     <input autocomplete="off" v-model="latestDono" type="date" @click.stop class="mt-2 px-2 py-1 border rounded"placeholder="maximum"/>
-                                    <button class="text-lg" @click="toggleSearch('receivedDate')">&#x24E7;</button>
+                                    <button class="text-lg" @click="toggleSearch(6)">&#x24E7;</button>
                                 </div>
+                                <button v-if="activeSorts[6].active" @click="toggleSort(6)" class="bg-[#c8c9c9] outline-double outline-black">#&#8595;</button>
+                                <button v-else @click="toggleSort(6)">#&#8595;</button>
                             </div>
                         </th>
                         <th class="px-4 py-3 text-left text-sm text-[#2d3e4d] border-b-2 border-[#a8b5bf] cursor-pointer transition-colors">
-                            <div class = w-full>
-                                <span @click="toggleSearch('boardName')" v-if="activeSearch !== 'boardName'">Last Editor ↑↓</span>
+                            <div class="w-full flex gap-2">
+                                <span @click="toggleSearch(7)" v-if="!activeSearch[7].active">Last Editor ↑↓</span>
                                 <div  v-else>
                                     <input autocomplete="off" v-model="searchInputs.boardName" @click.stop class="mt-2 px-2 py-1 border rounded"placeholder="Search Board Members"/>
-                                    <button class="text-lg" @click="toggleSearch('boardName')">&#x24E7;</button>
+                                    <button class="text-lg" @click="toggleSearch(7)">&#x24E7;</button>
                                 </div>
+                                <button v-if="activeSorts[7].active" @click="toggleSort(7)" class="bg-[#c8c9c9] outline-double outline-black">A-Z &#8595;</button>
+                                <button v-else @click="toggleSort(7)">A-Z &#8595;</button>
                             </div>
                         </th>
                         <th class="px-4 py-3 text-center text-sm text-[#2d3e4d] border-b-2 border-[#a8b5bf] cursor-pointer transition-colors">Actions</th>
                     </tr>
                 </thead>
                 <tbody>
-                    <tr v-for="(row,idx) in visibleIndices" :key="idx" class="hover:bg-[#e8f0f7] transition-colors border-b border-gray-200 cursor-pointer">
+                    <tr v-for="(row,idx) in sortedIndices" :key="idx" class="hover:bg-[#e8f0f7] transition-colors border-b border-gray-200 cursor-pointer">
                         <td class="px-6 py-4 text-[#2d3e4d] text-left text-sm">{{ row.donor?.name }}</td>
                         <td class="px-6 py-4 text-[#2d3e4d] text-left text-sm">{{ row.donation.event }}</td>
                         <td class="px-6 py-4 text-[#2d3e4d] text-left text-sm">{{ row.donation.monetaryAmount }}</td>
@@ -124,7 +141,16 @@ const props = defineProps<{
 
 
 
-const activeSearch = ref<'status' | 'event' | 'method' | 'nonMonetaryAmount' |'donorName' | 'boardName' |'monetaryAmount' | 'receivedDate' | null>(null)
+const activeSearch:Ref<{name:'status' | 'event' | 'method' | 'nonMonetaryAmount' |'donorName' | 'boardName' |'monetaryAmount' | 'receivedDate', active:boolean}[]> = ref([
+    {name:'donorName',active:false},
+    {name:'event',active:false},
+    {name:'monetaryAmount',active:false},
+    {name:'nonMonetaryAmount',active:false},
+    {name:'method',active:false},
+    {name:'status',active:false},
+    {name:'receivedDate',active:false},
+    {name:'boardName',active:false},
+])
 const searchInputs = ref({ status:'', event: '', method:'', nonMonetaryAmount:'', donorName:'' , boardName:'', monetaryAmount:'', receivedDate:''})
 const searchFields = ['status', 'event', 'method', 'nonMonetaryAmount', 'donorName', 'boardName', 'monetaryAmount', 'receivedDate'] as const
 
@@ -134,24 +160,27 @@ const minMoney = ref(0);
 const earliestDono = ref("");
 const latestDono= ref("");
   
-  const toggleSearch = (field: 'status' | 'event' | 'method' | 'nonMonetaryAmount'| 'monetaryAmount'| 'donorName' |'boardName'| 'receivedDate') => {
-    activeSearch.value = activeSearch.value === field ? null : field
-    searchInputs.value[field] = '';
-    if(field == 'monetaryAmount'){
+  const toggleSearch = (index:number) => {
+    activeSearch.value[index].active = !activeSearch.value[index].active;
+
+    searchInputs.value[activeSearch.value[index].name] = '';
+    if(activeSearch.value[index].name == 'monetaryAmount'){
         maxMoney.value = 0;
         minMoney.value = 0;
     }
-    if(field == 'receivedDate'){
+    if(activeSearch.value[index].name == 'receivedDate'){
         earliestDono.value = ('')
         latestDono.value=('')
     }
   }
 
+
+
 const visibleIndices = computed(() => {
   return props.data.filter((row) =>
     searchFields.every((field) => {
         const search = searchInputs.value[field].toLowerCase().trim() 
-        if (!search && (activeSearch.value != 'monetaryAmount' && activeSearch.value != 'receivedDate' )){
+        if (!search && (!activeSearch.value[2].active && !activeSearch.value[6].active)){
             return true
         } 
         const value = ref('');
@@ -177,6 +206,78 @@ const visibleIndices = computed(() => {
       return value.value.includes(search) 
     })
   )
+})
+
+const activeSorts:Ref<{name: 'donorName'| 'status' | 'event' | 'method' | 'nonMonetaryAmount' | 'boardName' |'monetaryAmount' | 'receivedDate',active:boolean}[]>=ref([
+    {name: 'donorName', active:false},
+    {name: 'event',active: false},
+    {name: 'monetaryAmount', active:false},
+    {name: 'nonMonetaryAmount',active:false},
+    {name: 'method',active:false}, 
+    {name: 'status',active: false},
+    {name: 'receivedDate', active:true},
+    {name: 'boardName', active:false},
+]) 
+
+function toggleSort(index:number){
+    activeSorts.value[index].active = !activeSorts.value[index].active;
+}
+
+const sortedIndices = computed(() => {
+    const sortActive = ref(false);
+    activeSorts.value.forEach((field) =>{
+        if(field.active){
+            sortActive.value = true;
+        }
+    })
+    if(!sortActive.value){
+        return visibleIndices.value
+    }
+    else{
+      return visibleIndices.value.toSorted((a,b) =>{  
+        for (const field of activeSorts.value) {
+            if (field.active) {
+                let comparison = 0;
+                switch(field.name) {
+                    case 'donorName':
+                        const aName = a.donor?.name || '';
+                        const bName = b.donor?.name || '';
+                        comparison = aName.localeCompare(bName);
+                        break;
+                    case 'event' : 
+                        const aEvent = a.donation.event || '';
+                        const bEvent = b.donation.event || '';
+                        comparison = aEvent.localeCompare(bEvent);
+                        break;
+                    case 'monetaryAmount': 
+                        const aMon = a.donation.monetaryAmount || 100000
+                        const bMon = b.donation.monetaryAmount || 100000
+                        break;
+                    case 'nonMonetaryAmount':
+                        const aNonMon = a.donation.nonMonetaryAmount || 'ZZZZZZZZZZZZZZZZZZZZZZZ';
+                        const bNonMon = b.donation.nonMonetaryAmount || 'ZZZZZZZZZZZZZZZZZZZZZZZ';
+                        comparison = aNonMon.localeCompare(bNonMon);
+                        break;
+                    case 'method' : 
+                        break;
+                    case 'status':
+                        break;
+                    case 'receivedDate':
+                        const aDate = a.donation.receivedDate?.toISOString().split('T')[0] || ''
+                        const bDate = b.donation.receivedDate?.toISOString().split('T')[0] || ''
+                        comparison = aDate.localeCompare(bDate);
+                        break;
+                    case 'boardName' :
+                        break;
+                }
+                if(comparison !== 0){
+                    return comparison
+                }
+            }
+        }
+        return 0;
+        })
+    }
 })
 
 </script>
