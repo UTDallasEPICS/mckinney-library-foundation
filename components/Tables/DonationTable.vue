@@ -250,17 +250,24 @@ const sortedIndices = computed(() => {
                         comparison = aEvent.localeCompare(bEvent);
                         break;
                     case 'monetaryAmount': 
-                        const aMon = a.donation.monetaryAmount || 100000
-                        const bMon = b.donation.monetaryAmount || 100000
+                        const aMon = a.donation.monetaryAmount || "100000"
+                        const bMon = b.donation.monetaryAmount || "100000"
+                        comparison = parseInt(aMon) - parseInt(bMon)
                         break;
                     case 'nonMonetaryAmount':
                         const aNonMon = a.donation.nonMonetaryAmount || 'ZZZZZZZZZZZZZZZZZZZZZZZ';
                         const bNonMon = b.donation.nonMonetaryAmount || 'ZZZZZZZZZZZZZZZZZZZZZZZ';
                         comparison = aNonMon.localeCompare(bNonMon);
                         break;
-                    case 'method' : 
+                    case 'method' :
+                        const aMethod = a.donation.method || 'ZZZZZZZZZZZZZZZZZZZZZZZ';
+                        const bMethod = b.donation.method || 'ZZZZZZZZZZZZZZZZZZZZZZZ';
+                        comparison = aMethod.localeCompare(bMethod); 
                         break;
                     case 'status':
+                        const aStatus = a.donation.method || 'ZZZZZZZZZZZZZZZZZZZZZZZ';
+                        const bStatus = b.donation.method || 'ZZZZZZZZZZZZZZZZZZZZZZZ';
+                        comparison = aStatus.localeCompare(bStatus); 
                         break;
                     case 'receivedDate':
                         const aDate = a.donation.receivedDate?.toISOString().split('T')[0] || ''
@@ -268,6 +275,9 @@ const sortedIndices = computed(() => {
                         comparison = aDate.localeCompare(bDate);
                         break;
                     case 'boardName' :
+                        const aBName = a.boardMember?.name || '';
+                        const bBName = b.boardMember?.name || '';
+                        comparison = aBName.localeCompare(bBName);
                         break;
                 }
                 if(comparison !== 0){
