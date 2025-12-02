@@ -179,25 +179,4 @@ const visibleIndices = computed(() => {
   )
 })
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 </script>

@@ -75,7 +75,12 @@
                             </div>
                         </th> 
                         <th class="px-4 py-3 text-center text-sm text-[#2d3e4d] border-b-2 border-[#a8b5bf] cursor-pointer transition-colors">Actions</th>
-                        <th v-if="permissionLevel>1" class="px-4 py-3 text-center text-sm text-[#2d3e4d] border-b-2 border-[#a8b5bf] cursor-pointer transition-colors">Select</th>
+                        <th v-if="permissionLevel>1" class="px-4 py-3 text-center text-sm text-[#2d3e4d] border-b-2 border-[#a8b5bf] cursor-pointer transition-colors">
+                            <div class="flex justify-center gap-2">
+                                <span>Select</span>
+                                <input autocomplete="off" @click="selectAll"  type="checkbox" :checked="allSelected"></input>
+                            </div> 
+                        </th>
                     </tr>
                 </thead>
                 <tbody>
@@ -126,21 +131,44 @@ props.data.forEach( (item,index) =>{
 const selectedCount = computed(() => 
   isChecked.value.filter(Boolean).length
 );
+
+function selectAll(){
+    const checkAll = !allSelected.value
+    props.data.forEach((row,index) =>{
+        if(row.donor.email !== ''){
+            isChecked.value[index] = checkAll;
+        }
+    })
+}
+
+
 const isEnabled  = computed(() => selectedCount.value > 0);
+const allSelected = computed(() => selectedCount.value == props.data.filter((row) =>{
+    return row.donor.email !== ''
+}).length)
+
+
 
 const activeSearch = ref<'name' | 'organization' | 'boardMember' | 'firstDonoDate' | 'lastDonoDate' | 'email' | 'phone' |null>(null)
 const searchInputs = ref({ name: '', organization: '', boardMember:'', firstDonoDate:'', lastDonoDate:'', email:'', phone:''})
 const searchFields = ['name', 'organization', 'boardMember','firstDonoDate', 'lastDonoDate', 'email','phone'] as const
-  
-  const toggleSearch = (field: 'name' | 'organization' | 'boardMember'|'firstDonoDate'| 'lastDonoDate' | 'email' | 'phone') => {
-    activeSearch.value = activeSearch.value === field ? null : field
-    searchInputs.value[field] = '';
-  }
-
 const earliestFirstDono = ref("");
 const latestFirstDono= ref("");
 const earliestLastDono = ref("");
 const latestLastDono= ref("");
+
+const toggleSearch = (field: 'name' | 'organization' | 'boardMember'|'firstDonoDate'| 'lastDonoDate' | 'email' | 'phone') => {
+  activeSearch.value = activeSearch.value === field ? null : field
+  searchInputs.value[field] = '';
+  if(activeSearch.value == 'lastDonoDate' || activeSearch.value == 'firstDonoDate'){
+    latestFirstDono.value = ""
+    earliestFirstDono.value =""
+    latestLastDono.value = ""
+    earliestLastDono.value = ""
+  }
+}
+
+
 
 const visibleIndices = computed(() => {
   return props.data.filter((row) =>

@@ -4,14 +4,30 @@
       <table class="w-full">
         <thead class="bg-[#5a6a77] text-white">
           <tr>
-            <th class="px-6 py-4 text-center text-sm">Name</th>
-            <th class="px-6 py-4 text-center text-sm"> Email</th>
-            <th class="px-6 py-4 text-center text-sm"> Role</th>
+            <th class="px-6 py-4 text-center text-sm cursor-pointer">
+              <div class= "w-full">
+                <span @click="toggleSearch('name')" v-if="activeSearch !== 'name'">Name ↑↓</span>
+                <div  v-else>
+                    <input autocomplete="off" v-model="searchInputs.name" @click.stop class="mt-2 text-black px-2 py-1 border rounded"placeholder="Search Accounts"/>
+                    <button class="text-lg" @click="toggleSearch('name')">&#x24E7;</button>
+                </div>
+              </div>
+            </th>
+            <th class="px-6 py-4 text-center text-sm cursor-pointer">
+              <div class = w-full>
+                <span @click="toggleSearch('email')" v-if="activeSearch !== 'email'">Email ↑↓</span>
+                <div  v-else>
+                    <input autocomplete="off" v-model="searchInputs.email" @click.stop class="mt-2 text-black px-2 py-1 border rounded"placeholder="Search Accounts"/>
+                    <button class="text-lg" @click="toggleSearch('email')">&#x24E7;</button>
+                </div>
+              </div>
+            </th>
+            <th class="px-6 py-4 text-center text-sm">Role</th>
             <th class="px-6 py-4 text-center text-sm">Actions</th>
           </tr>
         </thead>
         <tbody>
-          <tr v-for="(account,index) in accounts" :key="index" class="bg-[#e5e9ec]">
+          <tr v-for="(account,index) in visibleIndices" :key="index" class="bg-[#e5e9ec]">
             <td class="px-6 py-4 text-[#2d3e4d] text-center"> {{ account.name }}</td>
             <td class="px-6 py-4 text-[#2d3e4d] text-center">{{ account.email }} </td> 
             <td class="px-6 py-4">
@@ -91,4 +107,29 @@ async function deleteAccount(id:string, index:number){
   }
   
 }
+
+const activeSearch = ref<'name' | 'email' | null>(null)
+const searchInputs = ref({ name:'', email:''})
+const searchFields = ['name', 'email'] as const
+
+
+  const toggleSearch = (field: 'name' | 'email') => {
+    activeSearch.value = activeSearch.value === field ? null : field
+    searchInputs.value[field] = '';
+  }
+
+const visibleIndices = computed(() => {
+  return props.accounts.filter((row) =>
+    searchFields.every((field) => {
+      const search = searchInputs.value[field].toLowerCase().trim() 
+      if (!search){
+          return true
+      } 
+      const value = ref('');
+      
+      value.value = (row[field] || '').toString().toLowerCase()   
+      return value.value.includes(search) 
+    })
+  )
+})
 </script>
