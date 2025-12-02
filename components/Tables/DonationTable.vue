@@ -188,8 +188,8 @@ const visibleIndices = computed(() => {
             case 'donorName' : value.value = row?.donor? row?.donor['name']?.toString().toLowerCase() ?? "" : ''; break;
             case 'boardName' : value.value = row?.boardMember? row?.boardMember['name']?.toString().toLowerCase() ?? "" : ''; break;
             case 'monetaryAmount' : value.value = row?.donation[field]?.toString().toLowerCase() ?? ""; 
-                                    if(minMoney.value < maxMoney.value){
-                                        return (minMoney.value < parseInt(value.value) && parseInt(value.value) < maxMoney.value);
+                                    if(minMoney.value <= maxMoney.value && maxMoney.value !== 0){
+                                        return (minMoney.value <= parseInt(value.value) && parseInt(value.value) <= maxMoney.value);
                                     }else{
                                         return true;
                                     }      
@@ -272,7 +272,7 @@ const sortedIndices = computed(() => {
                     case 'receivedDate':
                         const aDate = a.donation.receivedDate?.toISOString().split('T')[0] || ''
                         const bDate = b.donation.receivedDate?.toISOString().split('T')[0] || ''
-                        comparison = aDate.localeCompare(bDate);
+                        comparison = bDate.localeCompare(aDate);
                         break;
                     case 'boardName' :
                         const aBName = a.boardMember?.name || '';
