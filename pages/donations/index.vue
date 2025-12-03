@@ -9,7 +9,7 @@
     :data="donationsData"
     :edit-function="prepDonationUpdate"
     :view-function="prepDonationView"
-    :delete-function="deleteDonation"
+    :delete-function="removeDonation"
     :permission-level="user.permissionLevel"
 />
 
@@ -71,7 +71,7 @@ const showViewDonation = ref(false);
 const {donors, getDonors} = useDonor();
 await getDonors();
 
-const {donationsData, getDonations} = useDonation();
+const {donationsData, getDonations, putDonation, deleteDonation} = useDonation();
 await getDonations();
 
 const {events, methods} = useDonationDropDown(donationsData.value)
@@ -122,21 +122,7 @@ async function prepDonationView(donationInfo:{donation:Donation,boardMember:{nam
 
 
 async function updateDonation(values:Record<string, any>){
-    const result = await $fetch(`/api/donation/${values.id}`,{
-        method:"PUT",
-        body:{
-            donor: values.donorName,
-            boardMemberId: user.value.id,
-            permissionLevel: user.value.permissionLevel,
-            status: parseInt(values.status),
-            event: values.event,
-            method:values.method,
-            monetaryAmount: values.monetaryAmount,
-            nonMonetaryAmount: values.nonMonetaryAmount,
-            notes: values.notes,
-            receivedDate: values.receivedDate,
-        }
-    })
+    const result = await putDonation(values,user.value)
     if(result.data){
         donationsData.value[values.index].donation ={
             ...result.data, 
@@ -171,13 +157,8 @@ function cancelUpdate(){
     }
 }
 
-async function deleteDonation(id:string,index:number){
-    const result = await $fetch(`/api/donation/${id}`,{
-        method:"DELETE",
-        body:{
-            permissionLevel: user.value.permissionLevel
-        }
-    })
+async function removeDonation(id:string,index:number){
+    const result = await deleteDonation(id, user.value.permissionLevel)
     if(result.success){
         donationsData.value.splice(index,1)
     }

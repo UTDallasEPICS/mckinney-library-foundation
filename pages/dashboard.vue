@@ -79,6 +79,10 @@ import { useAuth } from '~/composables/useAuth'
 import { useDonor } from '#imports'
 import { navigateTo } from '#app'
 import type { Donation, Donor } from '@prisma/client'
+import { useDonation } from '~/composables/useDonation';
+
+const {donationsData, getDonations, postDonation} = useDonation();
+await getDonations();
 
 const { session, getSession } = useAuth()
 session.value = await getSession()
@@ -91,33 +95,6 @@ donors.value.map((thisDonor:Donor,index:number) => {
   donorTableData.value.push({donor:thisDonor,donations:donors.value[index].donations})
 })
 const totalDonors = donors.value
-
-const donationsData:Ref<{donation: Donation, donor: {name: string} | null, boardMember: {name:string} | null}[]> = ref([])
-const donations = await $fetch('/api/donation');
-
-if(donations.success && donations.data){
-    const tempDonations:Ref<Donation[]> = ref([])
-    donations.data.map((donation) =>{
-        tempDonations.value.push({
-                ...donation,
-                 receivedDate: donation.receivedDate? new Date(donation.receivedDate) : null,
-                lastEditDate: donation.lastEditDate? new Date(donation.lastEditDate) : null,
-            }
-        )
-
-    })
-    tempDonations.value.map((thisDonation:Donation, index:number) => {  
-        donationsData.value.push({
-            donation:{
-                ...thisDonation,
-                receivedDate: thisDonation.receivedDate? new Date(thisDonation.receivedDate) : null,
-                lastEditDate: thisDonation.lastEditDate? new Date(thisDonation.lastEditDate) : null,
-            },
-            donor: donations.data[index].donor,
-            boardMember:donations.data[index].boardMember            
-        })
-    });
-}
 
 const {events, methods} = useDonationDropDown(donationsData.value)
 
@@ -180,21 +157,7 @@ const SettingsCardProps = {
 }
 
 async function createDonation(values:Record<string,any>){
-    const result = await $fetch('/api/donation',{
-        method:"POST",
-        body:{
-            donor: values.donorName,
-            boardMemberId: user.value.id,
-            permissionLevel:user.value.permissionLevel,
-            status: values.status,
-            event: values.event,
-            method:values.method,
-            monetaryAmount: values.monetaryAmount,
-            nonMonetaryAmount: values.nonMonetaryAmount,
-            notes: values.notes,
-            receivedDate: values.receivedDate,
-        }
-    })
+    const result = await postDonation(values,user.value)
     if(result.success){
       alert("donation created");
     }
@@ -204,16 +167,15 @@ function cancelDonation(){
     showDonationForm.value = false;
 }
 
-const donationsRes = await $fetch("/api/donation");
-const donationsArray = donationsRes?.data || [];
+const donationsArray = donationsData?.value || [];
 
 const totalDonations = new Intl.NumberFormat("en-US", {
   style: "currency",
   currency: "USD",
   maximumFractionDigits: 0
 }).format(
-  donationsArray.reduce((sum, d) => {
-    const amount = parseFloat(d.monetaryAmount || "0");
+  donationsArray.reduce((sum, row) => {
+    const amount = parseFloat(row.donation.monetaryAmount || "0");
     return sum + (isNaN(amount) ? 0 : amount);
   }, 0)
 );

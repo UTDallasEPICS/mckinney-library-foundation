@@ -50,6 +50,9 @@ import type { Donation, Donor } from '@prisma/client';
 import DonationForm from '../Forms/DonationForm.vue';
 import DonorForm from '../Forms/DonorForm.vue';
 import { useDonationDropDown, useDonorDropDown } from '~/composables/useDropDown';
+import { useDonation } from '~/composables/useDonation';
+
+const {postDonation} = useDonation()
 
 const addDonation = ref(false);
 const addDonor = ref(false);
@@ -102,21 +105,7 @@ function cancelDonor(){
     addDonor.value = false;
 }
 async function createDonation(values:Record<string,any>){
-    const result = await $fetch('/api/donation',{
-        method:"POST",
-        body:{
-            donor: values.donorName,
-            boardMemberId: props.user.id,
-            permissionLevel: props.user.permissionLevel,
-            status: values.status,
-            event: values.event,
-            method:values.method,
-            monetaryAmount: values.monetaryAmount,
-            nonMonetaryAmount: values.nonMonetaryAmount,
-            notes: values.notes,
-            receivedDate: values.receivedDate,
-        }
-    })
+    const result = await postDonation(values,props.user)
     if(result.data){
         props.donations?.push({
             ...result.data, 
