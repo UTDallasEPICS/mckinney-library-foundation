@@ -1,19 +1,40 @@
 import { ref } from 'vue';
-import type { Grant } from '~/interfaces/grant'
+import type { Grant } from "@prisma/client"
 
-export function useGrants() {
-    const grants = ref<Grant[]>([]);
+export function useGrant() {
+    //const grants = ref<Grant[]>([]);
+    const grantsData:Ref<{grant: Grant, grantor: {name: string} | null, boardMember: {name:string} | null}[]> = ref([]);
     const selectedGrant = ref(null);
 
-    async function getGrants(){
-        try {
-            const route: string = `/api/grants`;
-            grants.value = await $fetch<Grant[]>(route);
+    const getGrants = async () =>{
+            const grants = await $fetch('/api/grant');
+            if(grants.success && grants.data){
+                console.log(grants.data)
+                const tempGrants:Ref<Grant[]> = ref([])
+                grants.data.map((grant) =>{
+                    tempGrants.value.push({
+                            ...grant,
+                            proposedDate: grant.proposedDate? new Date() : null,
+                            receivedDate: grant.receivedDate? new Date(grant.receivedDate) : null,
+                            lastEditDate: grant.lastEditDate? new Date(grant.lastEditDate) : null,
+                        }
+                    )
     
-        } catch (error) {
-            console.error('getGrants Error:', error);
-        }
-    };
+                })
+                tempGrants.value.map((thisGrant:Grant, index:number) => {  
+                    grantsData.value.push({
+                        grant:{
+                            ...thisGrant,
+                            proposedDate: thisGrant.proposedDate? new Date() : null,
+                            receivedDate: thisGrant.receivedDate? new Date(thisGrant.receivedDate) : null,
+                            lastEditDate: thisGrant.lastEditDate? new Date(thisGrant.lastEditDate) : null,
+                        },
+                        grantor: grants.data[index].grantor,
+                        boardMember:grants.data[index].boardMember            
+                    })
+                });
+            }
+        } 
 
     async function getGrant(selectedGrant: Grant) {
         try {
@@ -62,7 +83,7 @@ export function useGrants() {
     }
 
     return {
-        grants,
+        grantsData,
         selectedGrant,
         getGrants,
         getGrant,

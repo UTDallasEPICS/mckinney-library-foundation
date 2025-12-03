@@ -1,25 +1,24 @@
-import { PrismaClient } from '@prisma/client'
+import { Prisma, PrismaClient } from '@prisma/client';
 
-const prisma = new PrismaClient()
+const prisma = new PrismaClient();
 
-export default defineEventHandler(async (event) => {
+export default defineEventHandler(async (event) => {  
     try {
-        const grantId = await getRouterParam(event, 'id');
+        const grantorId = await getRouterParam(event, 'id');
         const body = await readBody(event);
         if(body.permissionLevel < 1){
             throw createError({
                 statusCode:401,
-                statusMessage:"User does not have permission to delete grants"
+                statusMessage:"User does not have permission to delete grantors"
             })
         }
-        const grant = await prisma.grant.delete({
-            where: {id:grantId},
+        const deletedGrantor = await prisma.grantor.delete({
+            where: { id:grantorId }
         });
-
-        return { 
+        return{
             success: true,
             statusCode: 200,
-            data: grant,
+            data: deletedGrantor,
             error:{code: ""}
         }
     } catch (error) {
@@ -27,7 +26,7 @@ export default defineEventHandler(async (event) => {
         return { 
             success: false,
             statusCode: 500,
-            message: "Failed to delete grant",
+            message: "Failed to delete grantor",
             error: error, 
             data: null
         }

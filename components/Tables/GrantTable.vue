@@ -1,161 +1,293 @@
 <template>
     <div class="flex-1 p-8 ">
-    <button class="ml-6 px-1.5 py-1.5 bg-[#c5d0d8] font-bold shadow-[0_3px_0_#2d3e4d] rounded-lg text-[#2d3e4d] mb-3 mt-.5" @click="toggleSort('grantor')"> Aa </button>
-    <div class = "bg-white rounded-lg shadow-lg overflow-hidden mx-auto">  
-    <table class="w-full">
-    <thead  class="bg-[#c5d0d8] sticky top-0 z-10">
-    <tr>
-        <th class="px-4 py-3 text-left text-sm text-[#2d3e4d] border-b-2 border-[#a8b5bf] cursor-pointer"
-                            @click="toggleSearch('grantor')"> 
-                            <span v-if="activeSearch !== 'grantor'">Grantor ↑↓</span>
-                            <input
-                                v-else
-                                v-model="searchInputs.grantor"
-                                @click.stop
-                                class="mt-2 w-full px-2 py-1 border rounded"
-                                placeholder="Search grantor"
-                            />
-        </th>
-        <th class="px-4 py-3 text-left text-sm text-[#2d3e4d] border-b-2 border-[#a8b5bf] cursor-pointer"
-                            @click="toggleSearch('email')">
-                            <span v-if="activeSearch !== 'email'">Email ↑↓</span>
-                            <input
-                                v-else
-                                v-model="searchInputs.email"
-                                @click.stop
-                                class="mt-2 w-full px-2 py-1 border rounded"
-                                placeholder="Search email"
-                            />
-        </th>
-        <th class="px-4 py-3 text-left text-sm text-[#2d3e4d] border-b-2 border-[#a8b5bf] cursor-pointer transition-colors">Link</th>
-        <th class="px-4 py-3 text-left text-sm text-[#2d3e4d] border-b-2 border-[#a8b5bf] cursor-pointer transition-colors">Start Date</th>
-        <th class="px-4 py-3 text-left text-sm text-[#2d3e4d] border-b-2 border-[#a8b5bf] cursor-pointer transition-colors">End Date</th>
-        <th class="px-4 py-3 text-left text-sm text-[#2d3e4d] border-b-2 border-[#a8b5bf] cursor-pointer transition-colors">Purpose</th>
-        <th class="px-4 py-3 text-left text-sm text-[#2d3e4d] border-b-2 border-[#a8b5bf] cursor-pointer transition-colors">Method</th>
-        <th class="px-4 py-3 text-left text-sm text-[#2d3e4d] border-b-2 border-[#a8b5bf] cursor-pointer transition-colors"
-                            @click="toggleSort('amount')">Monetary Amount ↑↓</th>
-        <th class="px-4 py-3 text-left text-sm text-[#2d3e4d] border-b-2 border-[#a8b5bf] cursor-pointer transition-colors">Nonmonetary Amount</th>
-        <th class="px-4 py-3 text-left text-sm text-[#2d3e4d] border-b-2 border-[#a8b5bf] cursor-pointer transition-colors">Status</th>
-        <th class="px-4 py-3 text-center text-sm text-[#2d3e4d] border-b-2 border-[#a8b5bf] cursor-pointer transition-colors">Notes</th>
-        <th class="px-4 py-3 text-center text-sm text-[#2d3e4d] border-b-2 border-[#a8b5bf] cursor-pointer"
-                            @click="toggleSearch('board')">
-                            <span v-if="activeSearch !== 'board'">Board Member ↑↓</span>
-                            <input
-                                v-else
-                                v-model="searchInputs.board"
-                                @click.stop
-                                class="mt-2 w-full px-2 py-1 border rounded"
-                                placeholder="Search board"
-                            />
-        </th>
-        <th class="px-4 py-3 text-center text-sm text-[#2d3e4d] border-b-2 border-[#a8b5bf] cursor-pointer transition-colors">Actions</th>
-    </tr>
-    </thead>
-    <tbody>
-        <tr v-for = "(grant, index) in filteredAndSorted" :key="index" 
-         class="hover:bg-[#e8f0f7] transition-colors border-b border-gray-200 cursor-pointer">
-            <td class="px-6 py-4 text-[#2d3e4d] text-left text-sm">{{ grant.grantor?.name ?? "Anonymous"}}</td>
-            <td class="px-6 py-4 text-[#2d3e4d] text-left text-sm">{{ grant.grantor?.email ?? "N/A"}}</td>
-            <td class="px-6 py-4 text-[#2d3e4d] text-left text-sm">{{ grant.grantor?.webLink ?? "N/A"}}</td>
-            <td class="px-6 py-4 text-[#2d3e4d] text-left text-sm">{{ grant.startDate.slice(0,10)}}</td>
-            <td class="px-6 py-4 text-[#2d3e4d] text-left text-sm">{{ grant.endDate.slice(0,10)}}</td>
-            <td class="px-6 py-4 text-[#2d3e4d] text-left text-sm">{{ grant.purpose}}</td>
-            <td class="px-6 py-4 text-[#2d3e4d] text-left text-sm">{{ grant.method ?? "N/A"}}</td>
-            <td class="px-6 py-4 text-[#2d3e4d] text-left text-sm">{{ grant.monetaryAmount ?? "N/A"}}</td>
-            <td class="px-6 py-4 text-[#2d3e4d] text-left text-sm">{{ grant.nonMonetaryAmount ?? "N/A"}}</td>
-            <td class="px-6 py-4 text-[#2d3e4d] text-left text-sm">{{ grant.status == 0 ? 'pending': 'approved'}}</td>
-            <td class="px-6 py-4 text-[#2d3e4d] text-left text-sm">{{ grant.notes ?? "N/A"}}</td>
-            <td class="px-6 py-4 text-[#2d3e4d] text-left text-sm">{{ grant.boardMember?.name  ?? "Anonymous"}}</td>
-            <td>
-                <div>
-                    <button   class ="rounded-md mt-2 text-sm font-medium outline-none h-9 py-2 bg-blue-600 hover:bg-blue-700 text-white px-6"> Edit </button>
-                </div>
-            </td>
-        </tr>
-    </tbody>
-    </table>
+        <div class = "bg-white rounded-lg shadow-lg overflow-hidden mx-auto">       
+            <table class="w-full">
+                <thead  class="bg-[#c5d0d8] sticky top-0 z-10">
+                    <tr>
+                        <th class="px-4 py-3 text-left text-sm text-[#2d3e4d] border-b-2 border-[#a8b5bf] cursor-pointer transition-colors">
+                            <div class="w-full flex gap-2">
+                                <span @click="toggleSearch(0)" v-if="!activeSearch[0].active">Grantor ↑↓</span>
+                                <div  v-else>
+                                    <input autocomplete="off" v-model="searchInputs.grantorName" @click.stop class="mt-2 px-2 py-1 border rounded"placeholder="Search Grantors"/>
+                                    <button class="text-lg" @click="toggleSearch(0)">&#x24E7;</button>
+                                </div>
+                                <button v-if="activeSorts[0].active" @click="toggleSort(0)" class="bg-[#c8c9c9] outline-double outline-black">A-Z &#8595;</button>
+                                <button v-else @click="toggleSort(0)">A-Z &#8595;</button>
+                            </div>  
+                        </th>
+                        <th class="px-4 py-3 text-left text-sm text-[#2d3e4d] border-b-2 border-[#a8b5bf] cursor-pointer transition-colors">
+                            <div class="w-full flex gap-2">
+                                <span @click="toggleSearch(1)" v-if="!activeSearch[1].active">Purpose ↑↓</span>
+                                <div  v-else>
+                                    <input autocomplete="off" v-model="searchInputs.purpose" @click.stop class="mt-2 px-2 py-1 border rounded"placeholder="Search purpose"/>
+                                    <button class="text-lg" @click="toggleSearch(1)">&#x24E7;</button>                               
+                                </div>
+                                <button v-if="activeSorts[1].active" @click="toggleSort(1)" class="bg-[#c8c9c9] outline-double outline-black">A-Z &#8595;</button>
+                                <button v-else @click="toggleSort(1)">A-Z &#8595;</button>
+                            </div>
+                        </th>
+                        <th class="px-4 py-3 text-left text-sm text-[#2d3e4d] border-b-2 border-[#a8b5bf] cursor-pointer transition-colors">
+                            <div class="w-full flex gap-2">
+                                <span @click="toggleSearch(2)" v-if="!activeSearch[2].active">Monetary Amount ↑↓</span>
+                                <div  v-else>
+                                    <input autocomplete="off" v-model="minMoney"  @click.stop class="mt-2 px-2 py-1 border rounded"placeholder="minimum"/>
+                                    <input autocomplete="off" v-model="maxMoney" @click.stop class="mt-2 px-2 py-1 border rounded"placeholder="maximum"/>
+                                    <button class="text-lg" @click="toggleSearch(2)">&#x24E7;</button>
+                                </div>
+                                <button v-if="activeSorts[2].active" @click="toggleSort(2)" class="bg-[#c8c9c9] outline-double outline-black">#&#8595;</button>
+                                <button v-else @click="toggleSort(2)">#&#8595;</button>
+                            </div>
+                        </th>
+                        <th class="px-4 py-3 text-left text-sm text-[#2d3e4d] border-b-2 border-[#a8b5bf] cursor-pointer transition-colors">
+                            <div class="w-full flex gap-2">
+                                <span @click="toggleSearch(3)" v-if="!activeSearch[3].active">Non-Monetary Amount ↑↓</span>
+                                <div  v-else>
+                                    <input autocomplete="off" v-model="searchInputs.nonMonetaryAmount" @click.stop class="mt-2 px-2 py-1 border rounded"placeholder="Search"/>
+                                    <button class="text-lg" @click="toggleSearch(3)">&#x24E7;</button>
+                                </div>
+                                <button v-if="activeSorts[3].active" @click="toggleSort(3)" class="bg-[#c8c9c9] outline-double outline-black">A-Z &#8595;</button>
+                                <button v-else @click="toggleSort(3)">A-Z &#8595;</button>
+                            </div>
+                        </th>
+                        <th class="px-4 py-3 text-left text-sm text-[#2d3e4d] border-b-2 border-[#a8b5bf] cursor-pointer transition-colors">
+                            <div class="w-full flex gap-2">
+                                <span @click="toggleSearch(4)" v-if="!activeSearch[4].active">Payment Method ↑↓</span>
+                                <div  v-else>
+                                    <input autocomplete="off" v-model="searchInputs.method" @click.stop class="mt-2 px-2 py-1 border rounded"placeholder="Search method"/>
+                                    <button class="text-lg" @click="toggleSearch(4)">&#x24E7;</button>
+                                </div>
+                                <button v-if="activeSorts[4].active" @click="toggleSort(4)" class="bg-[#c8c9c9] outline-double outline-black">A-Z &#8595;</button>
+                                <button v-else @click="toggleSort(4)">A-Z &#8595;</button>
+                                
+                            </div>
+                        </th>
+                        <th class="px-4 py-3 text-left text-sm text-[#2d3e4d] border-b-2 border-[#a8b5bf] cursor-pointer transition-colors">
+                            <div class="w-full flex gap-2">
+                                <span @click="toggleSearch(5)" v-if="!activeSearch[5].active">Status ↑↓</span>
+                                <div  v-else>
+                                    <select autocomplete="off" v-model="searchInputs.status" @click.stop class="mt-2 px-2 py-1 border rounded">
+                                        <option value=0>Pending</option>
+                                        <option value=1>Recieved</option>
+                                    </select>
+                                    <button class="text-lg" @click="toggleSearch(5)">&#x24E7;</button>
+                                </div>
+                                <button v-if="activeSorts[5].active" @click="toggleSort(5)" class="bg-[#c8c9c9] outline-double outline-black">A-Z &#8595;</button>
+                                <button v-else @click="toggleSort(5)">A-Z &#8595;</button>
+                            </div>
+                        </th>
+                        <th class="px-4 py-3 text-left text-sm text-[#2d3e4d] border-b-2 border-[#a8b5bf] cursor-pointer transition-colors">
+                            <div class="w-full flex gap-2">
+                                <span @click="toggleSearch(6)" v-if="!activeSearch[6].active">Recieved Date ↑↓</span>
+                                <div  v-else>
+                                    <p>start date</p>
+                                    <input autocomplete="off" v-model="earliestDono" type="date"  @click.stop class="mt-2 px-2 py-1 border rounded"placeholder="minimum"/>
+                                    <p>end date</p>
+                                    <input autocomplete="off" v-model="latestDono" type="date" @click.stop class="mt-2 px-2 py-1 border rounded"placeholder="maximum"/>
+                                    <button class="text-lg" @click="toggleSearch(6)">&#x24E7;</button>
+                                </div>
+                                <button v-if="activeSorts[6].active" @click="toggleSort(6)" class="bg-[#c8c9c9] outline-double outline-black">#&#8595;</button>
+                                <button v-else @click="toggleSort(6)">#&#8595;</button>
+                            </div>
+                        </th>
+                        <th class="px-4 py-3 text-left text-sm text-[#2d3e4d] border-b-2 border-[#a8b5bf] cursor-pointer transition-colors">
+                            <div class="w-full flex gap-2">
+                                <span @click="toggleSearch(7)" v-if="!activeSearch[7].active">Last Editor ↑↓</span>
+                                <div  v-else>
+                                    <input autocomplete="off" v-model="searchInputs.boardName" @click.stop class="mt-2 px-2 py-1 border rounded"placeholder="Search Board Members"/>
+                                    <button class="text-lg" @click="toggleSearch(7)">&#x24E7;</button>
+                                </div>
+                                <button v-if="activeSorts[7].active" @click="toggleSort(7)" class="bg-[#c8c9c9] outline-double outline-black">A-Z &#8595;</button>
+                                <button v-else @click="toggleSort(7)">A-Z &#8595;</button>
+                            </div>
+                        </th>
+                        <th class="px-4 py-3 text-center text-sm text-[#2d3e4d] border-b-2 border-[#a8b5bf] cursor-pointer transition-colors">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr v-for="(row,idx) in sortedIndices" :key="idx" class="hover:bg-[#e8f0f7] transition-colors border-b border-gray-200 cursor-pointer">
+                        <td class="px-6 py-4 text-[#2d3e4d] text-left text-sm">{{ row.grantor?.name }}</td>
+                        <td class="px-6 py-4 text-[#2d3e4d] text-left text-sm">{{ row.grant.purpose }}</td>
+                        <td class="px-6 py-4 text-[#2d3e4d] text-left text-sm">{{ row.grant.monetaryAmount }}</td>
+                        <td class="px-6 py-4 text-[#2d3e4d] text-left text-sm">{{ row.grant.nonMonetaryAmount }}</td>
+                        <td class="px-6 py-4 text-[#2d3e4d] text-left text-sm">{{ row.grant.method }}</td>
+                        <td class="px-6 py-4 text-[#2d3e4d] text-left text-sm">{{ row.grant.status == 0? "pending" : "recieved" }}</td>             
+                        <td v-if= "row.grant.receivedDate" class="px-6 py-4 text-[#2d3e4d] text-left text-sm">{{row.grant.receivedDate? row.grant.receivedDate.toISOString().split('T')[0] : ""}}</td>
+                        <td class="px-6 py-4 text-[#2d3e4d] text-left text-sm">{{ row.boardMember?.name }}</td>
+                        <td class="px-6 py-4">
+                            <div class="flex justify-evenly">
+                                <button v-if="permissionLevel > 0" class ="rounded-md text-sm font-medium outline-none h-9 py-2 bg-blue-600 hover:bg-blue-700 text-white px-6" @click="editFunction(row,props.data.indexOf(row))"> Edit </button>
+                                <button v-if="permissionLevel > 0" class ="rounded-md text-sm font-medium outline-none h-9 py-2 bg-red-600 hover:bg-red-700 text-white px-6"@click=deleteFunction(row.grant.id,props.data.indexOf(row)) > Delete </button>
+                                <button class ="rounded-md text-sm font-medium outline-none h-9 py-2 bg-green-600 hover:bg-green-700 text-white px-6" @click="viewFunction(row,props.data.indexOf(row))" > View </button>
+                            </div>
+                        </td>     
+                    </tr>
+                </tbody>
+            </table>
+        </div>
     </div>
-    </div>
-    </template>
-    
-    <script setup>
+</template>
 
-import {ref, watch, computed} from 'vue';
-const props = defineProps({
-    grants :{
-        type: Object
+<script setup lang="ts">
+import type { Grant } from '@prisma/client';
+
+const props = defineProps<{
+    data:{grant:Grant,boardMember:{name:string} | null, grantor: {name: string} | null}[],
+    editFunction: (grantData:{grant:Grant,boardMember:{name:string}| null, grantor: {name: string} | null},index:number) => Promise<void>,
+    viewFunction: (grantData:{grant:Grant,boardMember:{name:string}| null, grantor: {name: string} | null},index:number) => Promise<void>,
+    deleteFunction: (id:string,index:number) => Promise<void>,
+    permissionLevel:number
+}>();
+
+
+
+
+const activeSearch:Ref<{name:'status' | 'purpose' | 'method' | 'nonMonetaryAmount' |'grantorName' | 'boardName' |'monetaryAmount' | 'receivedDate', active:boolean}[]> = ref([
+    {name:'grantorName',active:false},
+    {name:'purpose',active:false},
+    {name:'monetaryAmount',active:false},
+    {name:'nonMonetaryAmount',active:false},
+    {name:'method',active:false},
+    {name:'status',active:false},
+    {name:'receivedDate',active:false},
+    {name:'boardName',active:false},
+])
+const searchInputs = ref({ status:'', purpose: '', method:'', nonMonetaryAmount:'', grantorName:'' , boardName:'', monetaryAmount:'', receivedDate:''})
+const searchFields = ['status', 'purpose', 'method', 'nonMonetaryAmount', 'grantorName', 'boardName', 'monetaryAmount', 'receivedDate'] as const
+
+
+const maxMoney = ref(0);
+const minMoney = ref(0);
+const earliestDono = ref("");
+const latestDono= ref("");
+  
+  const toggleSearch = (index:number) => {
+    activeSearch.value[index].active = !activeSearch.value[index].active;
+
+    searchInputs.value[activeSearch.value[index].name] = '';
+    if(activeSearch.value[index].name == 'monetaryAmount'){
+        maxMoney.value = 0;
+        minMoney.value = 0;
     }
+    if(activeSearch.value[index].name == 'receivedDate'){
+        earliestDono.value = ('')
+        latestDono.value=('')
+    }
+  }
+
+
+
+const visibleIndices = computed(() => {
+  return props.data.filter((row) =>
+    searchFields.every((field) => {
+        const search = searchInputs.value[field].toLowerCase().trim() 
+        if (!search && (!activeSearch.value[2].active && !activeSearch.value[6].active)){
+            return true
+        } 
+        const value = ref('');
+        switch(field){
+            case 'grantorName' : value.value = row?.grantor? row?.grantor['name']?.toString().toLowerCase() ?? "" : ''; break;
+            case 'boardName' : value.value = row?.boardMember? row?.boardMember['name']?.toString().toLowerCase() ?? "" : ''; break;
+            case 'monetaryAmount' : value.value = row?.grant[field]?.toString().toLowerCase() ?? ""; 
+                                    if(minMoney.value <= maxMoney.value && maxMoney.value !== 0){
+                                        return (minMoney.value <= parseInt(value.value) && parseInt(value.value) <= maxMoney.value);
+                                    }else{
+                                        return true;
+                                    }      
+            case 'receivedDate' : value.value = row?.grant[field]?.toString().toLowerCase() ?? "";                                    
+                                    if(earliestDono.value && latestDono.value && earliestDono.value < latestDono.value){
+                                        const grantDate = new Date(value.value).toISOString().split('T')[0];
+                                        return (earliestDono.value <= grantDate && grantDate <= latestDono.value)
+                                    }
+                                    else{
+                                        return true;
+                                    }
+            default: value.value = row?.grant[field]?.toString().toLowerCase() ?? ""; break;
+        }     
+      return value.value.includes(search) 
+    })
+  )
 })
 
-const activeSearch = ref(null)
+const activeSorts:Ref<{name: 'grantorName'| 'status' | 'purpose' | 'method' | 'nonMonetaryAmount' | 'boardName' |'monetaryAmount' | 'receivedDate',active:boolean}[]>=ref([
+    {name: 'grantorName', active:false},
+    {name: 'purpose',active: false},
+    {name: 'monetaryAmount', active:false},
+    {name: 'nonMonetaryAmount',active:false},
+    {name: 'method',active:false}, 
+    {name: 'status',active: false},
+    {name: 'receivedDate', active:true},
+    {name: 'boardName', active:false},
+]) 
 
-const searchInputs = ref({
-    grantor: '',
-    email: '',
-    board: '',
-})
-
-const SORT_STATES = ["asc", "desc", "none"];
-
-const sortField = ref(null);
-const sortIndex = ref(0);      
-const sortDir = computed(() => SORT_STATES[sortIndex.value]);
-
-const toggleSearch = (field) => {
-    if (['grantor', 'email', 'board'].includes(field)) {
-        activeSearch.value = activeSearch.value === field ? null : field
-    }
+function toggleSort(index:number){
+    activeSorts.value[index].active = !activeSorts.value[index].active;
 }
 
-const toggleSort = (field) => {
-    if (sortField.value !== field) {
-        sortField.value = field;
-        sortIndex.value = 0;
-        return;
+const sortedIndices = computed(() => {
+    const sortActive = ref(false);
+    activeSorts.value.forEach((field) =>{
+        if(field.active){
+            sortActive.value = true;
+        }
+    })
+    if(!sortActive.value){
+        return visibleIndices.value
     }
-
-    sortIndex.value = (sortIndex.value + 1) % 3;
-
-    if (SORT_STATES[sortIndex.value] === "none") {
-        sortField.value = null;
-        sortIndex.value = 0;
+    else{
+      return visibleIndices.value.toSorted((a,b) =>{  
+        for (const field of activeSorts.value) {
+            if (field.active) {
+                let comparison = 0;
+                switch(field.name) {
+                    case 'grantorName':
+                        const aName = a.grantor?.name || '';
+                        const bName = b.grantor?.name || '';
+                        comparison = aName.localeCompare(bName);
+                        break;
+                    case 'purpose' : 
+                        const aPurpose = a.grant.purpose || '';
+                        const bPurpose = b.grant.purpose || '';
+                        comparison = aPurpose.localeCompare(bPurpose);
+                        break;
+                    case 'monetaryAmount': 
+                        const aMon = a.grant.monetaryAmount || "100000"
+                        const bMon = b.grant.monetaryAmount || "100000"
+                        comparison = parseInt(aMon) - parseInt(bMon)
+                        break;
+                    case 'nonMonetaryAmount':
+                        const aNonMon = a.grant.nonMonetaryAmount || 'ZZZZZZZZZZZZZZZZZZZZZZZ';
+                        const bNonMon = b.grant.nonMonetaryAmount || 'ZZZZZZZZZZZZZZZZZZZZZZZ';
+                        comparison = aNonMon.localeCompare(bNonMon);
+                        break;
+                    case 'method' :
+                        const aMethod = a.grant.method || 'ZZZZZZZZZZZZZZZZZZZZZZZ';
+                        const bMethod = b.grant.method || 'ZZZZZZZZZZZZZZZZZZZZZZZ';
+                        comparison = aMethod.localeCompare(bMethod); 
+                        break;
+                    case 'status':
+                        const aStatus = a.grant.status || 100000;
+                        const bStatus = b.grant.status || 100000;
+                        comparison = aStatus - bStatus; 
+                        break;
+                    case 'receivedDate':
+                        const aDate = a.grant.receivedDate?.toISOString().split('T')[0] || ''
+                        const bDate = b.grant.receivedDate?.toISOString().split('T')[0] || ''
+                        comparison = bDate.localeCompare(aDate);
+                        break;
+                    case 'boardName' :
+                        const aBName = a.boardMember?.name || '';
+                        const bBName = b.boardMember?.name || '';
+                        comparison = aBName.localeCompare(bBName);
+                        break;
+                }
+                if(comparison !== 0){
+                    return comparison
+                }
+            }
+        }
+        return 0;
+        })
     }
-};
-
-const filteredAndSorted = computed(() => {
-    let list = props.grants?.data || []
-
-list = list.filter((g) => {
-    return (
-        (g.grantor?.name || '').toLowerCase().includes(searchInputs.value.grantor.toLowerCase()) &&
-        (g.grantor?.email || '').toLowerCase().includes(searchInputs.value.email.toLowerCase()) &&
-        (g.boardMember?.name || '').toLowerCase().includes(searchInputs.value.board.toLowerCase())
-    )
 })
 
-if (!sortField.value || sortDir.value === "none") {
-    return list;
-}
-
-return list.sort((a, b) => {
-    const field = sortField.value;
-
-    if (field === "grantor") {
-      return sortDir.value === "asc"
-        ? (a.grantor?.name ?? "").localeCompare(b.grantor?.name ?? "")
-        : (b.grantor?.name ?? "").localeCompare(a.grantor?.name ?? "");
-    }
-
-    if (field === "amount") {
-      const x = Number(a.monetaryAmount ?? 0);
-      const y = Number(b.monetaryAmount ?? 0);
-
-      return sortDir.value === "asc" ? x - y : y - x;
-    }
-  });
-})
-    
-watch(() => props.grants, (newVal) => { 
-    console.log("Grants data updated:", newVal);
-}); 
-    </script>
+</script>

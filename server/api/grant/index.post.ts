@@ -20,10 +20,13 @@ export default defineEventHandler(async (event) => {
                 monetaryAmount: body.monetaryAmount,
                 nonMonetaryAmount: body.nonMonetaryAmount,
                 notes: body.notes,
-                proposedDate: new Date(body.proposedDate),
-                startDate: new Date(body.startDate),
-                endDate: new Date(body.endDate),
-                lastEditDate: new Date(body.proposedDate),
+                proposedDate: new Date(),
+                receivedDate: new Date(body.receivedDate),
+                lastEditDate: new Date(),
+            },
+            include: {
+                boardMember: true,
+                grantor: true,
             }
         })
 
@@ -31,6 +34,7 @@ export default defineEventHandler(async (event) => {
             success: true,
             statusCode: 200,
             data: grant, 
+            error:{code: ""}
         }
         
     } catch (error) {
@@ -40,6 +44,7 @@ export default defineEventHandler(async (event) => {
             statusCode: 500,
             message: "Failed to create grants",
             error: error, 
+            data: null
         }
     } finally {
         await prisma.$disconnect()

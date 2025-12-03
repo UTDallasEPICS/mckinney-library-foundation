@@ -14,6 +14,7 @@ export default defineEventHandler(async (event) => {
             success: true,
             statusCode: 200,
             data: grants, 
+            error:{code: ""}
         }
     } catch (error) {
         console.error(error);
@@ -22,7 +23,7 @@ export default defineEventHandler(async (event) => {
             statusCode: 500,
             message: "Failed to fetch grants",
             error: error, 
-            data:null
+            data: []
         }
     } finally {
         await prisma.$disconnect()
