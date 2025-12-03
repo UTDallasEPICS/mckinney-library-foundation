@@ -1,14 +1,15 @@
 <template>
 
 <div class="w-full bg-slate-500 text-white px-6 py-3 flex justify-center ">
-    <div class = "w-[70vw] flex justify-between">
-      
-      <button class="px-3 py-1 rounded hover:bg-slate-600 transition"  @click = "showMenu = true">add grant</button>
-    
+    <div class = "w-[70vw] flex justify-between">      
+      <button v-if="permissionLevel>0" @click="showMenu = true"
+        class="px-3 py-1 rounded hover:bg-slate-600 transition">
+        Add Grant
+      </button>
       <NuxtLink to = '/grants'>
       <button 
         class="px-3 py-1 rounded hover:bg-slate-600 transition">
-        view grants
+        View Grants
       </button>
     </NuxtLink>
 
@@ -23,7 +24,7 @@
     
     
     
-    <GrantForm @close = "showMenu = false"/>
+    
     
     
     </div>
@@ -37,14 +38,13 @@
     import GrantForm from '~/components/Forms/GrantForm.vue';
     
     import { ref } from 'vue';
-    
+
+const props = defineProps({
+      permissionLevel: {
+        type: Number
+      }
+    });    
     
     const showMenu = ref(false)
-    
-     
-    
-    
-    
-    
     
     </script>

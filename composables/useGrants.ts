@@ -26,7 +26,7 @@ export function useGrants() {
 
     async function updateGrant(selectedGrant: Grant) {
         try {
-            await $fetch('/api/grants/${id}', {
+            await $fetch(`/api/grants/${selectedGrant.id}`, {
                 method: "PUT",
                 body: selectedGrant
             });
@@ -38,7 +38,7 @@ export function useGrants() {
 
     async function createGrant(selectedGrant: Grant) {
         try {
-            const route: string = `/api/grants/${selectedGrant.id}`;
+            const route: string = `/api/grants`;
             await $fetch(route, {
                 method: "POST",
                 body: selectedGrant

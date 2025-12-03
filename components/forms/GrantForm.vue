@@ -73,7 +73,7 @@
 
 <script setup> 
 import { ref,onMounted } from 'vue';
-const emit = defineEmits(['close']);
+const emit = defineEmits(['close', 'created']);
 
 const granter = ref("")
 const purpose = ref("")
@@ -127,7 +127,7 @@ const submit = async () => {
 
 try { 
 
-const response = await $fetch("/api/grants/123", { 
+const response = await $fetch("/api/grants", { 
     method: "POST",
     body: {
         grantor: granter.value,
@@ -146,7 +146,7 @@ const response = await $fetch("/api/grants/123", {
     }
 })
 
-emit('close')
+emit('close', 'created')
 
 
 

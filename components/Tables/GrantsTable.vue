@@ -34,7 +34,7 @@
         <th class="px-4 py-3 text-left text-sm text-[#2d3e4d] border-b-2 border-[#a8b5bf] cursor-pointer transition-colors">Method</th>
         <th class="px-4 py-3 text-left text-sm text-[#2d3e4d] border-b-2 border-[#a8b5bf] cursor-pointer transition-colors"
                             @click="toggleSort('amount')">Monetary Amount ↑↓</th>
-        <th class="px-4 py-3 text-left text-sm text-[#2d3e4d] border-b-2 border-[#a8b5bf] cursor-pointer transition-colors">Nonmonetary amount</th>
+        <th class="px-4 py-3 text-left text-sm text-[#2d3e4d] border-b-2 border-[#a8b5bf] cursor-pointer transition-colors">Nonmonetary Amount</th>
         <th class="px-4 py-3 text-left text-sm text-[#2d3e4d] border-b-2 border-[#a8b5bf] cursor-pointer transition-colors">Status</th>
         <th class="px-4 py-3 text-center text-sm text-[#2d3e4d] border-b-2 border-[#a8b5bf] cursor-pointer transition-colors">Notes</th>
         <th class="px-4 py-3 text-center text-sm text-[#2d3e4d] border-b-2 border-[#a8b5bf] cursor-pointer"
@@ -54,18 +54,18 @@
     <tbody>
         <tr v-for = "(grant, index) in filteredAndSorted" :key="index" 
          class="hover:bg-[#e8f0f7] transition-colors border-b border-gray-200 cursor-pointer">
-            <td class="px-6 py-4 text-[#2d3e4d] text-left text-sm">{{ grant.grantor.name}}</td>
-            <td class="px-6 py-4 text-[#2d3e4d] text-left text-sm">{{ grant.grantor.email}}</td>
-            <td class="px-6 py-4 text-[#2d3e4d] text-left text-sm">{{ grant.grantor.webLink}}</td>
+            <td class="px-6 py-4 text-[#2d3e4d] text-left text-sm">{{ grant.grantor?.name ?? "Anonymous"}}</td>
+            <td class="px-6 py-4 text-[#2d3e4d] text-left text-sm">{{ grant.grantor?.email ?? "N/A"}}</td>
+            <td class="px-6 py-4 text-[#2d3e4d] text-left text-sm">{{ grant.grantor?.webLink ?? "N/A"}}</td>
             <td class="px-6 py-4 text-[#2d3e4d] text-left text-sm">{{ grant.startDate.slice(0,10)}}</td>
             <td class="px-6 py-4 text-[#2d3e4d] text-left text-sm">{{ grant.endDate.slice(0,10)}}</td>
             <td class="px-6 py-4 text-[#2d3e4d] text-left text-sm">{{ grant.purpose}}</td>
-            <td class="px-6 py-4 text-[#2d3e4d] text-left text-sm">{{ grant.method}}</td>
-            <td class="px-6 py-4 text-[#2d3e4d] text-left text-sm">{{ grant.monetaryAmount}}</td>
-            <td class="px-6 py-4 text-[#2d3e4d] text-left text-sm">{{ grant.nonMonetaryAmount}}</td>
+            <td class="px-6 py-4 text-[#2d3e4d] text-left text-sm">{{ grant.method ?? "N/A"}}</td>
+            <td class="px-6 py-4 text-[#2d3e4d] text-left text-sm">{{ grant.monetaryAmount ?? "N/A"}}</td>
+            <td class="px-6 py-4 text-[#2d3e4d] text-left text-sm">{{ grant.nonMonetaryAmount ?? "N/A"}}</td>
             <td class="px-6 py-4 text-[#2d3e4d] text-left text-sm">{{ grant.status == 0 ? 'pending': 'approved'}}</td>
-            <td class="px-6 py-4 text-[#2d3e4d] text-left text-sm">{{ grant.notes}}</td>
-            <td class="px-6 py-4 text-[#2d3e4d] text-left text-sm">{{ grant.boardMember.name}}</td>
+            <td class="px-6 py-4 text-[#2d3e4d] text-left text-sm">{{ grant.notes ?? "N/A"}}</td>
+            <td class="px-6 py-4 text-[#2d3e4d] text-left text-sm">{{ grant.boardMember?.name  ?? "Anonymous"}}</td>
             <td>
                 <div>
                     <button   class ="rounded-md mt-2 text-sm font-medium outline-none h-9 py-2 bg-blue-600 hover:bg-blue-700 text-white px-6"> Edit </button>
@@ -99,7 +99,6 @@ const SORT_STATES = ["asc", "desc", "none"];
 
 const sortField = ref(null);
 const sortIndex = ref(0);      
-
 const sortDir = computed(() => SORT_STATES[sortIndex.value]);
 
 const toggleSearch = (field) => {
