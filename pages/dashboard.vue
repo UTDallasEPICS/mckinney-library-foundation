@@ -73,7 +73,8 @@ import { ref } from 'vue'
 import DashboardCard from '~/components/Cards/DashboardCard/DashboardCard.vue'
 import DashboardStat from '~/components/Banners/DashboardBanner.vue'
 import DonationForm from '~/components/Forms/DonationForm.vue'
-import GrantsForm from '~/components/Forms/GrantForm.vue'
+import GrantsForm from '~/components/Forms/GrantsForm.vue'
+import { useDonationDropDown } from '~/composables/useDropDown'
 import { useAuth } from '~/composables/useAuth'
 import { useDonor } from '#imports'
 import { navigateTo } from '#app'
@@ -117,26 +118,8 @@ if(donations.success && donations.data){
         })
     });
 }
-const events: ComputedRef<string[]> = computed(() => {
-    if (donationsData) {
-        const uniqueEvents = new Set(
-            donationsData.value.map(donation => donation.donation.event).filter((event) => event != null)
-        )
-        return Array.from(uniqueEvents)
-    }
-    return []
-})
-const methods: ComputedRef<string[]> = computed(() => {
-    if (donationsData) {
-        const uniqueEvents = new Set(
-            donationsData.value.map(donation => donation.donation.method).filter((method) => method != null)
-        )
-        return Array.from(uniqueEvents)
-    }
-    return []
-})
 
-
+const {events, methods} = useDonationDropDown(donationsData.value)
 
 const user:Ref<{id:string, permissionLevel:number}> = ref({id:"",permissionLevel:0});
 if (session.value?.user) {

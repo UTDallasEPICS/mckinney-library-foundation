@@ -49,6 +49,7 @@
 import type { Donation, Donor } from '@prisma/client';
 import DonationForm from '../Forms/DonationForm.vue';
 import DonorForm from '../Forms/DonorForm.vue';
+import { useDonationDropDown, useDonorDropDown } from '~/composables/useDropDown';
 
 const addDonation = ref(false);
 const addDonor = ref(false);
@@ -56,40 +57,15 @@ const addDonor = ref(false);
 const props = defineProps<{
     user:{id:string, permissionLevel:number}
     donors:{donor:Donor, donations:Donation[],boardMember:{name:string}|null}[],
-    donations?:{
+    donations:{
         donation:Donation
         boardMember:{name:string}| null, 
         donor: {name: string | null} | null,
     }[]
 }>();
 
-const events: ComputedRef<string[]> = computed(() => {
-    if (props.donations) {
-        const uniqueEvents = new Set(
-            props.donations.map(donation => donation.donation.event).filter((event) => event != null)
-        )
-        return Array.from(uniqueEvents)
-    }
-    return []
-})
-const methods:ComputedRef<string[]> = computed(() => {
-    if (props.donations) {
-        const uniqueEvents = new Set(
-            props.donations.map(donation => donation.donation.method).filter((method) => method != null)
-        )
-        return Array.from(uniqueEvents)
-    }
-    return []
-})
-const organizations:ComputedRef<string[]> = computed(() => {
-    if (props.donations) {
-        const uniqueEvents = new Set(
-            props.donors.map(donor => donor.donor.organization).filter((organization) => organization != null)
-        )
-        return Array.from(uniqueEvents)
-    }
-    return []
-})
+const {events,methods} = useDonationDropDown(props.donations)
+const {organizations} = useDonorDropDown(props.donors)
 
 async function createDonor(values:Record<string,any>){
     const {data, error} = await $fetch('/api/donor',{

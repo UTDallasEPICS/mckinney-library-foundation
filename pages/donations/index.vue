@@ -46,6 +46,7 @@ import DonationTable from '~/components/Tables/DonationTable.vue';
 import DonationForm from '~/components/Forms/DonationForm.vue';
 import { useAuth } from '~/composables/useAuth';
 import { useDonor } from '~/composables/useDonor';
+import { useDonationDropDown } from '~/composables/useDropDown';
 import { useDonation } from '~/composables/useDonation';
 import type { Donation, Donor } from '@prisma/client';
 
@@ -73,25 +74,7 @@ await getDonors();
 const {donationsData, getDonations} = useDonation();
 await getDonations();
 
-const events: ComputedRef<string[]> = computed(() => {
-    if (donationsData) {
-        const uniqueEvents = new Set(
-            donationsData.value.map(donation => donation.donation.event).filter((event) => event != null)
-        )
-        return Array.from(uniqueEvents)
-    }
-    return []
-})
-const methods: ComputedRef<string[]> = computed(() => {
-    if (donationsData) {
-        const uniqueEvents = new Set(
-            donationsData.value.map(donation => donation.donation.method).filter((method) => method != null)
-        )
-        return Array.from(uniqueEvents)
-    }
-    return []
-})
-
+const {events, methods} = useDonationDropDown(donationsData.value)
 
 const donationData:Ref<{ 
     donation:Donation,

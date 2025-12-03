@@ -48,6 +48,7 @@ import DonorForm from '~/components/Forms/DonorForm.vue';
 import DonationBar from '~/components/Bars/DonationBar.vue'
 import { useAuth } from '~/composables/useAuth';
 import { useDonation } from '~/composables/useDonation';
+import { useDonorDropDown } from '~/composables/useDropDown';
 import type { Donation, Donor } from '@prisma/client';
 
 
@@ -93,15 +94,7 @@ donors.value.map((thisDonor:Donor,index:number) => {
   donorTableData.value.push({donor:thisDonor,donations:donors.value[index].donations,boardMember:donors.value[index].boardMember})
 })
 
-const organizations: ComputedRef<string[]> = computed(() => {
-    if (donorTableData) {
-        const uniqueEvents = new Set(
-            donorTableData.value.map(donor => donor.donor.organization).filter((organization) => organization != null)
-        )
-        return Array.from(uniqueEvents)
-    }
-    return []
-})
+const {organizations} = useDonorDropDown(donorTableData.value)
 
 const {donationsData, getDonations} = useDonation();
 await getDonations();
