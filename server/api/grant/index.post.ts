@@ -11,16 +11,34 @@ export default defineEventHandler(async (event) => {
                 statusMessage:"User does not have permission to create grants"
             })
         }
+        let grantorRecord = await prisma.grantor.findFirst({
+            where:{
+                name:body.grantor
+            }
+        })
+        if(!grantorRecord){
+            grantorRecord = await prisma.grantor.create({
+                data:{
+                    name: body.grantor? body.grantor : "Anonymous",
+                    address: "",
+                    email: "",
+                    phone: "",
+                    preferredCommunication: "",
+                    notes: "",
+                    boardMemberId: body.boardMemberId
+                }
+            })
+        }
         const grant = await prisma.grant.create({
             data: {
                 boardMemberId: body.boardMemberId,
-                grantorId: body.grantorId,
+                grantorId: grantorRecord.id,
                 purpose: body.purpose,
                 method: body.method,
                 monetaryAmount: body.monetaryAmount,
                 nonMonetaryAmount: body.nonMonetaryAmount,
                 notes: body.notes,
-                proposedDate: new Date(),
+                proposedDate: new Date(body.proposedDate),
                 receivedDate: new Date(body.receivedDate),
                 lastEditDate: new Date(),
             },

@@ -21,6 +21,8 @@
         :cancel-submisison="cancelUpdate"
         :data="grantData"
         :index="grantIndex"
+        :methods="methods"
+        :purposes="purposes"
     />
 </div>
 
@@ -31,6 +33,8 @@
         :submit-grant="updateGrant"
         :cancel-submisison="cancelUpdate"
         :data="grantData"
+        :methods="methods"
+        :purposes="purposes"
     />
 </div>
 
@@ -69,7 +73,7 @@ await getGrantors();
 const {grantsData, getGrants} = useGrant();
 await getGrants();
 
-/*
+
 const purposes: ComputedRef<string[]> = computed(() => {
     if (grantsData) {
         const uniquePurposes = new Set(
@@ -88,7 +92,7 @@ const methods: ComputedRef<string[]> = computed(() => {
     }
     return []
 })
-*/
+
 
 
 const grantData:Ref<{ 
@@ -116,9 +120,9 @@ const grantIndex = ref(0);
 
 
 const grantorTableData:Ref<{grantor:Grantor, grants:Grant[],boardMember:{name:string} }[]> = ref([]);
-// grantors.value.map((thisGrantor:Grantor,index:number) => {
-//   grantorTableData.value.push({grantor:thisGrantor,grants:grantors.value[index].grants, boardMember:{name:grantors.value[index].boardMember.name} })
-// })
+ grantors.value.map((thisGrantor:Grantor,index:number) => {
+   grantorTableData.value.push({grantor:thisGrantor,grants:grantors.value[index].grants, boardMember:{name:grantors.value[index].boardMember.name} })
+ })
 
 async function prepGrantUpdate(grantInfo:{grant:Grant,boardMember:{name:string}| null, grantor: {name: string} | null},index:number){
     grantData.value.grant = grantInfo.grant;
@@ -151,14 +155,14 @@ async function updateGrant(values:Record<string, any>){
             monetaryAmount: values.monetaryAmount,
             nonMonetaryAmount: values.nonMonetaryAmount,
             notes: values.notes,
-            proposedDate: new Date(),
+            proposedDate: values.proposedDate,
             receivedDate: values.receivedDate,
         }
     })
     if(result.data){
         grantsData.value[values.index].grant ={
             ...result.data, 
-            proposedDate: result.data.proposedDate ? new Date() : null,
+            proposedDate: result.data.proposedDate ? new Date(result.data.proposedDate) : null,
             receivedDate: result.data.receivedDate ? new Date(result.data.receivedDate) : null,
             lastEditDate: result.data.lastEditDate ? new Date(result.data.lastEditDate) : null,
         }

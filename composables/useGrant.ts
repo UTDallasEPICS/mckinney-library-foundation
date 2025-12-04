@@ -36,14 +36,7 @@ export function useGrant() {
             }
         } 
 
-    async function getGrant(selectedGrant: Grant) {
-        try {
-            const route: string = `/api/grants/${selectedGrant.id}`;
-            selectedGrant = await $fetch<Grant>(route);
-        } catch (error) {
-            console.error('getGrant Error:', error);
-        }
-    }
+    
 
     async function updateGrant(selectedGrant: Grant) {
         try {
@@ -57,17 +50,24 @@ export function useGrant() {
         }
     }
 
-    async function createGrant(selectedGrant: Grant) {
-        try {
-            const route: string = `/api/grants`;
-            await $fetch(route, {
-                method: "POST",
-                body: selectedGrant
-            });
-
-        } catch (error) {
-            console.error('createGrant Error:', error);
-        }
+    async function postGrant(values:Record<string,any>,user:{id:string, permissionLevel:number}) {
+        const result = await $fetch('/api/grant',{
+            method:"POST",
+            body:{
+                grantor: values.grantorName,
+                boardMemberId: user.id,
+                permissionLevel: user.permissionLevel,
+                status: values.status,
+                purpose: values.purpose,
+                method:values.method,
+                monetaryAmount: values.monetaryAmount,
+                nonMonetaryAmount: values.nonMonetaryAmount,
+                notes: values.notes,
+                receivedDate: values.receivedDate,
+                proposedDate: values.proposedDate
+            }
+        })
+        return result
     }
 
     async function deleteGrant(selectedGrant: Grant) {
@@ -82,13 +82,24 @@ export function useGrant() {
         }
     }
 
+
+
+    async function getGrant(selectedGrant: Grant) {
+        try {
+            const route: string = `/api/grants/${selectedGrant.id}`;
+            selectedGrant = await $fetch<Grant>(route);
+        } catch (error) {
+            console.error('getGrant Error:', error);
+        }
+    }
+
     return {
         grantsData,
         selectedGrant,
         getGrants,
         getGrant,
         updateGrant,
-        createGrant,
+        postGrant,
         deleteGrant
     }
 }

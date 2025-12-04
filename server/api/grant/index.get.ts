@@ -6,8 +6,16 @@ export default defineEventHandler(async (event) => {
     try {        
         const grants = await prisma.grant.findMany({
             include: {
-                boardMember: true,
-                grantor: true,
+                boardMember:{
+                    select:{
+                        name:true
+                    }
+                },
+                grantor: {
+                    select:{
+                        name:true
+                    }
+                },
             }
         });
         return { 

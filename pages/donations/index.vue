@@ -46,7 +46,7 @@ import DonationTable from '~/components/Tables/DonationTable.vue';
 import DonationForm from '~/components/Forms/DonationForm.vue';
 import { useAuth } from '~/composables/useAuth';
 import { useDonor } from '~/composables/useDonor';
-import { useDonationDropDown } from '~/composables/useDropDown';
+import { useDonationDropDown } from '~/composables/useDonationDropDown';
 import { useDonation } from '~/composables/useDonation';
 import type { Donation, Donor } from '@prisma/client';
 

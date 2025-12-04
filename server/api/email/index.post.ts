@@ -10,7 +10,7 @@ export default eventHandler(async (event)=>{
     }
     console.log(body);
 
-    // try{
+    // try{         commented out to prevent attempts to send emails to addresses that dont exist/we don't have access to
         // if(body.permissionLevel < 2){
         //     throw createError({
         //         statusCode:401,

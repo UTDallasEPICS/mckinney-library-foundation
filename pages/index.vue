@@ -189,7 +189,8 @@ async function checkCode(values:Record<string, any>){
          otp: values.otp_code.trim(), 
        });
        if(error){
-         console.error(error)
+         console.error(error);
+         alert("Invalide Code");
        }
        else{
         navigateTo("/dashboard");

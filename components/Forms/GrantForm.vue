@@ -6,15 +6,9 @@
             </div>
             <VeeField hidden name="id"></VeeField>
             <VeeField  hidden name="index"></VeeField> 
-            <div  class="grid grid-cols-2 gap-4">
+            <div  class="grid grid-cols-2 gap-4 mb-5">
                 <h2 class="form-field-label">grantor (name) <span class = "text-red-500">*</span></h2>
-                <h2 class="form-field-label">purpose <span class = "text-red-500">*</span></h2>      
-                <div>
-                    <VeeErrorMessage class="text-red-500"  name="grantorName" />
-                </div>
-                <div>
-                    <VeeErrorMessage class="text-red-500"  name="purpose" />
-                </div>      
+                <h2 class="form-field-label">purpose <span class = "text-red-500">*</span></h2>                     
                 <VeeField autocomplete="off" v-slot="{field}" :disabled="viewOnly" name="grantorName" class="form-input focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px]">
                     <input :disabled="viewOnly" autocomplete="off" v-bind="field" list="grantor-list" class="w-full px-3 py-2 bg-white border border-gray-300 rounded text-[#2d3e4d] focus:outline-none focus:ring-2 focus:ring-[#5a6a77] cursor-pointer">
                         <datalist id="grantor-list">
@@ -27,42 +21,38 @@
                     <input :disabled="viewOnly" autocomplete="off" v-bind="field" list="purpose-list" class="w-full px-3 py-2 bg-white border border-gray-300 rounded text-[#2d3e4d] focus:outline-none focus:ring-2 focus:ring-[#5a6a77] cursor-pointer">
                         <datalist id="purpose-list">
                             <option></option>
-                            <!--<option v-if="purposes.length > 0" v-for="purpose in purposes" :value="purpose"></option>-->
+                            <option v-if="purposes.length > 0" v-for="purpose in purposes" :value="purpose"></option>
                         </datalist> 
                     </input>
-                </VeeField>                       
+                </VeeField>  
+                <div>
+                    <VeeErrorMessage class="text-red-500"  name="grantorName" />
+                </div>
+                <div>
+                    <VeeErrorMessage class="text-red-500"  name="purpose" />
+                </div>                     
             </div>
             
-            <div class="grid grid-cols-2 gap-4">
+            <div class="grid grid-cols-2 gap-4 mb-5">
                 <h2 class="form-field-label">monetary amount</h2>
                 <h2 class="form-field-label">non monetary amount</h2>
+                <VeeField autocomplete="off" :disabled="viewOnly" class="form-input focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px]" name="monetaryAmount"/>
+                <VeeField autocomplete="off" :disabled="viewOnly" class="form-input focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px]" name="nonMonetaryAmount"/>
                 <div>
                     <VeeErrorMessage class="text-red-500"  name="monetaryAmount" />
                 </div>
                 <div>
                     <VeeErrorMessage class="text-red-500"  name="nonMonetaryAmount" />
                 </div>
-                <VeeField autocomplete="off" :disabled="viewOnly" class="form-input focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px]" name="monetaryAmount"/>
-                <VeeField autocomplete="off" :disabled="viewOnly" class="form-input focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px]" name="nonMonetaryAmount"/>
             </div>
-            <div class="grid grid-cols-3 gap-4">
+            <div class="grid grid-cols-2 gap-4 mb-5">
                 <h2 class="form-field-label">method <span class = "text-red-500">*</span></h2>
-                <h2 class="form-field-label">status<span class = "text-red-500">*</span></h2>
-                <h2 class="form-field-label">Received Date<span class = "text-red-500">*</span></h2>
-                <div>
-                    <VeeErrorMessage class="text-red-500"  name="method" />
-                </div>
-                <div>
-                    <VeeErrorMessage class="text-red-500"  name="status" />
-                </div>
-                <div>
-                    <VeeErrorMessage class="text-red-500" name="recievedDate" />
-                </div>
+                <h2 class="form-field-label">status<span class = "text-red-500">*</span></h2>          
                 <VeeField v-slot="{field}" autocomplete="off" :disabled="viewOnly"name="method" class="form-input focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px]">
                     <input :disabled="viewOnly" autocomplete="off" v-bind="field" list="method-list" class="w-full px-3 py-2 bg-white border border-gray-300 rounded text-[#2d3e4d] focus:outline-none focus:ring-2 focus:ring-[#5a6a77] cursor-pointer">
                         <datalist id="method-list">
                             <option></option>
-                            <!--<option v-if="methods.length > 0" v-for="method in methods" :value="method"></option>-->
+                            <option v-if="methods.length > 0" v-for="method in methods" :value="method"></option>
                         </datalist>
                     </input>
                 </VeeField>
@@ -72,12 +62,30 @@
                         <option :disabled="viewOnly" value = 1> Recieved </option>
                     </select>
                 </VeeField>
+                <div>
+                    <VeeErrorMessage class="text-red-500"  name="method" />
+                </div>
+                <div>
+                    <VeeErrorMessage class="text-red-500"  name="status" />
+                </div>
+            </div>
+            <div class="grid grid-cols-2 gap-4 mb-5">
+                <h2 class="form-field-label">Proposed Date<span class = "text-red-500">*</span></h2>
+                <h2 class="form-field-label">Received Date<span class = "text-red-500">*</span></h2>
+                <VeeField v-slot="{field}" autocomplete="off" :disabled="viewOnly" class="form-input focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px]" name="proposedDate">
+                    <input id="propDate"  autocomplete="off" :disabled="viewOnly" v-model="proposedDateRef" v-bind="field" type="date"></input>
+                </VeeField>
                 <VeeField v-slot="{field}" autocomplete="off" :disabled="viewOnly" class="form-input focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px]" name="receivedDate">
                     <input id="reqDate"  autocomplete="off" :disabled="viewOnly" v-model="recievedDateRef" v-bind="field" type="date"></input>
                 </VeeField>
+                <div>
+                    <VeeErrorMessage class="text-red-500" name="proposedDate" />
                 </div>
-
-            <h2 class="form-field-label">Notes</h2>
+                <div>
+                    <VeeErrorMessage class="text-red-500" name="recievedDate" />
+                </div>
+            </div>
+            <h2 class="form-field-label mb-2">Notes</h2>
             <VeeField autocomplete="off" :disabled="viewOnly" v-slot="{field}" name="notes">
                 <textarea v-bind="field" class="form-field focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px]"></textarea>
             </VeeField>
@@ -98,13 +106,14 @@ const props = defineProps<{
     submitGrant: (values: Record<string,any>) => Promise<void>         
     viewOnly: boolean
     index?:number,
-    purposes?: string[],
-    methods?: string[],
+    purposes: string[],
+    methods: string[],
     grantors:{grantor:Grantor, grants:Grant[]}[]
     data?:{grant:Grant,boardMember:{name:string}| null, grantor: {name: string | null} | null}
 }>();
 
-const recievedDateRef = ref('');
+const recievedDateRef = ref(new Date().toISOString());
+const proposedDateRef = ref('');
 const initValues = props.data?{
     index:props.index, 
     id: props.data.grant.id,
@@ -116,6 +125,7 @@ const initValues = props.data?{
     status:props.data.grant.status,
     notes:props.data.grant.notes,
     receivedDate: props.data.grant.receivedDate? props.data.grant.receivedDate.toISOString().split('T')[0] : '',
+    proposedDate: props.data.grant.proposedDate? props.data.grant.proposedDate.toISOString().split('T')[0] : '',
 }: undefined
 
 if(initValues && initValues.receivedDate != ''){
@@ -135,8 +145,11 @@ const schema = yup.object({
     }),
     method: yup.string().required('Must enter payment method'),
     status: yup.string().required('Must enter status'),
-    recievedDate: yup.string().test('date-not-empty', 'Date must be entered', ()=>{
+    recievedDate: yup.string().test('date-not-empty', 'Recieved Date must be entered', ()=>{
         return recievedDateRef.value !== ''
+    }),
+    proposedDate: yup.string().test('date-not-empty', 'Proposed Date must be entered', ()=>{
+        return proposedDateRef.value !== ''
     }),
 })
 

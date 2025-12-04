@@ -22,9 +22,8 @@ export default defineEventHandler(async (event) => {
                 monetaryAmount: body.monetaryAmount,
                 nonMonetaryAmount: body.nonMonetaryAmount,
                 notes: body.notes,
-                proposedDate: new Date(),
+                proposedDate: new Date(body.proposedDate),
                 receivedDate: new Date(body.receivedDate),
-                //lastEditDate: new Date(body.proposedDate),
             },
             include: {
                 boardMember: true,

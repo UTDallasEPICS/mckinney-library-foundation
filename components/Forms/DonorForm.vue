@@ -6,20 +6,19 @@
             </div>     
             <VeeField autocomplete="off" hidden name="id"></VeeField>
             <VeeField autocomplete="off" hidden name="index"></VeeField>  
-            <div class="grid grid-cols-2 gap-4">
+            <div class="grid grid-cols-2 gap-4 mb-5">
                 <h2 class = "form-field-label"> first name </h2>        
                 <h2 class = "form-field-label"> last name </h2>
+                <VeeField autocomplete="off" :disabled="viewOnly" name="fName" class="form-input focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px]"></VeeField>
+                <VeeField autocomplete="off" :disabled="viewOnly" name="lName" class="form-input focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px]"></VeeField>
                 <div>
                     <VeeErrorMessage class="text-red-500" name= "fName" />
                 </div>
                 <div>
                     <VeeErrorMessage class="text-red-500" name= "lName" />
                 </div>
-                <VeeField autocomplete="off" :disabled="viewOnly" name="fName" class="form-input focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px]"></VeeField>
-                <VeeField autocomplete="off" :disabled="viewOnly" name="lName" class="form-input focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px]"></VeeField>
             </div>
-
-            <div class = "grid grid-cols-3 gap-4">
+            <div class = "grid grid-cols-3 gap-4 mb-5">
                 <h2 class = "form-field-label"> phone </h2>
                 <h2 class = "form-field-label"> email </h2>
                 <h2 class = "form-field-label"> Communication Prefrence </h2> 
@@ -41,7 +40,7 @@
                     </select>
                 </VeeField>
             </div>
-            <div class = "mt-5 grid grid-cols-3 gap-4">
+            <div class = "mt-5 grid grid-cols-3 gap-4 mb-5">
                 <h2 class = "form-field-label"> organization </h2>
                 <h2 class = "form-field-label"> address </h2>
                 <h2 class = "form-field-label"> web link </h2>
@@ -59,9 +58,7 @@
             <h2 class = "form-field-label"> notes </h2>
             <VeeField autocomplete="off" v-slot="{field}" :disabled="viewOnly" name="notes">
                 <textarea :disabled="viewOnly" v-bind="field" class="form-field focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px]"></textarea>
-            </VeeField>
-            
-            
+            </VeeField>   
             <div class="flex justify-center gap-4 my-2">
                 <button @click="cancelSubmisison()" class ="form-button bg-gray-600 hover:bg-gray-700">Cancel</button>
                 <button v-if="!viewOnly" class ="form-button bg-blue-600 hover:bg-blue-700">Submit</button>

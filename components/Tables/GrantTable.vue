@@ -4,66 +4,72 @@
             <table class="w-full">
                 <thead  class="bg-[#c5d0d8] sticky top-0 z-10">
                     <tr>
-                        <th class="px-4 py-3 text-left text-sm text-[#2d3e4d] border-b-2 border-[#a8b5bf] cursor-pointer transition-colors">
+                        <th class="px-4 py-3 text-left text-xs text-[#2d3e4d] border-b-2 border-[#a8b5bf] cursor-pointer transition-colors">
                             <div class="w-full flex gap-2">
-                                <span @click="toggleSearch(0)" v-if="!activeSearch[0].active">Grantor ↑↓</span>
+                                <span v-if="!activeSearch[0].active">Grantor</span>
+                                <button @click="toggleSearch(0)" v-if="!activeSearch[0].active"><FunnelIcon class="w-4 h-4"/></button>
                                 <div  v-else>
                                     <input autocomplete="off" v-model="searchInputs.grantorName" @click.stop class="mt-2 px-2 py-1 border rounded"placeholder="Search Grantors"/>
                                     <button class="text-lg" @click="toggleSearch(0)">&#x24E7;</button>
                                 </div>
-                                <button v-if="activeSorts[0].active" @click="toggleSort(0)" class="bg-[#c8c9c9] outline-double outline-black">A-Z &#8595;</button>
-                                <button v-else @click="toggleSort(0)">A-Z &#8595;</button>
+                                <button v-if="activeSorts[0].active" @click="toggleSort(0)" class="bg-[#c8c9c9] outline-double outline-black"><NumberedListIcon class="w-4 h-4"/></button>
+                                <button v-else @click="toggleSort(0)"><NumberedListIcon class="w-4 h-4"/></button>
                             </div>  
                         </th>
-                        <th class="px-4 py-3 text-left text-sm text-[#2d3e4d] border-b-2 border-[#a8b5bf] cursor-pointer transition-colors">
+                        <th class="px-4 py-3 text-left text-xs text-[#2d3e4d] border-b-2 border-[#a8b5bf] cursor-pointer transition-colors">
                             <div class="w-full flex gap-2">
-                                <span @click="toggleSearch(1)" v-if="!activeSearch[1].active">Purpose ↑↓</span>
+                                <span v-if="!activeSearch[1].active">Purpose</span>
+                                <button @click="toggleSearch(1)" v-if="!activeSearch[1].active"><FunnelIcon class="w-4 h-4"/></button>
                                 <div  v-else>
                                     <input autocomplete="off" v-model="searchInputs.purpose" @click.stop class="mt-2 px-2 py-1 border rounded"placeholder="Search purpose"/>
                                     <button class="text-lg" @click="toggleSearch(1)">&#x24E7;</button>                               
                                 </div>
-                                <button v-if="activeSorts[1].active" @click="toggleSort(1)" class="bg-[#c8c9c9] outline-double outline-black">A-Z &#8595;</button>
-                                <button v-else @click="toggleSort(1)">A-Z &#8595;</button>
+                                <button v-if="activeSorts[1].active" @click="toggleSort(1)" class="bg-[#c8c9c9] outline-double outline-black"><NumberedListIcon class="w-4 h-4"/></button>
+                                <button v-else @click="toggleSort(1)"><NumberedListIcon class="w-4 h-4"/></button>
                             </div>
                         </th>
-                        <th class="px-4 py-3 text-left text-sm text-[#2d3e4d] border-b-2 border-[#a8b5bf] cursor-pointer transition-colors">
+                        <th class="px-4 py-3 text-left text-xs text-[#2d3e4d] border-b-2 border-[#a8b5bf] cursor-pointer transition-colors">
                             <div class="w-full flex gap-2">
-                                <span @click="toggleSearch(2)" v-if="!activeSearch[2].active">Monetary Amount ↑↓</span>
+                                <span v-if="!activeSearch[2].active">Monetary Amount ↑↓</span>
+                                <button @click="toggleSearch(2)" v-if="!activeSearch[2].active"><FunnelIcon class="w-4 h-4"/></button>
                                 <div  v-else>
                                     <input autocomplete="off" v-model="minMoney"  @click.stop class="mt-2 px-2 py-1 border rounded"placeholder="minimum"/>
                                     <input autocomplete="off" v-model="maxMoney" @click.stop class="mt-2 px-2 py-1 border rounded"placeholder="maximum"/>
                                     <button class="text-lg" @click="toggleSearch(2)">&#x24E7;</button>
                                 </div>
-                                <button v-if="activeSorts[2].active" @click="toggleSort(2)" class="bg-[#c8c9c9] outline-double outline-black">#&#8595;</button>
-                                <button v-else @click="toggleSort(2)">#&#8595;</button>
+                                <button v-if="activeSorts[2].active" @click="toggleSort(2)" class="bg-[#c8c9c9] outline-double outline-black"><NumberedListIcon class="w-4 h-4"/></button>
+                                <button v-else @click="toggleSort(2)"><NumberedListIcon class="w-4 h-4"/></button>
                             </div>
                         </th>
-                        <th class="px-4 py-3 text-left text-sm text-[#2d3e4d] border-b-2 border-[#a8b5bf] cursor-pointer transition-colors">
+                        <th class="px-4 py-3 text-left text-xs text-[#2d3e4d] border-b-2 border-[#a8b5bf] cursor-pointer transition-colors">
                             <div class="w-full flex gap-2">
-                                <span @click="toggleSearch(3)" v-if="!activeSearch[3].active">Non-Monetary Amount ↑↓</span>
+                                <span v-if="!activeSearch[3].active">Non-Monetary Amount</span>
+                                <button @click="toggleSearch(3)" v-if="!activeSearch[3].active"><FunnelIcon class="w-4 h-4"/></button>
                                 <div  v-else>
                                     <input autocomplete="off" v-model="searchInputs.nonMonetaryAmount" @click.stop class="mt-2 px-2 py-1 border rounded"placeholder="Search"/>
                                     <button class="text-lg" @click="toggleSearch(3)">&#x24E7;</button>
                                 </div>
-                                <button v-if="activeSorts[3].active" @click="toggleSort(3)" class="bg-[#c8c9c9] outline-double outline-black">A-Z &#8595;</button>
-                                <button v-else @click="toggleSort(3)">A-Z &#8595;</button>
+                                <button v-if="activeSorts[3].active" @click="toggleSort(3)" class="bg-[#c8c9c9] outline-double outline-black"><NumberedListIcon class="w-4 h-4"/></button>
+                                <button v-else @click="toggleSort(3)"><NumberedListIcon class="w-4 h-4"/></button>
                             </div>
                         </th>
-                        <th class="px-4 py-3 text-left text-sm text-[#2d3e4d] border-b-2 border-[#a8b5bf] cursor-pointer transition-colors">
+                        <th class="px-4 py-3 text-left text-xs text-[#2d3e4d] border-b-2 border-[#a8b5bf] cursor-pointer transition-colors">
                             <div class="w-full flex gap-2">
-                                <span @click="toggleSearch(4)" v-if="!activeSearch[4].active">Payment Method ↑↓</span>
+                                <span v-if="!activeSearch[4].active">Payment Method</span>
+                                <button @click="toggleSearch(4)" v-if="!activeSearch[4].active"><FunnelIcon class="w-4 h-4"/></button>
                                 <div  v-else>
                                     <input autocomplete="off" v-model="searchInputs.method" @click.stop class="mt-2 px-2 py-1 border rounded"placeholder="Search method"/>
                                     <button class="text-lg" @click="toggleSearch(4)">&#x24E7;</button>
                                 </div>
-                                <button v-if="activeSorts[4].active" @click="toggleSort(4)" class="bg-[#c8c9c9] outline-double outline-black">A-Z &#8595;</button>
-                                <button v-else @click="toggleSort(4)">A-Z &#8595;</button>
+                                <button v-if="activeSorts[4].active" @click="toggleSort(4)" class="bg-[#c8c9c9] outline-double outline-black"><NumberedListIcon class="w-4 h-4"/></button>
+                                <button v-else @click="toggleSort(4)"><NumberedListIcon class="w-4 h-4"/></button>
                                 
                             </div>
                         </th>
-                        <th class="px-4 py-3 text-left text-sm text-[#2d3e4d] border-b-2 border-[#a8b5bf] cursor-pointer transition-colors">
+                        <th class="px-4 py-3 text-left text-xs text-[#2d3e4d] border-b-2 border-[#a8b5bf] cursor-pointer transition-colors">
                             <div class="w-full flex gap-2">
-                                <span @click="toggleSearch(5)" v-if="!activeSearch[5].active">Status ↑↓</span>
+                                <span v-if="!activeSearch[5].active">Status</span>
+                                <button @click="toggleSearch(5)" v-if="!activeSearch[5].active"><FunnelIcon class="w-4 h-4"/></button>
                                 <div  v-else>
                                     <select autocomplete="off" v-model="searchInputs.status" @click.stop class="mt-2 px-2 py-1 border rounded">
                                         <option value=0>Pending</option>
@@ -71,13 +77,14 @@
                                     </select>
                                     <button class="text-lg" @click="toggleSearch(5)">&#x24E7;</button>
                                 </div>
-                                <button v-if="activeSorts[5].active" @click="toggleSort(5)" class="bg-[#c8c9c9] outline-double outline-black">A-Z &#8595;</button>
-                                <button v-else @click="toggleSort(5)">A-Z &#8595;</button>
+                                <button v-if="activeSorts[5].active" @click="toggleSort(5)" class="bg-[#c8c9c9] outline-double outline-black"><NumberedListIcon class="w-4 h-4"/></button>
+                                <button v-else @click="toggleSort(5)"><NumberedListIcon class="w-4 h-4"/></button>
                             </div>
                         </th>
-                        <th class="px-4 py-3 text-left text-sm text-[#2d3e4d] border-b-2 border-[#a8b5bf] cursor-pointer transition-colors">
+                        <th class="px-4 py-3 text-left text-xs text-[#2d3e4d] border-b-2 border-[#a8b5bf] cursor-pointer transition-colors">
                             <div class="w-full flex gap-2">
-                                <span @click="toggleSearch(6)" v-if="!activeSearch[6].active">Recieved Date ↑↓</span>
+                                <span @click="toggleSearch(6)" v-if="!activeSearch[6].active">Recieved Date</span>
+                                <button @click="toggleSearch(6)" v-if="!activeSearch[6].active"><FunnelIcon class="w-4 h-4"/></button>
                                 <div  v-else>
                                     <p>start date</p>
                                     <input autocomplete="off" v-model="earliestDono" type="date"  @click.stop class="mt-2 px-2 py-1 border rounded"placeholder="minimum"/>
@@ -85,22 +92,23 @@
                                     <input autocomplete="off" v-model="latestDono" type="date" @click.stop class="mt-2 px-2 py-1 border rounded"placeholder="maximum"/>
                                     <button class="text-lg" @click="toggleSearch(6)">&#x24E7;</button>
                                 </div>
-                                <button v-if="activeSorts[6].active" @click="toggleSort(6)" class="bg-[#c8c9c9] outline-double outline-black">#&#8595;</button>
-                                <button v-else @click="toggleSort(6)">#&#8595;</button>
+                                <button v-if="activeSorts[6].active" @click="toggleSort(6)" class="bg-[#c8c9c9] outline-double outline-black"><NumberedListIcon class="w-4 h-4"/></button>
+                                <button v-else @click="toggleSort(6)"><NumberedListIcon class="w-4 h-4"/></button>
                             </div>
                         </th>
-                        <th class="px-4 py-3 text-left text-sm text-[#2d3e4d] border-b-2 border-[#a8b5bf] cursor-pointer transition-colors">
+                        <th class="px-4 py-3 text-left text-xs text-[#2d3e4d] border-b-2 border-[#a8b5bf] cursor-pointer transition-colors">
                             <div class="w-full flex gap-2">
-                                <span @click="toggleSearch(7)" v-if="!activeSearch[7].active">Last Editor ↑↓</span>
+                                <span @click="toggleSearch(7)" v-if="!activeSearch[7].active">Last Editor</span>
+                                <button @click="toggleSearch(7)" v-if="!activeSearch[7].active"><FunnelIcon class="w-4 h-4"/></button>
                                 <div  v-else>
                                     <input autocomplete="off" v-model="searchInputs.boardName" @click.stop class="mt-2 px-2 py-1 border rounded"placeholder="Search Board Members"/>
                                     <button class="text-lg" @click="toggleSearch(7)">&#x24E7;</button>
                                 </div>
-                                <button v-if="activeSorts[7].active" @click="toggleSort(7)" class="bg-[#c8c9c9] outline-double outline-black">A-Z &#8595;</button>
-                                <button v-else @click="toggleSort(7)">A-Z &#8595;</button>
+                                <button v-if="activeSorts[7].active" @click="toggleSort(7)" class="bg-[#c8c9c9] outline-double outline-black"><NumberedListIcon class="w-4 h-4"/></button>
+                                <button v-else @click="toggleSort(7)"><NumberedListIcon class="w-4 h-4"/></button>
                             </div>
                         </th>
-                        <th class="px-4 py-3 text-center text-sm text-[#2d3e4d] border-b-2 border-[#a8b5bf] cursor-pointer transition-colors">Actions</th>
+                        <th class="px-4 py-3 text-center text-xs text-[#2d3e4d] border-b-2 border-[#a8b5bf] cursor-pointer transition-colors">Actions</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -129,7 +137,8 @@
 
 <script setup lang="ts">
 import type { Grant } from '@prisma/client';
-
+import { FunnelIcon } from '@heroicons/vue/24/solid';
+import { NumberedListIcon } from '@heroicons/vue/24/outline';
 const props = defineProps<{
     data:{grant:Grant,boardMember:{name:string} | null, grantor: {name: string} | null}[],
     editFunction: (grantData:{grant:Grant,boardMember:{name:string}| null, grantor: {name: string} | null},index:number) => Promise<void>,

@@ -49,6 +49,11 @@
 import type { Grant, Grantor } from '@prisma/client';
 import GrantForm from '../Forms/GrantForm.vue';
 import GrantorForm from '../Forms/GrantorForm.vue';
+import {useGrant} from '~/composables/useGrant';
+import { useGrantor } from '~/composables/useGrantor';
+
+const {postGrant} = useGrant();
+const {postGrantor} = useGrantor();
 
 const addGrant = ref(false);
 const addGrantor = ref(false);
@@ -56,11 +61,7 @@ const addGrantor = ref(false);
 const props = defineProps<{
     user:{id:string, permissionLevel:number}
     grantors:{grantor:Grantor, grants:Grant[],boardMember:{name:string}|null}[],
-    grants?:{
-        grant:Grant
-        boardMember:{name:string}| null, 
-        grantor: {name: string | null} | null,
-    }[]
+    grants?:{grant:Grant,boardMember:{name:string}| null, grantor: {name: string | null} | null,}[]
 }>();
 
 const purposes: ComputedRef<string[]> = computed(() => {
@@ -92,30 +93,16 @@ const organizations:ComputedRef<string[]> = computed(() => {
 })
 
 async function createGrantor(values:Record<string,any>){
-    const {data, error} = await $fetch('/api/grantor',{
-        method:"POST",
-        body:{
-            name:values.fName.trim() + " " + values.lName.trim(),
-            email: values.email? values.email.trim(): "",
-            phone: values.phone? values.phone.trim(): "",
-            address: values.address? values.address.trim(): "",
-            preferredCommunication: values.preferredCommunication? values.preferredCommunication.trim(): "",
-            notes: values.notes,
-            webLink: values.webLink? values.webLink.trim() : "",
-            organization: values.organization? values.organization.trim() : "",
-            permissionLevel:props.user.permissionLevel,
-            boardMemberId:props.user.id
-        }
-    })
-    if(error.code === 'P2002'){
+    const result = await postGrantor(values, props.user)
+    if(result.error.code === 'P2002'){
         alert('Grantor already exists');
     }
-    else if(data){
+    else if(result.data){
         if(props.grantors){
             props.grantors.push({
-                grantor:{...data},
+                grantor:{...result.data},
                 grants: [],
-                boardMember: data.boardMember? data.boardMember : null
+                boardMember: result.data.boardMember? result.data.boardMember : null
             })
                    
         }
@@ -126,27 +113,13 @@ function cancelGrantor(){
     addGrantor.value = false;
 }
 async function createGrant(values:Record<string,any>){
-    const result = await $fetch('/api/grant',{
-        method:"POST",
-        body:{
-            grantor: values.grantorName,
-            boardMemberId: props.user.id,
-            permissionLevel: props.user.permissionLevel,
-            status: values.status,
-            purpose: values.purpose,
-            method:values.method,
-            monetaryAmount: values.monetaryAmount,
-            nonMonetaryAmount: values.nonMonetaryAmount,
-            notes: values.notes,
-            receivedDate: values.receivedDate,
-        }
-    })
+    const result = await postGrant(values,props.user)
     if(result.data){
         props.grants?.push({
             ...result.data, 
             grant:{
                 ...result.data,
-                proposedDate: result.data.proposedDate ? new Date() : null,
+                proposedDate: result.data.proposedDate ? new Date(result.data.proposedDate) : null,
                 receivedDate: result.data.receivedDate ? new Date(result.data.receivedDate) : null,
                 lastEditDate: result.data.lastEditDate ? new Date(result.data.lastEditDate) : null,
             }        

@@ -6,31 +6,23 @@
             </div>     
             <VeeField autocomplete="off" hidden name="id"></VeeField>
             <VeeField autocomplete="off" hidden name="index"></VeeField>  
-            <div class="grid grid-cols-2 gap-4">
+            <div class="grid grid-cols-2 gap-4 mb-5">
                 <h2 class = "form-field-label"> first name </h2>        
                 <h2 class = "form-field-label"> last name </h2>
+                <VeeField autocomplete="off" :disabled="viewOnly" name="fName" class="form-input focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px]"></VeeField>
+                <VeeField autocomplete="off" :disabled="viewOnly" name="lName" class="form-input focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px]"></VeeField>
                 <div>
                     <VeeErrorMessage class="text-red-500" name= "fName" />
                 </div>
                 <div>
                     <VeeErrorMessage class="text-red-500" name= "lName" />
                 </div>
-                <VeeField autocomplete="off" :disabled="viewOnly" name="fName" class="form-input focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px]"></VeeField>
-                <VeeField autocomplete="off" :disabled="viewOnly" name="lName" class="form-input focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px]"></VeeField>
             </div>
 
-            <div class = "grid grid-cols-3 gap-4">
+            <div class = "grid grid-cols-3 gap-4 mb-5">
                 <h2 class = "form-field-label"> phone </h2>
                 <h2 class = "form-field-label"> email </h2>
-                <h2 class = "form-field-label"> Communication Prefrence </h2> 
-                <div class="h-4">
-                    <VeeErrorMessage class="text-red-500" name= "phone" />
-                </div>
-                <div class="h-4">
-                    <VeeErrorMessage class="text-red-500" name= "email" />
-                </div>
-                <div>
-                </div>
+                <h2 class = "form-field-label"> Communication Prefrence </h2>        
                 <VeeField autocomplete="off" :disabled="viewOnly" name="phone" class="form-input focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px]"></VeeField>
                 <VeeField autocomplete="off" :disabled="viewOnly" name="email" class="form-input focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px]"></VeeField>
                 <VeeField v-slot="{field}" autocomplete="off" :disabled="viewOnly" name="preferredCommunication"class="form-input focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px]">
@@ -40,8 +32,14 @@
                         <option value = 1> Email </option> 
                     </select>
                 </VeeField>
+                <div class="h-4">
+                    <VeeErrorMessage class="text-red-500" name= "phone" />
+                </div>
+                <div class="h-4">
+                    <VeeErrorMessage class="text-red-500" name= "email" />
+                </div>
             </div>
-            <div class = "mt-5 grid grid-cols-3 gap-4">
+            <div class = "mt-5 grid grid-cols-3 gap-4 mb-5">
                 <h2 class = "form-field-label"> organization </h2>
                 <h2 class = "form-field-label"> address </h2>
                 <h2 class = "form-field-label"> web link </h2>

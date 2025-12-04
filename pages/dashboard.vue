@@ -56,13 +56,20 @@
         :cancel-submisison="cancelDonation"
         :view-only="false"
         :donors="donorTableData"
-        :events="events"
-        :methods="methods"
+        :events="donationEvents"
+        :methods="donationMethods"
       />
     </div>
 
-    <div v-if="showGrantForm">
-      <GrantsForm />
+    <div v-if="showGrantForm" class="fixed top-0 left-0 w-full h-full flex justify-center items-center z-20 bg-black/50">
+      <GrantForm
+            :submit-grant="createGrant"
+            :cancel-submisison="cancelGrant"
+            :view-only="false"
+            :purposes="grantPurposes"
+            :grantors="grantorTableData"
+            :methods="grantMethods"
+        />
     </div>
 
   </div>
@@ -73,12 +80,15 @@ import { ref } from 'vue'
 import DashboardCard from '~/components/Cards/DashboardCard/DashboardCard.vue'
 import DashboardStat from '~/components/Banners/DashboardBanner.vue'
 import DonationForm from '~/components/Forms/DonationForm.vue'
-import GrantsForm from '~/components/Forms/GrantsForm.vue'
-import { useDonationDropDown } from '~/composables/useDropDown'
+import GrantForm from '~/components/Forms/GrantForm.vue'
+import { useDonationDropDown } from '~/composables/useDonationDropDown'
+import { useGrantsDropDown } from '~/composables/useGrantDropDowns'
 import { useAuth } from '~/composables/useAuth'
-import { useDonor } from '#imports'
+import { useDonor } from '~/composables/useDonor'
+import { useGrant } from '~/composables/useGrant'
+import { useGrantor } from '~/composables/useGrantor'
 import { navigateTo } from '#app'
-import type { Donation, Donor } from '@prisma/client'
+import type { Donation, Donor, Grant, Grantor } from '@prisma/client'
 import { useDonation } from '~/composables/useDonation';
 
 const {donationsData, getDonations, postDonation} = useDonation();
@@ -90,13 +100,30 @@ session.value = await getSession()
 const {donors, getDonors} = useDonor();
 await getDonors();
 
+const {grantsData, getGrants, postGrant} = useGrant();
+await getGrants();
+
+const {grantors , getGrantors} = useGrantor();
+await getGrantors();
+
+
+
 const donorTableData:Ref<{donor:Donor, donations:Donation[]}[]> = ref([]);
 donors.value.map((thisDonor:Donor,index:number) => {
   donorTableData.value.push({donor:thisDonor,donations:donors.value[index].donations})
 })
+
+const grantorTableData:Ref<{grantor:Grantor, grants:Grant[]}[]> = ref([]);
+grantors.value.map((thisGrantor:Grantor,index:number) => {
+  grantorTableData.value.push({grantor:thisGrantor,grants:grantors.value[index].grants})
+})
+
+
 const totalDonors = donors.value
 
-const {events, methods} = useDonationDropDown(donationsData.value)
+const {donationEvents, donationMethods} = useDonationDropDown(donationsData.value)
+
+const {grantPurposes, grantMethods} = useGrantsDropDown(grantsData.value)
 
 const user:Ref<{id:string, permissionLevel:number}> = ref({id:"",permissionLevel:0});
 if (session.value?.user) {
@@ -141,7 +168,8 @@ const GrantCardProps = {
   description:"Track grant applications, manage awards, and monitor grant progress.",
   buttons: [
     { name:"View Grants", link:"/grants", paths:['M2.062 12.348a1 1 0 0 1 0-.696 10.75 10.75 0 0 1 19.876 0 1 1 0 0 1 0 .696 10.75 10.75 0 0 1-19.876 0'], circles:[['12','12','3']], accessLevel:0 },
-    { name:"Add Grants", paths:['M5 12h14','M12 5v14'], accessLevel:1 }
+    { name:"Add Grants", paths:['M5 12h14','M12 5v14'], accessLevel:1 },
+    { name:"View Grantors", link:"/grants/grantors", paths:['M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2','M16 3.128a4 4 0 0 1 0 7.744', 'M22 21v-2a4 4 0 0 0-3-3.87'], circles:[['9','7','4']], accessLevel:0 }
   ]
 }
 
@@ -163,8 +191,21 @@ async function createDonation(values:Record<string,any>){
     }
     showDonationForm.value = false;
 }
+
+async function createGrant(values:Record<string,any>){
+    const result = await postGrant(values,user.value)
+    if(result.success){
+      alert("grant created")
+    }
+    showGrantForm.value = false;
+}
+
+
 function cancelDonation(){
     showDonationForm.value = false;
+}
+function cancelGrant(){
+  showGrantForm.value = false;
 }
 
 const donationsArray = donationsData?.value || [];
@@ -184,5 +225,7 @@ const grantsRes = await $fetch("/api/grant");
 const grantsArray = grantsRes?.data || [];
 
 const totalGrants = grantsArray.length.toLocaleString();
+
+
 
 </script>

@@ -1,7 +1,7 @@
 import type { Donation, Donor } from "@prisma/client";
 
 export const useDonationDropDown = (donations:{donation: Donation,boardMember: {name: string;} | null;donor: {name: string | null;} | null;}[]) => {
-    const events: ComputedRef<string[]> = computed(() => {
+    const donationEvents: ComputedRef<string[]> = computed(() => {
         if (donations) {
             const uniqueEvents = new Set(
                 donations.map((row) => row.donation.event).filter((event) => event != null)
@@ -10,7 +10,7 @@ export const useDonationDropDown = (donations:{donation: Donation,boardMember: {
         }
         return []
     })
-    const methods:ComputedRef<string[]> = computed(() => {
+    const donationMethods:ComputedRef<string[]> = computed(() => {
         if (donations) {
             const uniqueMethods = new Set(
                 donations.map(row => row.donation.method).filter((method) => method != null)
@@ -20,13 +20,13 @@ export const useDonationDropDown = (donations:{donation: Donation,boardMember: {
         return []
     }) 
     return {
-        events,
-        methods
+        donationEvents,
+        donationMethods
     }
 }
 
 export const useDonorDropDown = (donors:{donor:Donor, donations:Donation[],boardMember:{name:string}|null}[]) => {
-    const organizations:ComputedRef<string[]> = computed(() => {
+    const donorOrganizations:ComputedRef<string[]> = computed(() => {
         if (donors) {
             const uniqueOrgs = new Set(
                 donors.map((row) => row.donor.organization).filter((organization) => organization != null)
@@ -36,6 +36,7 @@ export const useDonorDropDown = (donors:{donor:Donor, donations:Donation[],board
         return []
     })
     return {
-        organizations
+        donorOrganizations
     }
 }
+

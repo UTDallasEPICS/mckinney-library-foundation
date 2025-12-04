@@ -28,9 +28,9 @@
             :submit-donation="createDonation"
             :cancel-submisison="cancelDonation"
             :view-only="false"
-            :events="events"
+            :events="donationEvents"
             :donors="donors"
-            :methods="methods"
+            :methods="donationMethods"
         />
     </div>
     <div  v-if = "addDonor"> 
@@ -38,7 +38,7 @@
             :submit-donor="createDonor"
             :cancel-submisison="cancelDonor"
             :view-only="false"
-            :organizations="organizations"
+            :organizations="donorOrganizations"
         />
     </div>
   </div> 
@@ -49,7 +49,7 @@
 import type { Donation, Donor } from '@prisma/client';
 import DonationForm from '../Forms/DonationForm.vue';
 import DonorForm from '../Forms/DonorForm.vue';
-import { useDonationDropDown, useDonorDropDown } from '~/composables/useDropDown';
+import { useDonationDropDown, useDonorDropDown } from '~/composables/useDonationDropDown';
 import { useDonation } from '~/composables/useDonation';
 
 const {postDonation} = useDonation()
@@ -67,8 +67,8 @@ const props = defineProps<{
     }[]
 }>();
 
-const {events,methods} = useDonationDropDown(props.donations)
-const {organizations} = useDonorDropDown(props.donors)
+const {donationEvents,donationMethods} = useDonationDropDown(props.donations)
+const {donorOrganizations} = useDonorDropDown(props.donors)
 
 async function createDonor(values:Record<string,any>){
     const {data, error} = await $fetch('/api/donor',{
