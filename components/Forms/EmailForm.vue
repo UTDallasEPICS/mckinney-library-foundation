@@ -6,19 +6,19 @@
             </div>         
             <div class = "px-6 pb-6 space-y-4">
               <div class="p-2.5 rounded-md mb-4 bg-[#f5f5f5]">
-                <p>Recipients: {{ props.nameList }}</p>
+                <p>Recipients: {{ nameList }}</p>
               </div>
               <div>
                 <h2 class = "form-field-label">Subject</h2>
                 <VeeErrorMessage name="Subject"/>
-                <VeeField autocomplete="off" v-slot="{field}" name="Subject">
-                  <input autocomplete="off" v-bind="field" class="form-input"></input>
+                <VeeField v-slot="{field}" name="Subject">
+                  <input v-bind="field" class="form-input"></input>
                 </VeeField>
               </div>
               <div>
                 <h2>Message</h2>
                 <VeeErrorMessage name="Message"/>
-                <VeeField autocomplete="off" v-slot="{field}" name="Message">
+                <VeeField v-slot="{field}" name="Message">
                   <textarea v-bind="field" class="form-field focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px]"></textarea>
                 </VeeField>
               </div>            
@@ -39,6 +39,7 @@ import * as yup from "yup";
         groupEmail: (values: Record<string, any>) => Promise<void>,
         cancelEmail: () => void
     }>();
+
 const groupEmailSchema = yup.object({
   Subject: yup.string().required(),
   Message: yup.string().required(),

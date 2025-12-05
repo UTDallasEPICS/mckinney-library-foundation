@@ -2,35 +2,38 @@ import {PrismaClient} from '@prisma/client'
 
 const prisma = new PrismaClient();
 
-export default defineEventHandler (async (event)=>{
-    try{
-        const donations = await prisma.donation.findMany({
-            include: {
-                boardMember: {
-                    select: {
-                        name: true,
-                    }
-                },
-                donor: {
-                    select: {
-                        name: true,
-                    }
+export default defineEventHandler (async ()=>{
+try{
+    const donations = await prisma.donation.findMany({
+        include: {
+            boardMember: {
+                select: {
+                    name: true,
                 }
             },
-        })
-        return{
-            success: true,
-            statusCode: 200,
-            data: donations,
-        }
+            donor: {
+                select: {
+                    name: true,
+                    email: true,
+                    phone: true,
+                    organization: true,
+                    address: true,
+                    lastDonationDate: true,
+                    firstDonationDate: true
+                }
+            }
+        },
+    })
+    return{
+        success: true, 
+        donations
     }
     }catch(error){
         return{
             success: false,
             statusCode: 500,
             message: "Failed to fetch donations",
-            error: error,
-            data:null
+            error: error
         }
     }
 })

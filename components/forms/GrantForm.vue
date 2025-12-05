@@ -1,156 +1,162 @@
-<template>
-    <div class="bg-[#e5e9ec] p-0 gap-0 border-0 rounded-md">
-        <VeeForm :initial-values="initValues" :validation-schema="schema" class= "w-[800px] max-h-[130vh] overflow-y-auto mx-4" @submit="submitGrant">
-            <div class = "flex flex-col gap-2 sm:text-left px-6 pt-6 pb-4 space-y-0">
-              <h1 class = "form-title"> Grant Information</h1>
-            </div>
-            <VeeField hidden name="id"></VeeField>
-            <VeeField  hidden name="index"></VeeField> 
-            <div  class="grid grid-cols-2 gap-4 mb-5">
-                <h2 class="form-field-label">grantor (name) <span class = "text-red-500">*</span></h2>
-                <h2 class="form-field-label">purpose <span class = "text-red-500">*</span></h2>                     
-                <VeeField autocomplete="off" v-slot="{field}" :disabled="viewOnly" name="grantorName" class="form-input focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px]">
-                    <input :disabled="viewOnly" autocomplete="off" v-bind="field" list="grantor-list" class="w-full px-3 py-2 bg-white border border-gray-300 rounded text-[#2d3e4d] focus:outline-none focus:ring-2 focus:ring-[#5a6a77] cursor-pointer">
-                        <datalist id="grantor-list">
-                            <option></option>
-                            <option v-if="grantors.length > 0" v-for="grantor in grantors" :value="grantor.grantor.name"></option>
-                        </datalist>
-                    </input>
-                </VeeField>  
-                <VeeField autocomplete="off" :disabled="viewOnly" v-slot="{field}" name="purpose" class="form-input focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px]">
-                    <input :disabled="viewOnly" autocomplete="off" v-bind="field" list="purpose-list" class="w-full px-3 py-2 bg-white border border-gray-300 rounded text-[#2d3e4d] focus:outline-none focus:ring-2 focus:ring-[#5a6a77] cursor-pointer">
-                        <datalist id="purpose-list">
-                            <option></option>
-                            <option v-if="purposes.length > 0" v-for="purpose in purposes" :value="purpose"></option>
-                        </datalist> 
-                    </input>
-                </VeeField>  
-                <div>
-                    <VeeErrorMessage class="text-red-500"  name="grantorName" />
-                </div>
-                <div>
-                    <VeeErrorMessage class="text-red-500"  name="purpose" />
-                </div>                     
-            </div>
-            
-            <div class="grid grid-cols-2 gap-4 mb-5">
-                <h2 class="form-field-label">monetary amount</h2>
-                <h2 class="form-field-label">non monetary amount</h2>
-                <VeeField autocomplete="off" :disabled="viewOnly" class="form-input focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px]" name="monetaryAmount"/>
-                <VeeField autocomplete="off" :disabled="viewOnly" class="form-input focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px]" name="nonMonetaryAmount"/>
-                <div>
-                    <VeeErrorMessage class="text-red-500"  name="monetaryAmount" />
-                </div>
-                <div>
-                    <VeeErrorMessage class="text-red-500"  name="nonMonetaryAmount" />
-                </div>
-            </div>
-            <div class="grid grid-cols-2 gap-4 mb-5">
-                <h2 class="form-field-label">method <span class = "text-red-500">*</span></h2>
-                <h2 class="form-field-label">status<span class = "text-red-500">*</span></h2>          
-                <VeeField v-slot="{field}" autocomplete="off" :disabled="viewOnly"name="method" class="form-input focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px]">
-                    <input :disabled="viewOnly" autocomplete="off" v-bind="field" list="method-list" class="w-full px-3 py-2 bg-white border border-gray-300 rounded text-[#2d3e4d] focus:outline-none focus:ring-2 focus:ring-[#5a6a77] cursor-pointer">
-                        <datalist id="method-list">
-                            <option></option>
-                            <option v-if="methods.length > 0" v-for="method in methods" :value="method"></option>
-                        </datalist>
-                    </input>
-                </VeeField>
-                <VeeField autocomplete="off" :disabled="viewOnly" v-slot="{field}" class="form-input focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px]" name="status">
-                    <select :disabled="viewOnly" v-bind="field" class="w-full px-3 py-2 bg-white border border-gray-300 rounded text-[#2d3e4d] focus:outline-none focus:ring-2 focus:ring-[#5a6a77] cursor-pointer">
-                        <option :disabled="viewOnly" value = 0> Pending </option>
-                        <option :disabled="viewOnly" value = 1> Recieved </option>
-                    </select>
-                </VeeField>
-                <div>
-                    <VeeErrorMessage class="text-red-500"  name="method" />
-                </div>
-                <div>
-                    <VeeErrorMessage class="text-red-500"  name="status" />
-                </div>
-            </div>
-            <div class="grid grid-cols-2 gap-4 mb-5">
-                <h2 class="form-field-label">Proposed Date<span class = "text-red-500">*</span></h2>
-                <h2 class="form-field-label">Received Date<span class = "text-red-500">*</span></h2>
-                <VeeField v-slot="{field}" autocomplete="off" :disabled="viewOnly" class="form-input focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px]" name="proposedDate">
-                    <input id="propDate"  autocomplete="off" :disabled="viewOnly" v-model="proposedDateRef" v-bind="field" type="date"></input>
-                </VeeField>
-                <VeeField v-slot="{field}" autocomplete="off" :disabled="viewOnly" class="form-input focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px]" name="receivedDate">
-                    <input id="reqDate"  autocomplete="off" :disabled="viewOnly" v-model="recievedDateRef" v-bind="field" type="date"></input>
-                </VeeField>
-                <div>
-                    <VeeErrorMessage class="text-red-500" name="proposedDate" />
-                </div>
-                <div>
-                    <VeeErrorMessage class="text-red-500" name="recievedDate" />
-                </div>
-            </div>
-            <h2 class="form-field-label mb-2">Notes</h2>
-            <VeeField autocomplete="off" :disabled="viewOnly" v-slot="{field}" name="notes">
-                <textarea v-bind="field" class="form-field focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px]"></textarea>
-            </VeeField>
-            <div class="flex justify-center gap-4 my-2">
-                <button class="form-button bg-gray-600 hover:bg-gray-700" @click="cancelSubmisison">Cancel</button>
-                <button v-if="!viewOnly" class ="form-button bg-blue-600 hover:bg-blue-700">Submit </button>
-            </div>           
-        </VeeForm>
-    </div>
+<template> 
+<div class="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+<div class="bg-slate-100  w-[30vw] h-[75vh] overflow-y-auto rounded-xl shadow-xl p-8 relative">
+
+<div class="flex items-center justify-between mb-6">
+<h2 class="text-2xl font-semibold text-slate-700">Grant Info</h2>
+<button @click="emit('close')" class="text-slate-500 hover:text-slate-700">✕</button>
+</div>
+
+<div class="flex flex-col gap-4">
+
+<div>
+<label class="text-sm text-slate-600">granter</label>
+<input v-model="granter" class="w-full mt-1 px-3 py-2 rounded-md border border-slate-300" />
+</div>
+
+<div>
+<label class="text-sm text-slate-600">purpose</label>
+<input v-model="purpose" class="w-full mt-1 px-3 py-2 rounded-md border border-slate-300" />
+</div>
+
+
+<div>
+<label class="text-sm text-slate-600">method</label>
+<input v-model="amountRequested" class="w-full mt-1 px-3 py-2 rounded-md border border-slate-300" />
+</div>
+
+
+<div>
+<label class="text-sm text-slate-600">nonmonetary amount</label>
+<input v-model="nonMonetaryAmount" type = 'number' class="w-full mt-1 px-3 py-2 rounded-md border border-slate-300"></input>
+</div>
+
+<div>
+<label class="text-sm text-slate-600">monetary amount</label>
+<input v-model="monetaryAmount" type ='number' class="w-full mt-1 px-3 py-2 rounded-md border border-slate-300" />
+</div>
+
+<div>
+    <label class="text-sm text-slate-600">Notes</label>
+<select v-model = "status"class="w-full mt-1 px-3 py-2 rounded-md border border-slate-300">
+<option value = 'pending'>pending</option>
+<option value = 'approved'>approved</option>
+</select>
+</div>
+
+<div>
+<label class="text-sm text-slate-600">proposed date</label>
+<input v-model="proposedDate" type="date" class="w-full mt-1 px-3 py-2 rounded-md border border-slate-300" />
+</div>
+
+
+<div>
+<label class="text-sm text-slate-600">Start Date</label>
+<input v-model="startDate" type="date" class="w-full mt-1 px-3 py-2 rounded-md border border-slate-300" />
+</div>
+
+<div>
+<label class="text-sm text-slate-600">End Date</label>
+<input v-model="endDate" type="date" class="w-full mt-1 px-3 py-2 rounded-md border border-slate-300" />
+</div>
+
+</div>
+
+<div class="flex justify-end gap-3 mt-6">
+<button class="px-4 py-2 bg-slate-300 text-slate-700 rounded-lg">Cancel</button>
+<button @click = "submit()" class="px-4 py-2 bg-slate-700 text-white rounded-lg">Submit</button>
+</div>
+
+</div>
+</div>
 </template>
 
-<script setup lang="ts">
-import type { Grant, Grantor } from '@prisma/client';
-import * as yup from 'yup';
+<script setup> 
+import { ref,onMounted } from 'vue';
+const emit = defineEmits(['close']);
 
-const props = defineProps<{
-    cancelSubmisison:() => void,
-    submitGrant: (values: Record<string,any>) => Promise<void>         
-    viewOnly: boolean
-    index?:number,
-    purposes: string[],
-    methods: string[],
-    grantors:{grantor:Grantor, grants:Grant[]}[]
-    data?:{grant:Grant,boardMember:{name:string}| null, grantor: {name: string | null} | null}
-}>();
+const granter = ref("")
+const purpose = ref("")
+const method = ref("")
+const monetaryAmount = ref("")
+const nonMonetaryAmount = ref("")
+const status = ref("pending")
+const notes = ref("")
+const proposedDate = ref("")
+const startDate = ref("")
+const endDate = ref("")
+const boardMemberId = ref("")
+const boardMember = ref("")
 
-const recievedDateRef = ref(new Date().toISOString());
-const proposedDateRef = ref('');
-const initValues = props.data?{
-    index:props.index, 
-    id: props.data.grant.id,
-    grantorName: props.data.grantor? props.data.grantor.name : null,
-    purpose: props.data.grant.purpose,
-    monetaryAmount: props.data.grant.monetaryAmount,
-    nonMonetaryAmount:props.data.grant.nonMonetaryAmount,
-    method:props.data.grant.method,
-    status:props.data.grant.status,
-    notes:props.data.grant.notes,
-    receivedDate: props.data.grant.receivedDate? props.data.grant.receivedDate.toISOString().split('T')[0] : '',
-    proposedDate: props.data.grant.proposedDate? props.data.grant.proposedDate.toISOString().split('T')[0] : '',
-}: undefined
 
-if(initValues && initValues.receivedDate != ''){
-    recievedDateRef.value = initValues.receivedDate;
-}
 
-const schema = yup.object({
-    grantorName: yup.string().required('Enter anonymous if grantor unknown'),
-    purpose: yup.string().required('Enter "none" if not associated with an purpose'),
-    monetaryAmount: yup.number().nullable().min(0.01,"minimum is at least 0.01").typeError('must be a number'),
-    nonMonetaryAmount: yup.string().nullable().test(
-    'amount-not-empty',
-    'grant must include either monetary or non-monetary amount',
-    function (value) {
-        const {monetaryAmount} = this.parent
-        return (value != null && value !== '') || (monetaryAmount != null && monetaryAmount !== '')
-    }),
-    method: yup.string().required('Must enter payment method'),
-    status: yup.string().required('Must enter status'),
-    recievedDate: yup.string().test('date-not-empty', 'Recieved Date must be entered', ()=>{
-        return recievedDateRef.value !== ''
-    }),
-    proposedDate: yup.string().test('date-not-empty', 'Proposed Date must be entered', ()=>{
-        return proposedDateRef.value !== ''
-    }),
+onMounted(() => { 
+
+    const getSession = async () => { 
+
+        try { 
+
+        const response = await $fetch("/api/session")
+
+        // console.log("response",response.data.user)
+
+        boardMemberId.value = response.data.user.id
+        boardMember.value = response.data.user.name
+
+
+
+        }
+        catch(err) { 
+
+            console.log("error",err)
+        }
+
+    }   
+
+    getSession()
+
+
+
+
 })
 
+
+
+
+const submit = async () => { 
+
+try { 
+
+const response = await $fetch("/api/grants/123", { 
+    method: "POST",
+    body: {
+        grantor: granter.value,
+        purpose: purpose.value,
+        method: method.value,
+        monetaryAmount: String(monetaryAmount.value),
+        nonMonetaryAmount: String(nonMonetaryAmount.value),
+        status: status.value,
+        notes: notes.value,
+        proposedDate: proposedDate.value,
+        startDate: startDate.value,
+        endDate: endDate.value,
+        boardMemberId: boardMemberId.value,
+        boardMember: boardMember.value,
+       
+    }
+})
+
+emit('close')
+
+
+
+}catch(Err) {
+
+    console.log("error",err)
+}
+}
+
+
 </script>
+    
+  

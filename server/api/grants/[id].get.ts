@@ -17,7 +17,6 @@ export default defineEventHandler(async (event) => {
             success: true,
             statusCode: 200,
             data: grant,
-            error:{code: ""}
         }
     } catch (error) {
         console.error(error);

@@ -6,12 +6,7 @@ export default defineEventHandler(async (event) => {
     try {
         const grantId = getRouterParam(event, 'id');
         const body = await readBody(event);
-        if(body.permissionLevel < 1){
-            throw createError({
-                statusCode:401,
-                statusMessage:"User does not have permission to update grants"
-            })
-        }
+
         const grant = await prisma.grant.update({
             where: { id: grantId },
             data: {
@@ -23,11 +18,9 @@ export default defineEventHandler(async (event) => {
                 nonMonetaryAmount: body.nonMonetaryAmount,
                 notes: body.notes,
                 proposedDate: new Date(body.proposedDate),
-                receivedDate: new Date(body.receivedDate),
-            },
-            include: {
-                boardMember: true,
-                grantor: true,
+                startDate: new Date(body.startDate),
+                endDate: new Date(body.endDate),
+                lastEditDate: new Date(body.proposedDate),
             }
         });
 
@@ -35,7 +28,6 @@ export default defineEventHandler(async (event) => {
             success: true,
             statusCode: 200,
             data: grant,
-            error:{code: ""}
         }
     } catch (error) {
         console.error(error);
@@ -44,7 +36,6 @@ export default defineEventHandler(async (event) => {
             statusCode: 500,
             message: "Failed to update grant",
             error: error, 
-            data: null
         }
     } finally {
         await prisma.$disconnect()

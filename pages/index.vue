@@ -69,7 +69,7 @@
 
         />
         <div v-if="!userEmail">
-          <span v-if="!reqAccount">Don't have an account? </span> 
+          <span>Don't have an account? </span> 
           <button v-if="!reqAccount" @click="ShowAccountRequest" style = "font-weight: 500;" class ="hover:underline text-[14px] text-[#4a5f7a] transition-colors" type="button">Request an Invitation</button>
           <button v-if="reqAccount" @click="ShowAccountRequest" style = "font-weight: 500;" class ="hover:underline text-[14px] text-[#4a5f7a] transition-colors" type="button">Cancel Request</button>
         </div>
@@ -146,15 +146,15 @@ const AccReqFormProps ={
 async function formSubmit(values:Record<string, any>){
   userEmail.value = values.email;
    const userExists = await checkEmailExists(values.email);
-    if(userExists){
-      alert("otp sent to email");
-      const { data, error } = await authClient.emailOtp.sendVerificationOtp({
+   if(userExists){
+     const { data, error } = await authClient.emailOtp.sendVerificationOtp({
         email: values.email,
         type: "sign-in",
       });
       if(error){
        console.log(error);
       }
+     alert("otp sent to email");
     
    }
    else{
@@ -167,14 +167,7 @@ async function checkEmailExists(email:string){
   const id = email;
   const user = await $fetch(`/api/user/${id}`);
   if(user.data){
-    if(!user.data.status){
-      return true;
-    } 
-    else{
-      alert("Your account is frozen, contact admin for more details")
-      return false;
-    }
-    
+    return true;
   }
   else{
     return false;
@@ -190,8 +183,7 @@ async function checkCode(values:Record<string, any>){
          otp: values.otp_code.trim(), 
        });
        if(error){
-         console.error(error);
-         alert("Invalide Code");
+         console.error(error)
        }
        else{
         navigateTo("/dashboard");

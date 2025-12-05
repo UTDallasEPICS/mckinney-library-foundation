@@ -2,47 +2,46 @@ import { PrismaClient } from '@prisma/client';
 
 const prisma = new PrismaClient();
 
-export default defineEventHandler(async (event) => {   
+export default defineEventHandler(async (event) => {  
+
+    console.log("hi the")
     try {
-        const grantorId = await getRouterParam(event, 'id');
+        const id = getRouterParam(event, 'id');
         const body = await readBody(event);
-        if(body.permissionLevel < 1){
+
+        console.log("body", body)
+         if(body.permissionLevel < 1){
             throw createError({
-                statusCode:401,
-                statusMessage:"User does not have permission to update grantors"
+                statusCode: 401,
+                statusMessage:"User not authorized to edit donors"
             })
         }
-        const updatedGrantor = await prisma.grantor.update({
-            where: { id:grantorId },
+        const updatedDonor = await prisma.donor.update({
+            where: { id:id },
             data: {
                 name: body.name,
-                boardMemberId: body.boardMemberId,
                 email: body.email,
                 phone: body.phone,
                 address: body.address,
                 preferredCommunication: body.preferredCommunication,
-                notes: body.notes,
+                notes: String(body.notes),
                 webLink: body.webLink,
                 organization: body.organization,
-            },
-            include: {
-                boardMember:true
-            } 
+                
+            }
         });
         return{
             success: true,
             statusCode: 200,
-            data: updatedGrantor,
-            error:{code: ""}
+            data: updatedDonor,
         }
     } catch (error) {
        console.error(error);
         return { 
             success: false,
             statusCode: 500,
-            message: "Failed to update grantor",
+            message: "Failed to update donor",
             error: error, 
-            data:null
         }
     } finally {
         await prisma.$disconnect()

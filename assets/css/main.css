@@ -4,7 +4,7 @@
 
 @layer components{
     .form-field-label{
-        @apply text-sm leading-none font-medium text-[#5a6a77] mt-3;
+        @apply text-sm leading-none font-medium text-[#5a6a77] my-1;
     }
     .form-title{
         @apply text-lg leading-none font-semibold text-[#5a6a77] text-center;

@@ -4,14 +4,7 @@ const prisma = new PrismaClient()
 
 export default defineEventHandler(async (event) => {
     try {
-        const grantId = await getRouterParam(event, 'id');
-        const body = await readBody(event);
-        if(body.permissionLevel < 1){
-            throw createError({
-                statusCode:401,
-                statusMessage:"User does not have permission to delete grants"
-            })
-        }
+        const grantId = getRouterParam(event, 'id');
         const grant = await prisma.grant.delete({
             where: {id:grantId},
         });
@@ -20,7 +13,6 @@ export default defineEventHandler(async (event) => {
             success: true,
             statusCode: 200,
             data: grant,
-            error:{code: ""}
         }
     } catch (error) {
         console.error(error);
@@ -29,7 +21,6 @@ export default defineEventHandler(async (event) => {
             statusCode: 500,
             message: "Failed to delete grant",
             error: error, 
-            data: null
         }
     } finally {
         await prisma.$disconnect()

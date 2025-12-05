@@ -1,12 +1,20 @@
-export const useAuth = () => {
-    const session = ref();
 
-    const getSession = async () =>{
-        const result = await useFetch("/api/session");
-        return result.data.value?.data;
-    } 
-    return {
-        getSession,
-        session
+  
+    export const useAuth = () => {
+        const session = ref();
+    
+        const getSession = async () =>{
+            const result = await useFetch("/api/session");
+            
+            return result.data.value?.data
+        } 
+        
+        return {
+            session,
+            getSession,
+        };
     }
-}
+
+   
+
+  
