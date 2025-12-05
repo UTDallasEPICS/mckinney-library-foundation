@@ -28,7 +28,7 @@ export const useDonor = () => {
     }
     const putDonor = async (values:Record<string,any>,user:{id:string, permissionLevel:number}) =>{
         const result = await $fetch(`/api/donor/${values.id}`,{
-            method:"PATCH",
+            method:'PUT',
             body:{
             name:values.fName.trim() + " " + values.lName.trim(),
             boardMemberId: user.id,
