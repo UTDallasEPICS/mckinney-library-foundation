@@ -4,11 +4,6 @@ const prisma = new PrismaClient();
 
 export default defineEventHandler(async (event) => {
   const body = await readBody(event);
-  if (body.status === 'pending') {
-    body.status = 0
-  } else {
-    body.status = 1
-  }
   try {
     if(body.permissionLevel < 1){
             throw createError({
@@ -18,19 +13,20 @@ export default defineEventHandler(async (event) => {
         }
     let donorRecord = await prisma.donor.findFirst({
       where: {
-        name: body.donor
+        name: body.donor? body.donor : "anonymous"
       }
     })
 
     if (!donorRecord) {      
       donorRecord = await prisma.donor.create({
         data: {
-          name: body.donor,
+          name: body.donor? body.donor: "anonymous",
           address: "",
           email: "",
           phone: "",
           preferredCommunication: "",
           notes: "",
+          boardMemberId: body.boardMemberId
         }
       })
     }
@@ -42,13 +38,18 @@ export default defineEventHandler(async (event) => {
         method: body.method,
         monetaryAmount: body.monetaryAmount,
         nonMonetaryAmount: body.nonMonetaryAmount,
-        status: body.status ?? 0,
+        status: parseInt(body.status) ?? 0,
         notes: body.notes,
-        receivedDate: new Date(),
+        receivedDate: new Date(body.receivedDate),
         lastEditDate: new Date()
       },
       include: {
-        donor: true
+        donor: true,
+        boardMember:{
+            select:{
+                name:true
+            }
+        }
       }
     })
     return {
@@ -62,8 +63,8 @@ export default defineEventHandler(async (event) => {
             success: false,
             statusCode: 500,
             message: "Failed to create donation",
-            error: error
+            error: error,
+            data:null
         }
   }
-})
-
+});

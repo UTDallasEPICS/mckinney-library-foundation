@@ -4,7 +4,20 @@ const prisma = new PrismaClient();
 
 export default defineEventHandler(async () =>{
     try{
-        const data = await prisma.donor.findMany();
+        const data = await prisma.donor.findMany({
+            include:{
+                donations:{
+                    orderBy:{
+                        receivedDate: 'asc'
+                    }
+                },
+                boardMember:{
+                    select:{
+                        name:true
+                    }
+                }
+            }
+        });
         return{
             success: true,
             statusCode: 200,

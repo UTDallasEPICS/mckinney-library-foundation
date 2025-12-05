@@ -3,8 +3,8 @@
         <VeeForm :validation-schema="validation" @submit="submitAction">
             <label class="form-field-label" style="font-weight: 500;"> {{ message }}</label>
             <VeeErrorMessage class="text-red-500" :name= "fieldName"/>
-            <VeeField v-slot="{field}" :name="fieldName" :placeholder="placeholderTxt" :type ="fieldType">
-                <input v-bind="field" 
+            <VeeField autocomplete="off" v-slot="{field}" :name="fieldName" :placeholder="placeholderTxt" :type ="fieldType">
+                <input autocomplete="off" v-bind="field" 
                 class ="form-input bg-[#f5f6f8]"
                 :placeholder="placeholderTxt"></input>
             </VeeField>

@@ -3,13 +3,14 @@ import {PrismaClient} from '@prisma/client'
 const prisma = new PrismaClient();
 
 export default defineEventHandler (async (event)=>{
-    const id = await getRouterParam(event, 'id');
-    const body = await readBody(event);
     try{
+
+        const body = await readBody(event);
+        const id = await getRouterParam(event, 'id');
         if(body.permissionLevel < 1){
             throw createError({
-                statusCode: 401,
-                statusMessage:"User not authorized to delete donations"
+                statusCode:401,
+                statusMessage:"User does not have permission to delete donations"
             })
         }
         if(!id){

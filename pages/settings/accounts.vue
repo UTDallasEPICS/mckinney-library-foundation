@@ -19,15 +19,15 @@
     />
     </div>
   </div>
-  
-
 </div>
 
 
-<h1 v-if="requests && requests.length > 0" class="text-[36px] text-[#2c3e50] text-center py-5 mb-2">Account Requests </h1>
-<RequestTable v-if="requests && requests.length > 0 && permissionLevel > 2"
+<h1 v-if="requests && requests.length > 0 && permissionLevel > 1" class="text-[36px] text-[#2c3e50] text-center py-5 mb-2">Account Requests </h1>
+<RequestTable v-if="requests && requests.length > 0 && permissionLevel > 1 && users && users.length > 0"
   key= "RequestTable"
   :requests="requests"
+  :permission-level="permissionLevel"
+  :accounts="users"
 />
 </template>
 
@@ -40,12 +40,11 @@ import { useAuth } from '~/composables/useAuth';
 
 const {session, getSession} = useAuth();
 session.value = await getSession();
+
 const permissionLevel = ref(0);
+
 if(session.value?.user){
-    permissionLevel.value = session.value.user.permission;
-    if(permissionLevel.value < 2){
-      navigateTo("/dashboard");
-    }
+  permissionLevel.value = session.value.user.permission;
 }
 else{
   navigateTo("/");
@@ -75,7 +74,6 @@ async function PrepEditAccount(index:number){
   }
   showEdit.value=true
   userIndex.value=index;
-  console.log(user.value)
 }
 async function editAccount(values: Record<string, any>){
   const {success} = await $fetch(`/api/user/${user.value.id}`,{

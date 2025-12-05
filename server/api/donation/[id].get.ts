@@ -8,6 +8,11 @@ export default defineEventHandler(async (event) => {
             where: { id:id },
             include:{
                 donor:true,
+                boardMember:{
+                    select:{
+                        name:true
+                    }
+                }
             }
         });    
         return {

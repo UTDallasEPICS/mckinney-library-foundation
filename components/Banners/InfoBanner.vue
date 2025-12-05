@@ -10,7 +10,7 @@
                 {{ title }}
             </div>
             <div class="text-[13px] opacity-80">
-                Comprehensive financial management
+                {{ description }}
             </div>
         </div>
     </div>

@@ -21,7 +21,9 @@ model User {
   sessions      Session[]
   accounts      Account[]
   donations     Donation[]
+  donors        Donor[]
   grants        Grant[]
+  grantors      Grantor[]
   expenditures  Expenditure[]
 
   @@unique([email])
@@ -81,6 +83,8 @@ model AccountCreationRequest {
 
 model Donor {
   id                     String     @id @default(cuid())
+  boardMemberId          String?
+  boardMember            User?      @relation(fields: [boardMemberId], references: [id], onDelete: Restrict)
   name                   String     @unique @default("Anonymous")
   address                String?
   phone                  String?
@@ -89,18 +93,22 @@ model Donor {
   notes                  String?
   webLink                String?
   organization           String?
-  lastDonationDate       DateTime?
-  firstDonationDate      DateTime?
   donations              Donation[]
 }
 
 model Grantor {
-  id           String  @id @default(cuid())
-  name         String  @default("Anonymous")
-  email        String?
-  webLink      String?
-  organization String?
-  grants       Grant[]
+  id                     String  @id @default(cuid())
+  boardMemberId          String?
+  boardMember            User?   @relation(fields: [boardMemberId], references: [id], onDelete: Restrict)
+  name                   String  @default("Anonymous")
+  phone                  String?
+  address                String?
+  email                  String?
+  preferredCommunication String? // phone or email
+  notes                  String?
+  webLink                String?
+  organization           String?
+  grants                 Grant[]
 }
 
 model Donation {
@@ -131,11 +139,9 @@ model Grant {
   nonMonetaryAmount String?
   status            Int?      @default(0) // 0: requested, 1: completed
   notes             String?
-  proposedDate      DateTime
+  proposedDate      DateTime?
   receivedDate      DateTime?
-  startDate         DateTime
-  endDate           DateTime
-  lastEditDate      DateTime
+  lastEditDate      DateTime?
 }
 
 model Expenditure {
