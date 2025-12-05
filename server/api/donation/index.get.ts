@@ -24,7 +24,8 @@ export default defineEventHandler (async (event)=>{
             data: donations,
         }
     }
-    }catch(error){
+    
+    catch(error){
         return{
             success: false,
             statusCode: 500,
@@ -33,4 +34,5 @@ export default defineEventHandler (async (event)=>{
             data:null
         }
     }
+
 })
