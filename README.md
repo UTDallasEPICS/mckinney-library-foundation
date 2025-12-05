@@ -108,4 +108,7 @@ npm run dev
 ```bash
 npx studio prisma
 ```
-### 8. Create a user record and enter your email
+### 8. Create a user record on <http://localhost:5555/>
+- Enter your email in the email field
+- Set your permission level
+- - Ranges from 0-3, where the roles are respectively: viewer, editor, admin, main admin
