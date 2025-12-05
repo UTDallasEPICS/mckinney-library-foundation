@@ -5,10 +5,10 @@ const prisma = new PrismaClient();
 export default defineEventHandler(async (event) =>{
     try {
         const body = await readBody(event);
-         if(body.permissionLevel < 2){
+        if(body.permissionLevel < 3){
             throw createError({
-                statusCode: 401,
-                statusMessage:"User not authorized to create users"
+                statusCode:401,
+                statusMessage:"User does not have permission to create users"
             })
         }
         const user = await prisma.user.create({
@@ -31,6 +31,7 @@ export default defineEventHandler(async (event) =>{
             statusCode: 500,
             message: "Failed to create user",
             error: error, 
+            data: null
         }
     }finally{
         await prisma.$disconnect();

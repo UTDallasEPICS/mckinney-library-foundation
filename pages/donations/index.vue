@@ -1,78 +1,169 @@
+<template>
+<DonationBar
+    :user="user"
+    :donors="donorTableData"
+    :donations="donationsData"
+/>
 
-<template> 
-  <donationBar  :permission-level="permissionLevel" @add-donation = "addDonation"/>  
-  <DonationsTable :permission-level="permissionLevel" :donation-info = "donations" @delete-donation="handleDeleteDonation" @update-donation = "updateDonation"/>
+<DonationTable
+    :data="donationsData"
+    :edit-function="prepDonationUpdate"
+    :view-function="prepDonationView"
+    :delete-function="removeDonation"
+    :permission-level="user.permissionLevel"
+/>
+
+<div v-if="showUpdateDonation" class="fixed top-0 left-0 w-full h-full flex justify-center items-center z-20 bg-black/50">
+    <DonationForm 
+        :donors="donorTableData"
+        :view-only="false"
+        :submit-donation="updateDonation"
+        :cancel-submisison="cancelUpdate"
+        :data="donationData"
+        :index="donationIndex"
+        :events="donationEvents"
+        :methods="donationMethods"
+    />
+</div>
+
+<div v-if="showViewDonation" class="fixed top-0 left-0 w-full h-full flex justify-center items-center z-20 bg-black/50">
+    <DonationForm 
+        :donors="donorTableData"
+        :view-only="true"
+        :submit-donation="updateDonation"
+        :cancel-submisison="cancelUpdate"
+        :data="donationData"
+        :events="donationEvents"
+        :methods="donationMethods"
+    />
+</div>
+
 </template>
-  
-<script setup lang="ts">
-  import DonationsTable from '~/components/Tables/DonationsTable.vue';
-  import donationBar from '~/components/donationBar.vue';
-  import { ref,onMounted } from 'vue';
-  import { useAuth } from '~/composables/useAuth';
 
-  const {session, getSession} = useAuth();
-  session.value = await getSession();
+<script setup lang = ts>
+import DonationBar from '~/components/Bars/DonationBar.vue';
+import DonationTable from '~/components/Tables/DonationTable.vue';
+import DonationForm from '~/components/Forms/DonationForm.vue';
+import { useAuth } from '~/composables/useAuth';
+import { useDonor } from '~/composables/useDonor';
+import { useDonationDropDown } from '~/composables/useDonationDropDown';
+import { useDonation } from '~/composables/useDonation';
+import type { Donation, Donor } from '@prisma/client';
 
-  const permissionLevel = ref(0);
-  if(session.value?.user){
-      permissionLevel.value = session.value.user.permission;
-  }
-  else{
-    navigateTo("/");
-  }
-  const donations = ref()
 
-  onMounted(() => { 
-    const getDonations = async () => {
-      try { 
-        const response = await $fetch('/api/donation',{
-          method:"GET",
-        })
-        donations.value = response
-      }catch(err) { 
-        console.log("error",err)
-      }
-    };
-    getDonations()
-  });
+const {session, getSession} = useAuth();
+session.value = await getSession();
 
-const handleDeleteDonation = (id:string) => {   
-  if (!donations.value || !donations.value.donations) return;
+const user:Ref<{id:string, permissionLevel:number}> = ref({id:"",permissionLevel:0});
 
-  donations.value.donations = donations.value.donations.filter(
-    (donation: { id: string }) => donation.id !== id
-  );
-};
+if(session.value?.user){
+  user.value.permissionLevel = session.value.user.permission;
+  user.value.id = session.value.user.id;
+}
+else{
+  navigateTo("/");
+}
 
-const updateDonation = (data: any) => {
-  
-  console.log("data in index.vue",data) 
-donations.value.donations = donations.value.donations.map((donation: { id: string }) => {
-    if (donation.id === data.id) {
-      return { ...donation, ...data };
+const showUpdateDonation = ref(false);
+const showViewDonation = ref(false);
+
+
+const {donors, getDonors} = useDonor();
+await getDonors();
+
+const {donationsData, getDonations, putDonation, deleteDonation} = useDonation();
+await getDonations();
+
+const {donationEvents, donationMethods} = useDonationDropDown(donationsData.value)
+
+const donationData:Ref<{ 
+    donation:Donation,
+    boardMember:{name:string}| null, 
+    donor: {name: string } | null}> = ref({
+        donation:{
+        id:"",
+        boardMemberId:"",
+        donorId:"",
+        method:"",
+        event:"",
+        monetaryAmount:"",
+        nonMonetaryAmount:"",
+        status:0,
+        notes:"",
+        receivedDate:null,
+        lastEditDate:null,
+        },
+        boardMember:null,
+        donor:null
+    });
+const donationIndex = ref(0);
+
+
+const donorTableData:Ref<{donor:Donor, donations:Donation[],boardMember:{name:string} }[]> = ref([]);
+donors.value.map((thisDonor:Donor,index:number) => {
+  donorTableData.value.push({donor:thisDonor,donations:donors.value[index].donations, boardMember:{name:donors.value[index].boardMember.name} })
+})
+
+async function prepDonationUpdate(donationInfo:{donation:Donation,boardMember:{name:string}| null, donor: {name: string} | null},index:number){
+    donationData.value.donation = donationInfo.donation;
+    donationData.value.boardMember = donationInfo.boardMember? donationInfo.boardMember : null
+    donationData.value.donor =  donationInfo.donor? donationInfo.donor : null
+    donationIndex.value = index
+    showUpdateDonation.value = true;
+}
+
+async function prepDonationView(donationInfo:{donation:Donation,boardMember:{name:string}| null, donor: {name: string} | null},index:number){
+    donationData.value.donation = donationInfo.donation;
+    donationData.value.boardMember = donationInfo.boardMember? donationInfo.boardMember : null
+    donationData.value.donor =  donationInfo.donor? donationInfo.donor : null
+    donationIndex.value = index
+    showViewDonation.value = true;
+}
+
+
+async function updateDonation(values:Record<string, any>){
+    const result = await putDonation(values,user.value)
+    if(result.data){
+        donationsData.value[values.index].donation ={
+            ...result.data, 
+            receivedDate: result.data.receivedDate ? new Date(result.data.receivedDate) : null,
+            lastEditDate: result.data.lastEditDate ? new Date(result.data.lastEditDate) : null,
+        }
+        donationsData.value[values.index].boardMember = result.data.boardMember
+        donationsData.value[values.index].donor = result.data.donor
     }
+    showUpdateDonation.value = false;
+}
 
-    console.log("donation please fucking work",donation)
-    return donation;
+function cancelUpdate(){
 
+    showUpdateDonation.value = false;
+    showViewDonation.value = false;
+    donationData.value = {
+        donation:{id:"",
+        boardMemberId:"",
+        donorId:"",
+        method:"",
+        event:"",
+        monetaryAmount:"",
+        nonMonetaryAmount:"",
+        status:0,
+        notes:"",
+        receivedDate:null,
+        lastEditDate:null,
+        },
+        boardMember:null,
+        donor:null
+    }
+}
 
-  });
-
-
-
+async function removeDonation(id:string,index:number){
+    const result = await deleteDonation(id, user.value.permissionLevel)
+    if(result.success){
+        donationsData.value.splice(index,1)
+    }
 }
 
 
-const addDonation = (data:Object) => {
-  donations.value.donations = [
-    ...donations.value.donations,
-    data
-  ];
-  
-}
 
-
-  
-
-  </script>
-
+</script>
