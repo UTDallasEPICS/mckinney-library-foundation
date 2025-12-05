@@ -9,7 +9,7 @@
     :data="grantsData"
     :edit-function="prepGrantUpdate"
     :view-function="prepGrantView"
-    :delete-function="deleteGrant"
+    :delete-function="removeGrant"
     :permission-level="user.permissionLevel"
 />
 
@@ -21,8 +21,8 @@
         :cancel-submisison="cancelUpdate"
         :data="grantData"
         :index="grantIndex"
-        :methods="methods"
-        :purposes="purposes"
+        :methods="grantMethods"
+        :purposes="grantPurposes"
     />
 </div>
 
@@ -33,8 +33,8 @@
         :submit-grant="updateGrant"
         :cancel-submisison="cancelUpdate"
         :data="grantData"
-        :methods="methods"
-        :purposes="purposes"
+        :methods="grantMethods"
+        :purposes="grantPurposes"
     />
 </div>
 
@@ -48,6 +48,7 @@ import { useAuth } from '~/composables/useAuth';
 import { useGrantor } from '~/composables/useGrantor';
 import { useGrant } from '~/composables/useGrant';
 import type { Grant, Grantor } from '@prisma/client';
+import { useGrantsDropDown } from '~/composables/useGrantDropDowns';
 
 
 const {session, getSession} = useAuth();
@@ -70,28 +71,10 @@ const showViewGrant = ref(false);
 const {grantors, getGrantors} = useGrantor();
 await getGrantors();
 
-const {grantsData, getGrants} = useGrant();
+const {grantsData, getGrants, putGrant, deleteGrant} = useGrant();
 await getGrants();
 
-
-const purposes: ComputedRef<string[]> = computed(() => {
-    if (grantsData) {
-        const uniquePurposes = new Set(
-            grantsData.value.map(grant => grant.grant.purpose).filter((purpose) => purpose != null)
-        )
-        return Array.from(uniquePurposes)
-    }
-    return []
-})
-const methods: ComputedRef<string[]> = computed(() => {
-    if (grantsData) {
-        const uniquePurposes = new Set(
-            grantsData.value.map(grant => grant.grant.method).filter((method) => method != null)
-        )
-        return Array.from(uniquePurposes)
-    }
-    return []
-})
+const {grantPurposes,grantMethods} = useGrantsDropDown(grantsData.value)
 
 
 
@@ -142,23 +125,7 @@ async function prepGrantView(grantInfo:{grant:Grant,boardMember:{name:string}| n
 
 
 async function updateGrant(values:Record<string, any>){
-    console.log("update called")
-    const result = await $fetch(`/api/grant/${values.id}`,{
-        method:"PUT",
-        body:{
-            grantor: values.grantorName,
-            boardMemberId: user.value.id,
-            permissionLevel: user.value.permissionLevel,
-            status: parseInt(values.status),
-            purpose: values.purpose,
-            method:values.method,
-            monetaryAmount: values.monetaryAmount,
-            nonMonetaryAmount: values.nonMonetaryAmount,
-            notes: values.notes,
-            proposedDate: values.proposedDate,
-            receivedDate: values.receivedDate,
-        }
-    })
+    const result = await putGrant(values,user.value)
     if(result.data){
         grantsData.value[values.index].grant ={
             ...result.data, 
@@ -195,13 +162,8 @@ function cancelUpdate(){
     }
 }
 
-async function deleteGrant(id:string,index:number){
-    const result = await $fetch(`/api/grant/${id}`,{
-        method:"DELETE",
-        body:{
-            permissionLevel: user.value.permissionLevel
-        }
-    })
+async function removeGrant(id:string,index:number){
+    const result = await deleteGrant(id, user.value.permissionLevel)
     if(result.success){
         grantsData.value.splice(index,1)
     }

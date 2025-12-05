@@ -21,8 +21,8 @@
         :cancel-submisison="cancelUpdate"
         :data="donationData"
         :index="donationIndex"
-        :events="events"
-        :methods="methods"
+        :events="donationEvents"
+        :methods="donationMethods"
     />
 </div>
 
@@ -33,8 +33,8 @@
         :submit-donation="updateDonation"
         :cancel-submisison="cancelUpdate"
         :data="donationData"
-        :events="events"
-        :methods="methods"
+        :events="donationEvents"
+        :methods="donationMethods"
     />
 </div>
 
@@ -74,7 +74,7 @@ await getDonors();
 const {donationsData, getDonations, putDonation, deleteDonation} = useDonation();
 await getDonations();
 
-const {events, methods} = useDonationDropDown(donationsData.value)
+const {donationEvents, donationMethods} = useDonationDropDown(donationsData.value)
 
 const donationData:Ref<{ 
     donation:Donation,

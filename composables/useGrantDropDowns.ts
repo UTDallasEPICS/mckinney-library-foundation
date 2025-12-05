@@ -25,17 +25,17 @@ export const useGrantsDropDown = (grants:{grant:Grant, boardMember:{name:string}
     }
 }
 
-// export const useDonorDropDown = (donors:{donor:Donor, donations:Donation[],boardMember:{name:string}|null}[]) => {
-//     const organizations:ComputedRef<string[]> = computed(() => {
-//         if (donors) {
-//             const uniqueOrgs = new Set(
-//                 donors.map((row) => row.donor.organization).filter((organization) => organization != null)
-//             )
-//             return Array.from(uniqueOrgs)
-//         }
-//         return []
-//     })
-//     return {
-//         organizations
-//     }
-// }
+export const useGrantorDropDown = (grantors:{grantor:Grantor, grants:Grant[],boardMember:{name:string}|null}[]) => {
+    const grantorOrganizations:ComputedRef<string[]> = computed(() => {
+        if (grantors) {
+            const uniqueOrgs = new Set(
+                grantors.map((row) => row.grantor.organization).filter((organization) => organization != null)
+            )
+            return Array.from(uniqueOrgs)
+        }
+        return []
+    })
+    return {
+        grantorOrganizations
+    }
+}

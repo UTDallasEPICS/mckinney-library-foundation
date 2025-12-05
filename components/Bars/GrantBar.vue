@@ -28,9 +28,9 @@
             :submit-grant="createGrant"
             :cancel-submisison="cancelGrant"
             :view-only="false"
-            :purposes="purposes"
+            :purposes="grantPurposes"
             :grantors="grantors"
-            :methods="methods"
+            :methods="grantMethods"
         />
     </div>
     <div  v-if = "addGrantor"> 
@@ -38,7 +38,7 @@
             :submit-grantor="createGrantor"
             :cancel-submisison="cancelGrantor"
             :view-only="false"
-            :organizations="organizations"
+            :organizations="grantorOrganizations"
         />
     </div>
   </div> 
@@ -51,9 +51,12 @@ import GrantForm from '../Forms/GrantForm.vue';
 import GrantorForm from '../Forms/GrantorForm.vue';
 import {useGrant} from '~/composables/useGrant';
 import { useGrantor } from '~/composables/useGrantor';
+import { useGrantorDropDown,useGrantsDropDown } from '~/composables/useGrantDropDowns';
 
 const {postGrant} = useGrant();
 const {postGrantor} = useGrantor();
+
+
 
 const addGrant = ref(false);
 const addGrantor = ref(false);
@@ -61,36 +64,11 @@ const addGrantor = ref(false);
 const props = defineProps<{
     user:{id:string, permissionLevel:number}
     grantors:{grantor:Grantor, grants:Grant[],boardMember:{name:string}|null}[],
-    grants?:{grant:Grant,boardMember:{name:string}| null, grantor: {name: string | null} | null,}[]
+    grants:{grant:Grant,boardMember:{name:string}| null, grantor: {name: string} | null,}[]
 }>();
 
-const purposes: ComputedRef<string[]> = computed(() => {
-    if (props.grants) {
-        const uniqueEvents = new Set(
-            props.grants.map(grant => grant.grant.purpose).filter((purpose) => purpose != null)
-        )
-        return Array.from(uniqueEvents)
-    }
-    return []
-})
-const methods:ComputedRef<string[]> = computed(() => {
-    if (props.grants) {
-        const uniqueEvents = new Set(
-            props.grants.map(grant => grant.grant.method).filter((method) => method != null)
-        )
-        return Array.from(uniqueEvents)
-    }
-    return []
-})
-const organizations:ComputedRef<string[]> = computed(() => {
-    if (props.grants) {
-        const uniqueEvents = new Set(
-            props.grantors.map(grantor => grantor.grantor.organization).filter((organization) => organization != null)
-        )
-        return Array.from(uniqueEvents)
-    }
-    return []
-})
+const {grantMethods,grantPurposes} = useGrantsDropDown(props.grants)
+const {grantorOrganizations} = useGrantorDropDown(props.grantors)
 
 async function createGrantor(values:Record<string,any>){
     const result = await postGrantor(values, props.user)

@@ -27,7 +27,7 @@
       :submit-donor="editDonor"
       :cancel-submisison="cancelUpdate"
       :view-only="false" 
-      :organizations="organizations"  
+      :organizations="donorOrganizations"  
     />
   </div>
   <div v-if="viewDonor" class="fixed top-0 left-0 w-full h-full flex justify-center items-center z-20 bg-black/50">
@@ -36,7 +36,7 @@
       :submit-donor="editDonor"
       :cancel-submisison="cancelUpdate"
       :view-only="true" 
-      :organizations="organizations"
+      :organizations="donorOrganizations"
     />
   </div> 
 </template>
@@ -46,9 +46,10 @@ import DonorTable from '~/components/Tables/DonorTable.vue';
 import EmailForm from '~/components/Forms/EmailForm.vue';
 import DonorForm from '~/components/Forms/DonorForm.vue';
 import DonationBar from '~/components/Bars/DonationBar.vue'
-import { useAuth } from '~/composables/useAuth';
-import { useDonation } from '~/composables/useDonation';
-import { useDonorDropDown } from '~/composables/useDonationDropDown';
+//import { useAuth } from '~/composables/useAuth';
+//import { useDonation } from '~/composables/useDonation';
+//import { useDonor } from '~/composables/useDonor';
+//import { useDonorDropDown } from '~/composables/useDonationDropDown';
 import type { Donation, Donor } from '@prisma/client';
 
 
@@ -67,7 +68,7 @@ else{
 const sendEmail = ref(false);
 const updateDonor = ref(false);
 const viewDonor = ref(false);
-const {donors, getDonors} = useDonor();
+const {donors, putDonor, deleteDonor, getDonors} = useDonor();
 const emailList: Ref<string[]> = ref([])
 const nameList = ref("")
 const donorIndex = ref(0);
@@ -94,7 +95,7 @@ donors.value.map((thisDonor:Donor,index:number) => {
   donorTableData.value.push({donor:thisDonor,donations:donors.value[index].donations,boardMember:donors.value[index].boardMember})
 })
 
-const {organizations} = useDonorDropDown(donorTableData.value)
+const {donorOrganizations} = useDonorDropDown(donorTableData.value)
 
 const {donationsData, getDonations} = useDonation();
 await getDonations();
@@ -103,7 +104,7 @@ const DonorTableProps ={
   donorTableData:donorTableData.value,
   emailFunction: prepEmail,
   editFunction:prepDonorUpdate,
-  deleteFunciton:deleteDonor,
+  deleteFunciton:removeDonor,
   viewFunction:prepDonorView
 }
 
@@ -167,21 +168,7 @@ async function prepDonorView(donor:Donor){
 }
 
 async function editDonor(values:Record<string,any>) {
-  const result = await $fetch(`/api/donor/${values.id}`,{
-    method:"PATCH",
-    body:{
-      name:values.fName.trim() + " " + values.lName.trim(),
-      boardMemberId: user.value.id,
-      email: values.email? values.email.trim() : "",
-      phone: values.phone? values.phone.trim(): "",
-      address: values.address? values.address.trim(): "",
-      preferredCommunication: values.preferredCommunication? values.preferredCommunication.trim(): "",
-      notes: values.notes,
-      webLink: values.webLink? values.webLink.trim(): "",
-      organization: values.organization? values.organization.trim() : "",
-      permissonLevel: user.value.permissionLevel
-    }
-  })
+  const result = await putDonor(values, user.value)
   if(result.success && result.data){
     donorTableData.value[donorIndex.value].donor={
       ...result.data,
@@ -191,13 +178,8 @@ async function editDonor(values:Record<string,any>) {
   updateDonor.value = false;
 }
 
-async function deleteDonor(donor:Donor,index:number) {
-  const result = await $fetch(`/api/donor/${donor.id}`,{
-    method:"DELETE",
-    body:{
-      permissionLevel:user.value.permissionLevel
-    }
-  })
+async function removeDonor(donor:Donor,index:number) {
+  const result = await deleteDonor(donor,user.value.permissionLevel);
   if(result.success){
     donorTableData.value.splice(index,1);
   }else if(result.error.code == 'P2003'){

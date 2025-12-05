@@ -221,10 +221,7 @@ const totalDonations = new Intl.NumberFormat("en-US", {
   }, 0)
 );
 
-const grantsRes = await $fetch("/api/grant");
-const grantsArray = grantsRes?.data || [];
-
-const totalGrants = grantsArray.length.toLocaleString();
+const totalGrants = grantsData.value.length.toLocaleString();
 
 
 

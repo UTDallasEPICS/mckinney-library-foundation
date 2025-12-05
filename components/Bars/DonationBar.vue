@@ -51,8 +51,10 @@ import DonationForm from '../Forms/DonationForm.vue';
 import DonorForm from '../Forms/DonorForm.vue';
 import { useDonationDropDown, useDonorDropDown } from '~/composables/useDonationDropDown';
 import { useDonation } from '~/composables/useDonation';
+import { useDonor } from '~/composables/useDonor'
 
 const {postDonation} = useDonation()
+const {postDonor} = useDonor();
 
 const addDonation = ref(false);
 const addDonor = ref(false);
@@ -71,30 +73,16 @@ const {donationEvents,donationMethods} = useDonationDropDown(props.donations)
 const {donorOrganizations} = useDonorDropDown(props.donors)
 
 async function createDonor(values:Record<string,any>){
-    const {data, error} = await $fetch('/api/donor',{
-        method:"POST",
-        body:{
-            name:values.fName.trim() + " " + values.lName.trim(),
-            email: values.email? values.email.trim(): "",
-            phone: values.phone? values.phone.trim(): "",
-            address: values.address? values.address.trim(): "",
-            preferredCommunication: values.preferredCommunication? values.preferredCommunication.trim(): "",
-            notes: values.notes,
-            webLink: values.webLink? values.webLink.trim() : "",
-            organization: values.organization? values.organization.trim() : "",
-            permissionLevel:props.user.permissionLevel,
-            boardMemberId:props.user.id
-        }
-    })
-    if(error.code === 'P2002'){
+    const result = await postDonor(values,props.user);
+    if(result.error.code === 'P2002'){
         alert('Donor already exists');
     }
-    else if(data){
+    else if(result.data){
         if(props.donors){
             props.donors.push({
-                donor:{...data},
+                donor:{...result.data},
                 donations: [],
-                boardMember: data.boardMember? data.boardMember : null
+                boardMember: result.data.boardMember? result.data.boardMember : null
             })
                    
         }

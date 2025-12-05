@@ -30,7 +30,7 @@
                         </th>
                         <th class="px-4 py-3 text-left text-xs text-[#2d3e4d] border-b-2 border-[#a8b5bf] cursor-pointer transition-colors">
                             <div class="w-full flex gap-2">
-                                <span v-if="!activeSearch[2].active">Monetary Amount ↑↓</span>
+                                <span v-if="!activeSearch[2].active">Monetary Amount</span>
                                 <button @click="toggleSearch(2)" v-if="!activeSearch[2].active"><FunnelIcon class="w-4 h-4"/></button>
                                 <div  v-else>
                                     <input autocomplete="off" v-model="minMoney"  @click.stop class="mt-2 px-2 py-1 border rounded"placeholder="minimum"/>

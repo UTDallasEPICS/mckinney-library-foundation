@@ -2,14 +2,12 @@ import { ref } from 'vue';
 import type { Grant } from "@prisma/client"
 
 export function useGrant() {
-    //const grants = ref<Grant[]>([]);
     const grantsData:Ref<{grant: Grant, grantor: {name: string} | null, boardMember: {name:string} | null}[]> = ref([]);
     const selectedGrant = ref(null);
 
     const getGrants = async () =>{
             const grants = await $fetch('/api/grant');
             if(grants.success && grants.data){
-                console.log(grants.data)
                 const tempGrants:Ref<Grant[]> = ref([])
                 grants.data.map((grant) =>{
                     tempGrants.value.push({
@@ -38,19 +36,27 @@ export function useGrant() {
 
     
 
-    async function updateGrant(selectedGrant: Grant) {
-        try {
-            await $fetch(`/api/grants/${selectedGrant.id}`, {
-                method: "PUT",
-                body: selectedGrant
-            });
-
-        } catch (error) {
-            console.error('updateGrant Error:', error);
-        }
+    const putGrant = async (values:Record<string, any>,user:{id:string, permissionLevel:number}) =>{
+        const result = await $fetch(`/api/grant/${values.id}`,{
+            method:"PUT",
+            body:{
+                grantor: values.grantorName,
+                boardMemberId: user.id,
+                permissionLevel: user.permissionLevel,
+                status: parseInt(values.status),
+                purpose: values.purpose,
+                method:values.method,
+                monetaryAmount: values.monetaryAmount,
+                nonMonetaryAmount: values.nonMonetaryAmount,
+                notes: values.notes,
+                proposedDate: values.proposedDate,
+                receivedDate: values.receivedDate,
+            }
+        })
+        return result
     }
 
-    async function postGrant(values:Record<string,any>,user:{id:string, permissionLevel:number}) {
+    const postGrant = async (values:Record<string,any>,user:{id:string, permissionLevel:number}) => {
         const result = await $fetch('/api/grant',{
             method:"POST",
             body:{
@@ -70,16 +76,14 @@ export function useGrant() {
         return result
     }
 
-    async function deleteGrant(selectedGrant: Grant) {
-        try {
-            const route: string = `/api/grants/${selectedGrant.id}`;
-            await $fetch(route, {
-                method: "DELETE",
-            });
-
-        } catch (error) {
-            console.error('deleteGrant Error:', error);
-        }
+    const deleteGrant = async (id:string,permissionLevel:number)=>{
+        const result = await $fetch(`/api/grant/${id}`,{
+            method:"DELETE",
+            body:{
+                permissionLevel: permissionLevel
+            }
+        })
+        return result
     }
 
 
@@ -98,7 +102,7 @@ export function useGrant() {
         selectedGrant,
         getGrants,
         getGrant,
-        updateGrant,
+        putGrant,
         postGrant,
         deleteGrant
     }

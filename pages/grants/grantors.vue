@@ -27,7 +27,7 @@
       :submit-grantor="editGrantor"
       :cancel-submisison="cancelUpdate"
       :view-only="false" 
-      :organizations="organizations"  
+      :organizations="grantorOrganizations"  
     />
   </div>
   <div v-if="viewGrantor" class="fixed top-0 left-0 w-full h-full flex justify-center items-center z-20 bg-black/50">
@@ -36,7 +36,7 @@
       :submit-grantor="editGrantor"
       :cancel-submisison="cancelUpdate"
       :view-only="true" 
-      :organizations="organizations"
+      :organizations="grantorOrganizations"
     />
   </div> 
 </template>
@@ -48,6 +48,7 @@ import GrantorForm from '~/components/Forms/GrantorForm.vue';
 import GrantBar from '~/components/Bars/GrantBar.vue'
 import { useAuth } from '~/composables/useAuth';
 import { useGrant } from '~/composables/useGrant';
+import { useGrantorDropDown } from '~/composables/useGrantDropDowns';
 import type { Grant, Grantor } from '@prisma/client';
 
 
@@ -66,7 +67,7 @@ else{
 const sendEmail = ref(false);
 const updateGrantor = ref(false);
 const viewGrantor = ref(false);
-const {grantors, getGrantors} = useGrantor();
+const {grantors, getGrantors, putGrantor, deleteGrantor} = useGrantor();
 const emailList: Ref<string[]> = ref([])
 const nameList = ref("")
 const grantorIndex = ref(0);
@@ -93,15 +94,7 @@ grantors.value.map((thisGrantor:Grantor,index:number) => {
   grantorTableData.value.push({grantor:thisGrantor,grants:grantors.value[index].grants,boardMember:grantors.value[index].boardMember})
 })
 
-const organizations: ComputedRef<string[]> = computed(() => {
-    if (grantorTableData) {
-        const uniquePurposes = new Set(
-            grantorTableData.value.map(grantor => grantor.grantor.organization).filter((organization) => organization != null)
-        )
-        return Array.from(uniquePurposes)
-    }
-    return []
-})
+const {grantorOrganizations} = useGrantorDropDown(grantorTableData.value)
 
 const {grantsData, getGrants} = useGrant();
 await getGrants();
@@ -110,7 +103,7 @@ const GrantorTableProps ={
   grantorTableData:grantorTableData.value,
   emailFunction: prepEmail,
   editFunction:prepGrantorUpdate,
-  deleteFunciton:deleteGrantor,
+  deleteFunciton:removeGrantor,
   viewFunction:prepGrantorView
 }
 
@@ -174,21 +167,7 @@ async function prepGrantorView(grantor:Grantor){
 }
 
 async function editGrantor(values:Record<string,any>) {
-  const result = await $fetch(`/api/grantor/${values.id}`,{
-    method:"PUT",
-    body:{
-      name:values.fName.trim() + " " + values.lName.trim(),
-      boardMemberId: user.value.id,
-      email: values.email? values.email.trim() : "",
-      phone: values.phone? values.phone.trim(): "",
-      address: values.address? values.address.trim(): "",
-      preferredCommunication: values.preferredCommunication? values.preferredCommunication.trim(): "",
-      notes: values.notes,
-      webLink: values.webLink? values.webLink.trim(): "",
-      organization: values.organization? values.organization.trim() : "",
-      permissonLevel: user.value.permissionLevel
-    }
-  })
+  const result = await putGrantor(values,user.value)
   if(result.success && result.data){
     grantorTableData.value[grantorIndex.value].grantor={
       ...result.data,
@@ -198,13 +177,8 @@ async function editGrantor(values:Record<string,any>) {
   updateGrantor.value = false;
 }
 
-async function deleteGrantor(grantor:Grantor,index:number) {
-  const result = await $fetch(`/api/grantor/${grantor.id}`,{
-    method:"DELETE",
-    body:{
-      permissionLevel:user.value.permissionLevel
-    }
-  })
+async function removeGrantor(grantor:Grantor,index:number) {
+  const result = await deleteGrantor(grantor,user.value.permissionLevel)
   if(result.success){
     grantorTableData.value.splice(index,1);
   }else if(result.error.code == 'P2003'){
