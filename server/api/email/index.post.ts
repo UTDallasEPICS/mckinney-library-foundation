@@ -2,7 +2,7 @@ const {sendMail} = useNodeMailer();
 
 export default eventHandler(async (event)=>{
     const body = await readBody(event);
-
+    // WTF is this api? why are we sending emails with no validation of any kind whatsoever?
     console.log(body);
 
     // try{
