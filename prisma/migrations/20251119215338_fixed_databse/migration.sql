@@ -1,50 +1,3 @@
-/*
-  Warnings:
-
-  - You are about to drop the `contactInfo` table. If the table is not empty, all the data it contains will be lost.
-  - You are about to drop the `donations` table. If the table is not empty, all the data it contains will be lost.
-  - You are about to drop the `donors` table. If the table is not empty, all the data it contains will be lost.
-  - You are about to drop the `grants` table. If the table is not empty, all the data it contains will be lost.
-  - You are about to drop the `rolePermissions` table. If the table is not empty, all the data it contains will be lost.
-  - You are about to drop the `userInvitations` table. If the table is not empty, all the data it contains will be lost.
-  - You are about to drop the `users` table. If the table is not empty, all the data it contains will be lost.
-
-*/
--- DropTable
-PRAGMA foreign_keys=off;
-DROP TABLE "contactInfo";
-PRAGMA foreign_keys=on;
-
--- DropTable
-PRAGMA foreign_keys=off;
-DROP TABLE "donations";
-PRAGMA foreign_keys=on;
-
--- DropTable
-PRAGMA foreign_keys=off;
-DROP TABLE "donors";
-PRAGMA foreign_keys=on;
-
--- DropTable
-PRAGMA foreign_keys=off;
-DROP TABLE "grants";
-PRAGMA foreign_keys=on;
-
--- DropTable
-PRAGMA foreign_keys=off;
-DROP TABLE "rolePermissions";
-PRAGMA foreign_keys=on;
-
--- DropTable
-PRAGMA foreign_keys=off;
-DROP TABLE "userInvitations";
-PRAGMA foreign_keys=on;
-
--- DropTable
-PRAGMA foreign_keys=off;
-DROP TABLE "users";
-PRAGMA foreign_keys=on;
-
 -- CreateTable
 CREATE TABLE "user" (
     "id" TEXT NOT NULL PRIMARY KEY,
@@ -110,7 +63,6 @@ CREATE TABLE "AccountCreationRequest" (
 -- CreateTable
 CREATE TABLE "Donor" (
     "id" TEXT NOT NULL PRIMARY KEY,
-    "boardMemberId" TEXT,
     "name" TEXT NOT NULL DEFAULT 'Anonymous',
     "address" TEXT,
     "phone" TEXT,
@@ -119,7 +71,8 @@ CREATE TABLE "Donor" (
     "notes" TEXT,
     "webLink" TEXT,
     "organization" TEXT,
-    CONSTRAINT "Donor_boardMemberId_fkey" FOREIGN KEY ("boardMemberId") REFERENCES "user" ("id") ON DELETE RESTRICT ON UPDATE CASCADE
+    "lastDonationDate" DATETIME,
+    "firstDonationDate" DATETIME
 );
 
 -- CreateTable
@@ -182,6 +135,13 @@ CREATE TABLE "Expenditure" (
     CONSTRAINT "Expenditure_boardMemberId_fkey" FOREIGN KEY ("boardMemberId") REFERENCES "user" ("id") ON DELETE RESTRICT ON UPDATE CASCADE
 );
 
+-- CreateTable
+CREATE TABLE "Request" (
+    "id" TEXT NOT NULL PRIMARY KEY,
+    "name" TEXT NOT NULL,
+    "email" TEXT NOT NULL
+);
+
 -- CreateIndex
 CREATE UNIQUE INDEX "user_name_key" ON "user"("name");
 
@@ -193,3 +153,6 @@ CREATE UNIQUE INDEX "session_token_key" ON "session"("token");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "Donor_name_key" ON "Donor"("name");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "Request_email_key" ON "Request"("email");
