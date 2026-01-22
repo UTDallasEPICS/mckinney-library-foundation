@@ -1,50 +1,3 @@
-/*
-  Warnings:
-
-  - You are about to drop the `contactInfo` table. If the table is not empty, all the data it contains will be lost.
-  - You are about to drop the `donations` table. If the table is not empty, all the data it contains will be lost.
-  - You are about to drop the `donors` table. If the table is not empty, all the data it contains will be lost.
-  - You are about to drop the `grants` table. If the table is not empty, all the data it contains will be lost.
-  - You are about to drop the `rolePermissions` table. If the table is not empty, all the data it contains will be lost.
-  - You are about to drop the `userInvitations` table. If the table is not empty, all the data it contains will be lost.
-  - You are about to drop the `users` table. If the table is not empty, all the data it contains will be lost.
-
-*/
--- DropTable
-PRAGMA foreign_keys=off;
-DROP TABLE "contactInfo";
-PRAGMA foreign_keys=on;
-
--- DropTable
-PRAGMA foreign_keys=off;
-DROP TABLE "donations";
-PRAGMA foreign_keys=on;
-
--- DropTable
-PRAGMA foreign_keys=off;
-DROP TABLE "donors";
-PRAGMA foreign_keys=on;
-
--- DropTable
-PRAGMA foreign_keys=off;
-DROP TABLE "grants";
-PRAGMA foreign_keys=on;
-
--- DropTable
-PRAGMA foreign_keys=off;
-DROP TABLE "rolePermissions";
-PRAGMA foreign_keys=on;
-
--- DropTable
-PRAGMA foreign_keys=off;
-DROP TABLE "userInvitations";
-PRAGMA foreign_keys=on;
-
--- DropTable
-PRAGMA foreign_keys=off;
-DROP TABLE "users";
-PRAGMA foreign_keys=on;
-
 -- CreateTable
 CREATE TABLE "user" (
     "id" TEXT NOT NULL PRIMARY KEY,
@@ -125,10 +78,16 @@ CREATE TABLE "Donor" (
 -- CreateTable
 CREATE TABLE "Grantor" (
     "id" TEXT NOT NULL PRIMARY KEY,
+    "boardMemberId" TEXT,
     "name" TEXT NOT NULL DEFAULT 'Anonymous',
+    "phone" TEXT,
+    "address" TEXT,
     "email" TEXT,
+    "preferredCommunication" TEXT,
+    "notes" TEXT,
     "webLink" TEXT,
-    "organization" TEXT
+    "organization" TEXT,
+    CONSTRAINT "Grantor_boardMemberId_fkey" FOREIGN KEY ("boardMemberId") REFERENCES "user" ("id") ON DELETE RESTRICT ON UPDATE CASCADE
 );
 
 -- CreateTable
@@ -159,11 +118,9 @@ CREATE TABLE "Grant" (
     "nonMonetaryAmount" TEXT,
     "status" INTEGER DEFAULT 0,
     "notes" TEXT,
-    "proposedDate" DATETIME NOT NULL,
+    "proposedDate" DATETIME,
     "receivedDate" DATETIME,
-    "startDate" DATETIME NOT NULL,
-    "endDate" DATETIME NOT NULL,
-    "lastEditDate" DATETIME NOT NULL,
+    "lastEditDate" DATETIME,
     CONSTRAINT "Grant_boardMemberId_fkey" FOREIGN KEY ("boardMemberId") REFERENCES "user" ("id") ON DELETE RESTRICT ON UPDATE CASCADE,
     CONSTRAINT "Grant_grantorId_fkey" FOREIGN KEY ("grantorId") REFERENCES "Grantor" ("id") ON DELETE RESTRICT ON UPDATE CASCADE
 );

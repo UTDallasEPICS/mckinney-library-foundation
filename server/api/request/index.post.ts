@@ -18,7 +18,7 @@ export default defineEventHandler(async (event) =>{
             const info = await sendMail({
                 subject: "MPLF Account Request",
                 text: body.email + " sent an account request for " + body.name,
-                to: process.env.NUXT_NODEMAILER_EMAIL
+                to: body.email
             })
             console.log("Email Sent: ", info.messageId);  
             return{
