@@ -1,30 +1,16 @@
-# Use the official Node.js 22 image
-FROM node:22
+FROM node:22-alpine AS builder
+COPY . ./
 
-# Set the working directory inside the container
-WORKDIR /app
+ENV PNPM_HOME="/pnpm"
+ENV PATH="$PNPM_HOME:$PATH"
+RUN corepack enable
 
-# Copy package.json, package-lock.json and prisma folder to ensure dependencies are installed correctly
-COPY /package.json .
-COPY /package-lock.json .
-COPY /prisma ./prisma
-
-ENV DATABASE_URL="file:/app/prisma/mplf.db"
-
-# Install dependencies using NPM with a specific Nuxt.js version
-RUN npm add nuxt@3.16.1 && npm install
-
-# Generate Prisma client
+RUN pnpm i --force
 RUN npx prisma generate
+RUN pnpm run build
 
-# Copy the rest of the application files
-COPY . .
+FROM node:22-alpine AS deployment
 
-# Build the Nuxt.js application
-RUN npm run build
-
-# Expose the port Nuxt uses (default is 3000)
+COPY --from=builder /.output /
 EXPOSE 3000
-
-# Start the Nuxt application
-CMD ["npm", "run", "start"]
+CMD ["node", "./server/index.mjs"]
