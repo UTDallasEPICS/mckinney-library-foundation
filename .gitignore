@@ -1,0 +1,38 @@
+#Nuxt folder .gitignore
+
+# Nuxt dev/build outputs
+.output
+.data
+.nuxt
+.nitro
+.cache
+dist
+
+#SQLite temp files
+*.db-journal
+*.db-wal
+*.db-shm
+
+# Node dependencies
+node_modules
+
+# Logs
+logs
+*.log
+
+# Misc
+.DS_Store
+.fleet
+.idea
+
+# Local env files
+.env
+!.env.example
+
+#Root .gitignore file
+node_modules/
+
+package-lock.json
+
+*.db
+# do not accept any kind of database file

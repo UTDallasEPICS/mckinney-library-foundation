@@ -1,0 +1,158 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id            String        @id @default(cuid())
+  name          String        @unique @default("Anonymous")
+  status        Boolean       @default(false) // 0: active, 1: frozen, 2: deleted
+  phone         String?
+  email         String        @default("mplfboard@gmail.com")
+  emailVerified Boolean       @default(false)
+  permission    Int           @default(0) // main admin, admin, editor, 0: viewer
+  image         String?
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @default(now()) @updatedAt
+  sessions      Session[]
+  accounts      Account[]
+  donations     Donation[]
+  donors        Donor[]
+  grants        Grant[]
+  grantors      Grantor[]
+  expenditures  Expenditure[]
+
+  @@unique([email])
+  @@map("user")
+}
+
+model Session {
+  id        String   @id @default(cuid())
+  expiresAt DateTime
+  token     String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  ipAddress String?
+  userAgent String?
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([token])
+  @@map("session")
+}
+
+model Account {
+  id                    String    @id @default(cuid())
+  accountId             String
+  providerId            String
+  userId                String
+  user                  User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  accessToken           String?
+  refreshToken          String?
+  idToken               String?
+  accessTokenExpiresAt  DateTime?
+  refreshTokenExpiresAt DateTime?
+  scope                 String?
+  password              String?
+  createdAt             DateTime  @default(now())
+  updatedAt             DateTime  @updatedAt
+
+  @@map("account")
+}
+
+model Verification {
+  id         String   @id @default(cuid())
+  identifier String
+  value      String
+  expiresAt  DateTime
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @default(now()) @updatedAt
+
+  @@map("verification")
+}
+
+model AccountCreationRequest {
+  id    String @id @default(cuid())
+  name  String @default("Anonymous")
+  email String
+}
+
+model Donor {
+  id                     String     @id @default(cuid())
+  boardMemberId          String?
+  boardMember            User?      @relation(fields: [boardMemberId], references: [id], onDelete: Restrict)
+  name                   String     @unique @default("Anonymous")
+  address                String?
+  phone                  String?
+  email                  String?
+  preferredCommunication String? // phone or email
+  notes                  String?
+  webLink                String?
+  organization           String?
+  donations              Donation[]
+}
+
+model Grantor {
+  id                     String  @id @default(cuid())
+  boardMemberId          String?
+  boardMember            User?   @relation(fields: [boardMemberId], references: [id], onDelete: Restrict)
+  name                   String  @default("Anonymous")
+  phone                  String?
+  address                String?
+  email                  String?
+  preferredCommunication String? // phone or email
+  notes                  String?
+  webLink                String?
+  organization           String?
+  grants                 Grant[]
+}
+
+model Donation {
+  id                String    @id @default(cuid())
+  boardMemberId     String?
+  boardMember       User?     @relation(fields: [boardMemberId], references: [id], onDelete: Restrict)
+  donorId           String?
+  donor             Donor?    @relation(fields: [donorId], references: [id], onDelete: Restrict)
+  event             String?
+  method            String?
+  monetaryAmount    String?
+  nonMonetaryAmount String?
+  status            Int       @default(0) // 0: pending, 1: completed
+  notes             String?
+  receivedDate      DateTime?
+  lastEditDate      DateTime?
+}
+
+model Grant {
+  id                String    @id @default(cuid())
+  boardMemberId     String?
+  boardMember       User?     @relation(fields: [boardMemberId], references: [id], onDelete: Restrict)
+  grantorId         String?
+  grantor           Grantor?  @relation(fields: [grantorId], references: [id], onDelete: Restrict)
+  purpose           String?
+  method            String?
+  monetaryAmount    String?
+  nonMonetaryAmount String?
+  status            Int?      @default(0) // 0: requested, 1: completed
+  notes             String?
+  proposedDate      DateTime?
+  receivedDate      DateTime?
+  lastEditDate      DateTime?
+}
+
+model Expenditure {
+  id                String    @id @default(cuid())
+  boardMemberId     String?
+  boardMember       User?     @relation(fields: [boardMemberId], references: [id], onDelete: Restrict)
+  purpose           String?
+  method            String?
+  monetaryAmount    String?
+  nonMonetaryAmount String?
+  notes             String?
+  spentDate         DateTime?
+  lastEditDate      DateTime
+}

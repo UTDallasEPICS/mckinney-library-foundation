@@ -1,0 +1,24 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer components{
+    .form-field-label{
+        @apply text-sm leading-none font-medium text-[#5a6a77] mt-3;
+    }
+    .form-title{
+        @apply text-lg leading-none font-semibold text-[#5a6a77] text-center;
+    }
+    .form-input{
+        @apply w-full flex min-w-0 rounded-md border px-3 py-1 text-base transition-[color,box-shadow] outline-none  md:text-sm bg-white border-gray-300 h-11;
+    }
+    .form-field{
+        @apply min-h-44 resize-y w-full flex min-w-0 rounded-md border px-3 py-1 text-base transition-[color,box-shadow] outline-none  md:text-sm bg-white border-gray-300 h-11;
+    }
+    .form-button{
+       @apply rounded-md text-sm font-medium outline-none h-9 py-2 text-white px-6;
+    }
+    .account-btn{
+        @apply font-medium outline-none px-4 py-2 w-full h-12 text-white mt-6 text-[15px] shadow-lg transition-all rounded-xl;
+    }
+}
