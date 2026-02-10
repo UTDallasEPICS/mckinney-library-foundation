@@ -84,7 +84,7 @@ import * as yup from 'yup';
 import AccReqForm from '~/components/Forms/AccReqForm.vue';
 import LoginForm from '~/components/Forms/LoginForm.vue';
 import { useAuth } from '~/composables/useAuth';
-import { authClient } from '~/lib/authClient';
+import { authClient } from '~/server/utils/authClient';
 import InfoBanner from '~/components/Banners/InfoBanner.vue';
 
 

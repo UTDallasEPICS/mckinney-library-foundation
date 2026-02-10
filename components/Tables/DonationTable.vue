@@ -136,7 +136,7 @@
 </template>
 
 <script setup lang="ts">
-import type { Donation } from '@prisma/client';
+import type { Donation } from '~~/server/utils/generated/prisma/browser';
 import { NumberedListIcon } from '@heroicons/vue/24/outline';
 import {FunnelIcon } from '@heroicons/vue/24/solid';
 const props = defineProps<{

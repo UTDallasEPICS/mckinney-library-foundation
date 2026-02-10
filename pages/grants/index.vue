@@ -47,7 +47,7 @@ import GrantForm from '~/components/Forms/GrantForm.vue';
 import { useAuth } from '~/composables/useAuth';
 import { useGrantor } from '~/composables/useGrantor';
 import { useGrant } from '~/composables/useGrant';
-import type { Grant, Grantor } from '@prisma/client';
+import type { Grant, Grantor } from '~~/server/utils/generated/prisma/browser';
 import { useGrantsDropDown } from '~/composables/useGrantDropDowns';
 
 

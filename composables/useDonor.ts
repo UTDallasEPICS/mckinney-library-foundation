@@ -1,4 +1,4 @@
-import type { Donor } from "@prisma/client";
+import type { Donor } from "~~/server/utils/generated/prisma/browser";
 
 export const useDonor = () => {
     const donors = ref();

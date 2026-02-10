@@ -69,7 +69,7 @@
 </template>
 
 <script setup lang="ts">
-import type { Grantor } from '@prisma/client';
+import type { Grantor } from '~~/server/utils/generated/prisma/browser';
 import * as yup from 'yup';
 
     const props = defineProps<{

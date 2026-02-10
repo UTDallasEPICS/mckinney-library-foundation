@@ -49,7 +49,7 @@ import GrantBar from '~/components/Bars/GrantBar.vue'
 import { useAuth } from '~/composables/useAuth';
 import { useGrant } from '~/composables/useGrant';
 import { useGrantorDropDown } from '~/composables/useGrantDropDowns';
-import type { Grant, Grantor } from '@prisma/client';
+import type { Grant, Grantor } from '~~/server/utils/generated/prisma/browser';
 
 
 const {session, getSession} = useAuth();
