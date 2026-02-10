@@ -89,7 +89,7 @@
 </template>
 
 <script setup lang="ts">
-import type { Donation, Donor } from '@prisma/client';
+import type { Donation, Donor } from '~~/server/utils/generated/prisma/browser';
 import * as yup from 'yup';
 
 const props = defineProps<{

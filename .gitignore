@@ -36,3 +36,8 @@ package-lock.json
 
 *.db
 # do not accept any kind of database file
+
+# Ignore prisma migrations
+prisma/migrations/
+# Ignore prisma generated files
+server/utils/generated/

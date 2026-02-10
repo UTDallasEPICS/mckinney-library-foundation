@@ -46,7 +46,7 @@
 </template>
 
 <script setup lang="ts">
-import type { Grant, Grantor } from '@prisma/client';
+import type { Grant, Grantor } from '~~/server/utils/generated/prisma/browser';
 import GrantForm from '../Forms/GrantForm.vue';
 import GrantorForm from '../Forms/GrantorForm.vue';
 import {useGrant} from '~/composables/useGrant';

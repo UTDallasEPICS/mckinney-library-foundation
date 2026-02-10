@@ -1,4 +1,4 @@
-import type { Grantor } from "@prisma/client";
+import type { Grantor } from "~~/server/utils/generated/prisma/browser";
 
 export const useGrantor = () => {
     const grantors = ref();
