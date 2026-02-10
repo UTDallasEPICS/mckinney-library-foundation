@@ -91,6 +91,7 @@ NUXT_NODEMAILER_HOST="smtp.gmail.com"
 NUXT_NODEMAILER_PORT="587"
 NUXT_NODEMAILER_FROM= 'MPLF Signin'
 ```
+- Get the values for these from your mentor
 ### 5. Initialize the database
 ```bash
 npx prisma generate
@@ -106,7 +107,7 @@ npm run dev
 ```
 ### 7. Access your database on <http://localhost:5555/>
 ```bash
-npx studio prisma
+npx prisma studio
 ```
 ### 8. Create a user record on <http://localhost:5555/>
 - Enter your email in the email field

@@ -1,4 +1,4 @@
-import type { Grant, Grantor } from "@prisma/client";
+import type { Grant, Grantor } from "~~/server/utils/generated/prisma/browser";
 
 export const useGrantsDropDown = (grants:{grant:Grant, boardMember:{name:string}| null, grantor: {name: string} | null}[]) => {
     const grantPurposes: ComputedRef<string[]> = computed(() => {

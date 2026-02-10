@@ -1,5 +1,5 @@
 import { ref } from 'vue';
-import type { Grant } from "@prisma/client"
+import type { Grant } from "~~/server/utils/generated/prisma/browser"
 
 export function useGrant() {
     const grantsData:Ref<{grant: Grant, grantor: {name: string} | null, boardMember: {name:string} | null}[]> = ref([]);
