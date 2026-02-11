@@ -21,6 +21,7 @@ export default defineNuxtConfig({
     from: process.env.NUXT_NODEMAILER_FROM,
     host: process.env.NUXT_NODEMAILER_HOST,
     port: parseInt(process.env.NUXT_NODEMAILER_PORT!),
+    secure: true,
     auth: {
       user: process.env.NUXT_NODEMAILER_EMAIL,
       pass: process.env.NUXT_NODEMAILER_PASS,
