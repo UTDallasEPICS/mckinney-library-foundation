@@ -70,7 +70,7 @@
                 </div>
             </div>
             <div class="grid grid-cols-2 gap-4 mb-5">
-                <h2 class="form-field-label">Proposed Date<span class = "text-red-500">*</span></h2>
+                <h2 class="form-field-label">Proposed Date</h2>
                 <h2 class="form-field-label">Received Date<span class = "text-red-500">*</span></h2>
                 <VeeField v-slot="{field}" autocomplete="off" :disabled="viewOnly" class="form-input focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px]" name="proposedDate">
                     <input id="propDate"  autocomplete="off" :disabled="viewOnly" v-model="proposedDateRef" v-bind="field" type="date"></input>
@@ -98,7 +98,7 @@
 </template>
 
 <script setup lang="ts">
-import type { Grant, Grantor } from '~~/server/utils/generated/prisma/browser';
+import type { Grant, Grantor } from '@prisma/client';
 import * as yup from 'yup';
 
 const props = defineProps<{
@@ -148,9 +148,7 @@ const schema = yup.object({
     recievedDate: yup.string().test('date-not-empty', 'Recieved Date must be entered', ()=>{
         return recievedDateRef.value !== ''
     }),
-    proposedDate: yup.string().test('date-not-empty', 'Proposed Date must be entered', ()=>{
-        return proposedDateRef.value !== ''
-    }),
+    proposedDate: yup.string().nullable(),
 })
 
 </script>
