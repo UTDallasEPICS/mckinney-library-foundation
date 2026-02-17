@@ -55,6 +55,19 @@
                 <VeeField autocomplete="off" :disabled="viewOnly" name="address" class="form-input focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px]"></VeeField> 
                 <VeeField autocomplete="off" :disabled="viewOnly" name="webLink"class="form-input focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px]"></VeeField>
             </div>
+            <VeeField name="isAuthor" type="checkbox" :value="true" :unchecked-value="false" v-slot="{field}">
+                <div class="flex items-center gap-2">
+                    <input
+                        v-bind="field"
+                        type="checkbox"
+                        id="isAuthor"
+                        :checked="field.value"
+                        :disabled="viewOnly"
+                        class="w-4 h-4"
+                    />
+                    <label for="isAuthor" class="form-field-label">Is the donor an author?</label>
+                </div>
+            </VeeField>
             <h2 class = "form-field-label"> notes </h2>
             <VeeField autocomplete="off" v-slot="{field}" :disabled="viewOnly" name="notes">
                 <textarea :disabled="viewOnly" v-bind="field" class="form-field focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px]"></textarea>
@@ -80,6 +93,7 @@ import * as yup from 'yup';
         index?:number
 }>();
 
+
 const initValues = props.donor?{
     index:props.index, 
     id: props.donor.id,
@@ -90,6 +104,7 @@ const initValues = props.donor?{
     phone:props.donor.phone,
     address:props.donor.address,
     preferredCommunication:props.donor.preferredCommunication,
+    isAuthor:props.donor.isAuthor,
     notes:props.donor.notes,
     webLink:props.donor.webLink
 }: undefined
@@ -97,5 +112,7 @@ const initValues = props.donor?{
 const schema = yup.object({
     fName: yup.string().required("first name is required"),
     lName: yup.string().required("last name is required"),
+    isAuthor: yup.boolean(),
+
 })
 </script>

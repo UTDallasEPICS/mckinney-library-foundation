@@ -92,6 +92,7 @@ model Donor {
   preferredCommunication String? // phone or email
   notes                  String?
   webLink                String?
+  isAuthor               Boolean    @default(false)
   organization           String?
   donations              Donation[]
 }

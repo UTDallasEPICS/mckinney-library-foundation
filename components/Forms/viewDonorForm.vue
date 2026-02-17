@@ -46,8 +46,17 @@
     <textarea v-model = "notes"  type = 'number' class="w-full mt-1 px-3 py-2 rounded-md border border-slate-300" disabled></textarea>
     </div>
     
-    
-
+    <!-- <div>
+    <input v-model = "isAuthor" type= "checkbox" disabled />
+    <label class="text-sm text-slate-600">{{  isAuthor  }}</label>
+    <label class="text-sm text-slate-600">{{  isAuthor }}</label> -->
+    <!-- </div> -->
+     <div>
+        <input v-model="isAuthor" type="checkbox" disabled/>
+        <label class="text-sm text-slate-600">
+            {{ isAuthor ? 'Is an Author' : 'Not an Author' }}
+        </label>
+     </div>
    
     <div>
     <label class="text-sm text-slate-600">organization</label>
@@ -86,9 +95,8 @@
     const notes = ref("")
     const organization = ref("")
     const webLink = ref("")
+    const isAuthor = ref(false)
     const lastDonationDate = ref("")
-
-    
 
 
     const props = defineProps({
@@ -131,6 +139,7 @@ watch(() => info.value, (newVal) => {
         notes.value = newVal.notes
         organization.value = newVal.organization
         webLink.value = newVal.webLink
+        isAuthor.value = newVal.isAuthor
         lastDonationDate.value = newVal.lastDonationDate.slice(0,10)
   }
 })

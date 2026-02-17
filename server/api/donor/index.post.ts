@@ -21,6 +21,7 @@ export default defineEventHandler(async (event) =>{
                 preferredCommunication: body.preferredCommunication,
                 notes: body.notes,
                 webLink: body.webLink,
+                isAuthor: body.isAuthor,
                 organization: body.organization,
                 donations: body.donations
             },
