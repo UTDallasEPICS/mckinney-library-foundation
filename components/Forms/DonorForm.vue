@@ -61,7 +61,7 @@
                         v-bind="field"
                         type="checkbox"
                         id="isAuthor"
-                        :checked="field.value"
+                        :checked="field.value === true"
                         :disabled="viewOnly"
                         class="w-4 h-4"
                     />
@@ -94,7 +94,7 @@ import * as yup from 'yup';
 }>();
 
 
-const initValues = props.donor?{
+const initValues = props.donor ?{
     index:props.index, 
     id: props.donor.id,
     fName: props.donor.name.split(' ')[0],
@@ -104,10 +104,10 @@ const initValues = props.donor?{
     phone:props.donor.phone,
     address:props.donor.address,
     preferredCommunication:props.donor.preferredCommunication,
-    isAuthor:props.donor.isAuthor,
+    isAuthor: Boolean(props.donor.isAuthor),
     notes:props.donor.notes,
     webLink:props.donor.webLink
-}: undefined
+} : undefined
 
 const schema = yup.object({
     fName: yup.string().required("first name is required"),
