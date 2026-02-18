@@ -61,7 +61,7 @@
                         v-bind="field"
                         type="checkbox"
                         id="isAuthor"
-                        :checked="field.value"
+                        :checked="field.value == true"
                         :disabled="viewOnly"
                         class="w-4 h-4"
                     />
@@ -104,7 +104,7 @@ const initValues = props.donor?{
     phone:props.donor.phone,
     address:props.donor.address,
     preferredCommunication:props.donor.preferredCommunication,
-    isAuthor:props.donor.isAuthor,
+    isAuthor: Boolean(props.donor.isAuthor),
     notes:props.donor.notes,
     webLink:props.donor.webLink
 }: undefined
