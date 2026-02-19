@@ -61,7 +61,7 @@
                         v-bind="field"
                         type="checkbox"
                         id="isAuthor"
-                        :checked="field.value == true"
+                        :checked="initValues?.isAuthor"
                         :disabled="viewOnly"
                         class="w-4 h-4"
                     />
