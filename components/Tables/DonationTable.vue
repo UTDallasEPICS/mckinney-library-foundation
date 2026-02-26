@@ -114,7 +114,7 @@
                 <tbody>
                     <tr v-for="(row,idx) in sortedIndices" :key="idx" class="hover:bg-[#e8f0f7] transition-colors border-b border-gray-200 cursor-pointer">
                         <td class="px-6 py-4 text-[#2d3e4d] text-left text-sm">{{ row.donor?.name }}</td>
-                        <td class="px-6 py-4 text-[#2d3e4d] text-left text-sm">{{ row.donation.event }}</td>
+                        <td class="px-6 py-4 text-[#2d3e4d] text-left text-sm">{{ row.donation.event?.eventName || '' }}</td>
                         <td class="px-6 py-4 text-[#2d3e4d] text-left text-sm">{{ row.donation.monetaryAmount }}</td>
                         <td class="px-6 py-4 text-[#2d3e4d] text-left text-sm">{{ row.donation.nonMonetaryAmount }}</td>
                         <td class="px-6 py-4 text-[#2d3e4d] text-left text-sm">{{ row.donation.method }}</td>
@@ -196,6 +196,7 @@ const visibleIndices = computed(() => {
         switch(field){
             case 'donorName' : value.value = row?.donor? row?.donor['name']?.toString().toLowerCase() ?? "" : ''; break;
             case 'boardName' : value.value = row?.boardMember? row?.boardMember['name']?.toString().toLowerCase() ?? "" : ''; break;
+            case 'event' : value.value = (row?.donation.event && typeof row.donation.event === 'object' ? row.donation.event.eventName : row?.donation.event)?.toString().toLowerCase() ?? ""; break;
             case 'monetaryAmount' : value.value = row?.donation[field]?.toString().toLowerCase() ?? ""; 
                                     if(minMoney.value <= maxMoney.value && maxMoney.value !== 0){
                                         return (minMoney.value <= parseInt(value.value) && parseInt(value.value) <= maxMoney.value);
@@ -254,8 +255,8 @@ const sortedIndices = computed(() => {
                         comparison = aName.localeCompare(bName);
                         break;
                     case 'event' : 
-                        const aEvent = a.donation.event || '';
-                        const bEvent = b.donation.event || '';
+                        const aEvent = (a.donation.event && typeof a.donation.event === 'object' ? a.donation.event.eventName : a.donation.event) || '';
+                        const bEvent = (b.donation.event && typeof b.donation.event === 'object' ? b.donation.event.eventName : b.donation.event) || '';
                         comparison = aEvent.localeCompare(bEvent);
                         break;
                     case 'monetaryAmount': 

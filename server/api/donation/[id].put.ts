@@ -43,12 +43,30 @@ export default defineEventHandler (async (event)=>{
                 }
             })
             }
+
+        // Upsert event if provided
+        let eventId = null;
+        if (body.event) {
+            const eventRecord = await prisma.event.upsert({
+                where: {
+                    eventName: body.event
+                },
+                update: {},
+                create: {
+                    eventName: body.event,
+                    eventDate: body.receivedDate ? new Date(body.receivedDate) : new Date(),
+                    boardMemberId: body.boardMemberId
+                }
+            });
+            eventId = eventRecord.id;
+        }
+
         const updateDonation = await prisma.donation.update({
             where: { id:id },
             data: {
                 boardMemberId: body.boardMemberId,
                 donorId: donorRecord.id,
-                event: body.event,
+                eventId: eventId,
                 method: body.method,
                 monetaryAmount: body. monetaryAmount,
                 nonMonetaryAmount: body.nonMonetaryAmount,
@@ -59,6 +77,7 @@ export default defineEventHandler (async (event)=>{
             },
             include: {
                 donor: true,
+                event: true,
                 boardMember:{
                     select:{
                         name:true

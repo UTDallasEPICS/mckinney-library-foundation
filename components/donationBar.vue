@@ -48,7 +48,7 @@
     </template>
     <script setup lang="ts">
     
-    import DonationsForm from '~/components/Forms/DonationsForm.vue';
+    import DonationsForm from '~/components/Forms/DonationForm.vue';
     import DonorForm from '~/components/Forms/DonorForm.vue';
 
     import { ref } from 'vue';

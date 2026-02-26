@@ -122,7 +122,7 @@
 
 <script setup lang="ts">
 import { ref, computed } from 'vue'
-import DonationsForm from '@/components/Forms/DonationsForm.vue'
+import DonationsForm from '@/components/Forms/DonationForm.vue'
 import viewDonationsForm from '@/components/Forms/viewDonationsForm.vue'
 
 const emit = defineEmits(['delete-donation', 'update-donation'])

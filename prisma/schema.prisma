@@ -25,6 +25,7 @@ model User {
   grants        Grant[]
   grantors      Grantor[]
   expenditures  Expenditure[]
+  events        Event[]
 
   @@unique([email])
   @@map("user")
@@ -117,7 +118,8 @@ model Donation {
   boardMember       User?     @relation(fields: [boardMemberId], references: [id], onDelete: Restrict)
   donorId           String?
   donor             Donor?    @relation(fields: [donorId], references: [id], onDelete: Restrict)
-  event             String?
+  eventId           String?
+  event             Event?    @relation(fields: [eventId], references: [id], onDelete: Restrict)
   method            String?
   monetaryAmount    String?
   nonMonetaryAmount String?
@@ -155,4 +157,13 @@ model Expenditure {
   notes             String?
   spentDate         DateTime?
   lastEditDate      DateTime
+}
+
+model Event {
+  id                String @id @default(cuid())
+  eventName         String @unique
+  eventDate         DateTime?
+  boardMemberId     String?
+  boardMember       User? @relation(fields: [boardMemberId], references: [id], onDelete: Restrict)
+  donations         Donation[]
 }

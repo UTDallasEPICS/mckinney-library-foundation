@@ -1,6 +1,6 @@
 <template>
     <div class="bg-[#e5e9ec] p-0 gap-0 border-0 rounded-md">
-        <VeeForm :initial-values="initValues" :validation-schema="schema" class= "w-[800px] max-h-[130vh] overflow-y-auto mx-4" @submit="submitDonation">
+        <VeeForm v-slot="{setFieldValue}" :initial-values="initValues" :validation-schema="schema" class= "w-[800px] max-h-[130vh] overflow-y-auto mx-4" @submit="submitDonation">
             <div class = "flex flex-col gap-2 sm:text-left px-6 pt-6 pb-4 space-y-0">
               <h1 class = "form-title"> Donation Information</h1>
             </div>
@@ -10,20 +10,20 @@
                 <h2 class="form-field-label">donor (name) <span class = "text-red-500">*</span></h2>
                 <h2 class="form-field-label">event <span class = "text-red-500">*</span></h2>          
                 <VeeField autocomplete="off" v-slot="{field}" :disabled="viewOnly" name="donorName" class="form-input focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px]">
-                    <input :disabled="viewOnly" autocomplete="off" v-bind="field" list="donor-list" class="w-full px-3 py-2 bg-white border border-gray-300 rounded text-[#2d3e4d] focus:outline-none focus:ring-2 focus:ring-[#5a6a77] cursor-pointer">
-                        <datalist id="donor-list">
-                            <option></option>
-                            <option v-if="donors.length > 0" v-for="donor in donors" :value="donor.donor.name"></option>
-                        </datalist>
-                    </input>
+                    <input :disabled="viewOnly" autocomplete="off" v-bind="field" class="w-full px-3 py-2 bg-white border border-gray-300 rounded text-[#2d3e4d] focus:outline-none focus:ring-2 focus:ring-[#5a6a77]">
                 </VeeField>  
                 <VeeField autocomplete="off" :disabled="viewOnly" v-slot="{field}" name="event" class="form-input focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px]">
-                    <input :disabled="viewOnly" autocomplete="off" v-bind="field" list="event-list" class="w-full px-3 py-2 bg-white border border-gray-300 rounded text-[#2d3e4d] focus:outline-none focus:ring-2 focus:ring-[#5a6a77] cursor-pointer">
+                    <div class="relative">
+                        <input :disabled="viewOnly" autocomplete="off" v-bind="field" @input="onEventChange($event, setFieldValue)" list="event-list" class="w-full px-3 py-2 pr-8 bg-white border border-gray-300 rounded text-[#2d3e4d] focus:outline-none focus:ring-2 focus:ring-[#5a6a77] cursor-pointer [&::-webkit-calendar-picker-indicator]:opacity-0 [&::-webkit-calendar-picker-indicator]:absolute [&::-webkit-calendar-picker-indicator]:right-0 [&::-webkit-calendar-picker-indicator]:w-8 [&::-webkit-calendar-picker-indicator]:h-full [&::-webkit-calendar-picker-indicator]:cursor-pointer" placeholder="Select or type an event...">
+                        <div class="absolute inset-y-0 right-0 flex items-center px-2 pointer-events-none">
+                            <svg class="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                            </svg>
+                        </div>
                         <datalist id="event-list">
-                            <option></option>
-                            <option v-if="events.length > 0" v-for="event in events" :value="event"></option>
+                            <option v-if="events.length > 0" v-for="evt in events" :key="evt.id" :value="evt.eventName"></option>
                         </datalist>
-                    </input>
+                    </div>
                 </VeeField>  
                 <div>
                     <VeeErrorMessage class="text-red-500"  name="donorName" />
@@ -89,7 +89,7 @@
 </template>
 
 <script setup lang="ts">
-import type { Donation, Donor } from '@prisma/client';
+import type { Donation, Donor, Event } from '@prisma/client';
 import * as yup from 'yup';
 
 const props = defineProps<{
@@ -97,18 +97,27 @@ const props = defineProps<{
     submitDonation: (values: Record<string,any>) => Promise<void>         
     viewOnly: boolean
     index?:number,
-    events: string[],
+    events: {id: string, eventName: string, eventDate: Date | null}[],
     methods: string[],
     donors:{donor:Donor, donations:Donation[]}[]
     data?:{donation:Donation,boardMember:{name:string}| null, donor: {name: string | null} | null}
 }>();
 
 const recievedDateRef = ref(new Date().toISOString());
+
+// Helper to extract event name from event object or string
+const getEventName = (eventData: any): string | null => {
+    if (!eventData) return null;
+    if (typeof eventData === 'string') return eventData;
+    if (typeof eventData === 'object' && eventData.eventName) return eventData.eventName;
+    return null;
+};
+
 const initValues = props.data?{
     index:props.index, 
     id: props.data.donation.id,
     donorName: props.data.donor? props.data.donor.name : null,
-    event: props.data.donation.event,
+    event: getEventName(props.data.donation.event),
     monetaryAmount: props.data.donation.monetaryAmount,
     nonMonetaryAmount:props.data.donation.nonMonetaryAmount,
     method:props.data.donation.method,
@@ -120,6 +129,19 @@ const initValues = props.data?{
 if(initValues && initValues.receivedDate != ''){
     recievedDateRef.value = initValues.receivedDate;
 }
+
+// Watch for event selection and auto-populate date
+const onEventChange = (event: any, setFieldValue: any) => {
+    const eventName = event.target.value;
+    const selectedEvent = props.events.find(e => e.eventName === eventName);
+    // Only autofill date if the typed value exactly matches an existing event
+    if (selectedEvent && selectedEvent.eventDate && !props.viewOnly) {
+        const dateStr = new Date(selectedEvent.eventDate).toISOString().split('T')[0];
+        recievedDateRef.value = dateStr;
+        setFieldValue('receivedDate', dateStr);
+    }
+    // If it's a new event name (not in list), don't autofill - let user set their own date
+};
 
 const schema = yup.object({
     donorName: yup.string().required('Enter anonymous if donor unknown'),

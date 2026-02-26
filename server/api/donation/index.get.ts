@@ -15,6 +15,12 @@ export default defineEventHandler (async (event)=>{
                     select: {
                         name: true,
                     }
+                },
+                event: {
+                    select: {
+                        eventName: true,
+                        eventDate: true,
+                    }
                 }
             },
         })

@@ -103,6 +103,8 @@ const {donorOrganizations} = useDonorDropDown(donorTableData.value)
 const {donationsData, getDonations} = useDonation();
 await getDonations();
 
+const {donationEvents} = useDonationDropDown(donationsData.value);
+
 const DonorTableProps ={
   donorTableData:donorTableData.value,
   emailFunction: prepEmail,
