@@ -123,6 +123,7 @@ model Donation {
   nonMonetaryAmount String?
   status            Int       @default(0) // 0: pending, 1: completed
   notes             String?
+  reason            String?
   receivedDate      DateTime?
   lastEditDate      DateTime?
 }

@@ -54,6 +54,7 @@ export default defineEventHandler (async (event)=>{
                 nonMonetaryAmount: body.nonMonetaryAmount,
                 status: body.status,
                 notes: body.notes,
+                reason: body.reason,
                 receivedDate: new Date(body.receivedDate),
                 lastEditDate: new Date()
             },

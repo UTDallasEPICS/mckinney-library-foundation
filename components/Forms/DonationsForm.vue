@@ -41,6 +41,11 @@
     <textarea v-model="notes" class="w-full mt-1 px-3 py-2 rounded-md border border-slate-300"></textarea>
     </div>
 
+    <div>
+    <label class="text-sm text-slate-600">Reason</label>
+    <textarea v-model="reason" class="w-full mt-1 px-3 py-2 rounded-md border border-slate-300"></textarea>
+    </div>
+
     <div class = "flex flex-col">
     <label class="text-sm text-slate-600">status</label>
     <select v-model="status" class="w-full mt-1 px-3 py-2 rounded-md border border-slate-300">
@@ -79,6 +84,7 @@
     const nonMonetaryAmount = ref("")
 
     const notes = ref("")
+    const reason = ref("")
 
     const receivedDate = ref("")
   
@@ -130,6 +136,7 @@ console.log("responsess",response.data.donor.name)
             nonMonetaryAmount.value = response.data.nonMonetaryAmount
     
             notes.value = response.data.notes
+            reason.value = response.data.reason
 
             receivedDate.value = response.data.lastEditDate.slice(0,10)
          
@@ -163,6 +170,7 @@ getInfo()
         monetaryAmount.value = ""
         nonMonetaryAmount.value = ""     
         notes.value = ""
+        reason.value = ""
         proposedDate.value = ""
         receivedDate.value = ""
         status.value = "pending"
@@ -194,6 +202,7 @@ getInfo()
                 nonMonetaryAmount: String(nonMonetaryAmount.value),
                 permissionLevel:props.permissionLevel,
                 notes: notes.value,
+                reason: reason.value,
            
                 receivedDate: receivedDate.value,
         
