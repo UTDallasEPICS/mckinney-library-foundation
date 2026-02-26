@@ -33,7 +33,7 @@
                                 <span v-if="!activeSearch[2].active">Event</span>
                                 <button @click="toggleSearch(2)" v-if="!activeSearch[2].active"><FunnelIcon class="w-4 h-4"/></button>
                                 <div  v-else>
-                                    <input autocomplete="off" v-model="searchInputs.event" @click.stop class="mt-2 px-2 py-1 border rounded"placeholder="Search event"/>
+                                    <input autocomplete="off" v-model="searchInputs.event" @click.stop class="mt-2 px-2 py-1 border rounded"placeholder="Search Events"/>
                                     <button class="text-lg" @click="toggleSearch(2)">&#x24E7;</button>                               
                                 </div>
                                 <button v-if="activeSorts[2].active" @click="toggleSort(2)" class="bg-[#c8c9c9] outline-double outline-black"><NumberedListIcon class="w-4 h-4"/></button>
@@ -58,7 +58,7 @@
                                 <span v-if="!activeSearch[4].active">Non-Monetary Amount</span>
                                 <button @click="toggleSearch(4)" v-if="!activeSearch[4].active"><FunnelIcon class="w-4 h-4"/></button>
                                 <div  v-else>
-                                    <input autocomplete="off" v-model="searchInputs.nonMonetaryAmount" @click.stop class="mt-2 px-2 py-1 border rounded"placeholder="Search"/>
+                                    <input autocomplete="off" v-model="searchInputs.nonMonetaryAmount" @click.stop class="mt-2 px-2 py-1 border rounded"placeholder="Search Amount"/>
                                     <button class="text-lg" @click="toggleSearch(4)">&#x24E7;</button>
                                 </div>
                                 <button v-if="activeSorts[4].active" @click="toggleSort(4)" class="bg-[#c8c9c9] outline-double outline-black"><NumberedListIcon class="w-4 h-4"/></button>
@@ -70,7 +70,7 @@
                                 <span v-if="!activeSearch[5].active">Payment Method</span>
                                 <button @click="toggleSearch(5)" v-if="!activeSearch[5].active"><FunnelIcon class="w-4 h-4"/></button>
                                 <div  v-else>
-                                    <input autocomplete="off" v-model="searchInputs.method" @click.stop class="mt-2 px-2 py-1 border rounded"placeholder="Search method"/>
+                                    <input autocomplete="off" v-model="searchInputs.method" @click.stop class="mt-2 px-2 py-1 border rounded"placeholder="Search Method"/>
                                     <button class="text-lg" @click="toggleSearch(5)">&#x24E7;</button>
                                 </div>
                                 <button v-if="activeSorts[5].active" @click="toggleSort(5)" class="bg-[#c8c9c9] outline-double outline-black"><NumberedListIcon class="w-4 h-4"/></button>
