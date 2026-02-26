@@ -38,14 +38,6 @@
                 <h2 class = "form-field-label"> Communication Preference </h2> 
                 <VeeErrorMessage class="text-red-500 col-span-1" name="phone" />
                 <VeeErrorMessage class="text-red-500 col-span-1" name="email" />
-                <!-- <div>
-                    <VeeErrorMessage class="text-red-500" name= "phone" />
-                </div>
-                <div>
-                    <VeeErrorMessage class="text-red-500" name= "email" />
-                </div>
-                <div>
-                </div> -->
                 <VeeField autocomplete="off" :disabled="viewOnly" name="phone" class="form-input focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px]"></VeeField>
                 <VeeField autocomplete="off" :disabled="viewOnly" name="email" class="form-input focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px]"></VeeField>
                 <VeeField v-slot="{field}" autocomplete="off" :disabled="viewOnly" name="preferredCommunication"class="form-input focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px]">
