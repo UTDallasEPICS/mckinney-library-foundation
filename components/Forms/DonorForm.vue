@@ -18,6 +18,19 @@
                     <VeeErrorMessage class="text-red-500" name= "lName" />
                 </div>
             </div>
+            <VeeField v-slot="{field}" name="isAuthor" type="checkbox" :value="true" :unchecked-value="false">
+                <div class="flex items-center gap-2">
+                    <input
+                        v-bind="field"
+                        type="checkbox"
+                        id="isAuthor"
+                        :checked="initValues?.isAuthor"
+                        :disabled="viewOnly"
+                        class="w-4 h-4"
+                    />
+                    <label for="isAuthor" class="form-field-label">Is the donor an author?</label>
+                </div>
+            </VeeField>
             <div class = "grid grid-cols-3 gap-4 mb-5">
                 <h2 class = "form-field-label"> phone </h2>
                 <h2 class = "form-field-label"> email </h2>
@@ -55,19 +68,6 @@
                 <VeeField autocomplete="off" :disabled="viewOnly" name="address" class="form-input focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px]"></VeeField> 
                 <VeeField autocomplete="off" :disabled="viewOnly" name="webLink"class="form-input focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px]"></VeeField>
             </div>
-            <VeeField name="isAuthor" type="checkbox" :value="true" :unchecked-value="false" v-slot="{field}">
-                <div class="flex items-center gap-2">
-                    <input
-                        v-bind="field"
-                        type="checkbox"
-                        id="isAuthor"
-                        :checked="initValues?.isAuthor"
-                        :disabled="viewOnly"
-                        class="w-4 h-4"
-                    />
-                    <label for="isAuthor" class="form-field-label">Is the donor an author?</label>
-                </div>
-            </VeeField>
             <h2 class = "form-field-label"> notes </h2>
             <VeeField autocomplete="off" v-slot="{field}" :disabled="viewOnly" name="notes">
                 <textarea :disabled="viewOnly" v-bind="field" class="form-field focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px]"></textarea>

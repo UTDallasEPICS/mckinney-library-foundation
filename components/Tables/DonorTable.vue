@@ -22,7 +22,7 @@
                                 <span v-if="!activeSearch[1].active">Author</span>
                                 <button @click="toggleSearch(1)" v-if="!activeSearch[1].active"><FunnelIcon class="w-4 h-4"/></button>
                                 <div  v-else>
-                                    <input autocomplete="off" v-model="searchInputs.name" @click.stop class="mt-2 px-2 py-1 border rounded"placeholder="Search Authors"/>
+                                    <input autocomplete="off" v-model="searchInputs.author" @click.stop class="mt-2 px-2 py-1 border rounded"placeholder="Search Authors"/>
                                     <button class="text-lg" @click="toggleSearch(1)">&#x24E7;</button>
                                 </div>
                                 <button v-if="activeSorts[1].active" @click="toggleSort(1)" class="bg-[#c8c9c9] outline-double outline-black"><NumberedListIcon class="w-4 h-4"/></button>
@@ -313,11 +313,11 @@ const sortedIndices = computed(() => {
                         const bName = b.donor.name || '';
                         comparison = aName.localeCompare(bName);
                         break;
-                    case 'author': // fix for boolean comparisons
-                        const aAuth = a.donor.isAuthor || '';
-                        const bAuth = b.donor.isAuthor || '';
-                        // comparison = Number(aAuth) - Number(bAuth);
-                        // comparison = Number(bAuth) - Number(aAuth);
+                    case 'author':
+                        const aAuth = Number(a.donor.isAuthor);
+                        const bAuth = Number(b.donor.isAuthor);
+                        comparison = bAuth - aAuth;
+                        break;
                     case 'organization' : 
                         const aEvent = a.donor.organization || 'ZZZZZZZZZZZZZZZZZZZZZZZ';
                         const bEvent = b.donor.organization || 'ZZZZZZZZZZZZZZZZZZZZZZZ';

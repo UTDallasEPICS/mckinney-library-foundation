@@ -43,11 +43,25 @@ export default defineEventHandler (async (event)=>{
                 }
             })
             }
+
+        const updatedDonor = await prisma.donor.update({
+            where: { id: body.donorId },
+            data: { 
+                isAuthor: body.isAuthor 
+            }
+        });
+        await prisma.donation.updateMany({
+            where: { donorId: body.donorId },
+            data: { 
+                isAuthor: updatedDonor.isAuthor
+                }
+        });
         const updateDonation = await prisma.donation.update({
             where: { id:id },
             data: {
                 boardMemberId: body.boardMemberId,
                 donorId: donorRecord.id,
+                isAuthor: updatedDonor.isAuthor,
                 event: body.event,
                 method: body.method,
                 monetaryAmount: body. monetaryAmount,
@@ -55,7 +69,7 @@ export default defineEventHandler (async (event)=>{
                 status: body.status,
                 notes: body.notes,
                 receivedDate: new Date(body.receivedDate),
-                lastEditDate: new Date()
+                lastEditDate: new Date(),
             },
             include: {
                 donor: true,

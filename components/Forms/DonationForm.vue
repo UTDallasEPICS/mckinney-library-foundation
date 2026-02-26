@@ -32,7 +32,6 @@
                     <VeeErrorMessage class="text-red-500"  name="event" />
                 </div>                       
             </div>
-            
             <div class="grid grid-cols-2 gap-4 mb-5">
                 <h2 class="form-field-label">monetary amount</h2>
                 <h2 class="form-field-label">non monetary amount</h2>
