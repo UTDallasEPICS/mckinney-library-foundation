@@ -32,6 +32,7 @@ export default defineEventHandler(async (event) => {
       data: {
         boardMemberId: body.boardMemberId,
         donorId: donorRecord.id,
+        isAuthor: donorRecord.isAuthor,
         event: body.event,
         method: body.method,
         monetaryAmount: body.monetaryAmount,

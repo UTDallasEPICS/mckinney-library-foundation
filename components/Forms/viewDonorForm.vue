@@ -45,9 +45,6 @@
     <label class="text-sm text-slate-600">notes</label>
     <textarea v-model = "notes"  type = 'number' class="w-full mt-1 px-3 py-2 rounded-md border border-slate-300" disabled></textarea>
     </div>
-    
-    
-
    
     <div>
     <label class="text-sm text-slate-600">organization</label>
@@ -86,9 +83,8 @@
     const notes = ref("")
     const organization = ref("")
     const webLink = ref("")
+    const isAuthor = ref(false)
     const lastDonationDate = ref("")
-
-    
 
 
     const props = defineProps({

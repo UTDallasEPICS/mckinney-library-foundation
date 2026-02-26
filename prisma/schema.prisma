@@ -98,6 +98,7 @@ model Donor {
   preferredCommunication String? // phone or email
   notes                  String?
   webLink                String?
+  isAuthor               Boolean    @default(false)
   organization           String?
   donations              Donation[]
 }
@@ -123,6 +124,7 @@ model Donation {
   boardMember       User?     @relation(fields: [boardMemberId], references: [id], onDelete: Restrict)
   donorId           String?
   donor             Donor?    @relation(fields: [donorId], references: [id], onDelete: Restrict)
+  isAuthor          Boolean   @default(false)
   event             String?
   method            String?
   monetaryAmount    String?
