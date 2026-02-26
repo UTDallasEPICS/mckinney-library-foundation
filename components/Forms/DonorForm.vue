@@ -6,7 +6,7 @@
             </div>     
             <VeeField autocomplete="off" hidden name="id"></VeeField>
             <VeeField autocomplete="off" hidden name="index"></VeeField>  
-            <div class="grid grid-cols-2 gap-4 mb-5">
+            <div class="grid grid-cols-2 gap-4 mb-2">
                 <h2 class = "form-field-label"> first name </h2>        
                 <h2 class = "form-field-label"> last name </h2>
                 <VeeField autocomplete="off" :disabled="viewOnly" name="fName" class="form-input focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px]"></VeeField>
@@ -18,27 +18,28 @@
                     <VeeErrorMessage class="text-red-500" name= "lName" />
                 </div>
             </div>
-            <VeeField v-slot="{field}" name="isAuthor" type="checkbox" :value="true" :unchecked-value="false">
-                <div class="flex items-center gap-2">
-                    <input
-                        v-bind="field"
-                        type="checkbox"
-                        id="isAuthor"
-                        :checked="initValues?.isAuthor"
-                        :disabled="viewOnly"
-                        class="w-4 h-4"
-                    />
-                    <label for="isAuthor" class="form-field-label">Is the donor an author?</label>
-                </div>
-            </VeeField>
+            <div class = "gap-4 mb-5">
+                <VeeField v-slot="{field}" name="isAuthor" type="checkbox" :value="true" :unchecked-value="false">
+                        <div class="flex items-center gap-2">
+                            <input
+                                v-bind="field"
+                                type="checkbox"
+                                id="isAuthor"
+                                :disabled="viewOnly"
+                                class="w-4 h-4 mt-[10px]"
+                            />
+                            <label for="isAuthor" class="form-field-label">Is the donor an author?</label>
+                        </div>
+                </VeeField>
+            </div>
             <div class = "grid grid-cols-3 gap-4 mb-5">
                 <h2 class = "form-field-label"> phone </h2>
                 <h2 class = "form-field-label"> email </h2>
                 <h2 class = "form-field-label"> Communication Prefrence </h2> 
-                <div class="h-4">
+                <div>
                     <VeeErrorMessage class="text-red-500" name= "phone" />
                 </div>
-                <div class="h-4">
+                <div>
                     <VeeErrorMessage class="text-red-500" name= "email" />
                 </div>
                 <div>
@@ -68,11 +69,11 @@
                 <VeeField autocomplete="off" :disabled="viewOnly" name="address" class="form-input focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px]"></VeeField> 
                 <VeeField autocomplete="off" :disabled="viewOnly" name="webLink"class="form-input focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px]"></VeeField>
             </div>
-            <h2 class = "form-field-label"> notes </h2>
-            <VeeField autocomplete="off" v-slot="{field}" :disabled="viewOnly" name="notes">
-                <textarea :disabled="viewOnly" v-bind="field" class="form-field focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px]"></textarea>
-            </VeeField>   
-            <div class="flex justify-center gap-4 my-2">
+                <h2 class = "form-field-label mb-3"> notes </h2>
+                <VeeField autocomplete="off" v-slot="{field}" :disabled="viewOnly" name="notes">
+                    <textarea :disabled="viewOnly" v-bind="field" class="form-field focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px]"></textarea>
+                </VeeField>  
+            <div class="flex justify-center gap-4 my-3">
                 <button @click="cancelSubmisison()" class ="form-button bg-gray-600 hover:bg-gray-700">Cancel</button>
                 <button v-if="!viewOnly" class ="form-button bg-blue-600 hover:bg-blue-700">Submit</button>
             </div>         
