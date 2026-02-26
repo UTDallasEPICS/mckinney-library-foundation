@@ -1,7 +1,6 @@
 import prisma from '~~/server/utils/prisma'
 
 
-
 export default defineEventHandler(async (event) => {
     try {
         const body = await readBody(event);
@@ -38,7 +37,7 @@ export default defineEventHandler(async (event) => {
                 monetaryAmount: body.monetaryAmount,
                 nonMonetaryAmount: body.nonMonetaryAmount,
                 notes: body.notes,
-                proposedDate: new Date(body.proposedDate),
+                proposedDate: body.proposedDate ? new Date(body.proposedDate) : null,
                 receivedDate: new Date(body.receivedDate),
                 lastEditDate: new Date(),
             },
