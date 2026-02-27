@@ -79,6 +79,10 @@
             <VeeField autocomplete="off" :disabled="viewOnly" v-slot="{field}" name="notes">
                 <textarea v-bind="field" :disabled="viewOnly" class="form-field focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px]"></textarea>
             </VeeField>
+            <h2 class="form-field-label mb-2">Reason</h2>
+            <VeeField autocomplete="off" :disabled="viewOnly" v-slot="{field}" name="reason">
+                <textarea v-bind="field" :disabled="viewOnly" class="form-field focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px]"></textarea>
+            </VeeField>
             <div class="flex justify-center gap-4 my-3">
                 <button class="form-button bg-gray-600 hover:bg-gray-700" @click="cancelSubmisison">Cancel</button>
                 <button v-if="!viewOnly" class ="form-button bg-blue-600 hover:bg-blue-700">Submit </button>
@@ -113,6 +117,7 @@ const initValues = props.data?{
     method:props.data.donation.method,
     status:props.data.donation.status,
     notes:props.data.donation.notes,
+    reason:props.data.donation.reason,
     receivedDate: props.data.donation.receivedDate? props.data.donation.receivedDate.toISOString().split('T')[0] : '',
 }: undefined
 
