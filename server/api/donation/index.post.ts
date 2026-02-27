@@ -1,6 +1,4 @@
-import {PrismaClient} from '@prisma/client'
-
-const prisma = new PrismaClient();
+import prisma from '~~/server/utils/prisma'
 
 export default defineEventHandler(async (event) => {
   const body = await readBody(event);
@@ -34,6 +32,7 @@ export default defineEventHandler(async (event) => {
       data: {
         boardMemberId: body.boardMemberId,
         donorId: donorRecord.id,
+        isAuthor: donorRecord.isAuthor,
         event: body.event,
         method: body.method,
         monetaryAmount: body.monetaryAmount,

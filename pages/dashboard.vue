@@ -88,7 +88,7 @@ import { useDonor } from '~/composables/useDonor'
 import { useGrant } from '~/composables/useGrant'
 import { useGrantor } from '~/composables/useGrantor'
 import { navigateTo } from '#app'
-import type { Donation, Donor, Grant, Grantor } from '@prisma/client'
+import type { Donation, Donor, Grant, Grantor } from '~~/server/utils/generated/prisma/browser'
 import { useDonation } from '~/composables/useDonation';
 
 const {donationsData, getDonations, postDonation} = useDonation();

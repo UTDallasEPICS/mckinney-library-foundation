@@ -1,6 +1,4 @@
-import {PrismaClient} from '@prisma/client';
-
-const prisma = new PrismaClient();
+import prisma from '~~/server/utils/prisma'
 
 export default defineEventHandler(async (event) =>{
     try{
@@ -21,6 +19,7 @@ export default defineEventHandler(async (event) =>{
                 preferredCommunication: body.preferredCommunication,
                 notes: body.notes,
                 webLink: body.webLink,
+                isAuthor: body.isAuthor,
                 organization: body.organization,
                 donations: body.donations
             },

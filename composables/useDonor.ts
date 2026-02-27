@@ -1,4 +1,4 @@
-import type { Donor } from "@prisma/client";
+import type { Donor } from "~~/server/utils/generated/prisma/browser";
 
 export const useDonor = () => {
     const donors = ref();
@@ -39,7 +39,8 @@ export const useDonor = () => {
             notes: values.notes,
             webLink: values.webLink? values.webLink.trim(): "",
             organization: values.organization? values.organization.trim() : "",
-            permissonLevel: user.permissionLevel
+            permissonLevel: user.permissionLevel,
+            isAuthor: values.isAuthor? true : false
             }
         })
         return result

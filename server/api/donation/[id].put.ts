@@ -1,6 +1,4 @@
-import {PrismaClient} from '@prisma/client'
-
-const prisma = new PrismaClient();
+import prisma from '~~/server/utils/prisma'
 
 export default defineEventHandler (async (event)=>{   
     try{
@@ -43,11 +41,25 @@ export default defineEventHandler (async (event)=>{
                 }
             })
             }
+
+        const updatedDonor = await prisma.donor.update({
+            where: { id: body.donorId },
+            data: { 
+                isAuthor: body.isAuthor 
+            }
+        });
+        await prisma.donation.updateMany({
+            where: { donorId: body.donorId },
+            data: { 
+                isAuthor: updatedDonor.isAuthor
+                }
+        });
         const updateDonation = await prisma.donation.update({
             where: { id:id },
             data: {
                 boardMemberId: body.boardMemberId,
                 donorId: donorRecord.id,
+                isAuthor: updatedDonor.isAuthor,
                 event: body.event,
                 method: body.method,
                 monetaryAmount: body. monetaryAmount,
@@ -56,7 +68,7 @@ export default defineEventHandler (async (event)=>{
                 notes: body.notes,
                 reason: body.reason,
                 receivedDate: new Date(body.receivedDate),
-                lastEditDate: new Date()
+                lastEditDate: new Date(),
             },
             include: {
                 donor: true,
