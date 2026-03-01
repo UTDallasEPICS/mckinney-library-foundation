@@ -2,7 +2,6 @@
 FROM node:22-alpine AS builder
 COPY . ./
 
-RUN adduser webapp -D
 ENV PNPM_HOME="/pnpm"
 ENV PATH="$PNPM_HOME:$PATH"
 RUN corepack enable
@@ -14,22 +13,18 @@ RUN pnpm run build
 # Deployment container
 FROM node:22-alpine AS deployment
 # npm complains when running migrations as root user, so we need to create a non root user
-RUN adduser webapp -D
-COPY --from=builder /.output /home/webapp/
-COPY --from=builder /package.json /home/webapp/
-COPY --from=builder /prisma.config.ts /home/webapp/
-COPY --from=builder /prisma /home/webapp/prisma
+
+COPY --from=builder /.output /
+COPY --from=builder /package.json /
+COPY --from=builder /prisma.config.ts /
+COPY --from=builder /prisma /prisma
 # Ensure we own all copied files
-RUN chown -R webapp:webapp /home/webapp/
-USER webapp
-WORKDIR /home/webapp
 
 # Install prisma for migrations, we are doing it here instead of entrypoint.sh so the container does not have a long start time
 # We cannot use the one present in server/node_modules since npm does not recognise prisma from there
-RUN mkdir /home/webapp/node_modules
-RUN ls -a /home/webapp
+RUN mkdir /node_modules
 RUN npm install prisma
-COPY ./entrypoint.sh /home/webapp/entrypoint.sh
+COPY ./entrypoint.sh /entrypoint.sh
 EXPOSE 3000
-ENTRYPOINT ["/home/webapp/entrypoint.sh"]
+ENTRYPOINT ["/entrypoint.sh"]
 CMD ["node", "./server/index.mjs"]
