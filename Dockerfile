@@ -16,14 +16,16 @@ FROM node:22-alpine AS deployment
 
 COPY --from=builder /.output /
 COPY --from=builder /package.json /
+COPY --from=builder /pnpm-lock.yaml /
 COPY --from=builder /prisma.config.ts /
 COPY --from=builder /prisma /prisma
-# Ensure we own all copied files
+COPY --from=builder /node_modules /node_modules
+RUN corepack enable
 
 # Install prisma for migrations, we are doing it here instead of entrypoint.sh so the container does not have a long start time
 # We cannot use the one present in server/node_modules since npm does not recognise prisma from there
-RUN mkdir /node_modules
-RUN npm install prisma
+
+#RUN pnpm i --frozen-lockfile
 COPY ./entrypoint.sh /entrypoint.sh
 EXPOSE 3000
 ENTRYPOINT ["/entrypoint.sh"]
