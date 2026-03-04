@@ -7,8 +7,8 @@
             <VeeField hidden name="id"></VeeField>
             <VeeField  hidden name="index"></VeeField> 
             <div  class="grid grid-cols-2 gap-4 mb-5">
-                <h2 class="form-field-label">donor (name) <span class = "text-red-500">*</span></h2>
-                <h2 class="form-field-label">event <span class = "text-red-500">*</span></h2>          
+                <h2 class="form-field-label">Donor (Full Name) <span class = "text-red-500">*</span></h2>
+                <h2 class="form-field-label">Event <span class = "text-red-500">*</span></h2>          
                 <VeeField autocomplete="off" v-slot="{field}" :disabled="viewOnly" name="donorName" class="form-input focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px]">
                     <input :disabled="viewOnly" autocomplete="off" v-bind="field" list="donor-list" class="w-full px-3 py-2 bg-white border border-gray-300 rounded text-[#2d3e4d] focus:outline-none focus:ring-2 focus:ring-[#5a6a77] cursor-pointer">
                         <datalist id="donor-list">
@@ -32,10 +32,9 @@
                     <VeeErrorMessage class="text-red-500"  name="event" />
                 </div>                       
             </div>
-            
             <div class="grid grid-cols-2 gap-4 mb-5">
-                <h2 class="form-field-label">monetary amount</h2>
-                <h2 class="form-field-label">non monetary amount</h2>
+                <h2 class="form-field-label">Monetary amount</h2>
+                <h2 class="form-field-label">Non-Monetary Amount</h2>
                 <VeeField autocomplete="off" :disabled="viewOnly" class="form-input focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px]" name="monetaryAmount"/>
                 <VeeField autocomplete="off" :disabled="viewOnly" class="form-input focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px]" name="nonMonetaryAmount"/>
                 <div>
@@ -46,8 +45,8 @@
                 </div>
             </div>
             <div class="grid grid-cols-3 gap-4 mb-5">
-                <h2 class="form-field-label">method <span class = "text-red-500">*</span></h2>
-                <h2 class="form-field-label">status<span class = "text-red-500">*</span></h2>
+                <h2 class="form-field-label">Method <span class = "text-red-500">*</span></h2>
+                <h2 class="form-field-label">Status<span class = "text-red-500">*</span></h2>
                 <h2 class="form-field-label">Received Date<span class = "text-red-500">*</span></h2>
                 <VeeField v-slot="{field}" autocomplete="off" :disabled="viewOnly"name="method" class="form-input focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px]">
                     <input :disabled="viewOnly" autocomplete="off" v-bind="field" list="method-list" class="w-full px-3 py-2 bg-white border border-gray-300 rounded text-[#2d3e4d] focus:outline-none focus:ring-2 focus:ring-[#5a6a77] cursor-pointer">
@@ -76,11 +75,15 @@
                     <VeeErrorMessage class="text-red-500" name="recievedDate" />
                 </div>
             </div>
-            <h2 class="form-field-label mb-2">Notes</h2>
+            <h2 class="form-field-label mb-3">Notes</h2>
             <VeeField autocomplete="off" :disabled="viewOnly" v-slot="{field}" name="notes">
                 <textarea v-bind="field" :disabled="viewOnly" class="form-field focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px]"></textarea>
             </VeeField>
-            <div class="flex justify-center gap-4 my-2 mb-2">
+            <h2 class="form-field-label mb-2">Reason</h2>
+            <VeeField autocomplete="off" :disabled="viewOnly" v-slot="{field}" name="reason">
+                <textarea v-bind="field" :disabled="viewOnly" class="form-field focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px]"></textarea>
+            </VeeField>
+            <div class="flex justify-center gap-4 my-3">
                 <button class="form-button bg-gray-600 hover:bg-gray-700" @click="cancelSubmisison">Cancel</button>
                 <button v-if="!viewOnly" class ="form-button bg-blue-600 hover:bg-blue-700">Submit </button>
             </div>           
@@ -114,6 +117,7 @@ const initValues = props.data?{
     method:props.data.donation.method,
     status:props.data.donation.status,
     notes:props.data.donation.notes,
+    reason:props.data.donation.reason,
     receivedDate: props.data.donation.receivedDate? props.data.donation.receivedDate.toISOString().split('T')[0] : '',
 }: undefined
 

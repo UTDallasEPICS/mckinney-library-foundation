@@ -63,7 +63,6 @@ model Account {
   accessTokenExpiresAt  DateTime?
   refreshTokenExpiresAt DateTime?
   scope                 String?
-  password              String?
   createdAt             DateTime  @default(now())
   updatedAt             DateTime  @updatedAt
 
@@ -98,6 +97,7 @@ model Donor {
   preferredCommunication String? // phone or email
   notes                  String?
   webLink                String?
+  isAuthor               Boolean    @default(false)
   organization           String?
   donations              Donation[]
 }
@@ -123,12 +123,14 @@ model Donation {
   boardMember       User?     @relation(fields: [boardMemberId], references: [id], onDelete: Restrict)
   donorId           String?
   donor             Donor?    @relation(fields: [donorId], references: [id], onDelete: Restrict)
+  isAuthor          Boolean   @default(false)
   event             String?
   method            String?
   monetaryAmount    String?
   nonMonetaryAmount String?
   status            Int       @default(0) // 0: pending, 1: completed
   notes             String?
+  reason            String?
   receivedDate      DateTime?
   lastEditDate      DateTime?
 }

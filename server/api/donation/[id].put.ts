@@ -41,6 +41,8 @@ export default defineEventHandler (async (event)=>{
                 }
             })
             }
+
+
         const updateDonation = await prisma.donation.update({
             where: { id:id },
             data: {
@@ -52,8 +54,9 @@ export default defineEventHandler (async (event)=>{
                 nonMonetaryAmount: body.nonMonetaryAmount,
                 status: body.status,
                 notes: body.notes,
+                reason: body.reason,
                 receivedDate: new Date(body.receivedDate),
-                lastEditDate: new Date()
+                lastEditDate: new Date(),
             },
             include: {
                 donor: true,

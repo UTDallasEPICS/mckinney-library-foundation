@@ -41,6 +41,7 @@ export const useDonation = () => {
                 monetaryAmount: values.monetaryAmount,
                 nonMonetaryAmount: values.nonMonetaryAmount,
                 notes: values.notes,
+                reason: values.reason,
                 receivedDate: values.receivedDate,
             }
         })
@@ -59,6 +60,7 @@ export const useDonation = () => {
                 monetaryAmount: values.monetaryAmount,
                 nonMonetaryAmount: values.nonMonetaryAmount,
                 notes: values.notes,
+                reason: values.reason,
                 receivedDate: values.receivedDate,
             }
         })
