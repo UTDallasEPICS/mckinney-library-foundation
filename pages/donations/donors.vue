@@ -55,6 +55,8 @@ import DonationBar from '~/components/Bars/DonationBar.vue'
 //import { useDonorDropDown } from '~/composables/useDonationDropDown';
 import type { Donation, Donor } from '@prisma/client';
 
+type DonorWithCount = Donor & { donationCount: number }
+
 
 const {session, getSession} = useAuth();
 session.value = await getSession();
@@ -78,9 +80,9 @@ const donorIndex = ref(0);
 
 await getDonors();
 
-const donorTableData:Ref<{donor:Donor, donations:Donation[], boardMember:{name:string} | null}[]> = ref([]);
+const donorTableData:Ref<{donor:DonorWithCount, donations:Donation[], boardMember:{name:string} | null}[]> = ref([]);
 
-const donorFormData:Ref<{donor:Donor}> = ref({
+const donorFormData:Ref<{donor: DonorWithCount}> = ref({
   donor:{
   id:"",
   boardMemberId:"",
@@ -91,12 +93,19 @@ const donorFormData:Ref<{donor:Donor}> = ref({
   address:"",
   notes:"",
   webLink:"",
-  preferredCommunication:""}
+  preferredCommunication:"",
+  donationCount: 0
+  }
 });
 
-donors.value.map((thisDonor:Donor,index:number) => {
-  donorTableData.value.push({donor:thisDonor,donations:donors.value[index].donations,boardMember:donors.value[index].boardMember})
+donors.value.map((thisDonor: any, index: number) => {
+  donorTableData.value.push({
+    donor: thisDonor as DonorWithCount,
+    donations: donors.value[index].donations,
+    boardMember: donors.value[index].boardMember
+  })
 })
+
 
 const {donorOrganizations} = useDonorDropDown(donorTableData.value)
 
@@ -136,6 +145,7 @@ function cancelUpdate(){
     notes:"",
     webLink:"",
     preferredCommunication:"",
+    donationCount: 0
 
   }};
   updateDonor.value= false;
@@ -158,15 +168,17 @@ async function prepEmail(selected:boolean[]) {
 }
 
 async function prepDonorUpdate(donor:Donor,index:number){
-  donorFormData.value.donor = donor;
+  donorFormData.value.donor = donor as DonorWithCount;
   updateDonor.value = true;
   donorIndex.value = index;
 }
 
-async function prepDonorView(donor:Donor){
-  donorFormData.value.donor = donor;
+async function prepDonorView(donor: Donor, index: number) {
+  donorFormData.value.donor = {
+    ...donor,
+    donationCount: (donor as any).donationCount ?? 0  
+  };
   viewDonor.value = true;
-  donorId.value = donor.id;
 }
 
 async function editDonor(values:Record<string,any>) {
@@ -174,6 +186,7 @@ async function editDonor(values:Record<string,any>) {
   if(result.success && result.data){
     donorTableData.value[donorIndex.value].donor={
       ...result.data,
+      donationCount: donorTableData.value[donorIndex.value].donor.donationCount
     }
     donorTableData.value[donorIndex.value].boardMember = result.data.boardMember? result.data.boardMember : null
   }

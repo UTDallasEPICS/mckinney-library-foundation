@@ -55,6 +55,14 @@
                 <VeeField autocomplete="off" :disabled="viewOnly" name="address" class="form-input focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px]"></VeeField> 
                 <VeeField autocomplete="off" :disabled="viewOnly" name="webLink"class="form-input focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px]"></VeeField>
             </div>
+            <div v-if="viewOnly" class="grid grid-cols-3 gap-4 mb-5">
+             <div class="col-span-1">
+                <h2 class="form-field-label">completed donations</h2>
+                <p class="w-full px-3 py-2 bg-white border border-gray-300 rounded text-[#2d3e4d]">
+                 {{ props.donor?.donationCount ?? 0 }}
+                </p>
+             </div>
+            </div>
             <h2 class = "form-field-label"> notes </h2>
             <VeeField autocomplete="off" v-slot="{field}" :disabled="viewOnly" name="notes">
                 <textarea :disabled="viewOnly" v-bind="field" class="form-field focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px]"></textarea>
@@ -69,10 +77,14 @@
 
 <script setup lang="ts">
 import type { Donor } from '@prisma/client';
+
+type DonorWithCount = Donor & { donationCount?: number }
+
+
 import * as yup from 'yup';
 
     const props = defineProps<{
-        donor?:Donor,
+        donor?:DonorWithCount,
         cancelSubmisison:() => void,
         submitDonor: (values: Record<string,any>) => Promise<void>
         organizations:string[],
