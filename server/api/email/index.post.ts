@@ -1,5 +1,3 @@
-const {sendMail} = useNodeMailer();
-
 export default eventHandler(async (event)=>{
     const body = await readBody(event);
     if(body.permissionLevel < 2){
@@ -8,6 +6,7 @@ export default eventHandler(async (event)=>{
             statusMessage:"User does not have permission to send group emails"
         })
     }
+    const {sendMail} = useNodeMailer();
     console.log(body);
 
     // try{         commented out to prevent attempts to send emails to addresses that dont exist/we don't have access to

@@ -1,8 +1,9 @@
-import prisma from '~~/server/utils/prisma'
-
-
+import prisma from "~~/server/utils/prisma"
+import { requireSession, filterSensitiveFields } from "~~/server/utils/requireSession"
 
 export default defineEventHandler(async (event) => {
+
+    const user = await requireSession(event, 0);
     try {        
         const grants = await prisma.grant.findMany({
             include: {
@@ -18,10 +19,13 @@ export default defineEventHandler(async (event) => {
                 },
             }
         });
+        const filtered = grants.map((g) =>
+            filterSensitiveFields(g, user.permission, ['notes'])
+        );
         return { 
             success: true,
             statusCode: 200,
-            data: grants, 
+            data: filtered, 
             error:{code: ""}
         }
     } catch (error) {
@@ -33,7 +37,5 @@ export default defineEventHandler(async (event) => {
             error: error, 
             data: []
         }
-    } finally {
-        await prisma.$disconnect()
     }
 });
