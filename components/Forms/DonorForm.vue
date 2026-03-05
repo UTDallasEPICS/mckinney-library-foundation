@@ -76,7 +76,7 @@
 </template>
 
 <script setup lang="ts">
-import type { Donor } from '@prisma/client';
+import type { Donor } from '~~/server/utils/generated/prisma/browser';
 
 type DonorWithCount = Donor & { donationCount?: number }
 

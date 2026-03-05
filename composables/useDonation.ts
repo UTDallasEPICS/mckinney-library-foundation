@@ -1,4 +1,4 @@
-import type { Donation } from "@prisma/client";
+import type { Donation } from "~~/server/utils/generated/prisma/browser";
 
 export const useDonation = () => {
     const donationsData:Ref<{donation: Donation, donor: {name: string} | null, boardMember: {name:string} | null}[]> = ref([]);

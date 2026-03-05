@@ -133,7 +133,7 @@
 </template>
 
 <script setup lang="ts">
-import type { Grant, Grantor } from '@prisma/client';
+import type { Grant, Grantor } from '~~/server/utils/generated/prisma/browser';
 import { FunnelIcon } from '@heroicons/vue/24/solid';
 import { NumberedListIcon } from '@heroicons/vue/24/outline';
 
