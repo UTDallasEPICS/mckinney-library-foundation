@@ -6,9 +6,9 @@
             </div>
             <VeeField hidden name="id"></VeeField>
             <VeeField  hidden name="index"></VeeField> 
-            <div  class="grid grid-cols-2 gap-4 mb-5">
-                <h2 class="form-field-label">grantor (name) <span class = "text-red-500">*</span></h2>
-                <h2 class="form-field-label">purpose <span class = "text-red-500">*</span></h2>                     
+            <div  class="grid grid-cols-2 gap-4 mb-3">
+                <h2 class="form-field-label">Grantor (Full Name) <span class = "text-red-500">*</span></h2>
+                <h2 class="form-field-label">Purpose <span class = "text-red-500">*</span></h2>                     
                 <VeeField autocomplete="off" v-slot="{field}" :disabled="viewOnly" name="grantorName" class="form-input focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px]">
                     <input :disabled="viewOnly" autocomplete="off" v-bind="field" list="grantor-list" class="w-full px-3 py-2 bg-white border border-gray-300 rounded text-[#2d3e4d] focus:outline-none focus:ring-2 focus:ring-[#5a6a77] cursor-pointer">
                         <datalist id="grantor-list">
@@ -33,9 +33,9 @@
                 </div>                     
             </div>
             
-            <div class="grid grid-cols-2 gap-4 mb-5">
-                <h2 class="form-field-label">monetary amount</h2>
-                <h2 class="form-field-label">non monetary amount</h2>
+            <div class="grid grid-cols-2 gap-4 mb-3">
+                <h2 class="form-field-label">Monetary Amount</h2>
+                <h2 class="form-field-label">Non-Monetary Amount</h2>
                 <VeeField autocomplete="off" :disabled="viewOnly" class="form-input focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px]" name="monetaryAmount"/>
                 <VeeField autocomplete="off" :disabled="viewOnly" class="form-input focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px]" name="nonMonetaryAmount"/>
                 <div>
@@ -45,9 +45,9 @@
                     <VeeErrorMessage class="text-red-500"  name="nonMonetaryAmount" />
                 </div>
             </div>
-            <div class="grid grid-cols-2 gap-4 mb-5">
-                <h2 class="form-field-label">method <span class = "text-red-500">*</span></h2>
-                <h2 class="form-field-label">status<span class = "text-red-500">*</span></h2>          
+            <div class="grid grid-cols-2 gap-4 mb-3">
+                <h2 class="form-field-label">Method <span class = "text-red-500">*</span></h2>
+                <h2 class="form-field-label">Status<span class = "text-red-500">*</span></h2>          
                 <VeeField v-slot="{field}" autocomplete="off" :disabled="viewOnly"name="method" class="form-input focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px]">
                     <input :disabled="viewOnly" autocomplete="off" v-bind="field" list="method-list" class="w-full px-3 py-2 bg-white border border-gray-300 rounded text-[#2d3e4d] focus:outline-none focus:ring-2 focus:ring-[#5a6a77] cursor-pointer">
                         <datalist id="method-list">
@@ -85,11 +85,23 @@
                     <VeeErrorMessage class="text-red-500" name="recievedDate" />
                 </div>
             </div>
+            <VeeField v-slot="{field}" name="isAuthor" type="checkbox" :value="true" :unchecked-value="false">
+                        <div class="flex items-center gap-2">
+                            <input
+                                v-bind="field"
+                                type="checkbox"
+                                id="isAuthor"
+                                :disabled="viewOnly"
+                                class="accent-[#64748b] w-4 h-4 mt-[10px]"
+                            />
+                            <label for="isAuthor" class="form-field-label">Will this grant reimburse MPLF?</label>
+                        </div>
+                </VeeField>
             <h2 class="form-field-label mb-2">Notes</h2>
             <VeeField autocomplete="off" :disabled="viewOnly" v-slot="{field}" name="notes">
                 <textarea v-bind="field" class="form-field focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px]"></textarea>
             </VeeField>
-            <div class="flex justify-center gap-4 my-2">
+            <div class="flex justify-center gap-4 my-3">
                 <button class="form-button bg-gray-600 hover:bg-gray-700" @click="cancelSubmisison">Cancel</button>
                 <button v-if="!viewOnly" class ="form-button bg-blue-600 hover:bg-blue-700">Submit </button>
             </div>           

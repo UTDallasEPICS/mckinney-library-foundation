@@ -10,7 +10,7 @@
                                 <span v-if="!activeSearch[0].active">Name</span>
                                 <button @click="toggleSearch(0)" v-if="!activeSearch[0].active"><FunnelIcon class="w-4 h-4"/></button>
                                 <div  v-else>
-                                    <input autocomplete="off" v-model="searchInputs.name" @click.stop class="mt-2 px-2 py-1 border rounded"placeholder="Search name"/>
+                                    <input autocomplete="off" v-model="searchInputs.name" @click.stop class="mt-2 px-2 py-1 border rounded"placeholder="Search Names"/>
                                     <button class="text-lg" @click="toggleSearch(0)">&#x24E7;</button>
                                 </div>
                                 <button v-if="activeSorts[0].active" @click="toggleSort(0)" class="bg-[#c8c9c9] outline-double outline-black"><NumberedListIcon class="w-4 h-4"/></button>
@@ -22,7 +22,7 @@
                                 <span v-if="!activeSearch[1].active">Organization</span>
                                 <button @click="toggleSearch(1)" v-if="!activeSearch[1].active"><FunnelIcon class="w-4 h-4"/></button>
                                 <div  v-else>
-                                    <input autocomplete="off" v-model="searchInputs.organization" @click.stop class="mt-2 px-2 py-1 border rounded"placeholder="Search Organization"/>
+                                    <input autocomplete="off" v-model="searchInputs.organization" @click.stop class="mt-2 px-2 py-1 border rounded"placeholder="Search Organizations"/>
                                     <button class="text-lg" @click="toggleSearch(1)">&#x24E7;</button>
                                 </div>
                                 <button v-if="activeSorts[1].active" @click="toggleSort(1)" class="bg-[#c8c9c9] outline-double outline-black"><NumberedListIcon class="w-4 h-4"/></button>
@@ -34,7 +34,7 @@
                                 <span @click="toggleSearch(2)" v-if="!activeSearch[2].active">Email</span>
                                 <button @click="toggleSearch(2)" v-if="!activeSearch[2].active"><FunnelIcon class="w-4 h-4"/></button>
                                 <div  v-else>
-                                    <input autocomplete="off" v-model="searchInputs.email" @click.stop class="mt-2 px-2 py-1 border rounded"placeholder="Search Emaiils"/>
+                                    <input autocomplete="off" v-model="searchInputs.email" @click.stop class="mt-2 px-2 py-1 border rounded"placeholder="Search Emails"/>
                                     <button class="text-lg" @click="toggleSearch(2)">&#x24E7;</button>
                                 </div>
                                 <button v-if="activeSorts[2].active" @click="toggleSort(2)" class="bg-[#c8c9c9] outline-double outline-black"><NumberedListIcon class="w-4 h-4"/></button>
@@ -46,7 +46,7 @@
                                 <span v-if="!activeSearch[3].active">Phone</span>
                                 <button @click="toggleSearch(3)" v-if="!activeSearch[3].active"><FunnelIcon class="w-4 h-4"/></button>
                                 <div  v-else>
-                                    <input autocomplete="off" v-model="searchInputs.phone" @click.stop class="mt-2 px-2 py-1 border rounded"placeholder="Search Emaiils"/>
+                                    <input autocomplete="off" v-model="searchInputs.phone" @click.stop class="mt-2 px-2 py-1 border rounded"placeholder="Search Emails"/>
                                     <button class="text-lg" @click="toggleSearch(3)">&#x24E7;</button>
                                 </div>
                                 <button v-if="activeSorts[3].active" @click="toggleSort(3)" class="bg-[#c8c9c9] outline-double outline-black"><NumberedListIcon class="w-4 h-4"/></button>

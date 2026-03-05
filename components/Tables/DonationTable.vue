@@ -16,7 +16,7 @@
                                 <button v-else @click="toggleSort(0)"><NumberedListIcon class="w-4 h-4"/></button>
                             </div>  
                         </th>
-                        <th class="px-4 py-3 text-left text-sm text-[#2d3e4d] border-b-2 border-[#a8b5bf] cursor-pointer transition-colors">
+                        <th class="px-4 py-3 text-left text-xs text-[#2d3e4d] border-b-2 border-[#a8b5bf] cursor-pointer transition-colors">
                             <div class="w-full flex gap-2">
                                 <span v-if="!activeSearch[1].active">Author</span>
                                 <button @click="toggleSearch(1)" v-if="!activeSearch[1].active"><FunnelIcon class="w-4 h-4"/></button>
