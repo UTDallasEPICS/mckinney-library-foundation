@@ -20,7 +20,7 @@ COPY --from=builder /pnpm-lock.yaml /
 COPY --from=builder /prisma.config.ts /
 COPY --from=builder /prisma /prisma
 COPY --from=builder /node_modules /node_modules
-RUN corepack enable
+RUN npm i -g pnpm
 
 # Install prisma for migrations, we are doing it here instead of entrypoint.sh so the container does not have a long start time
 # We cannot use the one present in server/node_modules since npm does not recognise prisma from there
