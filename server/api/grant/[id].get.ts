@@ -1,12 +1,11 @@
-import { getRouterParam } from "h3"
 import prisma from "~~/server/utils/prisma"
 import { requireSession, filterSensitiveFields } from "~~/server/utils/requireSession"
 
 export default defineEventHandler(async (event) => {
 
-    const user = await requireSession(event, 0);
+    const session = await requireSession(event, 0);
     try {
-        const grantId = getRouterParam(event, 'id');
+        const grantId = event.context.params?.id;
         const grant = await prisma.grant.findUnique({
             where: {id:grantId},
             include: {
@@ -15,7 +14,7 @@ export default defineEventHandler(async (event) => {
             }
         });
         const filtered = grant
-            ? filterSensitiveFields(grant, user.permission, ['notes'])
+            ? filterSensitiveFields(grant, session.user.permission, ['notes'])
             : grant;
         return { 
             success: true,

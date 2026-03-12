@@ -4,7 +4,7 @@ export default defineEventHandler (async (event)=>{
     try{
 
         const body = await readBody(event);
-        const id = await getRouterParam(event, 'id');
+        const id = event.context.params?.id;
         if(body.permissionLevel < 1){
             throw createError({
                 statusCode:401,

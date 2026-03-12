@@ -2,7 +2,7 @@ import prisma from '~~/server/utils/prisma'
 
 export default defineEventHandler(async (event) =>{
     try{
-        const id = await getRouterParam(event, 'id');
+        const id = event.context.params?.id;
          const session = await prisma.session.delete({
             where:{
                 id:id

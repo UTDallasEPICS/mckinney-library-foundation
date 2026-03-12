@@ -4,7 +4,7 @@ import prisma from '~~/server/utils/prisma'
 
 export default defineEventHandler(async (event) => {
     try {
-        const grantId = await getRouterParam(event, 'id');
+        const grantId = event.context.params?.id;
         const body = await readBody(event);
         if(body.permissionLevel < 1){
             throw createError({

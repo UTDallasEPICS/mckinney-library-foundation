@@ -3,7 +3,7 @@ import prisma from '~~/server/utils/prisma'
 export default defineEventHandler (async (event)=>{   
     try{
         const body = await readBody(event);
-        const id = await getRouterParam(event,'id');
+        const id = event.context.params?.id;
         if(!id){
             throw createError({
                 statusCode: 400,

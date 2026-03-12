@@ -3,7 +3,7 @@ import { requireSession, filterSensitiveFields } from "~~/server/utils/requireSe
 
 export default defineEventHandler(async (event) => {
 
-    const user = await requireSession(event, 0);
+    const session = await requireSession(event, 0);
     try {        
         const grants = await prisma.grant.findMany({
             include: {
@@ -20,7 +20,7 @@ export default defineEventHandler(async (event) => {
             }
         });
         const filtered = grants.map((g) =>
-            filterSensitiveFields(g, user.permission, ['notes'])
+            filterSensitiveFields(g, session.user.permission, ['notes'])
         );
         return { 
             success: true,

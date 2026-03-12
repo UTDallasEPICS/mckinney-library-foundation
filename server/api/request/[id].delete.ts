@@ -2,7 +2,7 @@ import prisma from '~~/server/utils/prisma'
 
 export default defineEventHandler(async (event) =>{
     try{
-        const id = getRouterParam(event, 'id');
+        const id = event.context.params?.id;
         const body = await readBody(event)
         const request = await prisma.accountCreationRequest.delete({
             where:{
