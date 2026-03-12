@@ -1,6 +1,5 @@
-import { PrismaClient } from '@prisma/client'
+import prisma from '~~/server/utils/prisma'
 
-const prisma = new PrismaClient()
 
 export default defineEventHandler(async (event) => {
     try {
@@ -39,7 +38,7 @@ export default defineEventHandler(async (event) => {
                 nonMonetaryAmount: body.nonMonetaryAmount,
                 reimburse: body.reimburse,
                 notes: body.notes,
-                proposedDate: new Date(body.proposedDate),
+                proposedDate: body.proposedDate ? new Date(body.proposedDate) : null,
                 receivedDate: new Date(body.receivedDate),
                 lastEditDate: new Date(),
             },

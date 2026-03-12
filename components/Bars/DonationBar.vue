@@ -46,7 +46,7 @@
 </template>
 
 <script setup lang="ts">
-import type { Donation, Donor } from '@prisma/client';
+import type { Donation, Donor } from '~~/server/utils/generated/prisma/browser';
 import DonationForm from '../Forms/DonationForm.vue';
 import DonorForm from '../Forms/DonorForm.vue';
 import { useDonationDropDown, useDonorDropDown } from '~/composables/useDonationDropDown';

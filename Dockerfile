@@ -1,30 +1,36 @@
-# Use the official Node.js 22 image
-FROM node:22
+# Build container
+FROM node:22-alpine AS builder
+COPY . ./
 
-# Set the working directory inside the container
-WORKDIR /app
+ENV PNPM_HOME="/pnpm"
+ENV PATH="$PNPM_HOME:$PATH"
+RUN corepack enable
 
-# Copy package.json, package-lock.json and prisma folder to ensure dependencies are installed correctly
-COPY /package.json .
-COPY /package-lock.json .
-COPY /prisma ./prisma
+RUN pnpm i --frozen-lockfile
+RUN pnpm prisma generate
+RUN pnpm run build
 
-ENV DATABASE_URL="file:/app/prisma/mplf.db"
+# Deployment container
+FROM node:22-alpine AS deployment
+ENV PNPM_HOME="/pnpm"
+ENV PATH="$PNPM_HOME:$PATH"
+COPY --from=builder /.output /
+COPY --from=builder /package.json /
+COPY --from=builder /pnpm-lock.yaml /
+COPY --from=builder /prisma.config.ts /
+COPY --from=builder /prisma /prisma
+COPY --from=builder /package.json /
+RUN mkdir node_modules
+RUN npm i -g pnpm
 
-# Install dependencies using NPM with a specific Nuxt.js version
-RUN npm add nuxt@3.16.1 && npm install
+# The below abomination is Vikas' idea, email vikas.thoutam@gmail.com to complain
+# It's purpose is to install the prisma version from the package lock so we can have prisma for automated migrations
+RUN pnpm i -g prisma@$( cat package.json | grep \"prisma\" | cut -d \" -f4)
 
-# Generate Prisma client
-RUN npx prisma generate
+# Install prisma for migrations, we are doing it here instead of entrypoint.sh so the container does not have a long start time
+# We cannot use the one present in server/node_modules since npm does not recognise prisma from there
 
-# Copy the rest of the application files
-COPY . .
-
-# Build the Nuxt.js application
-RUN npm run build
-
-# Expose the port Nuxt uses (default is 3000)
+COPY ./entrypoint.sh /entrypoint.sh
 EXPOSE 3000
-
-# Start the Nuxt application
-CMD ["npm", "run", "start"]
+ENTRYPOINT ["/entrypoint.sh"]
+CMD ["node", "./server/index.mjs"]

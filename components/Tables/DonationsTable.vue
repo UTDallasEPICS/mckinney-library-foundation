@@ -54,6 +54,10 @@
   </th>
 
   <th class="px-4 py-3 text-center text-sm text-[#2d3e4d] border-b-2 border-[#a8b5bf]">
+    Reason
+  </th>
+
+  <th class="px-4 py-3 text-center text-sm text-[#2d3e4d] border-b-2 border-[#a8b5bf]">
     Received Date
   </th>
 
@@ -91,6 +95,7 @@
   <td class="px-6 py-4">{{ donation.nonMonetaryAmount }}</td>
   <td class="px-6 py-4">{{ donation.status == 0 ? 'pending' : 'approved' }}</td>
   <td class="px-6 py-4">{{ donation.notes }}</td>
+  <td class="px-6 py-4">{{ donation.reason }}</td>
 
                     <td class="px-6 py-4 whitespace-nowrap w-[120px] truncate">
                         {{ donation.receivedDate.slice(0,10) }}

@@ -48,7 +48,7 @@ import { useAuth } from '~/composables/useAuth';
 import { useDonor } from '~/composables/useDonor';
 import { useDonationDropDown } from '~/composables/useDonationDropDown';
 import { useDonation } from '~/composables/useDonation';
-import type { Donation, Donor } from '@prisma/client';
+import type { Donation, Donor } from '~~/server/utils/generated/prisma/browser';
 
 
 const {session, getSession} = useAuth();
@@ -91,6 +91,7 @@ const donationData:Ref<{
         status:0,
         isAuthor: false,
         notes:"",
+        reason:"",
         receivedDate:null,
         lastEditDate:null,
         },
@@ -151,6 +152,7 @@ function cancelUpdate(){
         status:0,
         notes:"",
         isAuthor: false,
+        reason:"",
         receivedDate:null,
         lastEditDate:null,
         },

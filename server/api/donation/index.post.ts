@@ -1,6 +1,4 @@
-import {PrismaClient} from '@prisma/client'
-
-const prisma = new PrismaClient();
+import prisma from '~~/server/utils/prisma'
 
 export default defineEventHandler(async (event) => {
   const body = await readBody(event);
@@ -41,6 +39,7 @@ export default defineEventHandler(async (event) => {
         nonMonetaryAmount: body.nonMonetaryAmount,
         status: parseInt(body.status) ?? 0,
         notes: body.notes,
+        reason: body.reason,
         receivedDate: new Date(body.receivedDate),
         lastEditDate: new Date()
       },

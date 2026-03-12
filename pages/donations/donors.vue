@@ -53,7 +53,7 @@ import DonationBar from '~/components/Bars/DonationBar.vue'
 //import { useDonation } from '~/composables/useDonation';
 //import { useDonor } from '~/composables/useDonor';
 //import { useDonorDropDown } from '~/composables/useDonationDropDown';
-import type { Donation, Donor } from '@prisma/client';
+import type { Donation, Donor } from '~~/server/utils/generated/prisma/browser';
 
 
 const {session, getSession} = useAuth();

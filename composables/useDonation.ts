@@ -1,4 +1,4 @@
-import type { Donation } from "@prisma/client";
+import type { Donation } from "~~/server/utils/generated/prisma/browser";
 
 export const useDonation = () => {
     const donationsData:Ref<{donation: Donation, donor: {name: string} | null, boardMember: {name:string} | null}[]> = ref([]);
@@ -41,6 +41,7 @@ export const useDonation = () => {
                 monetaryAmount: values.monetaryAmount,
                 nonMonetaryAmount: values.nonMonetaryAmount,
                 notes: values.notes,
+                reason: values.reason,
                 receivedDate: values.receivedDate,
             }
         })
@@ -59,6 +60,7 @@ export const useDonation = () => {
                 monetaryAmount: values.monetaryAmount,
                 nonMonetaryAmount: values.nonMonetaryAmount,
                 notes: values.notes,
+                reason: values.reason,
                 receivedDate: values.receivedDate,
             }
         })
