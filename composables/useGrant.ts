@@ -71,7 +71,8 @@ export function useGrant() {
                 nonMonetaryAmount: values.nonMonetaryAmount,
                 notes: values.notes,
                 receivedDate: values.receivedDate,
-                proposedDate: values.proposedDate
+                proposedDate: values.proposedDate,
+                reimburse: values.reimburse,
             }
         })
         return result
