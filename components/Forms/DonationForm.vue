@@ -118,17 +118,18 @@ const initValues = props.data?{
     status:props.data.donation.status,
     notes:props.data.donation.notes,
     reason:props.data.donation.reason,
-    receivedDate: props.data.donation.receivedDate? props.data.donation.receivedDate.toISOString().split('T')[0] : '',
+    //receivedDate: props.data.donation.receivedDate? props.data.donation.receivedDate.toISOString().split('T')[0] : '',
+    receivedDate: props.data.donation.receivedDate,
 }: undefined
 
-if(initValues && initValues.receivedDate != ''){
+if(initValues && initValues.receivedDate){
     recievedDateRef.value = initValues.receivedDate;
 }
 
 const schema = yup.object({
     donorName: yup.string().required('Enter anonymous if donor unknown'),
     event: yup.string().required('Enter "none" if not associated with an event'),
-    monetaryAmount: yup.number().nullable().min(0.01,"minimum is at least 0.01").typeError('must be a number'),
+    monetaryAmount: yup.number().positive().nullable().min(0.01,"minimum is at least 0.01").typeError('must be a number'),
     nonMonetaryAmount: yup.string().nullable().test(
     'amount-not-empty',
     'donation must include either monetary or non-monetary amount',
@@ -138,9 +139,14 @@ const schema = yup.object({
     }),
     method: yup.string().required('Must enter payment method'),
     status: yup.string().required('Must enter status'),
-    recievedDate: yup.string().test('date-not-empty', 'Date must be entered', ()=>{
-        return recievedDateRef.value !== ''
-    }),
+    recievedDateRef: yup.date().max(new Date(), "too new").required()/*.test('date-not-empty', 'Date must be entered', 
+        //(value)=> value !== null
+        //(value) => value?.getDate() != null && isNaN(value.getDate())
+        (value) => value && value.getDate() > 0
+        //()=> (!recievedDateRef.value.includes('m') && !recievedDateRef.value.includes('d') && !recievedDateRef.value.includes('y'))
+        //(value)=> value !== ''
+        //(value)=> (!value.includes('m') && !value.includes('d') && !value.includes('y'))
+    )*/
 })
 
 </script>
