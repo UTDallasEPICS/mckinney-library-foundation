@@ -12,17 +12,17 @@
         </div>
         <div class = "text-white">
           <InfoBanner class = "my-5"
-            image="M9 4.804A7.968 7.968 0 005.5 4c-1.255 0-2.443.29-3.5.804v10A7.969 7.969 0 015.5 14c1.669 0 3.218.51 4.5 1.385A7.962 7.962 0 0114.5 14c1.255 0 2.443.29 3.5.804v-10A7.968 7.968 0 0014.5 4c-1.255 0-2.443.29-3.5.804V12a1 1 0 11-2 0V4.804z"
+            icon="/icons/book.svg"            
             title="Track Donations &amp; Grants"
             description="Comprehensive financial management"
           />
           <InfoBanner class = "my-5"
-           image="M9 6a3 3 0 11-6 0 3 3 0 016 0zM17 6a3 3 0 11-6 0 3 3 0 016 0zM12.93 17c.046-.327.07-.66.07-1a6.97 6.97 0 00-1.5-4.33A5 5 0 0119 16v1h-6.07zM6 11a5 5 0 015 5v1H1v-1a5 5 0 015-5z"
+            icon="/icons/users.svg"
             title="Manage Donor Relationships"
             description="Build lasting community connections"
           />
           <InfoBanner class = "my-5 w-full"
-            image="M3 3a1 1 0 000 2v8a2 2 0 002 2h2.586l-1.293 1.293a1 1 0 101.414 1.414L10 15.414l2.293 2.293a1 1 0 001.414-1.414L12.414 15H15a2 2 0 002-2V5a1 1 0 100-2H3zm11.707 4.707a1 1 0 00-1.414-1.414L10 9.586 8.707 8.293a1 1 0 00-1.414 0l-2 2a1 1 0 101.414 1.414L8 10.414l1.293 1.293a1 1 0 001.414 0l4-4z",
+            icon="/icons/chart.svg"
             title="Generate Insights &amp; Reports"
             description="Data-driven descision making"
           />  
