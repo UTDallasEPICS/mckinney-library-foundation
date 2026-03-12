@@ -85,18 +85,20 @@
                     <VeeErrorMessage class="text-red-500" name="recievedDate" />
                 </div>
             </div>
-            <VeeField v-slot="{field}" name="isAuthor" type="checkbox" :value="true" :unchecked-value="false">
+            <div class = "gap-4 mb-5">
+                <VeeField v-slot="{field}" name="reimburse" type="checkbox">
                         <div class="flex items-center gap-2">
                             <input
                                 v-bind="field"
                                 type="checkbox"
-                                id="isAuthor"
+                                id="reimburse"
                                 :disabled="viewOnly"
                                 class="accent-[#64748b] w-4 h-4 mt-[10px]"
                             />
-                            <label for="isAuthor" class="form-field-label">Will this grant reimburse MPLF?</label>
+                            <label for="reimburse" class="form-field-label">Will this grant reimburse MPLF?</label>
                         </div>
                 </VeeField>
+            </div>
             <h2 class="form-field-label mb-2">Notes</h2>
             <VeeField autocomplete="off" :disabled="viewOnly" v-slot="{field}" name="notes">
                 <textarea v-bind="field" class="form-field focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px]"></textarea>
@@ -121,7 +123,7 @@ const props = defineProps<{
     purposes: string[],
     methods: string[],
     grantors:{grantor:Grantor, grants:Grant[]}[]
-    data?:{grant:Grant,boardMember:{name:string}| null, grantor: {name: string | null} | null}
+    data?:{grant:Grant,boardMember:{name:string}| null, grantor: {name: string | null} | null},
 }>();
 
 const recievedDateRef = ref(new Date().toISOString());
@@ -136,6 +138,7 @@ const initValues = props.data?{
     method:props.data.grant.method,
     status:props.data.grant.status,
     notes:props.data.grant.notes,
+    reimburse:Boolean(props.data?.grant.reimburse),
     receivedDate: props.data.grant.receivedDate? props.data.grant.receivedDate.toISOString().split('T')[0] : '',
     proposedDate: props.data.grant.proposedDate? props.data.grant.proposedDate.toISOString().split('T')[0] : '',
 }: undefined
@@ -147,6 +150,7 @@ if(initValues && initValues.receivedDate != ''){
 const schema = yup.object({
     grantorName: yup.string().required('Enter anonymous if grantor unknown'),
     purpose: yup.string().required('Enter "none" if not associated with an purpose'),
+    reimburse: yup.boolean(),
     monetaryAmount: yup.number().nullable().min(0.01,"minimum is at least 0.01").typeError('must be a number'),
     nonMonetaryAmount: yup.string().nullable().test(
     'amount-not-empty',

@@ -51,6 +51,7 @@ export function useGrant() {
                 notes: values.notes,
                 proposedDate: values.proposedDate,
                 receivedDate: values.receivedDate,
+                reimburse: values.reimburse,
             }
         })
         return result
