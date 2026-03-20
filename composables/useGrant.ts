@@ -12,7 +12,7 @@ export function useGrant() {
                 grants.data.map((grant) =>{
                     tempGrants.value.push({
                             ...grant,
-                            proposedDate: grant.proposedDate? new Date() : null,
+                            proposedDate: grant.proposedDate ? new Date() : null,
                             receivedDate: grant.receivedDate? new Date(grant.receivedDate) : null,
                             lastEditDate: grant.lastEditDate? new Date(grant.lastEditDate) : null,
                         }
@@ -51,7 +51,7 @@ export function useGrant() {
                 notes: values.notes,
                 proposedDate: values.proposedDate,
                 receivedDate: values.receivedDate,
-                reimburse: values.reimburse,
+                reimburse: values.reimburse? true : false
             }
         })
         return result
@@ -72,7 +72,7 @@ export function useGrant() {
                 notes: values.notes,
                 receivedDate: values.receivedDate,
                 proposedDate: values.proposedDate,
-                reimburse: values.reimburse,
+                reimburse: values.reimburse? true : false
             }
         })
         return result

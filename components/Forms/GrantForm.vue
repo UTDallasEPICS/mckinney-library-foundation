@@ -86,7 +86,7 @@
                 </div>
             </div>
             <div class = "gap-4 mb-5">
-                <VeeField v-slot="{field}" name="reimburse" type="checkbox">
+                <VeeField v-slot="{field}" name="reimburse" type="checkbox" :value="true" :unchecked-value="false">
                         <div class="flex items-center gap-2">
                             <input
                                 v-bind="field"
@@ -138,7 +138,9 @@ const initValues = props.data?{
     method:props.data.grant.method,
     status:props.data.grant.status,
     notes:props.data.grant.notes,
-    reimburse:Boolean(props.data?.grant.reimburse),
+    reimburse: Boolean(props.data?.grant.reimburse),
+    //props.data?.grant.reimburse ?? false,
+    // Boolean(props.data?.grant.reimburse),
     receivedDate: props.data.grant.receivedDate? props.data.grant.receivedDate.toISOString().split('T')[0] : '',
     proposedDate: props.data.grant.proposedDate? props.data.grant.proposedDate.toISOString().split('T')[0] : '',
 }: undefined
