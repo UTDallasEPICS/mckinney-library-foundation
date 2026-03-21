@@ -146,6 +146,7 @@ model Grant {
   monetaryAmount    String?
   nonMonetaryAmount String?
   status            Int?      @default(0) // 0: requested, 1: completed
+  reimburse         Boolean   @default(false)
   notes             String?
   proposedDate      DateTime?
   receivedDate      DateTime?
