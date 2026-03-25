@@ -1,11 +1,8 @@
+import { requireSession } from "~~/server/utils/requireSession";
+
 export default eventHandler(async (event)=>{
+    await requireSession(event, 2);
     const body = await readBody(event);
-    if(body.permissionLevel < 2){
-        throw createError({
-            statusCode:401,
-            statusMessage:"User does not have permission to send group emails"
-        })
-    }
     const {sendMail} = useNodeMailer();
     console.log(body);
 

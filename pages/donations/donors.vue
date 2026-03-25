@@ -55,6 +55,10 @@ import DonationBar from '~/components/Bars/DonationBar.vue'
 //import { useDonorDropDown } from '~/composables/useDonationDropDown';
 import type { Donation, Donor } from '~~/server/utils/generated/prisma/browser';
 
+definePageMeta({
+  middleware: "auth",
+});
+
 
 const {session, getSession} = useAuth();
 session.value = await getSession();

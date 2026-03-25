@@ -1,18 +1,14 @@
 import prisma from '~~/server/utils/prisma'
+import { requireSession } from "~~/server/utils/requireSession";
 
 export default defineEventHandler(async (event) =>{
+    const session = await requireSession(event, 1);
     try{
         const body = await readBody(event);
-        if(body.permissionLevel < 1){
-            throw createError({
-                statusCode:401,
-                statusMessage:"User does not have permission to create donors"
-            })
-        }
         const donor = await prisma.donor.create({
             data:{
                 name:       body.name,
-                boardMemberId: body.boardMemberId,
+                boardMemberId: session.user.id,
                 email:      body.email,
                 phone:      body.phone,
                 address:    body.address,

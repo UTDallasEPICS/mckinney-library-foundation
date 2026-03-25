@@ -1,16 +1,11 @@
 import prisma from '~~/server/utils/prisma'
+import { requireSession } from "~~/server/utils/requireSession";
 
 
 export default defineEventHandler(async (event) =>{
+    await requireSession(event, 2);
     try{
         const id = event.context.params?.id;
-        const body = await readBody(event);
-        if(body.permissionLevel < 2){
-            throw createError({
-                statusCode:401,
-                statusMessage:"User does not have permission to delete users"
-            })
-        }
         const user = await prisma.user.delete({
             where:{
                 id:id

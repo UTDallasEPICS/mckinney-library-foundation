@@ -50,6 +50,10 @@ import { useDonationDropDown } from '~/composables/useDonationDropDown';
 import { useDonation } from '~/composables/useDonation';
 import type { Donation, Donor } from '~~/server/utils/generated/prisma/browser';
 
+definePageMeta({
+  middleware: "auth",
+});
+
 
 const {session, getSession} = useAuth();
 session.value = await getSession();

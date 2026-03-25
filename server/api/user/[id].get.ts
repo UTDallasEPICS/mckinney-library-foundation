@@ -6,7 +6,12 @@ export default defineEventHandler(async (event) =>{
         const user = await prisma.user.findUnique({
             where:{
                 email: email
-            }
+            },
+            select: {
+                id: true,
+                status: true,
+                email: true
+            },
         })
         return {
             success: true,
@@ -26,4 +31,3 @@ export default defineEventHandler(async (event) =>{
         await prisma.$disconnect();
     }   
 });
-
