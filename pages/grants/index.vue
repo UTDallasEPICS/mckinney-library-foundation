@@ -50,6 +50,10 @@ import { useGrant } from '~/composables/useGrant';
 import type { Grant, Grantor } from '~~/server/utils/generated/prisma/browser';
 import { useGrantsDropDown } from '~/composables/useGrantDropDowns';
 
+definePageMeta({
+  middleware: "auth",
+});
+
 
 const {session, getSession} = useAuth();
 session.value = await getSession();
@@ -92,7 +96,6 @@ const grantData:Ref<{
         nonMonetaryAmount:"",
         status:0,
         notes:"",
-        reimburse: false,
         proposedDate:null,
         receivedDate:null,
         lastEditDate:null,
@@ -154,7 +157,6 @@ function cancelUpdate(){
         nonMonetaryAmount:"",
         status:0,
         notes:"",
-        reimburse: false,
         proposedDate:null,
         receivedDate:null,
         lastEditDate:null,

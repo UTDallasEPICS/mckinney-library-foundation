@@ -50,6 +50,10 @@ import { useDonationDropDown } from '~/composables/useDonationDropDown';
 import { useDonation } from '~/composables/useDonation';
 import type { Donation, Donor } from '~~/server/utils/generated/prisma/browser';
 
+definePageMeta({
+  middleware: "auth",
+});
+
 
 const {session, getSession} = useAuth();
 session.value = await getSession();
@@ -89,9 +93,7 @@ const donationData:Ref<{
         monetaryAmount:"",
         nonMonetaryAmount:"",
         status:0,
-        isAuthor: false,
         notes:"",
-        reason:"",
         receivedDate:null,
         lastEditDate:null,
         },
@@ -151,8 +153,6 @@ function cancelUpdate(){
         nonMonetaryAmount:"",
         status:0,
         notes:"",
-        isAuthor: false,
-        reason:"",
         receivedDate:null,
         lastEditDate:null,
         },
