@@ -17,6 +17,10 @@ import AccReqForm from '~/components/Forms/AccReqForm.vue';
 import * as yup from "yup";
 import { useAuth } from '~/composables/useAuth';
 
+definePageMeta({
+  middleware: "auth",
+});
+
 const {session, getSession} = useAuth();
 session.value = await getSession();
 
