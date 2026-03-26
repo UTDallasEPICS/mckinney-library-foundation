@@ -1,27 +1,20 @@
 import prisma from '~~/server/utils/prisma'
-
-
+import { requireSession } from "~~/server/utils/requireSession";
 
 export default defineEventHandler(async (event) => {
+    const session = await requireSession(event, 1);
     try {
-        const grantId = getRouterParam(event, 'id');
+        const grantId = event.context.params?.id;
         const body = await readBody(event);
-        if(body.permissionLevel < 1){
-            throw createError({
-                statusCode:401,
-                statusMessage:"User does not have permission to update grants"
-            })
-        }
         const grant = await prisma.grant.update({
             where: { id: grantId },
             data: {
-                boardMemberId: body.boardMemberId,
+                boardMemberId: session.user.id,
                 grantorId: body.grantorId,
                 purpose: body.purpose,
                 method: body.method,
                 monetaryAmount: body.monetaryAmount,
                 nonMonetaryAmount: body.nonMonetaryAmount,
-                reimburse: body.reimburse,
                 notes: body.notes,
                 proposedDate: body.proposedDate ? new Date(body.proposedDate) : null,
                 receivedDate: new Date(body.receivedDate),
