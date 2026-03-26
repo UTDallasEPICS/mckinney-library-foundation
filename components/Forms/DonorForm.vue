@@ -28,7 +28,7 @@
                                 :disabled="viewOnly"
                                 class="accent-[#64748b] w-4 h-4 mt-[10px]"
                             />
-                            <label for="isAuthor" class="form-field-label">Is the donor an author?</label>
+                            <label for="isAuthor" class="form-field-label">Is this donor an author?</label>
                         </div>
                 </VeeField>
             </div>
@@ -36,8 +36,8 @@
                 <h2 class = "form-field-label"> Phone </h2>
                 <h2 class = "form-field-label"> Email </h2>
                 <h2 class = "form-field-label"> Communication Preference </h2> 
-                <VeeErrorMessage class="text-red-500 col-span-1" name="phone" />
-                <VeeErrorMessage class="text-red-500 col-span-1" name="email" />
+                <VeeErrorMessage class="text-red-500" name="phone" />
+                <VeeErrorMessage class="text-red-500" name="email" />
                 <VeeField autocomplete="off" :disabled="viewOnly" name="phone" class="form-input focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px]"></VeeField>
                 <VeeField autocomplete="off" :disabled="viewOnly" name="email" class="form-input focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px]"></VeeField>
                 <VeeField v-slot="{field}" autocomplete="off" :disabled="viewOnly" name="preferredCommunication"class="form-input focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px]">
