@@ -63,7 +63,7 @@
                     </select>
                 </VeeField>
                 <VeeField v-slot="{field}" autocomplete="off" :disabled="viewOnly" class="form-input focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px]" name="receivedDate">
-                    <input id="reqDate"  autocomplete="off" :disabled="viewOnly" v-model="recievedDateRef" v-bind="field" type="date"></input>
+                    <input id="reqDate"  autocomplete="off" :disabled="viewOnly" v-bind="field" type="date"></input>
                 </VeeField>
                 <div>
                     <VeeErrorMessage class="text-red-500"  name="method" />
@@ -72,7 +72,7 @@
                     <VeeErrorMessage class="text-red-500"  name="status" />
                 </div>
                 <div>
-                    <VeeErrorMessage class="text-red-500" name="recievedDate" />
+                    <VeeErrorMessage class="text-red-500" name="receivedDate" />
                 </div>
             </div>
             <h2 class="form-field-label mb-3">Notes</h2>
@@ -106,7 +106,6 @@ const props = defineProps<{
     data?:{donation:Donation,boardMember:{name:string}| null, donor: {name: string | null} | null}
 }>();
 
-const recievedDateRef = ref(new Date().toISOString());
 const initValues = props.data?{
     index:props.index, 
     id: props.data.donation.id,
@@ -118,17 +117,13 @@ const initValues = props.data?{
     status:props.data.donation.status,
     notes:props.data.donation.notes,
     reason:props.data.donation.reason,
-    receivedDate: props.data.donation.receivedDate? props.data.donation.receivedDate.toISOString().split('T')[0] : '',
-}: undefined
-
-if(initValues && initValues.receivedDate != ''){
-    recievedDateRef.value = initValues.receivedDate;
-}
+    receivedDate: props.data.donation.receivedDate ? new Date(props.data.donation.receivedDate).toISOString().split('T')[0] : '',
+}:undefined
 
 const schema = yup.object({
     donorName: yup.string().required('Enter anonymous if donor unknown'),
     event: yup.string().required('Enter "none" if not associated with an event'),
-    monetaryAmount: yup.number().nullable().min(0.01,"minimum is at least 0.01").typeError('must be a number'),
+    monetaryAmount: yup.number().positive().nullable().min(0.01,"minimum is at least 0.01").typeError('must be a number'),
     nonMonetaryAmount: yup.string().nullable().test(
     'amount-not-empty',
     'donation must include either monetary or non-monetary amount',
@@ -138,9 +133,7 @@ const schema = yup.object({
     }),
     method: yup.string().required('Must enter payment method'),
     status: yup.string().required('Must enter status'),
-    recievedDate: yup.string().test('date-not-empty', 'Date must be entered', ()=>{
-        return recievedDateRef.value !== ''
-    }),
+    receivedDate: yup.date().required("Must be a valid date")
 })
 
 </script>
