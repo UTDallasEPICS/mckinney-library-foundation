@@ -2,7 +2,7 @@
     <div class="bg-[#e5e9ec] p-0 gap-0 border-0 rounded-md">
         <VeeForm :validation-schema="groupEmailSchema" class= "w-[800px] max-h-[130vh] overflow-y-auto" @submit="groupEmail">
             <div class = "flex flex-col gap-2 text-center sm:text-left px-6 pt-6 pb-4 space-y-0">
-              <h1 class = "form-title"> Send Email to {{ emailList.length }} Donors</h1>
+              <h1 class = "form-title"> Send Email to {{ emailList.length }} {{ props.userName }}</h1>
             </div>         
             <div class = "px-6 pb-6 space-y-4">
               <div class="p-2.5 rounded-md mb-4 bg-[#f5f5f5]">
@@ -37,7 +37,8 @@ import * as yup from "yup";
         nameList:string,
         emailList:string[],
         groupEmail: (values: Record<string, any>) => Promise<void>,
-        cancelEmail: () => void
+        cancelEmail: () => void,
+        userName: string
     }>();
 const groupEmailSchema = yup.object({
   Subject: yup.string().required(),
