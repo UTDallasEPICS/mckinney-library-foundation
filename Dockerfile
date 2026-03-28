@@ -22,10 +22,10 @@ COPY --from=builder /prisma /prisma
 COPY --from=builder /node_modules /node_modules
 RUN npm i -g pnpm
 RUN pnpm prisma generate
-COPY ./entrypoint.sh /entrypoint.sh
+COPY ./entrypoint.sh /entrypoint
 
 # Esnure we can actually run the entrypoint script
-RUN chmod +x /entrypoint.sh
+RUN chmod +x /entrypoint
 EXPOSE 3000
-ENTRYPOINT ["/entrypoint.sh"]
+ENTRYPOINT ["/entrypoint"]
 CMD ["node", "./server/index.mjs"]
