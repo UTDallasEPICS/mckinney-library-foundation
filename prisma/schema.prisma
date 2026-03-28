@@ -15,7 +15,7 @@ datasource db {
 
 model User {
   id            String        @id @default(cuid())
-  name          String        @unique @default("Anonymous")
+  name          String        @default("Anonymous")
   status        Boolean       @default(false) // 0: active, 1: frozen, 2: deleted
   phone         String?
   email         String        @default("mplfboard@gmail.com")
