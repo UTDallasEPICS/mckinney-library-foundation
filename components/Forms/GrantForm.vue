@@ -139,8 +139,6 @@ const initValues = props.data?{
     status:props.data.grant.status,
     notes:props.data.grant.notes,
     reimburse: Boolean(props.data?.grant.reimburse),
-    //props.data?.grant.reimburse ?? false,
-    // Boolean(props.data?.grant.reimburse),
     receivedDate: props.data.grant.receivedDate? props.data.grant.receivedDate.toISOString().split('T')[0] : '',
     proposedDate: props.data.grant.proposedDate? props.data.grant.proposedDate.toISOString().split('T')[0] : '',
 }: undefined
