@@ -9,14 +9,14 @@
                 <p>Recipients: {{ props.nameList }}</p>
               </div>
               <div>
-                <h2 class = "form-field-label">Subject</h2>
+                <h2 class = "form-field-label mb-2">Subject</h2>
                 <VeeErrorMessage class="text-red-500" name="Subject" />
                 <VeeField autocomplete="off" v-slot="{field}" name="Subject">
                   <input autocomplete="off" v-bind="field" class="form-input"></input>
                 </VeeField>
               </div>
               <div>
-                <h2>Message</h2>
+                <h2 class = "form-field-label mb-2">Message</h2>
                 <VeeErrorMessage class="text-red-500" name="Message" />
                 <VeeField autocomplete="off" v-slot="{field}" name="Message">
                   <textarea v-bind="field" class="form-field focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px]"></textarea>
