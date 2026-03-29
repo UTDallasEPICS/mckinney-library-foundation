@@ -190,7 +190,8 @@ async function removeGrantor(grantor:Grantor,index:number) {
 
 
 async function groupEmail(values:Record<string, any>){
-  await $fetch("/api/email",{
+  try {
+    await $fetch("/api/email",{
     method:"POST",
     body:{
       permissionLevel:user.value.permissionLevel,
@@ -200,8 +201,14 @@ async function groupEmail(values:Record<string, any>){
     }
   })
 
-  sendEmail.value=false;
+  alert("Email sent successfully.")
+
+  sendEmail.value= false;
   emailList.value = [];
   nameList.value = "";
+} catch (error) {
+  alert("Failed to sent email");
+  console.error(error);
+  }
 }
 </script>

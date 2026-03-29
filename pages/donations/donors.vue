@@ -204,10 +204,17 @@ async function removeDonor(donor:Donor,index:number) {
   }
 }
 
+const addDonor = (data: any) => { 
+//hi there
 
+
+  console.log("donros",donors)
+  donors.value.push(data);
+};
 
 async function groupEmail(values:Record<string, any>){
-  await $fetch("/api/email",{
+  try {
+    await $fetch("/api/email",{
     method:"POST",
     body:{
       permissionLevel:user.value.permissionLevel,
@@ -217,16 +224,14 @@ async function groupEmail(values:Record<string, any>){
     }
   });
 
+  alert("Email sent successfully.");
+
   sendEmail.value = false;
   emailList.value = [];
   nameList.value = "";
+} catch (error) {
+  alert("Failed to send email.");
+  console.error(error);
+  }
 }
-
-const addDonor = (data: any) => { 
-//hi there
-
-
-  console.log("donros",donors)
-  donors.value.push(data);
-};
 </script>
