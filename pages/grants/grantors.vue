@@ -207,7 +207,7 @@ async function groupEmail(values:Record<string, any>){
   emailList.value = [];
   nameList.value = "";
 } catch (error) {
-  alert("Failed to sent email");
+  alert("Failed to send email.");
   console.error(error);
   }
 }
