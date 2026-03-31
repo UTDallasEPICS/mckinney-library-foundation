@@ -3,7 +3,9 @@ import type { Donation } from "~~/server/utils/generated/prisma/browser";
 export const useDonation = () => {
     const donationsData:Ref<{donation: Donation, donor: {name: string} | null, boardMember: {name:string} | null}[]> = ref([]);
     const getDonations = async () =>{
-        const donations = await $fetch('/api/donation');
+        const requestFetch = useRequestFetch();
+        const donations = await requestFetch('/api/donation');
+        donationsData.value = [];
         if(donations.success && donations.data){
             const tempDonations:Ref<Donation[]> = ref([])
             donations.data.map((donation) =>{
@@ -41,7 +43,6 @@ export const useDonation = () => {
                 monetaryAmount: values.monetaryAmount,
                 nonMonetaryAmount: values.nonMonetaryAmount,
                 notes: values.notes,
-                reason: values.reason,
                 receivedDate: values.receivedDate,
             }
         })
@@ -60,7 +61,6 @@ export const useDonation = () => {
                 monetaryAmount: values.monetaryAmount,
                 nonMonetaryAmount: values.nonMonetaryAmount,
                 notes: values.notes,
-                reason: values.reason,
                 receivedDate: values.receivedDate,
             }
         })
