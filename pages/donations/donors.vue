@@ -145,18 +145,25 @@ function cancelUpdate(){
 }
 
 
-async function prepEmail(selected:boolean[]) {
-  donors.value.forEach((item: { email: string; name: string; },index: number) =>{
-    if(selected[index] && item.email !== ""){
+async function prepEmail(selected: Record<string, boolean>) {
+  emailList.value = [];
+  nameList.value = "";
+
+  donors.value.forEach((item) => {
+    if(selected[item.id] && item.email !== "") {
       emailList.value.push(item.email);
+
       if (nameList.value != "") {
         nameList.value += ", " + item.name;
       } else {
-        nameList.value += item.name;
+        nameList.value = item.name;
       }
-      sendEmail.value = true;
     }
   });
+
+  if (emailList.value.length > 0) {
+    sendEmail.value = true;
+  }
 }
 
 // for updating donor info
