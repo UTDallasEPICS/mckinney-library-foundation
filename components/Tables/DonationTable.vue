@@ -1,10 +1,11 @@
 <template>
     <div class="flex-1 p-8 ">
+        <button v-if="permissionLevel>1" :disabled="!isEnabled" @click="emailFunction(isChecked)" class ="disabled:bg-slate-300 rounded-md text-sm font-medium outline-none h-9 py-2 bg-blue-600 hover:bg-blue-700 text-white px-6 my-3 ">Email Donors</button>
         <div class = "bg-white rounded-lg shadow-lg overflow-x-auto mx-auto">       
             <table class="w-full">
                 <thead  class="bg-[#c5d0d8] sticky top-0 z-10">
                     <tr>
-                        <th class="px-4 py-3 text-left text-xs text-[#2d3e4d] border-b-2 border-[#a8b5bf] cursor-pointer transition-colors">
+                        <th class="px-4 py-3 text-left text-sm text-[#2d3e4d] border-b-2 border-[#a8b5bf] cursor-pointer transition-colors">
                             <div class="w-full flex gap-2">
                                 <span @click="toggleSearch(0)" v-if="!activeSearch[0].active">Donor </span>
                                 <button @click="toggleSearch(0)" v-if="!activeSearch[0].active"><FunnelIcon class="w-4 h-4"/></button>
@@ -16,7 +17,7 @@
                                 <button v-else @click="toggleSort(0)"><NumberedListIcon class="w-4 h-4"/></button>
                             </div>  
                         </th>
-                        <th class="px-4 py-3 text-left text-xs text-[#2d3e4d] border-b-2 border-[#a8b5bf] cursor-pointer transition-colors">
+                        <th class="px-4 py-3 text-left text-sm text-[#2d3e4d] border-b-2 border-[#a8b5bf] cursor-pointer transition-colors">
                             <div class="w-full flex gap-2">
                                 <span v-if="!activeSearch[1].active">Author</span>
                                 <button @click="toggleSearch(1)" v-if="!activeSearch[1].active"><FunnelIcon class="w-4 h-4"/></button>
@@ -28,7 +29,7 @@
                                 <button v-else @click="toggleSort(1)"><NumberedListIcon class="w-4 h-4"/></button>
                             </div>
                         </th>
-                        <th class="px-4 py-3 text-left text-xs text-[#2d3e4d] border-b-2 border-[#a8b5bf] cursor-pointer transition-colors">
+                        <th class="px-4 py-3 text-left text-sm text-[#2d3e4d] border-b-2 border-[#a8b5bf] cursor-pointer transition-colors">
                             <div class="w-full flex gap-2">
                                 <span v-if="!activeSearch[2].active">Event</span>
                                 <button @click="toggleSearch(2)" v-if="!activeSearch[2].active"><FunnelIcon class="w-4 h-4"/></button>
@@ -40,7 +41,7 @@
                                 <button v-else @click="toggleSort(2)"><NumberedListIcon class="w-4 h-4"/></button>
                             </div>
                         </th>
-                        <th class="px-4 py-3 text-left text-xs text-[#2d3e4d] border-b-2 border-[#a8b5bf] cursor-pointer transition-colors">
+                        <th class="px-4 py-3 text-left text-sm text-[#2d3e4d] border-b-2 border-[#a8b5bf] cursor-pointer transition-colors">
                             <div class="w-full flex gap-2">
                                 <span v-if="!activeSearch[3].active">Monetary Amount</span>
                                 <button @click="toggleSearch(3)" v-if="!activeSearch[3].active"><FunnelIcon class="w-4 h-4"/></button>
@@ -53,7 +54,7 @@
                                 <button v-else @click="toggleSort(3)"><NumberedListIcon class="w-4 h-4"/></button>
                             </div>
                         </th>
-                        <th class="px-4 py-3 text-left text-xs text-[#2d3e4d] border-b-2 border-[#a8b5bf] cursor-pointer transition-colors">
+                        <th class="px-4 py-3 text-left text-sm text-[#2d3e4d] border-b-2 border-[#a8b5bf] cursor-pointer transition-colors">
                             <div class="w-full flex gap-2">
                                 <span v-if="!activeSearch[4].active">Non-Monetary Amount</span>
                                 <button @click="toggleSearch(4)" v-if="!activeSearch[4].active"><FunnelIcon class="w-4 h-4"/></button>
@@ -65,7 +66,7 @@
                                 <button v-else @click="toggleSort(4)"><NumberedListIcon class="w-4 h-4"/></button>
                             </div>
                         </th>
-                        <th class="px-4 py-3 text-left text-xs text-[#2d3e4d] border-b-2 border-[#a8b5bf] cursor-pointer transition-colors">
+                        <th class="px-4 py-3 text-left text-sm text-[#2d3e4d] border-b-2 border-[#a8b5bf] cursor-pointer transition-colors">
                             <div class="w-full flex gap-2">
                                 <span v-if="!activeSearch[5].active">Payment Method</span>
                                 <button @click="toggleSearch(5)" v-if="!activeSearch[5].active"><FunnelIcon class="w-4 h-4"/></button>
@@ -78,7 +79,7 @@
                                 
                             </div>
                         </th>
-                        <th class="px-4 py-3 text-left text-xs text-[#2d3e4d] border-b-2 border-[#a8b5bf] cursor-pointer transition-colors">
+                        <th class="px-4 py-3 text-left text-sm text-[#2d3e4d] border-b-2 border-[#a8b5bf] cursor-pointer transition-colors">
                             <div class="w-full flex gap-2">
                                 <span v-if="!activeSearch[6].active">Status </span>
                                 <button @click="toggleSearch(6)" v-if="!activeSearch[6].active"><FunnelIcon class="w-4 h-4"/></button>
@@ -93,7 +94,7 @@
                                 <button v-else @click="toggleSort(6)"><NumberedListIcon class="w-4 h-4"/></button>
                             </div>
                         </th>
-                        <th class="px-4 py-3 text-left text-xs text-[#2d3e4d] border-b-2 border-[#a8b5bf] cursor-pointer transition-colors">
+                        <th class="px-4 py-3 text-left text-sm text-[#2d3e4d] border-b-2 border-[#a8b5bf] cursor-pointer transition-colors">
                             <div class="w-full flex gap-2">
                                 <span @click="toggleSearch(7)" v-if="!activeSearch[7].active">Recieved Date</span>
                                 <button @click="toggleSearch(7)" v-if="!activeSearch[7].active"><FunnelIcon class="w-4 h-4"/></button>
@@ -108,7 +109,7 @@
                                 <button v-else @click="toggleSort(7)"><NumberedListIcon class="w-4 h-4"/></button>
                             </div>
                         </th>
-                        <th class="px-4 py-3 text-left text-xs text-[#2d3e4d] border-b-2 border-[#a8b5bf] cursor-pointer transition-colors">
+                        <th class="px-4 py-3 text-left text-sm text-[#2d3e4d] border-b-2 border-[#a8b5bf] cursor-pointer transition-colors">
                             <div class="w-full flex gap-2">
                                 <span v-if="!activeSearch[8].active">Last Editor</span>
                                 <button @click="toggleSearch(8)" v-if="!activeSearch[8].active"><FunnelIcon class="w-4 h-4"/></button>
@@ -120,7 +121,13 @@
                                 <button v-else @click="toggleSort(8)"><NumberedListIcon class="w-4 h-4"/></button>
                             </div>
                         </th>
-                        <th class="px-4 py-3 text-center text-xs text-[#2d3e4d] border-b-2 border-[#a8b5bf] cursor-pointer transition-colors">Actions</th>
+                        <th class="px-4 py-3 text-center text-sm text-[#2d3e4d] border-b-2 border-[#a8b5bf] cursor-pointer transition-colors">Actions</th>
+                        <th v-if="permissionLevel>1" class="px-4 py-3 text-center text-sm text-[#2d3e4d] border-b-2 border-[#a8b5bf] cursor-pointer transition-colors">
+                            <div class="flex justify-center gap-2">
+                                <span>Select</span>
+                                <input autocomplete="off" @click="selectAll"  type="checkbox" :checked="allSelected"></input>
+                            </div> 
+                        </th>
                     </tr>
                 </thead>
                 <tbody>
@@ -140,7 +147,7 @@
                                 <button v-if="permissionLevel > 0" class ="rounded-md text-sm font-medium outline-none h-9 py-2 bg-red-600 hover:bg-red-700 text-white px-6"@click=deleteFunction(row.donation.id,props.data.indexOf(row)) > Delete </button>
                                 <button class ="rounded-md text-sm font-medium outline-none h-9 py-2 bg-green-600 hover:bg-green-700 text-white px-6" @click="viewFunction(row,props.data.indexOf(row))" > View </button>
                             </div>
-                        </td>     
+                        </td>    
                     </tr>
                 </tbody>
             </table>
