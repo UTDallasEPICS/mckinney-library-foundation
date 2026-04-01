@@ -63,11 +63,19 @@
                 <VeeField autocomplete="off" :disabled="viewOnly" name="address" class="form-input focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px]"></VeeField> 
                 <VeeField autocomplete="off" :disabled="viewOnly" name="webLink"class="form-input focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px]"></VeeField>
             </div>
-                <h2 class = "form-field-label mb-3"> Notes </h2>
-                <VeeField autocomplete="off" v-slot="{field}" :disabled="viewOnly" name="notes">
-                    <textarea :disabled="viewOnly" v-bind="field" class="form-field focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px]"></textarea>
-                </VeeField>  
-            <div class="flex justify-center gap-4 my-3">
+            <div v-if="viewOnly" class="grid grid-cols-3 gap-4 mb-5">
+             <div class="col-span-1">
+                <h2 class="form-field-label">completed donations</h2>
+                <p class="w-full px-3 py-2 bg-white border border-gray-300 rounded text-[#2d3e4d]">
+                 {{ props.donor?.donationCount ?? 0 }}
+                </p>
+             </div>
+            </div>
+            <h2 class = "form-field-label"> notes </h2>
+            <VeeField autocomplete="off" v-slot="{field}" :disabled="viewOnly" name="notes">
+                <textarea :disabled="viewOnly" v-bind="field" class="form-field focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px]"></textarea>
+            </VeeField>   
+            <div class="flex justify-center gap-4 my-2">
                 <button @click="cancelSubmisison()" class ="form-button bg-gray-600 hover:bg-gray-700">Cancel</button>
                 <button v-if="!viewOnly" class ="form-button bg-blue-600 hover:bg-blue-700">Submit</button>
             </div>         
@@ -77,10 +85,14 @@
 
 <script setup lang="ts">
 import type { Donor } from '~~/server/utils/generated/prisma/browser';
+
+type DonorWithCount = Donor & { donationCount?: number; isAuthor?: boolean }
+
+
 import * as yup from 'yup';
 
     const props = defineProps<{
-        donor?:Donor,
+        donor?:DonorWithCount,
         cancelSubmisison:() => void,
         submitDonor: (values: Record<string,any>) => Promise<void>
         organizations:string[],
