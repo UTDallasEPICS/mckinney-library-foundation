@@ -51,6 +51,10 @@ import { useGrant } from '~/composables/useGrant';
 import { useGrantorDropDown } from '~/composables/useGrantDropDowns';
 import type { Grant, Grantor } from '~~/server/utils/generated/prisma/browser';
 
+definePageMeta({
+  middleware: "auth",
+});
+
 
 const {session, getSession} = useAuth();
 session.value = await getSession();
