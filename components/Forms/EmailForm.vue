@@ -37,7 +37,8 @@ import * as yup from "yup";
         nameList:string,
         emailList:string[],
         groupEmail: (values: Record<string, any>) => Promise<void>,
-        cancelEmail: () => void
+        cancelEmail: () => void,
+        userName: string
     }>();
 const groupEmailSchema = yup.object({
   Subject: yup.string().required(),

@@ -7,7 +7,7 @@
             <VeeField hidden name="id"></VeeField>
             <VeeField  hidden name="index"></VeeField> 
             <div  class="grid grid-cols-2 gap-4 mb-5">
-                <h2 class="form-field-label">Donor (Full Name) <span class = "text-red-500">*</span></h2>
+                <h2 class="form-field-label">Donor <span class = "text-red-500">*</span></h2>
                 <h2 class="form-field-label">Event <span class = "text-red-500">*</span></h2>          
                 <VeeField autocomplete="off" v-slot="{field}" :disabled="viewOnly" name="donorName" class="form-input focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px]">
                     <input :disabled="viewOnly" autocomplete="off" v-bind="field" list="donor-list" class="w-full px-3 py-2 bg-white border border-gray-300 rounded text-[#2d3e4d] focus:outline-none focus:ring-2 focus:ring-[#5a6a77] cursor-pointer">

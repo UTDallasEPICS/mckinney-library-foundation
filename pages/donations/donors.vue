@@ -17,10 +17,11 @@
   <div v-if="sendEmail" class="fixed top-0 left-0 w-full h-full flex justify-center items-center z-20 bg-black/50">
     <EmailForm
       :name-list="nameList"
-      :email-list="emailFormProps.emails"
-      :group-email="emailFormProps.groupEmail"
-      :cancel-email="emailFormProps.cancelEmail"
-    />
+      :email-list="emailList"
+      :group-email="groupEmail"
+      :cancel-email="cancelEmail"
+      user-name="Donor(s)"
+      />
   </div>
 
   <div v-if="updateDonor" class="fixed top-0 left-0 w-full h-full flex justify-center items-center z-20 bg-black/50">
