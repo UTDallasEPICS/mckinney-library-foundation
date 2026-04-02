@@ -1,6 +1,5 @@
 <template>
     <div class="flex-1 p-8 ">
-        <button v-if="permissionLevel>1" :disabled="!isEnabled" @click="emailFunction(isChecked)" class ="disabled:bg-slate-300 rounded-md text-sm font-medium outline-none h-9 py-2 bg-blue-600 hover:bg-blue-700 text-white px-6 my-3 ">Email Donors</button>
         <div class = "bg-white rounded-lg shadow-lg overflow-x-auto mx-auto">       
             <table class="w-full">
                 <thead  class="bg-[#c5d0d8] sticky top-0 z-10">
@@ -122,12 +121,6 @@
                             </div>
                         </th>
                         <th class="px-4 py-3 text-center text-sm text-[#2d3e4d] border-b-2 border-[#a8b5bf] cursor-pointer transition-colors">Actions</th>
-                        <th v-if="permissionLevel>1" class="px-4 py-3 text-center text-sm text-[#2d3e4d] border-b-2 border-[#a8b5bf] cursor-pointer transition-colors">
-                            <div class="flex justify-center gap-2">
-                                <span>Select</span>
-                                <input autocomplete="off" @click="selectAll"  type="checkbox" :checked="allSelected"></input>
-                            </div> 
-                        </th>
                     </tr>
                 </thead>
                 <tbody>
