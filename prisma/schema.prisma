@@ -24,14 +24,13 @@ model User {
   image         String?
   createdAt     DateTime      @default(now())
   updatedAt     DateTime      @default(now()) @updatedAt
-  sessions      Session[]
-  accounts      Account[]
-  donations     Donation[]
-  donors        Donor[]
-  grants        Grant[]
-  grantors      Grantor[]
-  expenditures  Expenditure[]
-  events        Event[]
+  Sessions      Session[]
+  Accounts      Account[]
+  Donations     Donation[]
+  Donors        Donor[]
+  Grants        Grant[]
+  Grantors      Grantor[]
+  Events        Event[]
 
   @@unique([email])
   @@map("user")
@@ -100,9 +99,8 @@ model Donor {
   webLink                String?
   isAuthor               Boolean    @default(false)
   organization           String?
-  donations              Donation[]
-  grants                 Grant[]
-  events                 Event[]    @relation("DonorToEvent")
+  Donations              Donation[]
+  Events                 Event[]    @relation("DonorToEvent")
 }
 
 model Grantor {
@@ -117,7 +115,7 @@ model Grantor {
   notes                  String?
   webLink                String?
   organization           String?
-  grants                 Grant[]
+  Grants                 Grant[]
 }
 
 model Donation {
@@ -157,19 +155,6 @@ model Grant {
   lastEditDate      DateTime?
 }
 
-model Expenditure {
-  id                String    @id @default(cuid())
-  boardMemberId     String?
-  boardMember       User?     @relation(fields: [boardMemberId], references: [id], onDelete: Restrict)
-  purpose           String?
-  method            String?
-  monetaryAmount    String?
-  nonMonetaryAmount String?
-  notes             String?
-  spentDate         DateTime?
-  lastEditDate      DateTime
-}
-
 model Event {
   id                String    @id @default(cuid())
   boardMemberId     String?
@@ -178,6 +163,6 @@ model Event {
   eventDate         DateTime?
   //like notes
   description       String?
-  donors            Donor[]   @relation("DonorToEvent")
-  donations         Donation[]
+  Donors            Donor[]   @relation("DonorToEvent")
+  Donations         Donation[]
 }
