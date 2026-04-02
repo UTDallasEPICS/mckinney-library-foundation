@@ -56,11 +56,11 @@
                 <VeeField autocomplete="off" :disabled="viewOnly" name="address" class="form-input focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px]"></VeeField> 
                 <VeeField autocomplete="off" :disabled="viewOnly" name="webLink"class="form-input focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px]"></VeeField>
             </div>
-                <h2 class = "form-field-label mb-3"> Notes </h2>
-                <VeeField autocomplete="off" v-slot="{field}" :disabled="viewOnly" name="notes">
-                    <textarea :disabled="viewOnly" v-bind="field" class="form-field focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px]"></textarea>
-                </VeeField>  
-            <div class="flex justify-center gap-4 my-3">
+            <h2 class = "form-field-label"> notes </h2>
+            <VeeField autocomplete="off" v-slot="{field}" :disabled="viewOnly" name="notes">
+                <textarea :disabled="viewOnly" v-bind="field" class="form-field focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px]"></textarea>
+            </VeeField>   
+            <div class="flex justify-center gap-4 my-2">
                 <button @click="cancelSubmisison()" class ="form-button bg-gray-600 hover:bg-gray-700">Cancel</button>
                 <button v-if="!viewOnly" class ="form-button bg-blue-600 hover:bg-blue-700">Submit</button>
             </div>         
@@ -70,10 +70,14 @@
 
 <script setup lang="ts">
 import type { Donor } from '~~/server/utils/generated/prisma/browser';
+
+type DonorWithCount = Donor & { donationCount?: number; isAuthor?: boolean }
+
+
 import * as yup from 'yup';
 
     const props = defineProps<{
-        donor?:Donor,
+        donor?:DonorWithCount,
         cancelSubmisison:() => void,
         submitDonor: (values: Record<string,any>) => Promise<void>
         organizations:string[],
