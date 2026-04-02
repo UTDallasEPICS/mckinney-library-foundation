@@ -12,7 +12,7 @@ export const useDonor = () => {
         const result = await $fetch('/api/donor',{
             method:"POST",
             body:{
-                name:values.fName.trim() + " " + values.lName.trim(),
+                name:values.donorName,
                 email: values.email? values.email.trim(): "",
                 phone: values.phone? values.phone.trim(): "",
                 address: values.address? values.address.trim(): "",
@@ -30,7 +30,7 @@ export const useDonor = () => {
         const result = await $fetch(`/api/donor/${values.id}`,{
             method:'PUT',
             body:{
-            name:values.fName.trim() + " " + values.lName.trim(),
+            name:values.donorName,
             boardMemberId: user.id,
             email: values.email? values.email.trim() : "",
             phone: values.phone? values.phone.trim(): "",

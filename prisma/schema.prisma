@@ -30,7 +30,6 @@ model User {
   donors        Donor[]
   grants        Grant[]
   grantors      Grantor[]
-  expenditures  Expenditure[]
 
   @@unique([email])
   @@map("user")
@@ -151,17 +150,4 @@ model Grant {
   proposedDate      DateTime?
   receivedDate      DateTime?
   lastEditDate      DateTime?
-}
-
-model Expenditure {
-  id                String    @id @default(cuid())
-  boardMemberId     String?
-  boardMember       User?     @relation(fields: [boardMemberId], references: [id], onDelete: Restrict)
-  purpose           String?
-  method            String?
-  monetaryAmount    String?
-  nonMonetaryAmount String?
-  notes             String?
-  spentDate         DateTime?
-  lastEditDate      DateTime
 }

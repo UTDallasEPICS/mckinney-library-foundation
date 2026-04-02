@@ -10,7 +10,6 @@ export default eventHandler(async (event)=>{
     }
     console.log(body);
 
-    // commented out to prevent attempts to send emails to addresses that dont exist/we don't have access to
     try{
         if(body.permissionLevel < 2){
             throw createError({
