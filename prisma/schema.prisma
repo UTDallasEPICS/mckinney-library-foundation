@@ -15,7 +15,7 @@ datasource db {
 
 model User {
   id            String        @id @default(cuid())
-  name          String        @unique @default("Anonymous")
+  name          String        @default("Anonymous")
   status        Boolean       @default(false) // 0: active, 1: frozen, 2: deleted
   phone         String?
   email         String        @default("mplfboard@gmail.com")
@@ -30,7 +30,6 @@ model User {
   donors        Donor[]
   grants        Grant[]
   grantors      Grantor[]
-  expenditures  Expenditure[]
 
   @@unique([email])
   @@map("user")
@@ -63,7 +62,6 @@ model Account {
   accessTokenExpiresAt  DateTime?
   refreshTokenExpiresAt DateTime?
   scope                 String?
-  password              String?
   createdAt             DateTime  @default(now())
   updatedAt             DateTime  @updatedAt
 
@@ -98,6 +96,7 @@ model Donor {
   preferredCommunication String? // phone or email
   notes                  String?
   webLink                String?
+  isAuthor               Boolean    @default(false)
   organization           String?
   donations              Donation[]
 }
@@ -123,12 +122,14 @@ model Donation {
   boardMember       User?     @relation(fields: [boardMemberId], references: [id], onDelete: Restrict)
   donorId           String?
   donor             Donor?    @relation(fields: [donorId], references: [id], onDelete: Restrict)
+  isAuthor          Boolean   @default(false)
   event             String?
   method            String?
   monetaryAmount    String?
   nonMonetaryAmount String?
   status            Int       @default(0) // 0: pending, 1: completed
   notes             String?
+  reason            String?
   receivedDate      DateTime?
   lastEditDate      DateTime?
 }
@@ -144,21 +145,9 @@ model Grant {
   monetaryAmount    String?
   nonMonetaryAmount String?
   status            Int?      @default(0) // 0: requested, 1: completed
+  reimburse         Boolean   @default(false)
   notes             String?
   proposedDate      DateTime?
   receivedDate      DateTime?
   lastEditDate      DateTime?
-}
-
-model Expenditure {
-  id                String    @id @default(cuid())
-  boardMemberId     String?
-  boardMember       User?     @relation(fields: [boardMemberId], references: [id], onDelete: Restrict)
-  purpose           String?
-  method            String?
-  monetaryAmount    String?
-  nonMonetaryAmount String?
-  notes             String?
-  spentDate         DateTime?
-  lastEditDate      DateTime
 }

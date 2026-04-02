@@ -7,8 +7,8 @@
             <VeeField hidden name="id"></VeeField>
             <VeeField  hidden name="index"></VeeField> 
             <div  class="grid grid-cols-2 gap-4 mb-5">
-                <h2 class="form-field-label">donor (name) <span class = "text-red-500">*</span></h2>
-                <h2 class="form-field-label">event <span class = "text-red-500">*</span></h2>          
+                <h2 class="form-field-label">Donor <span class = "text-red-500">*</span></h2>
+                <h2 class="form-field-label">Event <span class = "text-red-500">*</span></h2>          
                 <VeeField autocomplete="off" v-slot="{field}" :disabled="viewOnly" name="donorName" class="form-input focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px]">
                     <input :disabled="viewOnly" autocomplete="off" v-bind="field" list="donor-list" class="w-full px-3 py-2 bg-white border border-gray-300 rounded text-[#2d3e4d] focus:outline-none focus:ring-2 focus:ring-[#5a6a77] cursor-pointer">
                         <datalist id="donor-list">
@@ -32,10 +32,9 @@
                     <VeeErrorMessage class="text-red-500"  name="event" />
                 </div>                       
             </div>
-            
             <div class="grid grid-cols-2 gap-4 mb-5">
-                <h2 class="form-field-label">monetary amount</h2>
-                <h2 class="form-field-label">non monetary amount</h2>
+                <h2 class="form-field-label">Monetary amount</h2>
+                <h2 class="form-field-label">Non-Monetary Amount</h2>
                 <VeeField autocomplete="off" :disabled="viewOnly" class="form-input focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px]" name="monetaryAmount"/>
                 <VeeField autocomplete="off" :disabled="viewOnly" class="form-input focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px]" name="nonMonetaryAmount"/>
                 <div>
@@ -46,8 +45,8 @@
                 </div>
             </div>
             <div class="grid grid-cols-3 gap-4 mb-5">
-                <h2 class="form-field-label">method <span class = "text-red-500">*</span></h2>
-                <h2 class="form-field-label">status<span class = "text-red-500">*</span></h2>
+                <h2 class="form-field-label">Method <span class = "text-red-500">*</span></h2>
+                <h2 class="form-field-label">Status<span class = "text-red-500">*</span></h2>
                 <h2 class="form-field-label">Received Date<span class = "text-red-500">*</span></h2>
                 <VeeField v-slot="{field}" autocomplete="off" :disabled="viewOnly"name="method" class="form-input focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px]">
                     <input :disabled="viewOnly" autocomplete="off" v-bind="field" list="method-list" class="w-full px-3 py-2 bg-white border border-gray-300 rounded text-[#2d3e4d] focus:outline-none focus:ring-2 focus:ring-[#5a6a77] cursor-pointer">
@@ -64,7 +63,7 @@
                     </select>
                 </VeeField>
                 <VeeField v-slot="{field}" autocomplete="off" :disabled="viewOnly" class="form-input focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px]" name="receivedDate">
-                    <input id="reqDate"  autocomplete="off" :disabled="viewOnly" v-model="recievedDateRef" v-bind="field" type="date"></input>
+                    <input id="reqDate"  autocomplete="off" :disabled="viewOnly" v-bind="field" type="date"></input>
                 </VeeField>
                 <div>
                     <VeeErrorMessage class="text-red-500"  name="method" />
@@ -73,14 +72,18 @@
                     <VeeErrorMessage class="text-red-500"  name="status" />
                 </div>
                 <div>
-                    <VeeErrorMessage class="text-red-500" name="recievedDate" />
+                    <VeeErrorMessage class="text-red-500" name="receivedDate" />
                 </div>
             </div>
-            <h2 class="form-field-label mb-2">Notes</h2>
+            <h2 class="form-field-label mb-3">Notes</h2>
             <VeeField autocomplete="off" :disabled="viewOnly" v-slot="{field}" name="notes">
                 <textarea v-bind="field" :disabled="viewOnly" class="form-field focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px]"></textarea>
             </VeeField>
-            <div class="flex justify-center gap-4 my-2 mb-2">
+            <h2 class="form-field-label mb-2">Reason</h2>
+            <VeeField autocomplete="off" :disabled="viewOnly" v-slot="{field}" name="reason">
+                <textarea v-bind="field" :disabled="viewOnly" class="form-field focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px]"></textarea>
+            </VeeField>
+            <div class="flex justify-center gap-4 my-3">
                 <button class="form-button bg-gray-600 hover:bg-gray-700" @click="cancelSubmisison">Cancel</button>
                 <button v-if="!viewOnly" class ="form-button bg-blue-600 hover:bg-blue-700">Submit </button>
             </div>           
@@ -103,7 +106,6 @@ const props = defineProps<{
     data?:{donation:Donation,boardMember:{name:string}| null, donor: {name: string | null} | null}
 }>();
 
-const recievedDateRef = ref(new Date().toISOString());
 const initValues = props.data?{
     index:props.index, 
     id: props.data.donation.id,
@@ -114,17 +116,14 @@ const initValues = props.data?{
     method:props.data.donation.method,
     status:props.data.donation.status,
     notes:props.data.donation.notes,
-    receivedDate: props.data.donation.receivedDate? props.data.donation.receivedDate.toISOString().split('T')[0] : '',
-}: undefined
-
-if(initValues && initValues.receivedDate != ''){
-    recievedDateRef.value = initValues.receivedDate;
-}
+    reason:props.data.donation.reason,
+    receivedDate: props.data.donation.receivedDate ? new Date(props.data.donation.receivedDate).toISOString().split('T')[0] : '',
+}:undefined
 
 const schema = yup.object({
     donorName: yup.string().required('Enter anonymous if donor unknown'),
     event: yup.string().required('Enter "none" if not associated with an event'),
-    monetaryAmount: yup.number().nullable().min(0.01,"minimum is at least 0.01").typeError('must be a number'),
+    monetaryAmount: yup.number().positive().nullable().min(0.01,"minimum is at least 0.01").typeError('must be a number'),
     nonMonetaryAmount: yup.string().nullable().test(
     'amount-not-empty',
     'donation must include either monetary or non-monetary amount',
@@ -134,9 +133,7 @@ const schema = yup.object({
     }),
     method: yup.string().required('Must enter payment method'),
     status: yup.string().required('Must enter status'),
-    recievedDate: yup.string().test('date-not-empty', 'Date must be entered', ()=>{
-        return recievedDateRef.value !== ''
-    }),
+    receivedDate: yup.date().required("Must be a valid date")
 })
 
 </script>

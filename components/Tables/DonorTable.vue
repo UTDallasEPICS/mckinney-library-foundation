@@ -1,7 +1,7 @@
 <template>
-    <div class="flex-1 p-8 ">
+    <div class="flex-1 p-8">
         <button v-if="permissionLevel>1" :disabled="!isEnabled" @click="emailFunction(isChecked)" class ="disabled:bg-slate-300 rounded-md text-sm font-medium outline-none h-9 py-2 bg-blue-600 hover:bg-blue-700 text-white px-6 my-3 ">Email Donors</button>
-        <div class = "bg-white rounded-lg shadow-lg overflow-hidden mx-auto">       
+        <div class = "bg-white rounded-lg shadow-lg overflow-x-auto mx-auto">       
             <table class="w-full">
                 <thead  class="bg-[#c5d0d8] sticky top-0 z-10">
                     <tr>
@@ -10,7 +10,7 @@
                                 <span v-if="!activeSearch[0].active">Name</span>
                                 <button @click="toggleSearch(0)" v-if="!activeSearch[0].active"><FunnelIcon class="w-4 h-4"/></button>
                                 <div  v-else>
-                                    <input autocomplete="off" v-model="searchInputs.name" @click.stop class="mt-2 px-2 py-1 border rounded"placeholder="Search name"/>
+                                    <input autocomplete="off" v-model="searchInputs.name" @click.stop class="mt-2 px-2 py-1 border rounded"placeholder="Search Names"/>
                                     <button class="text-lg" @click="toggleSearch(0)">&#x24E7;</button>
                                 </div>
                                 <button v-if="activeSorts[0].active" @click="toggleSort(0)" class="bg-[#c8c9c9] outline-double outline-black"><NumberedListIcon class="w-4 h-4"/></button>
@@ -18,11 +18,11 @@
                             </div>
                         </th>
                         <th class="px-4 py-3 text-left text-sm text-[#2d3e4d] border-b-2 border-[#a8b5bf] cursor-pointer transition-colors">
-                             <div class="w-full flex gap-2">
-                                <span v-if="!activeSearch[1].active">Organization</span>
+                            <div class="w-full flex gap-2">
+                                <span v-if="!activeSearch[1].active">Author</span>
                                 <button @click="toggleSearch(1)" v-if="!activeSearch[1].active"><FunnelIcon class="w-4 h-4"/></button>
                                 <div  v-else>
-                                    <input autocomplete="off" v-model="searchInputs.organization" @click.stop class="mt-2 px-2 py-1 border rounded"placeholder="Search Organization"/>
+                                    <input autocomplete="off" v-model="searchInputs.author" @click.stop class="mt-2 px-2 py-1 border rounded"placeholder="Search Authors"/>
                                     <button class="text-lg" @click="toggleSearch(1)">&#x24E7;</button>
                                 </div>
                                 <button v-if="activeSorts[1].active" @click="toggleSort(1)" class="bg-[#c8c9c9] outline-double outline-black"><NumberedListIcon class="w-4 h-4"/></button>
@@ -31,10 +31,10 @@
                         </th>
                         <th class="px-4 py-3 text-left text-sm text-[#2d3e4d] border-b-2 border-[#a8b5bf] cursor-pointer transition-colors">
                              <div class="w-full flex gap-2">
-                                <span v-if="!activeSearch[2].active">Email</span>
-                                <button @click="toggleSearch(2)" v-if="!activeSearch[2].active" ><FunnelIcon class="w-4 h-4"/></button>
+                                <span v-if="!activeSearch[2].active">Organization</span>
+                                <button @click="toggleSearch(2)" v-if="!activeSearch[2].active"><FunnelIcon class="w-4 h-4"/></button>
                                 <div  v-else>
-                                    <input autocomplete="off" v-model="searchInputs.email" @click.stop class="mt-2 px-2 py-1 border rounded"placeholder="Search Emaiils"/>
+                                    <input autocomplete="off" v-model="searchInputs.organization" @click.stop class="mt-2 px-2 py-1 border rounded"placeholder="Search Organizations"/>
                                     <button class="text-lg" @click="toggleSearch(2)">&#x24E7;</button>
                                 </div>
                                 <button v-if="activeSorts[2].active" @click="toggleSort(2)" class="bg-[#c8c9c9] outline-double outline-black"><NumberedListIcon class="w-4 h-4"/></button>
@@ -43,10 +43,10 @@
                         </th>
                         <th class="px-4 py-3 text-left text-sm text-[#2d3e4d] border-b-2 border-[#a8b5bf] cursor-pointer transition-colors">
                              <div class="w-full flex gap-2">
-                                <span v-if="!activeSearch[3].active">Phone</span>
-                                <button @click="toggleSearch(3)" v-if="!activeSearch[3].active"><FunnelIcon class="w-4 h-4"/></button>
+                                <span v-if="!activeSearch[3].active">Email</span>
+                                <button @click="toggleSearch(3)" v-if="!activeSearch[3].active" ><FunnelIcon class="w-4 h-4"/></button>
                                 <div  v-else>
-                                    <input autocomplete="off" v-model="searchInputs.phone" @click.stop class="mt-2 px-2 py-1 border rounded"placeholder="Search Emaiils"/>
+                                    <input autocomplete="off" v-model="searchInputs.email" @click.stop class="mt-2 px-2 py-1 border rounded"placeholder="Search Emails"/>
                                     <button class="text-lg" @click="toggleSearch(3)">&#x24E7;</button>
                                 </div>
                                 <button v-if="activeSorts[3].active" @click="toggleSort(3)" class="bg-[#c8c9c9] outline-double outline-black"><NumberedListIcon class="w-4 h-4"/></button>
@@ -54,45 +54,57 @@
                             </div>
                         </th>
                         <th class="px-4 py-3 text-left text-sm text-[#2d3e4d] border-b-2 border-[#a8b5bf] cursor-pointer transition-colors">
-                            <div class="w-full flex gap-2">
-                                <span @click="toggleSearch(4)">First Donation</span>
+                             <div class="w-full flex gap-2">
+                                <span v-if="!activeSearch[4].active">Phone</span>
                                 <button @click="toggleSearch(4)" v-if="!activeSearch[4].active"><FunnelIcon class="w-4 h-4"/></button>
                                 <div  v-else>
-                                    <p>start date</p>
-                                    <input autocomplete="off" v-model="earliestFirstDono" type="date"  @click.stop class="mt-2 px-2 py-1 border rounded"placeholder="minimum"/>
-                                    <p>end date</p>
-                                    <input autocomplete="off" v-model="latestFirstDono" type="date" @click.stop class="mt-2 px-2 py-1 border rounded"placeholder="maximum"/>
+                                    <input autocomplete="off" v-model="searchInputs.phone" @click.stop class="mt-2 px-2 py-1 border rounded"placeholder="Search Phones"/>
                                     <button class="text-lg" @click="toggleSearch(4)">&#x24E7;</button>
                                 </div>
                                 <button v-if="activeSorts[4].active" @click="toggleSort(4)" class="bg-[#c8c9c9] outline-double outline-black"><NumberedListIcon class="w-4 h-4"/></button>
                                 <button v-else @click="toggleSort(4)"><NumberedListIcon class="w-4 h-4"/></button>
                             </div>
                         </th>
-                         <th class="px-4 py-3 text-left text-sm text-[#2d3e4d] border-b-2 border-[#a8b5bf] cursor-pointer transition-colors">
+                        <th class="px-4 py-3 text-left text-sm text-[#2d3e4d] border-b-2 border-[#a8b5bf] cursor-pointer transition-colors">
                             <div class="w-full flex gap-2">
-                                <span v-if="!activeSearch[5].active">Last Donation</span>
+                                <span @click="toggleSearch(5)">First Donation</span>
                                 <button @click="toggleSearch(5)" v-if="!activeSearch[5].active"><FunnelIcon class="w-4 h-4"/></button>
                                 <div  v-else>
                                     <p>start date</p>
-                                    <input autocomplete="off" v-model="earliestLastDono" type="date"  @click.stop class="mt-2 px-2 py-1 border rounded"placeholder="minimum"/>
+                                    <input autocomplete="off" v-model="earliestFirstDono" type="date"  @click.stop class="mt-2 px-2 py-1 border rounded"placeholder="minimum"/>
                                     <p>end date</p>
-                                    <input autocomplete="off" v-model="latestLastDono" type="date" @click.stop class="mt-2 px-2 py-1 border rounded"placeholder="maximum"/>
+                                    <input autocomplete="off" v-model="latestFirstDono" type="date" @click.stop class="mt-2 px-2 py-1 border rounded"placeholder="maximum"/>
                                     <button class="text-lg" @click="toggleSearch(5)">&#x24E7;</button>
                                 </div>
                                 <button v-if="activeSorts[5].active" @click="toggleSort(5)" class="bg-[#c8c9c9] outline-double outline-black"><NumberedListIcon class="w-4 h-4"/></button>
                                 <button v-else @click="toggleSort(5)"><NumberedListIcon class="w-4 h-4"/></button>
                             </div>
                         </th>
-                        <th class="px-4 py-3 text-left text-sm text-[#2d3e4d] border-b-2 border-[#a8b5bf] cursor-pointer transition-colors">
+                         <th class="px-4 py-3 text-left text-sm text-[#2d3e4d] border-b-2 border-[#a8b5bf] cursor-pointer transition-colors">
                             <div class="w-full flex gap-2">
-                                <span v-if="!activeSearch[6].active">Last Editor</span>
+                                <span v-if="!activeSearch[6].active">Last Donation</span>
                                 <button @click="toggleSearch(6)" v-if="!activeSearch[6].active"><FunnelIcon class="w-4 h-4"/></button>
                                 <div  v-else>
-                                    <input autocomplete="off" v-model="searchInputs.boardMember" @click.stop class="mt-2 px-2 py-1 border rounded"placeholder="Search Board Members"/>
+                                    <p>start date</p>
+                                    <input autocomplete="off" v-model="earliestLastDono" type="date"  @click.stop class="mt-2 px-2 py-1 border rounded"placeholder="minimum"/>
+                                    <p>end date</p>
+                                    <input autocomplete="off" v-model="latestLastDono" type="date" @click.stop class="mt-2 px-2 py-1 border rounded"placeholder="maximum"/>
                                     <button class="text-lg" @click="toggleSearch(6)">&#x24E7;</button>
                                 </div>
                                 <button v-if="activeSorts[6].active" @click="toggleSort(6)" class="bg-[#c8c9c9] outline-double outline-black"><NumberedListIcon class="w-4 h-4"/></button>
                                 <button v-else @click="toggleSort(6)"><NumberedListIcon class="w-4 h-4"/></button>
+                            </div>
+                        </th>
+                        <th class="px-4 py-3 text-left text-sm text-[#2d3e4d] border-b-2 border-[#a8b5bf] cursor-pointer transition-colors">
+                            <div class="w-full flex gap-2">
+                                <span v-if="!activeSearch[7].active">Last Editor</span>
+                                <button @click="toggleSearch(7)" v-if="!activeSearch[7].active"><FunnelIcon class="w-4 h-4"/></button>
+                                <div  v-else>
+                                    <input autocomplete="off" v-model="searchInputs.boardMember" @click.stop class="mt-2 px-2 py-1 border rounded"placeholder="Search Board Members"/>
+                                    <button class="text-lg" @click="toggleSearch(7)">&#x24E7;</button>
+                                </div>
+                                <button v-if="activeSorts[7].active" @click="toggleSort(7)" class="bg-[#c8c9c9] outline-double outline-black"><NumberedListIcon class="w-4 h-4"/></button>
+                                <button v-else @click="toggleSort(7)"><NumberedListIcon class="w-4 h-4"/></button>
                             </div>
                         </th> 
                         <th class="px-4 py-3 text-center text-sm text-[#2d3e4d] border-b-2 border-[#a8b5bf] cursor-pointer transition-colors">Actions</th>
@@ -107,6 +119,7 @@
                 <tbody>
                     <tr v-for="(row,idx) in sortedIndices" :key="idx" class="hover:bg-[#e8f0f7] transition-colors border-b border-gray-200 cursor-pointer">
                         <td class="px-6 py-4 text-[#2d3e4d] text-left text-sm">{{ row.donor.name }}</td>
+                        <td class="px-6 py-4 text-[#2d3e4d] text-left text-sm">{{ row.donor.isAuthor }}</td>
                         <td class="px-6 py-4 text-[#2d3e4d] text-left text-sm">{{ row.donor.organization }}</td>
                         <td class="px-6 py-4 text-[#2d3e4d] text-left text-sm">{{ row.donor.email }}</td>
                         <td class="px-6 py-4 text-[#2d3e4d] text-left text-sm">{{ row.donor.phone }}</td>
@@ -172,8 +185,9 @@ const allSelected = computed(() => selectedCount.value == props.data.filter((row
 
 
 
-const activeSearch:Ref<{name:'name' | 'organization' | 'boardMember' | 'firstDonoDate' | 'lastDonoDate' | 'email' | 'phone', active:boolean}[]> = ref([
+const activeSearch:Ref<{name:'name' | 'author' | 'organization' | 'boardMember' | 'firstDonoDate' | 'lastDonoDate' | 'email' | 'phone', active:boolean}[]> = ref([
     {name:'name',active:false},
+    {name:'author', active:false},
     {name:'organization',active:false},
     {name:'email',active:false},
     {name:'phone',active:false},
@@ -181,8 +195,8 @@ const activeSearch:Ref<{name:'name' | 'organization' | 'boardMember' | 'firstDon
     {name:'lastDonoDate',active:false},
     {name:'boardMember',active:false},
 ])
-const searchInputs = ref({ name: '', organization: '', boardMember:'', firstDonoDate:'', lastDonoDate:'', email:'', phone:''})
-const searchFields = ['name', 'organization', 'boardMember','firstDonoDate', 'lastDonoDate', 'email','phone'] as const
+const searchInputs = ref({ name: '', author: '', organization: '', boardMember:'', firstDonoDate:'', lastDonoDate:'', email:'', phone:''})
+const searchFields = ['name', 'author', 'organization', 'boardMember','firstDonoDate', 'lastDonoDate', 'email','phone'] as const
 const earliestFirstDono = ref("");
 const latestFirstDono= ref("");
 const earliestLastDono = ref("");
@@ -215,6 +229,7 @@ const visibleIndices = computed(() => {
         const value = ref("");
         switch(field){
             case 'boardMember' : value.value = row?.boardMember? row?.boardMember['name']?.toString().toLowerCase() ?? "" : ''; break;
+            case 'author': value.value = row.donor.isAuthor ? 'true' : 'false'; break;
 
             case 'firstDonoDate' : if(row.donations.length > 0){
                 value.value = row?.donations[0].receivedDate?.toString().toLowerCase() ?? "";
@@ -255,15 +270,16 @@ const visibleIndices = computed(() => {
                         return false;
                     }
                 } 
-                break;  
+                break;
             default : value.value = row?.donor[field]?.toString().toLowerCase() ?? ""; break;
         }
       return value.value.includes(search)
     })
   )
 })
-const activeSorts:Ref<{name:'name' | 'organization' | 'boardMember' | 'firstDonoDate' | 'lastDonoDate' | 'email' | 'phone', active:boolean}[]>=ref([
+const activeSorts:Ref<{name:'name' | 'author' | 'organization' | 'boardMember' | 'firstDonoDate' | 'lastDonoDate' | 'email' | 'phone', active:boolean}[]>=ref([
     {name: 'name', active:false},
+    {name: 'author', active: false},
     {name: 'organization',active: false},
     {name: 'email', active:false},
     {name: 'phone',active:false},
@@ -296,6 +312,11 @@ const sortedIndices = computed(() => {
                         const aName = a.donor.name || '';
                         const bName = b.donor.name || '';
                         comparison = aName.localeCompare(bName);
+                        break;
+                    case 'author':
+                        const aAuth = Number(a.donor.isAuthor);
+                        const bAuth = Number(b.donor.isAuthor);
+                        comparison = bAuth - aAuth;
                         break;
                     case 'organization' : 
                         const aEvent = a.donor.organization || 'ZZZZZZZZZZZZZZZZZZZZZZZ';

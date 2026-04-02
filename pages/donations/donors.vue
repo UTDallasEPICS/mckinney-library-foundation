@@ -17,10 +17,11 @@
   <div v-if="sendEmail" class="fixed top-0 left-0 w-full h-full flex justify-center items-center z-20 bg-black/50">
     <EmailForm
       :name-list="nameList"
-      :email-list="emailFormProps.emails"
-      :group-email="emailFormProps.groupEmail"
-      :cancel-email="emailFormProps.cancelEmail"
-    />
+      :email-list="emailList"
+      :group-email="groupEmail"
+      :cancel-email="cancelEmail"
+      user-name="Donor(s)"
+      />
   </div>
 
   <div v-if="updateDonor" class="fixed top-0 left-0 w-full h-full flex justify-center items-center z-20 bg-black/50">
@@ -55,7 +56,7 @@ import DonationBar from '~/components/Bars/DonationBar.vue'
 //import { useDonorDropDown } from '~/composables/useDonationDropDown';
 import type { Donation, Donor } from '~~/server/utils/generated/prisma/browser';
 
-type DonorWithCount = Donor & { donationCount: number }
+type DonorWithCount = Donor & { donationCount: number; isAuthor?: boolean }
 
 
 const {session, getSession} = useAuth();
@@ -93,9 +94,10 @@ const donorFormData:Ref<{donor: DonorWithCount}> = ref({
   address:"",
   notes:"",
   webLink:"",
+  isAuthor: false,
   preferredCommunication:"",
   donationCount: 0
-  }
+}
 });
 
 donors.value.map((thisDonor: any, index: number) => {
@@ -144,9 +146,9 @@ function cancelUpdate(){
     address:"",
     notes:"",
     webLink:"",
+    isAuthor: false,
     preferredCommunication:"",
     donationCount: 0
-
   }};
   updateDonor.value= false;
   viewDonor.value=false;
@@ -167,21 +169,32 @@ async function prepEmail(selected:boolean[]) {
   });
 }
 
+// for updating donor info
 async function prepDonorUpdate(donor:Donor,index:number){
-  donorFormData.value.donor = donor as DonorWithCount;
+  donorFormData.value.donor = {
+    ...(donor as DonorWithCount),
+    isAuthor: Boolean((donor as any).isAuthor),
+  };
   updateDonor.value = true;
   donorIndex.value = index;
 }
 
-async function prepDonorView(donor: Donor, index: number) {
+async function prepDonorView(donor:Donor, index: number){
   donorFormData.value.donor = {
-    ...donor,
-    donationCount: (donor as any).donationCount ?? 0  
+    ...donor, 
+    isAuthor: Boolean((donor as any).isAuthor),
+    donationCount: (donor as any).donationCount ?? 0
   };
   viewDonor.value = true;
 }
 
+ // prisma recieves a boolean when submitted
 async function editDonor(values:Record<string,any>) {
+  const payload = {
+    ...values,
+    isAuthor: !!values.isAuthor
+  };
+  // values.isAuthor = Boolean(values.isAuthor)
   const result = await putDonor(values, user.value)
   if(result.success && result.data){
     donorTableData.value[donorIndex.value].donor={

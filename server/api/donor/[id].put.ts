@@ -23,6 +23,7 @@ export default defineEventHandler(async (event) => {
                 preferredCommunication: body.preferredCommunication,
                 notes: body.notes,
                 webLink: body.webLink,
+                isAuthor: body.isAuthor,
                 organization: body.organization,
             },
             include: {
@@ -33,6 +34,10 @@ export default defineEventHandler(async (event) => {
                 }
             } 
         });
+        await prisma.donation.updateMany({
+            where: { donorId: id },
+            data: {isAuthor: updatedDonor.isAuthor }
+        })
         return{
             success: true,
             statusCode: 200,

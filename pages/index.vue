@@ -194,7 +194,7 @@ async function checkCode(values:Record<string, any>){
          alert("Invalide Code");
        }
        else{
-        navigateTo("/dashboard");
+        window.location.replace("/dashboard");
        }
      }
      catch(error){
