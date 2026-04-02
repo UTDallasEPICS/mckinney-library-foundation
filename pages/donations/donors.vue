@@ -96,7 +96,7 @@ const donorFormData:Ref<{donor:Donor}> = ref({
 });
 
 donors.value.map((thisDonor:Donor,index:number) => {
-  donorTableData.value.push({donor:thisDonor,donations:donors.value[index].donations,boardMember:donors.value[index].boardMember})
+  donorTableData.value.push({donor:thisDonor,donations:donors.value[index].Donations,boardMember:donors.value[index].boardMember})
 })
 
 const {donorOrganizations} = useDonorDropDown(donorTableData.value)

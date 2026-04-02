@@ -110,12 +110,12 @@ await getGrantors();
 
 const donorTableData:Ref<{donor:Donor, donations:Donation[]}[]> = ref([]);
 donors.value.map((thisDonor:Donor,index:number) => {
-  donorTableData.value.push({donor:thisDonor,donations:donors.value[index].donations})
+  donorTableData.value.push({donor:thisDonor,donations:donors.value[index].Donations})
 })
 
 const grantorTableData:Ref<{grantor:Grantor, grants:Grant[]}[]> = ref([]);
 grantors.value.map((thisGrantor:Grantor,index:number) => {
-  grantorTableData.value.push({grantor:thisGrantor,grants:grantors.value[index].grants})
+  grantorTableData.value.push({grantor:thisGrantor,grants:grantors.value[index].Grants})
 })
 
 

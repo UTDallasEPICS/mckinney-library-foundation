@@ -21,7 +21,7 @@ export default defineEventHandler(async (event) =>{
                 webLink: body.webLink,
                 isAuthor: body.isAuthor,
                 organization: body.organization,
-                donations: body.donations
+                Donations: body.donations
             },
             include: {
                 boardMember:{
