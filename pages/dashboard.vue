@@ -23,6 +23,14 @@
         @button-click="handleDashboardButtonClick"
       />
       <DashboardCard
+        :img="GrantCardProps.img"
+        :title="GrantCardProps.title"
+        :description="GrantCardProps.description"
+        :buttons="GrantCardProps.buttons"
+        :permission-level="user.permissionLevel"
+        @button-click="handleDashboardButtonClick"
+      />
+      <DashboardCard
         :img="SettingsCardProps.img"
         :title="SettingsCardProps.title"
         :description="SettingsCardProps.description"
@@ -170,6 +178,16 @@ const GrantCardProps = {
     { name:"View Grants", link:"/grants", paths:['M2.062 12.348a1 1 0 0 1 0-.696 10.75 10.75 0 0 1 19.876 0 1 1 0 0 1 0 .696 10.75 10.75 0 0 1-19.876 0'], circles:[['12','12','3']], accessLevel:0 },
     { name:"Add Grants", paths:['M5 12h14','M12 5v14'], accessLevel:1 },
     { name:"View Grantors", link:"/grants/grantors", paths:['M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2','M16 3.128a4 4 0 0 1 0 7.744', 'M22 21v-2a4 4 0 0 0-3-3.87'], circles:[['9','7','4']], accessLevel:0 }
+  ]
+}
+
+const EventCardProps = {
+    img:{ paths:["M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z","M14 2v4a2 2 0 0 0 2 2h4", "M10 9H8","M16 13H8","M16 17H8"] },
+    title:"Events",
+    description:"Manage hosted events and group donors per attendees.",
+    buttons: [
+    { name:"Create Events", link:"/settings", paths:['M5 12h14','M12 5v14'], accessLevel:3 },
+    { name:"View Events", link:"/settings/roles", paths:['M2.062 12.348a1 1 0 0 1 0-.696 10.75 10.75 0 0 1 19.876 0 1 1 0 0 1 0 .696 10.75 10.75 0 0 1-19.876 0'], circles:[['12','12','3']], accessLevel:1 },
   ]
 }
 
