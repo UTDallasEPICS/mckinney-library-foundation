@@ -40,7 +40,6 @@ async function signOut(){
     method: "DELETE"
   });
   if(result.success){
-    alert("signed out");
     reloadNuxtApp();
   }
 }
