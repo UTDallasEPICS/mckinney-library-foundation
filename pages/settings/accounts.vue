@@ -79,7 +79,7 @@ async function editAccount(values: Record<string, any>){
   const {success} = await $fetch(`/api/user/${user.value.id}`,{
     method:"PATCH",
     body:{
-      email:values.email,
+      email:values.email.toLowerCase(),
       name:values.fName+ ' ' + values.lName,
       permission:values.permission,
       permissionLevel:permissionLevel.value
@@ -88,7 +88,7 @@ async function editAccount(values: Record<string, any>){
   if(success){
     if(users){
       users[userIndex.value].name = values.fName + ' ' + values.lName;
-      users[userIndex.value].email = values.email;
+      users[userIndex.value].email = values.email.toLowerCase();
       users[userIndex.value].permission = values.permision
     } 
   }

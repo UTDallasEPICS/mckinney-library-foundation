@@ -164,7 +164,7 @@ async function formSubmit(values:Record<string, any>){
 }
 
 async function checkEmailExists(email:string){
-  const id = email;
+  const id = email.toLowerCase();
   const user = await $fetch(`/api/user/${id}`);
   if(user.data){
     if(!user.data.status){
