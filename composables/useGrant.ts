@@ -6,13 +6,15 @@ export function useGrant() {
     const selectedGrant = ref(null);
 
     const getGrants = async () =>{
-            const grants = await $fetch('/api/grant');
+            const requestFetch = useRequestFetch();
+            const grants = await requestFetch('/api/grant');
+            grantsData.value = [];
             if(grants.success && grants.data){
                 const tempGrants:Ref<Grant[]> = ref([])
                 grants.data.map((grant) =>{
                     tempGrants.value.push({
                             ...grant,
-                            proposedDate: grant.proposedDate ? new Date() : null,
+                            proposedDate: grant.proposedDate? new Date() : null,
                             receivedDate: grant.receivedDate? new Date(grant.receivedDate) : null,
                             lastEditDate: grant.lastEditDate? new Date(grant.lastEditDate) : null,
                         }
@@ -51,7 +53,6 @@ export function useGrant() {
                 notes: values.notes,
                 proposedDate: values.proposedDate,
                 receivedDate: values.receivedDate,
-                reimburse: values.reimburse? true : false
             }
         })
         return result
@@ -71,8 +72,7 @@ export function useGrant() {
                 nonMonetaryAmount: values.nonMonetaryAmount,
                 notes: values.notes,
                 receivedDate: values.receivedDate,
-                proposedDate: values.proposedDate,
-                reimburse: values.reimburse? true : false
+                proposedDate: values.proposedDate
             }
         })
         return result

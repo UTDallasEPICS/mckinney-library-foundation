@@ -56,6 +56,10 @@ import DonationBar from '~/components/Bars/DonationBar.vue'
 //import { useDonorDropDown } from '~/composables/useDonationDropDown';
 import type { Donation, Donor } from '~~/server/utils/generated/prisma/browser';
 
+definePageMeta({
+  middleware: "auth",
+});
+
 
 const {session, getSession} = useAuth();
 session.value = await getSession();
@@ -92,7 +96,6 @@ const donorFormData:Ref<{donor:Donor}> = ref({
   address:"",
   notes:"",
   webLink:"",
-  isAuthor: false,
   preferredCommunication:""}
 });
 
@@ -137,8 +140,8 @@ function cancelUpdate(){
     address:"",
     notes:"",
     webLink:"",
-    isAuthor: false,
     preferredCommunication:"",
+
   }};
   updateDonor.value= false;
   viewDonor.value=false;
@@ -159,32 +162,19 @@ async function prepEmail(selected:boolean[]) {
   });
 }
 
-// for updating donor info
 async function prepDonorUpdate(donor:Donor,index:number){
-  donorFormData.value.donor = {
-    ...donor,
-    isAuthor: Boolean(donor.isAuthor),
-  };
+  donorFormData.value.donor = donor;
   updateDonor.value = true;
   donorIndex.value = index;
 }
 
 async function prepDonorView(donor:Donor){
-  donorFormData.value.donor = {
-    ...donor,
-    isAuthor: Boolean(donor.isAuthor),
-  }
+  donorFormData.value.donor = donor;
   viewDonor.value = true;
   donorId.value = donor.id;
 }
 
- // prisma recieves a boolean when submitted
 async function editDonor(values:Record<string,any>) {
-  const payload = {
-    ...values,
-    isAuthor: !!values.isAuthor
-  };
-  // values.isAuthor = Boolean(values.isAuthor)
   const result = await putDonor(values, user.value)
   if(result.success && result.data){
     donorTableData.value[donorIndex.value].donor={
