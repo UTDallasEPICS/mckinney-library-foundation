@@ -6,17 +6,10 @@
             </div>     
             <VeeField autocomplete="off" hidden name="id"></VeeField>
             <VeeField autocomplete="off" hidden name="index"></VeeField>  
-            <div class="grid grid-cols-2 gap-4 mb-2">
-                <h2 class = "form-field-label"> First Name </h2>        
-                <h2 class = "form-field-label"> Last Name </h2>
-                <VeeField autocomplete="off" :disabled="viewOnly" name="fName" class="form-input focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px]"></VeeField>
-                <VeeField autocomplete="off" :disabled="viewOnly" name="lName" class="form-input focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px]"></VeeField>
-                <div>
-                    <VeeErrorMessage class="text-red-500" name= "fName" />
-                </div>
-                <div>
-                    <VeeErrorMessage class="text-red-500" name= "lName" />
-                </div>
+            <div class="grid gap-4 mb-2">
+                <h2 class="form-field-label">Grantor <span class = "text-red-500">*</span></h2>
+                <VeeField autocomplete="off" :disabled="viewOnly" name="grantorName" class="form-input focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px]"></VeeField>
+                <VeeErrorMessage class="text-red-500" name= "grantorName" />
             </div>
 
             <div class = "grid grid-cols-3 gap-4 mb-5">
@@ -78,8 +71,7 @@ import * as yup from 'yup';
 const initValues = props.grantor?{
     index:props.index, 
     id: props.grantor.id,
-    fName: props.grantor.name.split(' ')[0],
-    lName: props.grantor.name.split(' ')[1],
+    grantorName: props.grantor.name,
     organization: props.grantor.organization,
     email: props.grantor.email,
     phone:props.grantor.phone,
@@ -90,7 +82,6 @@ const initValues = props.grantor?{
 }: undefined
 
 const schema = yup.object({
-    fName: yup.string().required("first name is required"),
-    lName: yup.string().required("last name is required"),
+    grantorName: yup.string().required("Enter anonymous if grantor unknown'"),
 })
 </script>

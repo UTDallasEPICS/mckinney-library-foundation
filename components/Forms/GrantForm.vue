@@ -7,7 +7,7 @@
             <VeeField hidden name="id"></VeeField>
             <VeeField  hidden name="index"></VeeField> 
             <div  class="grid grid-cols-2 gap-4 mb-3">
-                <h2 class="form-field-label">Grantor (Full Name) <span class = "text-red-500">*</span></h2>
+                <h2 class="form-field-label">Grantor <span class = "text-red-500">*</span></h2>
                 <h2 class="form-field-label">Purpose <span class = "text-red-500">*</span></h2>                     
                 <VeeField autocomplete="off" v-slot="{field}" :disabled="viewOnly" name="grantorName" class="form-input focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px]">
                     <input :disabled="viewOnly" autocomplete="off" v-bind="field" list="grantor-list" class="w-full px-3 py-2 bg-white border border-gray-300 rounded text-[#2d3e4d] focus:outline-none focus:ring-2 focus:ring-[#5a6a77] cursor-pointer">
