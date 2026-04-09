@@ -10,6 +10,4 @@ export const useAuth = () => {
         session
     }
 
-}
-
-  
+};
