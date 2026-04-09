@@ -1,8 +1,11 @@
-import prisma from '~~/server/utils/prisma'
+import prisma from "~~/server/utils/prisma"
+import { requireSession, filterSensitiveFields } from "~~/server/utils/requireSession"
 
 export default defineEventHandler(async (event) => {
+
+    const session = await requireSession(event, 0);
     try {
-        const id = getRouterParam(event, 'id');  
+        const id = event.context.params?.id;  
         const donation = await prisma.donation.findUnique({
             where: { id:id },
             include:{
@@ -14,10 +17,13 @@ export default defineEventHandler(async (event) => {
                 }
             }
         });    
+        const filtered = donation
+            ? filterSensitiveFields(donation, session.user.permission, ['notes'])
+            : donation;
         return {
             success: true,
             statusCode: 200,
-            data: donation, 
+            data: filtered, 
         }
     }catch (error) {
         console.error(error);
@@ -27,8 +33,5 @@ export default defineEventHandler(async (event) => {
             message: "Failed to fetch donation",
             error: error, 
         }
-    }finally {
-        await prisma.$disconnect()
-    }   
-
- })
+    }
+})

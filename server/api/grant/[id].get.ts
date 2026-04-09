@@ -1,11 +1,11 @@
-import prisma from '~~/server/utils/prisma'
-
-
+import prisma from "~~/server/utils/prisma"
+import { requireSession, filterSensitiveFields } from "~~/server/utils/requireSession"
 
 export default defineEventHandler(async (event) => {
-    try {
-        const grantId = getRouterParam(event, 'id');
 
+    const session = await requireSession(event, 0);
+    try {
+        const grantId = event.context.params?.id;
         const grant = await prisma.grant.findUnique({
             where: {id:grantId},
             include: {
@@ -13,10 +13,13 @@ export default defineEventHandler(async (event) => {
                 grantor: true,
             }
         });
+        const filtered = grant
+            ? filterSensitiveFields(grant, session.user.permission, ['notes'])
+            : grant;
         return { 
             success: true,
             statusCode: 200,
-            data: grant,
+            data: filtered,
             error:{code: ""}
         }
     } catch (error) {
@@ -27,7 +30,5 @@ export default defineEventHandler(async (event) => {
             message: "Failed to find grant",
             error: error, 
         }
-    } finally {
-        await prisma.$disconnect()
     }
 });
