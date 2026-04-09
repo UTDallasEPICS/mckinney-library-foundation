@@ -17,10 +17,11 @@
   <div v-if="sendEmail" class="fixed top-0 left-0 w-full h-full flex justify-center items-center z-20 bg-black/50">
     <EmailForm
       :name-list="nameList"
-      :email-list="emailFormProps.emails"
-      :group-email="emailFormProps.groupEmail"
-      :cancel-email="emailFormProps.cancelEmail"
-    />
+      :email-list="emailList"
+      :group-email="groupEmail"
+      :cancel-email="cancelEmail"
+      user-name="Donor(s)"
+      />
   </div>
 
   <div v-if="updateDonor" class="fixed top-0 left-0 w-full h-full flex justify-center items-center z-20 bg-black/50">
@@ -96,7 +97,7 @@ const donorFormData:Ref<{donor: DonorWithCount}> = ref({
   isAuthor: false,
   preferredCommunication:"",
   donationCount: 0
-  }
+}
 });
 
 donors.value.map((thisDonor: any, index: number) => {
@@ -148,7 +149,6 @@ function cancelUpdate(){
     isAuthor: false,
     preferredCommunication:"",
     donationCount: 0
-
   }};
   updateDonor.value= false;
   viewDonor.value=false;
@@ -175,16 +175,15 @@ async function prepDonorUpdate(donor:Donor,index:number){
     ...(donor as DonorWithCount),
     isAuthor: Boolean((donor as any).isAuthor),
   };
-  donorFormData.value.donor = donor as DonorWithCount;
   updateDonor.value = true;
   donorIndex.value = index;
 }
 
-async function prepDonorView(donor: Donor, index: number) {
+async function prepDonorView(donor:Donor, index: number){
   donorFormData.value.donor = {
-    ...donor,
+    ...donor, 
     isAuthor: Boolean((donor as any).isAuthor),
-    donationCount: (donor as any).donationCount ?? 0  
+    donationCount: (donor as any).donationCount ?? 0
   };
   viewDonor.value = true;
 }
