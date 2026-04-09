@@ -17,6 +17,7 @@ export const useAuth = () => {
       return session.value;
     }
 
+<<<<<<< HEAD
     const result = await useFetch<SessionResponse>("/api/session");
     session.value = result.data.value?.data ?? null;
     sessionLoaded.value = true;
@@ -30,3 +31,6 @@ export const useAuth = () => {
 };
 
   
+=======
+};
+>>>>>>> eacb842 (chore: scope auth foundation changes for split PR)
