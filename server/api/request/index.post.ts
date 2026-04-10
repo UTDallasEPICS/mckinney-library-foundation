@@ -1,11 +1,10 @@
 import prisma from '~~/server/utils/prisma'
 import {v4 as uuidv4} from 'uuid';
 
-const {sendMail} = useNodeMailer();
-
 export default defineEventHandler(async (event) =>{
     try{
         const body = await readBody(event);
+        const {sendMail} = useNodeMailer();
         const request = await prisma.accountCreationRequest.create({
         data:{
              name: body.name, 
