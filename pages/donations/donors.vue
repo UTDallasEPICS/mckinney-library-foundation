@@ -145,18 +145,25 @@ function cancelUpdate(){
 }
 
 
-async function prepEmail(selected:boolean[]) {
-  donors.value.forEach((item: { email: string; name: string; },index: number) =>{
-    if(selected[index] && item.email !== ""){
+async function prepEmail(selected: Record<string, boolean>) {
+  emailList.value = [];
+  nameList.value = "";
+
+  donors.value.forEach((item) => {
+    if(selected[item.id] && item.email !== "") {
       emailList.value.push(item.email);
+
       if (nameList.value != "") {
         nameList.value += ", " + item.name;
       } else {
-        nameList.value += item.name;
+        nameList.value = item.name;
       }
-      sendEmail.value = true;
     }
   });
+
+  if (emailList.value.length > 0) {
+    sendEmail.value = true;
+  }
 }
 
 // for updating donor info
@@ -204,10 +211,17 @@ async function removeDonor(donor:Donor,index:number) {
   }
 }
 
+const addDonor = (data: any) => { 
+//hi there
 
+
+  console.log("donros",donors)
+  donors.value.push(data);
+};
 
 async function groupEmail(values:Record<string, any>){
-  await $fetch("/api/email",{
+  try {
+    await $fetch("/api/email",{
     method:"POST",
     body:{
       permissionLevel:user.value.permissionLevel,
@@ -217,16 +231,14 @@ async function groupEmail(values:Record<string, any>){
     }
   });
 
+  alert("Email sent successfully.");
+
   sendEmail.value = false;
   emailList.value = [];
   nameList.value = "";
+} catch (error) {
+  alert("Failed to send email.");
+  console.error(error);
+  }
 }
-
-const addDonor = (data: any) => { 
-//hi there
-
-
-  console.log("donros",donors)
-  donors.value.push(data);
-};
 </script>

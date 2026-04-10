@@ -122,7 +122,7 @@
                         </td>
                         <td v-if="permissionLevel>1">
                             <div class="flex justify-center">
-                                <input autocomplete="off" v-if="row.grantor.email" v-model="isChecked[idx]" type="checkbox"></input>
+                                <input autocomplete="off" v-if="row.grantor.email" v-model="isChecked[row.grantor.id]" type="checkbox"></input>
                             </div>     
                         </td>
                     </tr>
@@ -145,21 +145,22 @@ const props = defineProps<{
     viewFunction: (grantor:Grantor,idx:number) => Promise<void>
     permissionLevel:number
     }>();
-const isChecked: Ref<boolean[]> = ref([])
+// use grantor ID instead of index
+const isChecked = ref<Record<string, boolean>>({})
 
-props.data.forEach( (item,index) =>{
-    isChecked.value[index] = false;
+props.data.forEach( (row) =>{
+    isChecked.value[row.grantor.id] = false;
 })
 
 const selectedCount = computed(() => 
-  isChecked.value.filter(Boolean).length
+  Object.values(isChecked.value).filter(Boolean).length
 );
 
 function selectAll(){
     const checkAll = !allSelected.value
-    props.data.forEach((row,index) =>{
+    props.data.forEach((row) =>{
         if(row.grantor.email !== ''){
-            isChecked.value[index] = checkAll;
+            isChecked.value[row.grantor.id] = checkAll;
         }
     })
 }
