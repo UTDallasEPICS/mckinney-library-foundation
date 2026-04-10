@@ -1,6 +1,16 @@
-import prisma from '~~/server/utils/prisma'
 
-export default defineEventHandler (async (event)=>{
+import prisma from "~~/server/utils/prisma"
+import { requireSession } from "~~/server/utils/requireSession"
+
+export default defineEventHandler(async (event) => {
+
+    const session = await requireSession(event, 0);
+    const redactFields = <T extends Record<string, any>>(record: T, fields: string[]) => {
+        if (session.user.permission >= 1) return record;
+        const copy = { ...record } as Record<string, any>;
+        fields.forEach((field) => delete copy[field]);
+        return copy as T;
+    };
     try{
         const donations = await prisma.donation.findMany({
             include: {
@@ -16,10 +26,13 @@ export default defineEventHandler (async (event)=>{
                 }
             },
         })
+        const filtered = donations.map((d) =>
+            redactFields(d, ['notes'])
+        );
         return{
             success: true,
             statusCode: 200,
-            data: donations,
+            data: filtered,
         }
     }
     
@@ -32,5 +45,4 @@ export default defineEventHandler (async (event)=>{
             data:null
         }
     }
-
 })
