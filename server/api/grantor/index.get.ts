@@ -1,6 +1,15 @@
-import prisma from '~~/server/utils/prisma'
+import prisma from "~~/server/utils/prisma"
+import { requireSession } from "~~/server/utils/requireSession"
 
-export default defineEventHandler(async () =>{
+export default defineEventHandler(async (event) => {
+
+    const session = await requireSession(event, 0);
+    const redactFields = <T extends Record<string, any>>(record: T, fields: string[]) => {
+        if (session.user.permission >= 1) return record;
+        const copy = { ...record } as Record<string, any>;
+        fields.forEach((field) => delete copy[field]);
+        return copy as T;
+    };
     try{
         const data = await prisma.grantor.findMany({
             include:{
@@ -12,10 +21,13 @@ export default defineEventHandler(async () =>{
                 boardMember: true,
             }
         });
+        const filtered = data.map((g) =>
+            redactFields(g, ['email','phone','address','notes','webLink'])
+        );
         return{
             success: true,
             statusCode: 200,
-            data: data,
+            data: filtered,
             error:{code: ""}
         }
     }catch(error){
@@ -27,8 +39,5 @@ export default defineEventHandler(async () =>{
             error: error, 
             data: null
         }
-    }finally{
-        await prisma.$disconnect();
     }
 });
-
