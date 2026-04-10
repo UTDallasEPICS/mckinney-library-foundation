@@ -1,25 +1,30 @@
-import prisma from '~~/server/utils/prisma';
-
-;
+import prisma from "~~/server/utils/prisma"
+import { requireSession } from "~~/server/utils/requireSession"
 
 export default defineEventHandler(async (event) => {
 
-
-    console.log("router reached")
+    const session = await requireSession(event, 0);
+    const redactFields = <T extends Record<string, any>>(record: T, fields: string[]) => {
+        if (session.user.permission >= 1) return record;
+        const copy = { ...record } as Record<string, any>;
+        fields.forEach((field) => delete copy[field]);
+        return copy as T;
+    };
     try {
-        const id = getRouterParam(event, 'id');
-
-        console.log("id found:", id);   
+        const id = event.context.params?.id;
         const donor = await prisma.donor.findUnique({
             where: { id:id },
             include:{
                 donations:true
             }
         });      
+        const filtered = donor
+            ? redactFields(donor, ['email','phone','address','notes','webLink'])
+            : donor;
         return {
             success: true,
             statusCode: 200,
-            data: donor, 
+            data: filtered, 
         }
     } catch (error) {
         console.error(error);
@@ -29,7 +34,5 @@ export default defineEventHandler(async (event) => {
             message: "Failed to fetch donor",
             error: error, 
         }
-    } finally {
-        await prisma.$disconnect()
     }
 });
