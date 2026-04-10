@@ -1,11 +1,17 @@
-import prisma from '~~/server/utils/prisma'
-
-
+import prisma from "~~/server/utils/prisma"
+import { requireSession } from "~~/server/utils/requireSession"
 
 export default defineEventHandler(async (event) => {
-    try {
-        const grantId = getRouterParam(event, 'id');
 
+    const session = await requireSession(event, 0);
+    const redactFields = <T extends Record<string, any>>(record: T, fields: string[]) => {
+        if (session.user.permission >= 1) return record;
+        const copy = { ...record } as Record<string, any>;
+        fields.forEach((field) => delete copy[field]);
+        return copy as T;
+    };
+    try {
+        const grantId = event.context.params?.id;
         const grant = await prisma.grant.findUnique({
             where: {id:grantId},
             include: {
@@ -13,10 +19,13 @@ export default defineEventHandler(async (event) => {
                 grantor: true,
             }
         });
+        const filtered = grant
+            ? redactFields(grant, ['notes'])
+            : grant;
         return { 
             success: true,
             statusCode: 200,
-            data: grant,
+            data: filtered,
             error:{code: ""}
         }
     } catch (error) {
@@ -27,7 +36,5 @@ export default defineEventHandler(async (event) => {
             message: "Failed to find grant",
             error: error, 
         }
-    } finally {
-        await prisma.$disconnect()
     }
 });
