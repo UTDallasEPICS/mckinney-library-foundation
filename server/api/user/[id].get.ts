@@ -2,11 +2,16 @@ import prisma from '~~/server/utils/prisma'
 
 export default defineEventHandler(async (event) =>{
     try{
-        const email = getRouterParam(event, 'id');
+        const email = event.context.params?.id;
         const user = await prisma.user.findUnique({
             where:{
                 email: email
-            }
+            },
+            select: {
+                id: true,
+                status: true,
+                email: true
+            },
         })
         return {
             success: true,
@@ -26,4 +31,3 @@ export default defineEventHandler(async (event) =>{
         await prisma.$disconnect();
     }   
 });
-
