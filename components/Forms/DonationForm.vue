@@ -6,7 +6,7 @@
             </div>
             <VeeField hidden name="id"></VeeField>
             <VeeField  hidden name="index"></VeeField> 
-            <div  class="grid grid-cols-2 gap-6 px-6 mb-5">
+            <div  class="grid grid-cols-2 gap-6 px-6 mb-2">
                 <h2 class="form-field-label">Donor <span class = "text-red-500">*</span></h2>
                 <h2 class="form-field-label">Event <span class = "text-red-500">*</span></h2>          
                 <VeeField autocomplete="off" v-slot="{field}" :disabled="viewOnly" name="donorName" class="form-input focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px]">
@@ -32,7 +32,7 @@
                     <VeeErrorMessage class="text-red-500"  name="event" />
                 </div>                       
             </div>
-            <div class="grid grid-cols-2 gap-6 px-6 mb-5">
+            <div class="grid grid-cols-2 gap-6 px-6 mb-2">
                 <h2 class="form-field-label">Monetary amount</h2>
                 <h2 class="form-field-label">Non-Monetary Amount</h2>
                 <VeeField autocomplete="off" :disabled="viewOnly" class="form-input focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px]" name="monetaryAmount"/>
@@ -44,7 +44,7 @@
                     <VeeErrorMessage class="text-red-500"  name="nonMonetaryAmount" />
                 </div>
             </div>
-            <div class="grid grid-cols-3 gap-6 px-6 mb-5">
+            <div class="grid grid-cols-3 gap-6 px-6 mb-2">
                 <h2 class="form-field-label">Method <span class = "text-red-500">*</span></h2>
                 <h2 class="form-field-label">Status<span class = "text-red-500">*</span></h2>
                 <h2 class="form-field-label">Received Date<span class = "text-red-500">*</span></h2>
@@ -75,7 +75,7 @@
                     <VeeErrorMessage class="text-red-500" name="receivedDate" />
                 </div>
             </div>
-            <div class="px-6 mb-5">
+            <div class="px-6 mb-6">
                 <h2 class="form-field-label mb-2">Notes</h2>
                 <VeeField autocomplete="off" :disabled="viewOnly" v-slot="{field}" name="notes">
                     <textarea v-bind="field" :disabled="viewOnly" class="form-field focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px]"></textarea>
