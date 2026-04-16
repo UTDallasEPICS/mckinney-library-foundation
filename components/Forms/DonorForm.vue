@@ -1,17 +1,17 @@
 <template>
-    <div class="bg-[#e5e9ec] p-0 gap-0 border-0 rounded-md">
-        <VeeForm :initial-values="initValues" :validation-schema="schema" va @submit="submitDonor" class= "w-[800px] max-h-[130vh] overflow-y-auto mx-4">
-            <div class = "flex flex-col gap-2 sm:text-left px-6 pt-6 pb-4 space-y-0">
+    <div class="bg-[#e5e9ec] rounded-md p-6">
+        <VeeForm :initial-values="initValues" :validation-schema="schema" va @submit="submitDonor" class= "w-full max-w-3xl max-h-[80vh] overflow-y-auto mx-auto">
+            <div class = "px-6 pt-6 pb-5">
               <h1 class = "form-title"> Donor Information</h1>
             </div>     
             <VeeField autocomplete="off" hidden name="id"></VeeField>
             <VeeField autocomplete="off" hidden name="index"></VeeField>  
-            <div class="grid gap-4 mb-2">
+            <div class="grid gap-6 px-6 mb-4">
                 <h2 class="form-field-label">Donor <span class = "text-red-500">*</span></h2>
                 <VeeField autocomplete="off" :disabled="viewOnly" name="donorName" class="form-input focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px]"></VeeField>
                 <VeeErrorMessage class="text-red-500" name= "donorName" />
             </div>
-            <div class = "gap-4 mb-5">
+            <div class = "gap-4 px-6 mb-5">
                 <VeeField v-slot="{field}" name="isAuthor" type="checkbox" :value="true" :unchecked-value="false">
                         <div class="flex items-center gap-2">
                             <input
@@ -25,7 +25,7 @@
                         </div>
                 </VeeField>
             </div>
-            <div class = "grid grid-cols-3 gap-4 mb-5">
+            <div class = "grid grid-cols-3 gap-4 px-6 mb-5">
                 <h2 class = "form-field-label"> Phone </h2>
                 <h2 class = "form-field-label"> Email </h2>
                 <h2 class = "form-field-label"> Communication Preference </h2> 
@@ -41,7 +41,7 @@
                     </select>
                 </VeeField>
             </div>
-            <div class = "mt-5 grid grid-cols-3 gap-4 my-8">
+            <div class = "grid grid-cols-3 gap-4 px-6 mb-5">
                 <h2 class = "form-field-label"> Organization </h2>
                 <h2 class = "form-field-label"> Address </h2>
                 <h2 class = "form-field-label"> Web Link </h2>
@@ -56,11 +56,13 @@
                 <VeeField autocomplete="off" :disabled="viewOnly" name="address" class="form-input focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px]"></VeeField> 
                 <VeeField autocomplete="off" :disabled="viewOnly" name="webLink"class="form-input focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px]"></VeeField>
             </div>
+            <div class = "px-6 mb-6">
                 <h2 class = "form-field-label mb-3"> Notes </h2>
                 <VeeField autocomplete="off" v-slot="{field}" :disabled="viewOnly" name="notes">
                     <textarea :disabled="viewOnly" v-bind="field" class="form-field focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px]"></textarea>
-                </VeeField>  
-            <div class="flex justify-center gap-4 my-3">
+                </VeeField> 
+            </div>
+            <div class="flex justify-center gap-4 pb-6">
                 <button @click="cancelSubmisison()" class ="form-button bg-gray-600 hover:bg-gray-700">Cancel</button>
                 <button v-if="!viewOnly" class ="form-button bg-blue-600 hover:bg-blue-700">Submit</button>
             </div>         
