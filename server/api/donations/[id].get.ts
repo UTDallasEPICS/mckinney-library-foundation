@@ -4,29 +4,22 @@ import { requireSession } from "~~/server/utils/requireSession"
 export default defineEventHandler(async (event) => {
 
     const session = await requireSession(event, 0);
-    const redactFields = <T extends Record<string, any>>(record: T, fields: string[]) => {
-        if (session.user.permission >= 1) return record;
-        const copy = { ...record } as Record<string, any>;
-        fields.forEach((field) => delete copy[field]);
-        return copy as T;
-    };
+    const donationOmit = session.user.permission < 1 ? { notes: true } as const : undefined;
     console.log("donation get router reached")
     try {
         const id = event.context.params?.id;
         const donation = await prisma.donation.findUnique({
             where: { id },
+            omit: donationOmit,
             include: {
                 donor: true,
             },
         });
         console.log("donation found:", donation);
-        const filtered = donation
-            ? redactFields(donation, ['notes'])
-            : donation;
         return {
             success: true,
             statusCode: 200,
-            data: filtered, 
+            data: donation, 
         }
     } catch (error) {
         console.error(error);

@@ -28,12 +28,14 @@ export default defineEventHandler(async (event) => {
       data: {
         boardMemberId: session.user.id,
         donorId: donorRecord.id,
+        isAuthor: donorRecord.isAuthor,
         event: body.event,
         method: body.method,
         monetaryAmount: body.monetaryAmount,
         nonMonetaryAmount: body.nonMonetaryAmount,
         status: parseInt(body.status) ?? 0,
         notes: body.notes,
+        reason: body.reason,
         receivedDate: new Date(body.receivedDate),
         lastEditDate: new Date()
       },

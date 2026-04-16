@@ -91,11 +91,14 @@ import { navigateTo } from '#app'
 import type { Donation, Donor, Grant, Grantor } from '~~/server/utils/generated/prisma/browser'
 import { useDonation } from '~/composables/useDonation';
 
-const {donationsData, getDonations, postDonation} = useDonation();
-await getDonations();
-
 const { session, getSession } = useAuth()
 session.value = await getSession()
+if (!session.value?.user) {
+  await navigateTo("/")
+}
+
+const {donationsData, getDonations, postDonation} = useDonation();
+await getDonations();
 
 const {donors, getDonors} = useDonor();
 await getDonors();
@@ -129,9 +132,6 @@ const user:Ref<{id:string, permissionLevel:number}> = ref({id:"",permissionLevel
 if (session.value?.user) {
   user.value.id = session.value.user.id
   user.value.permissionLevel = session.value.user.permission
-}
-else{
-  navigateTo("/");
 }
 
 const showDonationForm = ref(false)
