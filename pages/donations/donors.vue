@@ -231,8 +231,6 @@ async function groupEmail(values:Record<string, any>){
     }
   });
 
-  alert("Email sent successfully.");
-
   sendEmail.value = false;
   emailList.value = [];
   nameList.value = "";

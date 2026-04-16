@@ -205,9 +205,6 @@ async function groupEmail(values:Record<string, any>){
       emails:emailList.value,
     }
   })
-
-  alert("Email sent successfully.")
-
   sendEmail.value= false;
   emailList.value = [];
   nameList.value = "";
