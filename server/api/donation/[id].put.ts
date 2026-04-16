@@ -1,8 +1,22 @@
 import prisma from '~~/server/utils/prisma'
+import { auth } from '~~/server/utils/auth'
 
 export default defineEventHandler (async (event)=>{   
     try{
         const body = await readBody(event);
+        const session = await auth.api.getSession({ headers: event.headers });
+        if (!session?.user) {
+            return {
+                success: false,
+                statusCode: 401,
+                message: 'Unauthorized',
+                error: { code: 'UNAUTHORIZED' },
+                data: null,
+            };
+        }
+
+        const currentUser = session.user as { id: string; permission?: number };
+        const permissionLevel = Number(currentUser.permission ?? 0);
         const id = await getRouterParam(event,'id');
         if(!id){
             throw createError({
@@ -10,11 +24,14 @@ export default defineEventHandler (async (event)=>{
                 statusMessage: "A donationId is required to update a donation"
             });
         }
-        if(body.permissionLevel < 1){
-            throw createError({
-                statusCode:401,
-                statusMessage:"User does not have permission to update donations"
-            })
+        if(permissionLevel < 1){
+            return {
+                success: false,
+                statusCode: 403,
+                message: 'User does not have permission to update donations',
+                error: { code: 'FORBIDDEN' },
+                data: null,
+            };
         }
         if(!body.monetaryAmount && !body.nonMonetaryAmount){
             throw createError({
@@ -22,6 +39,14 @@ export default defineEventHandler (async (event)=>{
                 statusMessage: "The donation requires a monetary or non-monetary value"
             });
         }
+        const eventName = typeof body.event === 'string' ? body.event.trim() : '';
+        const matchedEvent = eventName
+            ? await prisma.event.findFirst({
+                where: {
+                    eventName,
+                },
+            })
+            : null;
         let donorRecord = await prisma.donor.findFirst({
             where: {
                 name: body.donor? body.donor : "anonymous"
@@ -37,7 +62,7 @@ export default defineEventHandler (async (event)=>{
                 phone: "",
                 preferredCommunication: "",
                 notes: "",
-                boardMemberId: body.boardMemberId
+                boardMemberId: currentUser.id
                 }
             })
             }
@@ -46,9 +71,9 @@ export default defineEventHandler (async (event)=>{
         const updateDonation = await prisma.donation.update({
             where: { id:id },
             data: {
-                boardMemberId: body.boardMemberId,
+                boardMemberId: currentUser.id,
                 donorId: donorRecord.id,
-                event: body.event,
+                eventId: matchedEvent?.id ?? null,
                 method: body.method,
                 monetaryAmount: body. monetaryAmount,
                 nonMonetaryAmount: body.nonMonetaryAmount,
@@ -59,6 +84,12 @@ export default defineEventHandler (async (event)=>{
                 lastEditDate: new Date(),
             },
             include: {
+                event: {
+                    select: {
+                        eventName: true,
+                        eventDate: true,
+                    }
+                },
                 donor: true,
                 boardMember:{
                     select:{

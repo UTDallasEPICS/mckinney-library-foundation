@@ -1,8 +1,8 @@
 import prisma from '~~/server/utils/prisma'
 import { auth } from '~~/server/utils/auth'
 
-export default defineEventHandler (async (event)=>{
-    try{
+export default defineEventHandler(async (event) => {
+    try {
         const session = await auth.api.getSession({ headers: event.headers });
         if (!session?.user) {
             return {
@@ -10,45 +10,39 @@ export default defineEventHandler (async (event)=>{
                 statusCode: 401,
                 message: 'Unauthorized',
                 error: { code: 'UNAUTHORIZED' },
-                data: null,
+                data: [],
             };
         }
 
-        const donations = await prisma.donation.findMany({
+        const events = await prisma.event.findMany({
             include: {
-                event: {
-                    select: {
-                        eventName: true,
-                        eventDate: true,
-                    }
-                },
                 boardMember: {
-                    select: {
-                        name: true,
-                    }
-                },
-                donor: {
                     select: {
                         name: true,
                     }
                 }
             },
-        })
-        return{
+            orderBy: {
+                eventDate: 'desc',
+            }
+        });
+
+        return {
             success: true,
             statusCode: 200,
-            data: donations,
-        }
-    }
-    
-    catch(error){
-        return{
+            data: events,
+            error: { code: '' }
+        };
+    } catch (error) {
+        console.error(error);
+        return {
             success: false,
             statusCode: 500,
-            message: "Failed to fetch donations",
-            error: error,
-            data:null
-        }
+            message: 'Failed to fetch events',
+            error,
+            data: []
+        };
+    } finally {
+        await prisma.$disconnect();
     }
-
-})
+});

@@ -28,9 +28,11 @@
             :submit-donation="createDonation"
             :cancel-submisison="cancelDonation"
             :view-only="false"
-            :events="donationEvents"
+            :events="eventNames"
+            :event-date-lookup="eventDateLookup"
             :donors="donors"
             :methods="donationMethods"
+            @request-create-event="openEventFormFromDonation"
         />
     </div>
     <div  v-if = "addDonor"> 
@@ -42,6 +44,10 @@
         />
     </div>
   </div> 
+
+    <div v-if="addEvent" class="fixed top-0 left-0 w-full h-full flex justify-center items-center z-20 bg-black/50">
+        <EventForm :submit-event="createEvent" :cancel-submisison="cancelEvent" :view-only="false" />
+    </div>
   
 </template>
 
@@ -49,15 +55,21 @@
 import type { Donation, Donor } from '~~/server/utils/generated/prisma/browser';
 import DonationForm from '../Forms/DonationForm.vue';
 import DonorForm from '../Forms/DonorForm.vue';
+import EventForm from '../Forms/EventForm.vue';
 import { useDonationDropDown, useDonorDropDown } from '~/composables/useDonationDropDown';
 import { useDonation } from '~/composables/useDonation';
 import { useDonor } from '~/composables/useDonor'
+import { useEvent } from '~/composables/useEvent';
+import { useEventDropDown } from '~/composables/useEventDropDown';
 
 const {postDonation} = useDonation()
 const {postDonor} = useDonor();
+const {eventsData, getEvents, postEvent} = useEvent();
+await getEvents();
 
 const addDonation = ref(false);
 const addDonor = ref(false);
+const addEvent = ref(false);
 
 const props = defineProps<{
     user:{id:string, permissionLevel:number}
@@ -69,8 +81,18 @@ const props = defineProps<{
     }[]
 }>();
 
-const {donationEvents,donationMethods} = useDonationDropDown(props.donations)
+const {eventNames} = useEventDropDown(eventsData)
+const {donationMethods} = useDonationDropDown(props.donations)
 const {donorOrganizations} = useDonorDropDown(props.donors)
+const eventDateLookup = computed<Record<string, string>>(() => {
+    const lookup: Record<string, string> = {};
+    eventsData.value.forEach((row) => {
+        if (row.event.eventName && row.event.eventDate) {
+            lookup[row.event.eventName] = row.event.eventDate.toISOString().split('T')[0] ?? '';
+        }
+    });
+    return lookup;
+})
 
 async function createDonor(values:Record<string,any>){
     const result = await postDonor(values,props.user);
@@ -110,6 +132,24 @@ async function createDonation(values:Record<string,any>){
 }
 function cancelDonation(){
     addDonation.value = false;
+}
+
+async function createEvent(values:Record<string,any>) {
+    const result = await postEvent(values, props.user);
+    if (result.success) {
+        await getEvents();
+        addEvent.value = false;
+    } else if ((result as any).error?.code === 'EVENT_ALREADY_EXISTS' || (result as any).message === 'The event already exists') {
+        alert('The event already exists');
+    }
+}
+
+function openEventFormFromDonation() {
+    addEvent.value = true;
+}
+
+function cancelEvent() {
+    addEvent.value = false;
 }
 
 
