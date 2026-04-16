@@ -6,7 +6,7 @@
             </div>
             <VeeField hidden name="id"></VeeField>
             <VeeField  hidden name="index"></VeeField> 
-            <div  class="grid grid-cols-2 gap-6 px-6 mb-4">
+            <div  class="grid grid-cols-2 gap-6 px-6 mb-2">
                 <h2 class="form-field-label">Grantor <span class = "text-red-500">*</span></h2>
                 <h2 class="form-field-label">Purpose <span class = "text-red-500">*</span></h2>                     
                 <VeeField autocomplete="off" v-slot="{field}" :disabled="viewOnly" name="grantorName" class="form-input focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px]">
@@ -33,7 +33,7 @@
                 </div>                     
             </div>
             
-            <div class="grid grid-cols-2 gap-6 px-6 mb-4">
+            <div class="grid grid-cols-2 gap-6 px-6 mb-2">
                 <h2 class="form-field-label">Monetary Amount</h2>
                 <h2 class="form-field-label">Non-Monetary Amount</h2>
                 <VeeField autocomplete="off" :disabled="viewOnly" class="form-input focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px]" name="monetaryAmount"/>
@@ -69,7 +69,7 @@
                     <VeeErrorMessage class="text-red-500"  name="status" />
                 </div>
             </div>
-            <div class="grid grid-cols-2 gap-6 px-6 mb-4">
+            <div class="grid grid-cols-2 gap-6 px-6 mb-2">
                 <h2 class="form-field-label">Proposed Date</h2>
                 <h2 class="form-field-label">Received Date<span class = "text-red-500">*</span></h2>
                 <VeeField v-slot="{field}" autocomplete="off" :disabled="viewOnly" class="form-input focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px]" name="proposedDate">
@@ -99,13 +99,13 @@
                         </div>
                 </VeeField>
             </div>
-            <div class="px-6 pb-6">
+            <div class="px-6 mb-6">
                 <h2 class="form-field-label mb-2">Notes</h2>
                 <VeeField autocomplete="off" :disabled="viewOnly" v-slot="{field}" name="notes">
                     <textarea v-bind="field" class="form-field focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px]"></textarea>
                 </VeeField>
             </div>
-            <div class="flex justify-center gap-4 my-3">
+            <div class="flex justify-center gap-4 pb-6">
                 <button class="form-button bg-gray-600 hover:bg-gray-700" @click="cancelSubmisison">Cancel</button>
                 <button v-if="!viewOnly" class ="form-button bg-blue-600 hover:bg-blue-700">Submit </button>
             </div>           
