@@ -1,7 +1,7 @@
 <template>
     <div class="flex-1 p-8">
         <button v-if="permissionLevel>1" :disabled="!isEnabled" @click="emailFunction(isChecked)" class ="disabled:bg-slate-300 rounded-md text-sm font-medium outline-none h-9 py-2 bg-blue-600 hover:bg-blue-700 text-white px-6 my-3 ">Email Donors</button>
-        <div class = "bg-white rounded-lg shadow-lg overflow-x-auto mx-auto">       
+        <div class = "bg-white rounded-lg shadow-lg overflow-x-auto mx-auto">      
             <table class="w-full">
                 <thead  class="bg-[#c5d0d8] sticky top-0 z-10">
                     <tr>
@@ -106,13 +106,13 @@
                                 <button v-if="activeSorts[7].active" @click="toggleSort(7)" class="bg-[#c8c9c9] outline-double outline-black"><NumberedListIcon class="w-4 h-4"/></button>
                                 <button v-else @click="toggleSort(7)"><NumberedListIcon class="w-4 h-4"/></button>
                             </div>
-                        </th> 
+                        </th>
                         <th class="px-4 py-3 text-center text-sm text-[#2d3e4d] border-b-2 border-[#a8b5bf] cursor-pointer transition-colors">Actions</th>
                         <th v-if="permissionLevel>1" class="px-4 py-3 text-center text-sm text-[#2d3e4d] border-b-2 border-[#a8b5bf] cursor-pointer transition-colors">
                             <div class="flex justify-center gap-2">
                                 <span>Select</span>
                                 <input autocomplete="off" @click="selectAll"  type="checkbox" :checked="allSelected"></input>
-                            </div> 
+                            </div>
                         </th>
                     </tr>
                 </thead>
@@ -136,7 +136,7 @@
                         <td v-if="permissionLevel>1">
                             <div class="flex justify-center">
                                 <input autocomplete="off" v-if="row.donor.email" v-model="isChecked[row.donor.id]" type="checkbox"></input>
-                            </div>     
+                            </div>    
                         </td>
                     </tr>
                 </tbody>
@@ -145,10 +145,12 @@
     </div>
 </template>
 
+
 <script setup lang="ts">
 import type { Donation, Donor } from '~~/server/utils/generated/prisma/browser';
 import { NumberedListIcon } from '@heroicons/vue/24/outline';
 import {FunnelIcon } from '@heroicons/vue/24/solid';
+
 
 const props = defineProps<{
     data:{donor:Donor, donations:Donation[], boardMember:{name:string} | null}[]
@@ -161,13 +163,16 @@ const props = defineProps<{
 // use donor ID instead of index
 const isChecked = ref<Record<string, boolean>>({})
 
+
 props.data.forEach( (row) =>{
     isChecked.value[row.donor.id] = false;
 })
 
-const selectedCount = computed(() => 
+
+const selectedCount = computed(() =>
   Object.values(isChecked.value).filter(Boolean).length
 );
+
 
 function selectAll(){
     const checkAll = !allSelected.value
@@ -179,10 +184,15 @@ function selectAll(){
 }
 
 
+
+
 const isEnabled  = computed(() => selectedCount.value > 0);
 const allSelected = computed(() => selectedCount.value == props.data.filter((row) =>{
     return row.donor.email !== ''
 }).length)
+
+
+
 
 
 
@@ -203,11 +213,13 @@ const latestFirstDono= ref("");
 const earliestLastDono = ref("");
 const latestLastDono= ref("");
 
+
 const toggleSearch = (index:number) => {
   activeSearch.value[index].active = !activeSearch.value[index].active;
 
+
     searchInputs.value[activeSearch.value[index].name] = '';
-  if(activeSearch.value[index].name == 'lastDonoDate'){ 
+  if(activeSearch.value[index].name == 'lastDonoDate'){
     latestFirstDono.value = ""
     earliestFirstDono.value =""
   }
@@ -215,8 +227,11 @@ const toggleSearch = (index:number) => {
     latestLastDono.value = ""
     earliestLastDono.value = ""
   }
-  
+ 
 }
+
+
+
 
 
 
@@ -226,11 +241,12 @@ const visibleIndices = computed(() => {
         const search = searchInputs.value[field].toLowerCase().trim()
         if (activeSearch.value == null || (!search && !activeSearch.value[2].active && !activeSearch.value[3].active && !activeSearch.value[4].active && !activeSearch.value[5].active )){
             return true
-        } 
+        }
         const value = ref("");
         switch(field){
             case 'boardMember' : value.value = row?.boardMember? row?.boardMember['name']?.toString().toLowerCase() ?? "" : ''; break;
             case 'author': value.value = row.donor.isAuthor ? 'true' : 'false'; break;
+
 
             case 'firstDonoDate' : if(row.donations.length > 0){
                 value.value = row?.donations[0].receivedDate?.toString().toLowerCase() ?? "";
@@ -243,7 +259,7 @@ const visibleIndices = computed(() => {
                 }
                 }else if(activeSearch.value[4].active){
                     return false;
-                } 
+                }
                 break;
             case 'lastDonoDate' : if(row.donations.length > 0){
                 value.value = row?.donations[row.donations.length-1].receivedDate?.toString().toLowerCase() ?? "";
@@ -256,21 +272,21 @@ const visibleIndices = computed(() => {
                 }
                 }else if(activeSearch.value[5].active){
                     return false;
-                } 
+                }
                 break;
             case 'email' : value.value = row?.donor['email']?.toString().toLowerCase() ?? ""
                 if(activeSearch.value[2].active){
                     if(value.value == ""){
                         return false;
                     }
-                } 
+                }
                 break;
             case 'phone' : value.value = row?.donor['phone']?.toString().toLowerCase() ?? ""
                 if(activeSearch.value[3].active){
                     if(value.value == ""){
                         return false;
                     }
-                } 
+                }
                 break;
             default : value.value = row?.donor[field]?.toString().toLowerCase() ?? ""; break;
         }
@@ -284,14 +300,16 @@ const activeSorts:Ref<{name:'name' | 'author' | 'organization' | 'boardMember' |
     {name: 'organization',active: false},
     {name: 'email', active:false},
     {name: 'phone',active:false},
-    {name: 'firstDonoDate',active:false}, 
+    {name: 'firstDonoDate',active:false},
     {name: 'lastDonoDate',active: false},
     {name: 'boardMember', active:false},
-]) 
+])
+
 
 function toggleSort(index:number){
     activeSorts.value[index].active = !activeSorts.value[index].active;
 }
+
 
 const sortedIndices = computed(() => {
     const sortActive = ref(false);
@@ -319,12 +337,12 @@ const sortedIndices = computed(() => {
                         const bAuth = Number(b.donor.isAuthor);
                         comparison = bAuth - aAuth;
                         break;
-                    case 'organization' : 
+                    case 'organization' :
                         const aEvent = a.donor.organization || 'ZZZZZZZZZZZZZZZZZZZZZZZ';
                         const bEvent = b.donor.organization || 'ZZZZZZZZZZZZZZZZZZZZZZZ';
                         comparison = aEvent.localeCompare(bEvent);
                         break;
-                    case 'email': 
+                    case 'email':
                         const aMon = a.donor.email || 'ZZZZZZZZZZZZZZZZZZZZZZZ'
                         const bMon = b.donor.email || 'ZZZZZZZZZZZZZZZZZZZZZZZ'
                         comparison = aMon.localeCompare(bMon);
@@ -334,7 +352,7 @@ const sortedIndices = computed(() => {
                         const bPhone = b.donor.phone || 'ZZZZZZZZZZZZZZZZZZZZZZZ';
                         comparison = aPhone.localeCompare(bPhone);
                         break;
-                    case 'firstDonoDate' : 
+                    case 'firstDonoDate' :
                         const aFDate = a.donations.length > 0 ? (a.donations[0].receivedDate?.toString().split('T')[0] || 'ZZZZZZZZZZZZZZZZZZZZZZZ'): 'ZZZZZZZZZZZZZZZZZZZZZZZ';
                         const bFDate = b.donations.length > 0 ? (b.donations[0].receivedDate?.toString().split('T')[0] || 'ZZZZZZZZZZZZZZZZZZZZZZZ'): 'ZZZZZZZZZZZZZZZZZZZZZZZ';
                         comparison = aFDate.localeCompare(bFDate);
