@@ -6,85 +6,92 @@
             </div>
             <VeeField hidden name="id"></VeeField>
             <VeeField  hidden name="index"></VeeField> 
-            <div  class="grid grid-cols-2 gap-6 px-6 mb-2">
-                <h2 class="form-field-label">Grantor <span class = "text-red-500">*</span></h2>
-                <h2 class="form-field-label">Purpose <span class = "text-red-500">*</span></h2>                     
-                <VeeField autocomplete="off" v-slot="{field}" :disabled="viewOnly" name="grantorName" class="form-input focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px]">
-                    <input :disabled="viewOnly" autocomplete="off" v-bind="field" list="grantor-list" class="w-full px-3 py-2 bg-white border border-gray-300 rounded text-[#2d3e4d] focus:outline-none focus:ring-2 focus:ring-[#5a6a77] cursor-pointer">
-                        <datalist id="grantor-list">
-                            <option></option>
-                            <option v-if="grantors.length > 0" v-for="grantor in grantors" :value="grantor.grantor.name"></option>
-                        </datalist>
-                    </input>
-                </VeeField>  
-                <VeeField autocomplete="off" :disabled="viewOnly" v-slot="{field}" name="purpose" class="form-input focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px]">
-                    <input :disabled="viewOnly" autocomplete="off" v-bind="field" list="purpose-list" class="w-full px-3 py-2 bg-white border border-gray-300 rounded text-[#2d3e4d] focus:outline-none focus:ring-2 focus:ring-[#5a6a77] cursor-pointer">
-                        <datalist id="purpose-list">
-                            <option></option>
-                            <option v-if="purposes.length > 0" v-for="purpose in purposes" :value="purpose"></option>
-                        </datalist> 
-                    </input>
-                </VeeField>  
+            <div class="grid grid-cols-2 gap-6 px-6 mb-4">
                 <div>
-                    <VeeErrorMessage class="text-red-500"  name="grantorName" />
+                    <h2 class="form-field-label mb-2">Grantor <span class = "text-red-500">*</span></h2>
+                    <VeeField autocomplete="off" v-slot="{field}" :disabled="viewOnly" name="grantorName" class="form-input focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px]">
+                        <input :disabled="viewOnly" autocomplete="off" v-bind="field" list="grantor-list" class="w-full px-3 py-2 bg-white border border-gray-300 rounded text-[#2d3e4d] focus:outline-none focus:ring-2 focus:ring-[#5a6a77] cursor-pointer">
+                            <datalist id="grantor-list">
+                                <option></option>
+                                <option v-if="grantors.length > 0" v-for="grantor in grantors" :value="grantor.grantor.name"></option>
+                            </datalist>
+                        </input>
+                    </VeeField>  
+                    <VeeErrorMessage class="min-h-[20px] text-red-500 text-sm" name="grantorName" />
                 </div>
+
                 <div>
-                    <VeeErrorMessage class="text-red-500"  name="purpose" />
-                </div>                     
+                    <h2 class="form-field-label mb-2">Purpose <span class = "text-red-500">*</span></h2>                     
+                    <VeeField autocomplete="off" :disabled="viewOnly" v-slot="{field}" name="purpose" class="form-input focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px]">
+                        <input :disabled="viewOnly" autocomplete="off" v-bind="field" list="purpose-list" class="w-full px-3 py-2 bg-white border border-gray-300 rounded text-[#2d3e4d] focus:outline-none focus:ring-2 focus:ring-[#5a6a77] cursor-pointer">
+                            <datalist id="purpose-list">
+                                <option></option>
+                                    <option v-if="purposes.length > 0" v-for="purpose in purposes" :value="purpose"></option>
+                            </datalist> 
+                        </input>
+                    </VeeField>  
+                    <VeeErrorMessage class="min-h-[20px] text-red-500 text-sm"  name="purpose" />
+                </div>
             </div>
             
-            <div class="grid grid-cols-2 gap-6 px-6 mb-2">
-                <h2 class="form-field-label">Monetary Amount</h2>
-                <h2 class="form-field-label">Non-Monetary Amount</h2>
-                <VeeField autocomplete="off" :disabled="viewOnly" class="form-input focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px]" name="monetaryAmount"/>
-                <VeeField autocomplete="off" :disabled="viewOnly" class="form-input focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px]" name="nonMonetaryAmount"/>
-                <div>
-                    <VeeErrorMessage class="text-red-500"  name="monetaryAmount" />
-                </div>
-                <div>
-                    <VeeErrorMessage class="text-red-500"  name="nonMonetaryAmount" />
-                </div>
-            </div>
             <div class="grid grid-cols-2 gap-6 px-6 mb-4">
-                <h2 class="form-field-label">Method <span class = "text-red-500">*</span></h2>
-                <h2 class="form-field-label">Status<span class = "text-red-500">*</span></h2>          
-                <VeeField v-slot="{field}" autocomplete="off" :disabled="viewOnly"name="method" class="form-input focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px]">
-                    <input :disabled="viewOnly" autocomplete="off" v-bind="field" list="method-list" class="w-full px-3 py-2 bg-white border border-gray-300 rounded text-[#2d3e4d] focus:outline-none focus:ring-2 focus:ring-[#5a6a77] cursor-pointer">
-                        <datalist id="method-list">
-                            <option></option>
-                            <option v-if="methods.length > 0" v-for="method in methods" :value="method"></option>
-                        </datalist>
-                    </input>
-                </VeeField>
-                <VeeField autocomplete="off" :disabled="viewOnly" v-slot="{field}" class="form-input focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px]" name="status">
-                    <select :disabled="viewOnly" v-bind="field" class="w-full px-3 py-2 bg-white border border-gray-300 rounded text-[#2d3e4d] focus:outline-none focus:ring-2 focus:ring-[#5a6a77] cursor-pointer">
-                        <option :disabled="viewOnly" value = 0> Pending </option>
-                        <option :disabled="viewOnly" value = 1> Recieved </option>
-                    </select>
-                </VeeField>
                 <div>
-                    <VeeErrorMessage class="text-red-500"  name="method" />
+                    <h2 class="form-field-label mb-2">Monetary Amount</h2>
+                    <VeeField autocomplete="off" :disabled="viewOnly" class="form-input focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px]" name="monetaryAmount"/>
+                    <VeeErrorMessage class="min-h-[20px] text-red-500 text-sm"  name="monetaryAmount" />
                 </div>
+
                 <div>
-                    <VeeErrorMessage class="text-red-500"  name="status" />
+                    <h2 class="form-field-label mb-2">Non-Monetary Amount</h2>
+                    <VeeField autocomplete="off" :disabled="viewOnly" class="form-input focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px]" name="nonMonetaryAmount"/>
+                    <VeeErrorMessage class="min-h-[20px] text-red-500 text-sm"  name="nonMonetaryAmount" />
                 </div>
             </div>
-            <div class="grid grid-cols-2 gap-6 px-6 mb-2">
-                <h2 class="form-field-label">Proposed Date</h2>
-                <h2 class="form-field-label">Received Date<span class = "text-red-500">*</span></h2>
-                <VeeField v-slot="{field}" autocomplete="off" :disabled="viewOnly" class="form-input focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px]" name="proposedDate">
-                    <input id="propDate"  autocomplete="off" :disabled="viewOnly" v-model="proposedDateRef" v-bind="field" type="date"></input>
-                </VeeField>
-                <VeeField v-slot="{field}" autocomplete="off" :disabled="viewOnly" class="form-input focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px]" name="receivedDate">
-                    <input id="reqDate"  autocomplete="off" :disabled="viewOnly" v-model="recievedDateRef" v-bind="field" type="date"></input>
-                </VeeField>
+
+            <div class="grid grid-cols-2 gap-6 px-6 mb-4">
                 <div>
-                    <VeeErrorMessage class="text-red-500" name="proposedDate" />
+                    <h2 class="form-field-label mb-2">Method <span class = "text-red-500">*</span></h2>
+                    <VeeField v-slot="{field}" autocomplete="off" :disabled="viewOnly"name="method" class="form-input focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px]">
+                        <input :disabled="viewOnly" autocomplete="off" v-bind="field" list="method-list" class="w-full px-3 py-2 bg-white border border-gray-300 rounded text-[#2d3e4d] focus:outline-none focus:ring-2 focus:ring-[#5a6a77] cursor-pointer">
+                            <datalist id="method-list">
+                                <option></option>
+                                <option v-if="methods.length > 0" v-for="method in methods" :value="method"></option>
+                            </datalist>
+                        </input>
+                    </VeeField>
+                    <VeeErrorMessage class="min-h-[20px] text-red-500 text-sm"  name="method" />
                 </div>
+
                 <div>
-                    <VeeErrorMessage class="text-red-500" name="recievedDate" />
+                    <h2 class="form-field-label mb-2">Status<span class = "text-red-500">*</span></h2>           
+                    <VeeField autocomplete="off" :disabled="viewOnly" v-slot="{field}" class="form-input focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px]" name="status">
+                        <select :disabled="viewOnly" v-bind="field" class="w-full px-3 py-2 bg-white border border-gray-300 rounded text-[#2d3e4d] focus:outline-none focus:ring-2 focus:ring-[#5a6a77] cursor-pointer">
+                            <option :disabled="viewOnly" value = 0> Pending </option>
+                            <option :disabled="viewOnly" value = 1> Recieved </option>
+                        </select>
+                    </VeeField>
+                    <VeeErrorMessage class="min-h-[20px] text-red-500 text-sm"  name="status" />
                 </div>
             </div>
+
+            <div class="grid grid-cols-2 gap-6 px-6 mb-4">
+                <div>
+                    <h2 class="form-field-label mb-2">Proposed Date</h2>
+                    <VeeField v-slot="{field}" autocomplete="off" :disabled="viewOnly" class="form-input focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px]" name="proposedDate">
+                        <input id="propDate"  autocomplete="off" :disabled="viewOnly" v-model="proposedDateRef" v-bind="field" type="date"></input>
+                    </VeeField>
+                    <VeeErrorMessage class="min-h-[20px] text-red-500 text-sm" name="proposedDate" />
+                </div>
+
+                <div>
+                    <h2 class="form-field-label mb-2">Received Date<span class = "text-red-500">*</span></h2>
+                    <VeeField v-slot="{field}" autocomplete="off" :disabled="viewOnly" class="form-input focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px]" name="receivedDate">
+                        <input id="reqDate"  autocomplete="off" :disabled="viewOnly" v-model="recievedDateRef" v-bind="field" type="date"></input>
+                    </VeeField>
+                    <VeeErrorMessage class="min-h-[20px] text-red-500 text-sm" name="recievedDate" />
+                </div>
+            </div>
+            
             <div class = "gap-4 px-6 mb-5">
                 <VeeField v-slot="{field}" name="reimburse" type="checkbox" :value="true" :unchecked-value="false">
                         <div class="flex items-center gap-2">
@@ -99,12 +106,14 @@
                         </div>
                 </VeeField>
             </div>
+
             <div class="px-6 mb-6">
                 <h2 class="form-field-label mb-2">Notes</h2>
                 <VeeField autocomplete="off" :disabled="viewOnly" v-slot="{field}" name="notes">
                     <textarea v-bind="field" class="form-field focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px]"></textarea>
                 </VeeField>
             </div>
+
             <div class="flex justify-center gap-4 pb-6">
                 <button class="form-button bg-gray-600 hover:bg-gray-700" @click="cancelSubmisison">Cancel</button>
                 <button v-if="!viewOnly" class ="form-button bg-blue-600 hover:bg-blue-700">Submit </button>

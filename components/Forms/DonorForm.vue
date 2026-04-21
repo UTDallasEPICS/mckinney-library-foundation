@@ -9,7 +9,7 @@
             <div class="grid gap-6 px-6 mb-4">
                 <h2 class="form-field-label">Donor <span class = "text-red-500">*</span></h2>
                 <VeeField autocomplete="off" :disabled="viewOnly" name="donorName" class="form-input focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px]"></VeeField>
-                <VeeErrorMessage class="text-red-500" name= "donorName" />
+                <VeeErrorMessage class="text-red-500 text-sm" name= "donorName" />
             </div>
             <div class = "gap-4 px-6 mb-5">
                 <VeeField v-slot="{field}" name="isAuthor" type="checkbox" :value="true" :unchecked-value="false">
@@ -29,8 +29,8 @@
                 <h2 class = "form-field-label"> Phone </h2>
                 <h2 class = "form-field-label"> Email </h2>
                 <h2 class = "form-field-label"> Communication Preference </h2> 
-                <VeeErrorMessage class="text-red-500" name="phone" />
-                <VeeErrorMessage class="text-red-500" name="email" />
+                <VeeErrorMessage class="text-red-500 text-sm" name="phone" />
+                <VeeErrorMessage class="text-red-500 text-sm" name="email" />
                 <VeeField autocomplete="off" :disabled="viewOnly" name="phone" class="form-input focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px]"></VeeField>
                 <VeeField autocomplete="off" :disabled="viewOnly" name="email" class="form-input focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px]"></VeeField>
                 <VeeField v-slot="{field}" autocomplete="off" :disabled="viewOnly" name="preferredCommunication"class="form-input focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px]">

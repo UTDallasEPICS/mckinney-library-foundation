@@ -6,7 +6,7 @@
             </div>
             <VeeField hidden name="id"></VeeField>
             <VeeField  hidden name="index"></VeeField> 
-            <div  class="grid grid-cols-2 gap-6 px-6 mb-2">
+            <div class="grid grid-cols-2 gap-6 px-6">
                 <h2 class="form-field-label">Donor <span class = "text-red-500">*</span></h2>
                 <h2 class="form-field-label">Event <span class = "text-red-500">*</span></h2>          
                 <VeeField autocomplete="off" v-slot="{field}" :disabled="viewOnly" name="donorName" class="form-input focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px]">
@@ -26,25 +26,25 @@
                     </input>
                 </VeeField>  
                 <div>
-                    <VeeErrorMessage class="text-red-500"  name="donorName" />
+                    <VeeErrorMessage class="text-red-500 text-sm"  name="donorName" />
                 </div>
                 <div>
-                    <VeeErrorMessage class="text-red-500"  name="event" />
+                    <VeeErrorMessage class="text-red-500 text-sm"  name="event" />
                 </div>                       
             </div>
-            <div class="grid grid-cols-2 gap-6 px-6 mb-2">
+            <div class="grid grid-cols-2 gap-6 px-6">
                 <h2 class="form-field-label">Monetary amount</h2>
                 <h2 class="form-field-label">Non-Monetary Amount</h2>
                 <VeeField autocomplete="off" :disabled="viewOnly" class="form-input focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px]" name="monetaryAmount"/>
                 <VeeField autocomplete="off" :disabled="viewOnly" class="form-input focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px]" name="nonMonetaryAmount"/>
                 <div>
-                    <VeeErrorMessage class="text-red-500"  name="monetaryAmount" />
+                    <VeeErrorMessage class="text-red-500 text-sm"  name="monetaryAmount" />
                 </div>
                 <div>
-                    <VeeErrorMessage class="text-red-500"  name="nonMonetaryAmount" />
+                    <VeeErrorMessage class="text-red-500 text-sm"  name="nonMonetaryAmount" />
                 </div>
             </div>
-            <div class="grid grid-cols-3 gap-6 px-6 mb-2">
+            <div class="grid grid-cols-3 gap-6 px-6">
                 <h2 class="form-field-label">Method <span class = "text-red-500">*</span></h2>
                 <h2 class="form-field-label">Status<span class = "text-red-500">*</span></h2>
                 <h2 class="form-field-label">Received Date<span class = "text-red-500">*</span></h2>
@@ -66,13 +66,13 @@
                     <input id="reqDate"  autocomplete="off" :disabled="viewOnly" v-bind="field" type="date"></input>
                 </VeeField>
                 <div>
-                    <VeeErrorMessage class="text-red-500"  name="method" />
+                    <VeeErrorMessage class="text-red-500 text-sm"  name="method" />
                 </div>
                 <div>
-                    <VeeErrorMessage class="text-red-500"  name="status" />
+                    <VeeErrorMessage class="text-red-500 text-sm"  name="status" />
                 </div>
                 <div>
-                    <VeeErrorMessage class="text-red-500" name="receivedDate" />
+                    <VeeErrorMessage class="text-red-500 text-sm" name="receivedDate" />
                 </div>
             </div>
             <div class="px-6 mb-6">

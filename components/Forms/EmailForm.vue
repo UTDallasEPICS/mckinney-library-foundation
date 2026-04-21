@@ -1,6 +1,6 @@
 <template>
     <div class="bg-[#e5e9ec] rounded-md p-6">
-        <VeeForm :validation-schema="groupEmailSchema" class= "w-[800px] max-h-[130vh] overflow-y-auto" @submit="groupEmail">
+        <VeeForm :validation-schema="groupEmailSchema" class= "w-full max-w-3xl max-h-[80vh] overflow-y-auto mx-auto" @submit="groupEmail">
             <div class = "flex flex-col gap-2 text-center sm:text-left px-6 pt-6 pb-4 space-y-0">
               <h1 class = "form-title"> Send Email to {{ emailList.length }} {{ props.userName }}</h1>
             </div>         
@@ -10,14 +10,14 @@
               </div>
               <div>
                 <h2 class = "form-field-label">Subject</h2>
-                <VeeErrorMessage class="text-red-500" name="Subject"/>
+                <VeeErrorMessage class="text-red-500 text-sm" name="Subject"/>
                 <VeeField autocomplete="off" v-slot="{field}" name="Subject">
                   <input autocomplete="off" v-bind="field" class="form-input"></input>
                 </VeeField>
               </div>
               <div>
                 <h2 class = "form-field-label">Message</h2>
-                <VeeErrorMessage class="text-red-500" name="Message"/>
+                <VeeErrorMessage class="text-red-500 text-sm" name="Message"/>
                 <VeeField autocomplete="off" v-slot="{field}" name="Message">
                   <textarea v-bind="field" class="form-field focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px]"></textarea>
                 </VeeField>
