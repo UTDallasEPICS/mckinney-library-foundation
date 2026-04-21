@@ -17,11 +17,10 @@
   <div v-if="sendEmail" class="fixed top-0 left-0 w-full h-full flex justify-center items-center z-20 bg-black/50">
     <EmailForm
       :name-list="nameList"
-      :email-list="emailList"
-      :group-email="groupEmail"
-      :cancel-email="cancelEmail"
-      user-name="Donor(s)"
-      />
+      :email-list="emailFormProps.emails"
+      :group-email="emailFormProps.groupEmail"
+      :cancel-email="emailFormProps.cancelEmail"
+    />
   </div>
 
   <div v-if="updateDonor" class="fixed top-0 left-0 w-full h-full flex justify-center items-center z-20 bg-black/50">
@@ -56,6 +55,8 @@ import DonationBar from '~/components/Bars/DonationBar.vue'
 //import { useDonorDropDown } from '~/composables/useDonationDropDown';
 import type { Donation, Donor } from '~~/server/utils/generated/prisma/browser';
 
+type DonorWithCount = Donor & { donationCount: number; isAuthor?: boolean }
+
 
 const {session, getSession} = useAuth();
 session.value = await getSession();
@@ -79,9 +80,9 @@ const donorIndex = ref(0);
 
 await getDonors();
 
-const donorTableData:Ref<{donor:Donor, donations:Donation[], boardMember:{name:string} | null}[]> = ref([]);
+const donorTableData:Ref<{donor:DonorWithCount, donations:Donation[], boardMember:{name:string} | null}[]> = ref([]);
 
-const donorFormData:Ref<{donor:Donor}> = ref({
+const donorFormData:Ref<{donor: DonorWithCount}> = ref({
   donor:{
   id:"",
   boardMemberId:"",
@@ -93,12 +94,19 @@ const donorFormData:Ref<{donor:Donor}> = ref({
   notes:"",
   webLink:"",
   isAuthor: false,
-  preferredCommunication:""}
+  preferredCommunication:"",
+  donationCount: 0
+  }
 });
 
-donors.value.map((thisDonor:Donor,index:number) => {
-  donorTableData.value.push({donor:thisDonor,donations:donors.value[index].donations,boardMember:donors.value[index].boardMember})
+donors.value.map((thisDonor: any, index: number) => {
+  donorTableData.value.push({
+    donor: thisDonor as DonorWithCount,
+    donations: donors.value[index].donations,
+    boardMember: donors.value[index].boardMember
+  })
 })
+
 
 const {donorOrganizations} = useDonorDropDown(donorTableData.value)
 
@@ -139,6 +147,8 @@ function cancelUpdate(){
     webLink:"",
     isAuthor: false,
     preferredCommunication:"",
+    donationCount: 0
+
   }};
   updateDonor.value= false;
   viewDonor.value=false;
@@ -169,20 +179,21 @@ async function prepEmail(selected: Record<string, boolean>) {
 // for updating donor info
 async function prepDonorUpdate(donor:Donor,index:number){
   donorFormData.value.donor = {
-    ...donor,
-    isAuthor: Boolean(donor.isAuthor),
+    ...(donor as DonorWithCount),
+    isAuthor: Boolean((donor as any).isAuthor),
   };
+  donorFormData.value.donor = donor as DonorWithCount;
   updateDonor.value = true;
   donorIndex.value = index;
 }
 
-async function prepDonorView(donor:Donor){
+async function prepDonorView(donor: Donor, index: number) {
   donorFormData.value.donor = {
     ...donor,
-    isAuthor: Boolean(donor.isAuthor),
-  }
+    isAuthor: Boolean((donor as any).isAuthor),
+    donationCount: (donor as any).donationCount ?? 0  
+  };
   viewDonor.value = true;
-  donorId.value = donor.id;
 }
 
  // prisma recieves a boolean when submitted
@@ -196,6 +207,7 @@ async function editDonor(values:Record<string,any>) {
   if(result.success && result.data){
     donorTableData.value[donorIndex.value].donor={
       ...result.data,
+      donationCount: donorTableData.value[donorIndex.value].donor.donationCount
     }
     donorTableData.value[donorIndex.value].boardMember = result.data.boardMember? result.data.boardMember : null
   }

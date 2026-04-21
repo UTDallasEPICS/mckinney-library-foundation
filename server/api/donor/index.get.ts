@@ -10,16 +10,38 @@ export default defineEventHandler(async () =>{
                     }
                 },
                 boardMember:{
-                    select:{
+                    select: {
                         name:true
                     }
+                },
+
+                _count: {
+                    select: {
+                        donations: {
+                            where: {
+                                status: 1,
+                                donorId: {not: null}
+                            }
+                        }
+                    }
                 }
+                
             }
         });
+
+        const flattenedData = data.map((donor) => {
+            const { _count, ...donorWithoutCount } = donor;
+            return {
+                ...donorWithoutCount, 
+                donationCount: _count.donations
+            }
+        });
+
+
         return{
             success: true,
             statusCode: 200,
-            data: data,
+            data: flattenedData,
         }
     }catch(error){
         console.error(error);
