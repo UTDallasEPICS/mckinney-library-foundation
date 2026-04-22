@@ -38,7 +38,7 @@ const AccReqFormProps ={
 }
 
 async function createAccount(values:Record<string,any>){
-    alert("account created");
+    //alert("account created");
     const info = await $fetch("/api/user",{
         method: "POST",
         body:{

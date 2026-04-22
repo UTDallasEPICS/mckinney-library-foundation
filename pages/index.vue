@@ -124,8 +124,9 @@ const otpFormProps ={
 }
 
 async function formSubmit(values:Record<string, any>){
-   toastMessage.value = "Loading...";
-   const userExists = await checkEmailExists(values.email);
+  if (toastMessage.value !== "Loading..."){
+    toastMessage.value = "Loading...";
+    const userExists = await checkEmailExists(values.email);
     if(userExists){
       userEmail.value = values.email;
       const { data, error } = await authClient.emailOtp.sendVerificationOtp({
@@ -137,11 +138,12 @@ async function formSubmit(values:Record<string, any>){
        console.log(error);
       }
     
-   }
-   else{
-     userEmail.value = '';
-     toastMessage.value = "User not found. Please try again.";
-   }
+    }
+    else{
+      userEmail.value = '';
+      toastMessage.value = "User not found. Please try again.";
+    }
+  }
 }
 
 async function checkEmailExists(email:string){
@@ -161,7 +163,7 @@ async function checkEmailExists(email:string){
 }
 
 async function checkCode(values:Record<string, any>){
-   if(values.otp_code){
+   if(values.otp_code && toastMessage.value !== "Loading..."){ // TODO: prevent button press if toast equals loading
     toastMessage.value = "Loading...";
      try{
        const { data, error } = await authClient.signIn.emailOtp({

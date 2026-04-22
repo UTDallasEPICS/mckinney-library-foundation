@@ -187,7 +187,7 @@ const SettingsCardProps = {
 async function createDonation(values:Record<string,any>){
     const result = await postDonation(values,user.value)
     if(result.success){
-      alert("donation created");
+      //alert("donation created");
     }
     showDonationForm.value = false;
 }
@@ -195,7 +195,7 @@ async function createDonation(values:Record<string,any>){
 async function createGrant(values:Record<string,any>){
     const result = await postGrant(values,user.value)
     if(result.success){
-      alert("grant created")
+      //alert("grant created")
     }
     showGrantForm.value = false;
 }
