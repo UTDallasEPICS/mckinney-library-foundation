@@ -10,7 +10,7 @@
     <div class="flex flex-col gap-4">
     
     <div>
-    <label class="text-sm text-slate-600">donor (name) <span class = "text-red-500">*</span></label>
+    <label class="text-sm text-slate-600">donor <span class = "text-red-500">*</span></label>
     <input v-model="donor" class="w-full mt-1 px-3 py-2 rounded-md border border-slate-300" />
     </div>
     
