@@ -87,8 +87,8 @@ model AccountCreationRequest {
 
 model Donor {
   id                     String     @id @default(cuid())
-  boardMemberId          String?
-  boardMember            User?      @relation(fields: [boardMemberId], references: [id], onDelete: Restrict)
+  boardMemberId          String
+  boardMember            User      @relation(fields: [boardMemberId], references: [id], onDelete: Restrict)
   name                   String     @unique @default("Anonymous")
   address                String?
   phone                  String?
@@ -103,8 +103,8 @@ model Donor {
 
 model Grantor {
   id                     String  @id @default(cuid())
-  boardMemberId          String?
-  boardMember            User?   @relation(fields: [boardMemberId], references: [id], onDelete: Restrict)
+  boardMemberId          String
+  boardMember            User   @relation(fields: [boardMemberId], references: [id], onDelete: Restrict)
   name                   String  @default("Anonymous")
   phone                  String?
   address                String?
@@ -118,8 +118,8 @@ model Grantor {
 
 model Donation {
   id                String    @id @default(cuid())
-  boardMemberId     String?
-  boardMember       User?     @relation(fields: [boardMemberId], references: [id], onDelete: Restrict)
+  boardMemberId     String
+  boardMember       User     @relation(fields: [boardMemberId], references: [id], onDelete: Restrict)
   donorId           String?
   donor             Donor?    @relation(fields: [donorId], references: [id], onDelete: Restrict)
   isAuthor          Boolean   @default(false)
@@ -136,8 +136,8 @@ model Donation {
 
 model Grant {
   id                String    @id @default(cuid())
-  boardMemberId     String?
-  boardMember       User?     @relation(fields: [boardMemberId], references: [id], onDelete: Restrict)
+  boardMemberId     String
+  boardMember       User     @relation(fields: [boardMemberId], references: [id], onDelete: Restrict)
   grantorId         String?
   grantor           Grantor?  @relation(fields: [grantorId], references: [id], onDelete: Restrict)
   purpose           String?
