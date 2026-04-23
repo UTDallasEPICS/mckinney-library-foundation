@@ -7,7 +7,7 @@
 
     <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
       <DashboardCard
-        :img="DonationCardProps.img"
+        :icon="DonationCardProps.icon"
         :title="DonationCardProps.title"
         :description="DonationCardProps.description"
         :buttons="DonationCardProps.buttons"
@@ -15,7 +15,7 @@
         @button-click="handleDashboardButtonClick"
       />
       <DashboardCard
-        :img="GrantCardProps.img"
+        :icon="GrantCardProps.icon"
         :title="GrantCardProps.title"
         :description="GrantCardProps.description"
         :buttons="GrantCardProps.buttons"
@@ -23,7 +23,7 @@
         @button-click="handleDashboardButtonClick"
       />
       <DashboardCard
-        :img="SettingsCardProps.img"
+        :icon="SettingsCardProps.icon"
         :title="SettingsCardProps.title"
         :description="SettingsCardProps.description"
         :buttons="SettingsCardProps.buttons"
@@ -91,11 +91,14 @@ import { navigateTo } from '#app'
 import type { Donation, Donor, Grant, Grantor } from '~~/server/utils/generated/prisma/browser'
 import { useDonation } from '~/composables/useDonation';
 
-const {donationsData, getDonations, postDonation} = useDonation();
-await getDonations();
-
 const { session, getSession } = useAuth()
 session.value = await getSession()
+if (!session.value?.user) {
+  await navigateTo("/")
+}
+
+const {donationsData, getDonations, postDonation} = useDonation();
+await getDonations();
 
 const {donors, getDonors} = useDonor();
 await getDonors();
@@ -130,9 +133,6 @@ if (session.value?.user) {
   user.value.id = session.value.user.id
   user.value.permissionLevel = session.value.user.permission
 }
-else{
-  navigateTo("/");
-}
 
 const showDonationForm = ref(false)
 const showGrantForm = ref(false)
@@ -152,35 +152,35 @@ const handleDashboardButtonClick = (button: any) => {
 }
 
 const DonationCardProps = {
-  img: { paths:["M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"], lines:[["12","12","2","22"]] },
+  icon: "/icons/dollar-sign.svg",
   title: "Donations",
   description: "Manage donation records, track contributions, and view donor information.",
   buttons: [
-    { name:"View Donations", link:"/donations", paths:['M2.062 12.348a1 1 0 0 1 0-.696 10.75 10.75 0 0 1 19.876 0 1 1 0 0 1 0 .696 10.75 10.75 0 0 1-19.876 0'], circles:[['12','12', '3']], accessLevel:0 },
-    { name:"Add Donations", paths:['M5 12h14','M12 5v14'], accessLevel:1 },
-    { name:"View Donors", link:"/donations/donors", paths:['M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2','M16 3.128a4 4 0 0 1 0 7.744', 'M22 21v-2a4 4 0 0 0-3-3.87'], circles:[['9','7','4']], accessLevel:0 }
+    { name:"View Donations", link:"/donations", icon: "/icons/eye.svg", accessLevel:0 },
+    { name:"Add Donations", icon:"/icons/plus.svg", accessLevel:1 },
+    { name:"View Donors", link:"/donations/donors", icon: "/icons/people.svg", accessLevel:0 }
   ]
 }
 
 const GrantCardProps = {
-  img:{ paths:["M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z","M14 2v4a2 2 0 0 0 2 2h4", "M10 9H8","M16 13H8","M16 17H8"] },
+  icon:"/icons/file-text.svg",
   title:"Grants",
   description:"Track grant applications, manage awards, and monitor grant progress.",
   buttons: [
-    { name:"View Grants", link:"/grants", paths:['M2.062 12.348a1 1 0 0 1 0-.696 10.75 10.75 0 0 1 19.876 0 1 1 0 0 1 0 .696 10.75 10.75 0 0 1-19.876 0'], circles:[['12','12','3']], accessLevel:0 },
-    { name:"Add Grants", paths:['M5 12h14','M12 5v14'], accessLevel:1 },
-    { name:"View Grantors", link:"/grants/grantors", paths:['M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2','M16 3.128a4 4 0 0 1 0 7.744', 'M22 21v-2a4 4 0 0 0-3-3.87'], circles:[['9','7','4']], accessLevel:0 }
+    { name:"View Grants", link:"/grants", icon: "/icons/eye.svg", accessLevel:0 },
+    { name:"Add Grants", icon: "/icons/plus.svg", accessLevel:1 },
+    { name:"View Grantors", link:"/grants/grantors", icon: "/icons/people.svg", accessLevel:0 }
   ]
 }
 
 const SettingsCardProps = {
-  img:{ paths:["M9.671 4.136a2.34 2.34 0 0 1 4.659 0 2.34 2.34 0 0 0 3.319 1.915 2.34 2.34 0 0 1 2.33 4.033 2.34 2.34 0 0 0 0 3.831 2.34 2.34 0 0 1-2.33 4.033 2.34 2.34 0 0 0-3.319 1.915 2.34 2.34 0 0 1-4.659 0 2.34 2.34 0 0 0-3.32-1.915 2.34 2.34 0 0 1-2.33-4.033 2.34 2.34 0 0 0 0-3.831A2.34 2.34 0 0 1 6.35 6.051a2.34 2.34 0 0 0 3.319-1.915"], circles:[["12","12","3"]] },
+  icon:"/icons/settings.svg",
   title:"Settings",
   description:"Configure system settings, Manage user accounts, and control access.",
   buttons: [
-    { name:"Create Accounts", link:"/settings", paths:['M5 12h14','M12 5v14'], accessLevel:3 },
-    { name:"View Roles", link:"/settings/roles", paths:['M2.062 12.348a1 1 0 0 1 0-.696 10.75 10.75 0 0 1 19.876 0 1 1 0 0 1 0 .696 10.75 10.75 0 0 1-19.876 0'], circles:[['12','12','3']], accessLevel:1 },
-    { name:"View Accounts", link:"/settings/accounts", paths:['M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2','M16 3.128a4 4 0 0 1 0 7.744', 'M22 21v-2a4 4 0 0 0-3-3.87'], circles:[['9','7','4']], accessLevel:2 }
+    { name:"Create Accounts", link:"/settings", icon:"/icons/plus.svg", accessLevel:3 },
+    { name:"View Roles", link:"/settings/roles", icon:"/icons/eye.svg", accessLevel: 1},
+    { name:"View Accounts", link:"/settings/accounts", icon: "/icons/people.svg", accessLevel:2 }
   ]
 }
 

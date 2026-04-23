@@ -1,13 +1,14 @@
 <template>
     <div class="flex-1 p-8 ">
         <button v-if="permissionLevel>1" :disabled="!isEnabled" @click="emailFunction(isChecked)" class ="disabled:bg-slate-300 rounded-md text-sm font-medium outline-none h-9 py-2 bg-blue-600 hover:bg-blue-700 text-white px-6 my-3 ">Email Grantors</button>
-        <div class = "bg-white rounded-lg shadow-lg overflow-hidden mx-auto">       
+        <div class = "bg-white rounded-lg shadow-lg overflow-x-auto mx-auto">       
             <table class="w-full">
-                <thead  class="bg-[#c5d0d8] sticky top-0 z-10">
+                <thead class="bg-[#c5d0d8] sticky top-0 z-10">
                     <tr>
                         <th class="px-4 py-3 text-left text-sm text-[#2d3e4d] border-b-2 border-[#a8b5bf] cursor-pointer transition-colors">
                             <div class="w-full flex gap-2">
                                 <span v-if="!activeSearch[0].active">Name</span>
+                 
                                 <button @click="toggleSearch(0)" v-if="!activeSearch[0].active"><FunnelIcon class="w-4 h-4"/></button>
                                 <div  v-else>
                                     <input autocomplete="off" v-model="searchInputs.name" @click.stop class="mt-2 px-2 py-1 border rounded"placeholder="Search Names"/>
@@ -122,7 +123,7 @@
                         </td>
                         <td v-if="permissionLevel>1">
                             <div class="flex justify-center">
-                                <input autocomplete="off" v-if="row.grantor.email" v-model="isChecked[idx]" type="checkbox"></input>
+                                <input autocomplete="off" v-if="row.grantor.email" v-model="isChecked[row.grantor.id]" type="checkbox"></input>
                             </div>     
                         </td>
                     </tr>
@@ -145,21 +146,22 @@ const props = defineProps<{
     viewFunction: (grantor:Grantor,idx:number) => Promise<void>
     permissionLevel:number
     }>();
-const isChecked: Ref<boolean[]> = ref([])
+// use grantor ID instead of index
+const isChecked = ref<Record<string, boolean>>({})
 
-props.data.forEach( (item,index) =>{
-    isChecked.value[index] = false;
+props.data.forEach( (row) =>{
+    isChecked.value[row.grantor.id] = false;
 })
 
 const selectedCount = computed(() => 
-  isChecked.value.filter(Boolean).length
+  Object.values(isChecked.value).filter(Boolean).length
 );
 
 function selectAll(){
     const checkAll = !allSelected.value
-    props.data.forEach((row,index) =>{
+    props.data.forEach((row) =>{
         if(row.grantor.email !== ''){
-            isChecked.value[index] = checkAll;
+            isChecked.value[row.grantor.id] = checkAll;
         }
     })
 }
