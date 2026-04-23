@@ -1,22 +1,8 @@
 import prisma from '~~/server/utils/prisma'
-import { auth } from '~~/server/utils/auth'
 
 export default defineEventHandler (async (event)=>{   
     try{
         const body = await readBody(event);
-        const session = await auth.api.getSession({ headers: event.headers });
-        if (!session?.user) {
-            return {
-                success: false,
-                statusCode: 401,
-                message: 'Unauthorized',
-                error: { code: 'UNAUTHORIZED' },
-                data: null,
-            };
-        }
-
-        const currentUser = session.user as { id: string; permission?: number };
-        const permissionLevel = Number(currentUser.permission ?? 0);
         const id = await getRouterParam(event,'id');
         if(!id){
             throw createError({
@@ -24,14 +10,11 @@ export default defineEventHandler (async (event)=>{
                 statusMessage: "A donationId is required to update a donation"
             });
         }
-        if(permissionLevel < 1){
-            return {
-                success: false,
-                statusCode: 403,
-                message: 'User does not have permission to update donations',
-                error: { code: 'FORBIDDEN' },
-                data: null,
-            };
+        if(body.permissionLevel < 1){
+            throw createError({
+                statusCode:401,
+                statusMessage:"User does not have permission to update donations"
+            })
         }
         if(!body.monetaryAmount && !body.nonMonetaryAmount){
             throw createError({

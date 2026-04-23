@@ -1,19 +1,7 @@
 import prisma from '~~/server/utils/prisma'
-import { auth } from '~~/server/utils/auth'
 
 export default defineEventHandler (async (event)=>{
     try{
-        const session = await auth.api.getSession({ headers: event.headers });
-        if (!session?.user) {
-            return {
-                success: false,
-                statusCode: 401,
-                message: 'Unauthorized',
-                error: { code: 'UNAUTHORIZED' },
-                data: null,
-            };
-        }
-
         const donations = await prisma.donation.findMany({
             include: {
                 event: {

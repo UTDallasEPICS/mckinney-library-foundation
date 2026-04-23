@@ -1,21 +1,9 @@
 import prisma from '~~/server/utils/prisma'
-import { auth } from '~~/server/utils/auth'
 
 export default defineEventHandler(async (event) => {
 
 console.log("donation get router reached")
 try {
-    const session = await auth.api.getSession({ headers: event.headers });
-    if (!session?.user) {
-        return {
-            success: false,
-            statusCode: 401,
-            message: 'Unauthorized',
-            error: { code: 'UNAUTHORIZED' },
-            data: null,
-        };
-    }
-
     const id = getRouterParam(event, 'id');
 
     // console.log("id found:", id);   

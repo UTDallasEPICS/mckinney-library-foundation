@@ -61,6 +61,9 @@ export default defineEventHandler(async (event) => {
     } catch (error) {
         console.error('error deleting event:', error);
         const prismaError = error as { code?: string };
+        // P2003 is error that happens when a relation is unable to properly reference a piece of data in another relation
+        // in this case, happens when donation references an event id and details for an event that doesn't exist bc it is deleted
+        // so the deletion of the event is stopped to prevent that error
         if (prismaError.code === 'P2003') {
             return {
                 success: false,
@@ -77,7 +80,5 @@ export default defineEventHandler(async (event) => {
             error,
             data: null,
         };
-    } finally {
-        await prisma.$disconnect();
     }
 });
