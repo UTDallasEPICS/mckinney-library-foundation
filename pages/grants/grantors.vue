@@ -91,7 +91,7 @@ const grantorFormData:Ref<{grantor:Grantor}> = ref({
 });
 
 grantors.value.map((thisGrantor:Grantor,index:number) => {
-  grantorTableData.value.push({grantor:thisGrantor,grants:grantors.value[index].Grants,boardMember:grantors.value[index].boardMember})
+  grantorTableData.value.push({grantor:thisGrantor,grants:grantors.value[index].grants,boardMember:grantors.value[index].boardMember})
 })
 
 const {grantorOrganizations} = useGrantorDropDown(grantorTableData.value)

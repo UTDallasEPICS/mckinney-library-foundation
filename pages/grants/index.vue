@@ -105,7 +105,7 @@ const grantIndex = ref(0);
 
 const grantorTableData:Ref<{grantor:Grantor, grants:Grant[],boardMember:{name:string} }[]> = ref([]);
  grantors.value.map((thisGrantor:Grantor,index:number) => {
-     grantorTableData.value.push({grantor:thisGrantor,grants:grantors.value[index].Grants, boardMember:{name:grantors.value[index].boardMember.name} })
+   grantorTableData.value.push({grantor:thisGrantor,grants:grantors.value[index].grants, boardMember:{name:grantors.value[index].boardMember.name} })
  })
 
 async function prepGrantUpdate(grantInfo:{grant:Grant,boardMember:{name:string}| null, grantor: {name: string} | null},index:number){

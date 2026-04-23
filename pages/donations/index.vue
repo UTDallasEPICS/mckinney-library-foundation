@@ -127,7 +127,7 @@ const donationIndex = ref(0);
 
 const donorTableData:Ref<{donor:Donor, donations:Donation[],boardMember:{name:string} }[]> = ref([]);
 donors.value.map((thisDonor:Donor,index:number) => {
-    donorTableData.value.push({donor:thisDonor,donations:donors.value[index].Donations, boardMember:{name:donors.value[index].boardMember.name} })
+  donorTableData.value.push({donor:thisDonor,donations:donors.value[index].donations, boardMember:{name:donors.value[index].boardMember.name} })
 })
 
 async function prepDonationUpdate(donationInfo:{donation:Donation,boardMember:{name:string}| null, donor: {name: string} | null},index:number){

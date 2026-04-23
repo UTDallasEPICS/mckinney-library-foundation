@@ -20,7 +20,7 @@ export default defineEventHandler(async (event) =>{
                 notes: body.notes,
                 webLink: body.webLink,
                 organization: body.organization,
-                Grants: body.grants
+                grants: body.grants
             },
             include: {
                 boardMember:true

@@ -4,7 +4,7 @@ export default defineEventHandler(async () =>{
     try{
         const data = await prisma.donor.findMany({
             include:{
-                Donations:{
+                donations:{
                     orderBy:{
                         receivedDate: 'asc'
                     }

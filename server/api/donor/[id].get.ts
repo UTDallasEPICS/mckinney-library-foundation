@@ -13,7 +13,7 @@ export default defineEventHandler(async (event) => {
         const donor = await prisma.donor.findUnique({
             where: { id:id },
             include:{
-                Donations:true
+                donations:true
             }
         });      
         return {
