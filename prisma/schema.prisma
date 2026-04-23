@@ -24,12 +24,12 @@ model User {
   image         String?
   createdAt     DateTime      @default(now())
   updatedAt     DateTime      @default(now()) @updatedAt
-  Sessions      Session[]
-  Accounts      Account[]
-  Donations     Donation[]
-  Donors        Donor[]
-  Grants        Grant[]
-  Grantors      Grantor[]
+  sessions      Session[]
+  accounts      Account[]
+  donations     Donation[]
+  donors        Donor[]
+  grants        Grant[]
+  grantors      Grantor[]
   Events        Event[]
 
   @@unique([email])
@@ -99,7 +99,7 @@ model Donor {
   webLink                String?
   isAuthor               Boolean    @default(false)
   organization           String?
-  Donations              Donation[]
+  donations              Donation[]
   Events                 Event[]    @relation("DonorToEvent")
 }
 
@@ -115,7 +115,7 @@ model Grantor {
   notes                  String?
   webLink                String?
   organization           String?
-  Grants                 Grant[]
+  grants                 Grant[]
 }
 
 model Donation {
@@ -163,6 +163,6 @@ model Event {
   eventDate         DateTime?
   //like notes
   description       String?
-  Donors            Donor[]   @relation("DonorToEvent")
-  Donations         Donation[]
+  donors            Donor[]   @relation("DonorToEvent")
+  donations         Donation[]
 }
