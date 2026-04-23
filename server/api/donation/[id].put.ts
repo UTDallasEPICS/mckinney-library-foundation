@@ -18,6 +18,14 @@ export default defineEventHandler (async (event)=>{
                 statusMessage: "The donation requires a monetary or non-monetary value"
             });
         }
+        const eventName = typeof body.event === 'string' ? body.event.trim() : '';
+        const matchedEvent = eventName
+            ? await prisma.event.findFirst({
+                where: {
+                    eventName,
+                },
+            })
+            : null;
         let donorRecord = await prisma.donor.findFirst({
             where: {
                 name: body.donor? body.donor : "anonymous"
@@ -42,7 +50,7 @@ export default defineEventHandler (async (event)=>{
             data: {
                 boardMemberId: session.user.id,
                 donorId: donorRecord.id,
-                event: body.event,
+                eventId: matchedEvent?.id ?? null,
                 method: body.method,
                 monetaryAmount: body. monetaryAmount,
                 nonMonetaryAmount: body.nonMonetaryAmount,
@@ -53,6 +61,12 @@ export default defineEventHandler (async (event)=>{
                 lastEditDate: new Date()
             },
             include: {
+                event: {
+                    select: {
+                        eventName: true,
+                        eventDate: true,
+                    }
+                },
                 donor: true,
                 boardMember:{
                     select:{

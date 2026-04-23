@@ -30,6 +30,7 @@ model User {
   donors        Donor[]
   grants        Grant[]
   grantors      Grantor[]
+  Events        Event[]
 
   @@unique([email])
   @@map("user")
@@ -99,6 +100,7 @@ model Donor {
   isAuthor               Boolean    @default(false)
   organization           String?
   donations              Donation[]
+  Events                 Event[]    @relation("DonorToEvent")
 }
 
 model Grantor {
@@ -123,7 +125,8 @@ model Donation {
   donorId           String?
   donor             Donor?    @relation(fields: [donorId], references: [id], onDelete: Restrict)
   isAuthor          Boolean   @default(false)
-  event             String?
+  eventId           String?
+  event             Event?    @relation(fields: [eventId], references: [id], onDelete: Restrict)
   method            String?
   monetaryAmount    String?
   nonMonetaryAmount String?
@@ -150,4 +153,16 @@ model Grant {
   proposedDate      DateTime?
   receivedDate      DateTime?
   lastEditDate      DateTime?
+}
+
+model Event {
+  id                String    @id @default(cuid())
+  boardMemberId     String?
+  boardMember       User?     @relation(fields: [boardMemberId], references: [id], onDelete: Restrict)
+  eventName         String
+  eventDate         DateTime?
+  //like notes
+  description       String?
+  donors            Donor[]   @relation("DonorToEvent")
+  donations         Donation[]
 }

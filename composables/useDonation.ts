@@ -1,7 +1,9 @@
 import type { Donation } from "~~/server/utils/generated/prisma/browser";
 
+type DonationEvent = { eventName: string; eventDate: Date | string | null } | null;
+
 export const useDonation = () => {
-    const donationsData:Ref<{donation: Donation, donor: {name: string} | null, boardMember: {name:string} | null}[]> = ref([]);
+    const donationsData:Ref<{donation: Donation & { event?: DonationEvent }, donor: {name: string} | null, boardMember: {name:string} | null}[]> = ref([]);
     const getDonations = async () =>{
         const result = await useFetch('/api/donation');
         const donations = result.data.value;
@@ -22,6 +24,10 @@ export const useDonation = () => {
                         ...thisDonation,
                         receivedDate: thisDonation.receivedDate? new Date(thisDonation.receivedDate) : null,
                         lastEditDate: thisDonation.lastEditDate? new Date(thisDonation.lastEditDate) : null,
+                        event: thisDonation.event ? {
+                            ...thisDonation.event,
+                            eventDate: thisDonation.event.eventDate ? new Date(thisDonation.event.eventDate) : null,
+                        } : null,
                     },
                     donor: donations.data[index].donor,
                     boardMember:donations.data[index].boardMember            

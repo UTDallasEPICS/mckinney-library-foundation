@@ -10,6 +10,12 @@ export default defineEventHandler(async (event) => {
         const donations = await prisma.donation.findMany({
             omit: donationOmit,
             include: {
+                event: {
+                    select: {
+                        eventName: true,
+                        eventDate: true,
+                    }
+                },
                 boardMember: {
                     select: {
                         name: true,

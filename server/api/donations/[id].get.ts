@@ -12,7 +12,13 @@ export default defineEventHandler(async (event) => {
             where: { id },
             omit: donationOmit,
             include: {
-                donor: true,
+                event: {
+                select: {
+                    eventName: true,
+                    eventDate: true,
+                }
+            },
+            donor: true,
             },
         });
         console.log("donation found:", donation);
