@@ -24,12 +24,12 @@ model User {
   image         String?
   createdAt     DateTime      @default(now())
   updatedAt     DateTime      @default(now()) @updatedAt
-  sessions      Session[]
-  accounts      Account[]
-  donations     Donation[]
-  donors        Donor[]
-  grants        Grant[]
-  grantors      Grantor[]
+  Sessions      Session[]
+  Accounts      Account[]
+  Donations     Donation[]
+  Donors        Donor[]
+  Grants        Grant[]
+  Grantors      Grantor[]
 
   @@unique([email])
   @@map("user")
@@ -98,7 +98,7 @@ model Donor {
   webLink                String?
   isAuthor               Boolean    @default(false)
   organization           String?
-  donations              Donation[]
+  Donations              Donation[]
 }
 
 model Grantor {
@@ -113,7 +113,7 @@ model Grantor {
   notes                  String?
   webLink                String?
   organization           String?
-  grants                 Grant[]
+  Grants                 Grant[]
 }
 
 model Donation {
