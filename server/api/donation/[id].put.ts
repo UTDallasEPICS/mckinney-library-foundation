@@ -1,20 +1,16 @@
 import prisma from '~~/server/utils/prisma'
+import { requireSession } from "~~/server/utils/requireSession";
 
 export default defineEventHandler (async (event)=>{   
+    const session = await requireSession(event, 1);
     try{
         const body = await readBody(event);
-        const id = await getRouterParam(event,'id');
+        const id = event.context.params?.id;
         if(!id){
             throw createError({
                 statusCode: 400,
                 statusMessage: "A donationId is required to update a donation"
             });
-        }
-        if(body.permissionLevel < 1){
-            throw createError({
-                statusCode:401,
-                statusMessage:"User does not have permission to update donations"
-            })
         }
         if(!body.monetaryAmount && !body.nonMonetaryAmount){
             throw createError({
@@ -45,16 +41,14 @@ export default defineEventHandler (async (event)=>{
                 phone: "",
                 preferredCommunication: "",
                 notes: "",
-                boardMemberId: currentUser.id
+                boardMemberId: session.user.id
                 }
             })
             }
-
-
         const updateDonation = await prisma.donation.update({
             where: { id:id },
             data: {
-                boardMemberId: currentUser.id,
+                boardMemberId: session.user.id,
                 donorId: donorRecord.id,
                 eventId: matchedEvent?.id ?? null,
                 method: body.method,
@@ -64,7 +58,7 @@ export default defineEventHandler (async (event)=>{
                 notes: body.notes,
                 reason: body.reason,
                 receivedDate: new Date(body.receivedDate),
-                lastEditDate: new Date(),
+                lastEditDate: new Date()
             },
             include: {
                 event: {

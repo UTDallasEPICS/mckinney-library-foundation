@@ -1,6 +1,8 @@
 import prisma from '~~/server/utils/prisma'
+import { requireSession } from "~~/server/utils/requireSession";
 
 export default defineEventHandler(async (event) => {
+  const session = await requireSession(event, 1);
   const body = await readBody(event);
   try {
     if(body.permissionLevel < 1){
@@ -32,13 +34,13 @@ export default defineEventHandler(async (event) => {
           phone: "",
           preferredCommunication: "",
           notes: "",
-          boardMemberId: currentUser.id
+          boardMemberId: session.user.id
         }
       })
     }
     const donation = await prisma.donation.create({
       data: {
-        boardMemberId: currentUser.id,
+        boardMemberId: session.user.id,
         donorId: donorRecord.id,
         isAuthor: donorRecord.isAuthor,
         eventId: matchedEvent?.id ?? null,

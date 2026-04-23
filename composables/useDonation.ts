@@ -5,8 +5,9 @@ type DonationEvent = { eventName: string; eventDate: Date | string | null } | nu
 export const useDonation = () => {
     const donationsData:Ref<{donation: Donation & { event?: DonationEvent }, donor: {name: string} | null, boardMember: {name:string} | null}[]> = ref([]);
     const getDonations = async () =>{
-        const donations = await $fetch('/api/donation');
-        if(donations.success && donations.data){
+        const result = await useFetch('/api/donation');
+        const donations = result.data.value;
+        if(donations?.success && donations.data){
             const tempDonations:Ref<Donation[]> = ref([])
             donations.data.map((donation) =>{
                 tempDonations.value.push({

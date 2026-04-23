@@ -2,8 +2,8 @@
  <header  class="bg-[#34495e] text-white">
     <div class="mx-auto px-6 py-4 flex items-center justify-between">
       <div class="flex items-center gap-4">
-        <div class = " px-4 py-4 bg-slate-500 rounded border-[0.5px]">
-          logo
+        <div>
+          <img src="/book.png" alt="MPLF Logo" class="w-12 h-auto object-cover">
         </div>
         <div>  
           <h1 class="text-lg font-semibold">MPLF Donor & Grant Tracker</h1>
@@ -12,7 +12,7 @@
       </div>
       <template v-if="signedIn">
         <div class="flex  items-center gap-3">
-        <div class = "w-6 h-6 ">
+        <div v-if="showDashboardBackArrow" class = "w-6 h-6 ">
           <NuxtLink to = "/dashboard">
             <arrow-left-icon/>
           </NuxtLink>
@@ -32,8 +32,10 @@ import { ArrowLeftIcon } from "@heroicons/vue/24/outline";
 import { useAuth } from '~/composables/useAuth';
 
 const {session, getSession} = useAuth();
+const route = useRoute();
 session.value = await getSession();
 const signedIn = computed(() => !!session.value?.session);
+const showDashboardBackArrow = computed(() => route.path !== '/dashboard');
 
 async function signOut(){
   const result = await $fetch(`/api/session/${session.value?.session.id}`,{
