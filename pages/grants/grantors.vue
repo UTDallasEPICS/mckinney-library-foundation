@@ -98,6 +98,7 @@ const {grantorOrganizations} = useGrantorDropDown(grantorTableData.value)
 
 const {grantsData, getGrants} = useGrant();
 await getGrants();
+const toasts = useToast();
 
 const GrantorTableProps ={
   grantorTableData:grantorTableData.value,
@@ -182,7 +183,9 @@ async function removeGrantor(grantor:Grantor,index:number) {
   if(result.success){
     grantorTableData.value.splice(index,1);
   }else if(result.error.code == 'P2003'){
-    alert("Cannot delete grantor with grants"); 
+    toasts.add({
+      title: "Cannot delete a grantor with grants on record"
+    });
   }
 }
 

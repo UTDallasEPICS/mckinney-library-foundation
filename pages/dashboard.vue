@@ -183,11 +183,14 @@ const SettingsCardProps = {
     { name:"View Accounts", link:"/settings/accounts", paths:['M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2','M16 3.128a4 4 0 0 1 0 7.744', 'M22 21v-2a4 4 0 0 0-3-3.87'], circles:[['9','7','4']], accessLevel:2 }
   ]
 }
+const toasts = useToast();
 
 async function createDonation(values:Record<string,any>){
     const result = await postDonation(values,user.value)
     if(result.success){
-      //alert("donation created");
+      toasts.add({
+        title: "Donation created!"
+      });
     }
     showDonationForm.value = false;
 }
@@ -195,7 +198,9 @@ async function createDonation(values:Record<string,any>){
 async function createGrant(values:Record<string,any>){
     const result = await postGrant(values,user.value)
     if(result.success){
-      //alert("grant created")
+      toasts.add({
+        title: "Grant created!"
+      });
     }
     showGrantForm.value = false;
 }

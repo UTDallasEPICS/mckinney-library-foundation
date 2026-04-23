@@ -34,6 +34,7 @@ import { useAuth } from '~/composables/useAuth';
 const {session, getSession} = useAuth();
 session.value = await getSession();
 const signedIn = computed(() => !!session.value?.session);
+const toasts = useToast();
 
 async function signOut(){
   const result = await $fetch(`/api/session/${session.value?.session.id}`,{
@@ -41,6 +42,10 @@ async function signOut(){
   });
   if(result.success){
     reloadNuxtApp();
+    toasts.add({
+      title: "Signed out",
+      duration: 5000
+    });
   }
 }
 </script>

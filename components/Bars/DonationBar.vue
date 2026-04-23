@@ -71,11 +71,14 @@ const props = defineProps<{
 
 const {donationEvents,donationMethods} = useDonationDropDown(props.donations)
 const {donorOrganizations} = useDonorDropDown(props.donors)
+const toasts = useToast()
 
 async function createDonor(values:Record<string,any>){
     const result = await postDonor(values,props.user);
     if(result.error.code === 'P2002'){
-        alert('Donor already exists');
+        toasts.add({
+            title: "Donor already exists!"
+        });
     }
     else if(result.data){
         if(props.donors){

@@ -179,7 +179,9 @@ getInfo()
     const submit = async () => { 
 
     if (!donor.value || !event.value || !method.value  || !status.value) {
-        alert("Please fill in all required fields.")
+        toasts.add({
+            title: "Please fill in all required fields"
+        });
         return
     }
 

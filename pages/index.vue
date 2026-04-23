@@ -1,6 +1,5 @@
 <template>
   <div class = "flex min-h-screen min-w-screen bg-blue-100">
-
     <div class = "basis-1/2 bg-[#34495e]" id="site_info">
       <div class="w-3/4 mx-auto">
         <div class="mt-6 mb-6 flex flex-col items-center">
@@ -56,9 +55,6 @@
           :field-type="otpFormProps.fieldType"
           :function="otpFormProps.onSubmit"
         />
-        <div class="text-black">
-          <h2 class="text-[20px] pt-4 pb--1">{{ toastMessage }}</h2>
-      </div>
       </div>
     </div>
   </div>
@@ -82,7 +78,8 @@ if(session.value?.user){
     navigateTo("/dashboard");
 }
 const userEmail = ref("");
-const toastMessage = ref("");
+const loading = ref();
+const toasts = useToast();
 
 const emailSchema = yup.object({
   email: 
@@ -124,8 +121,8 @@ const otpFormProps ={
 }
 
 async function formSubmit(values:Record<string, any>){
-  if (toastMessage.value !== "Loading..."){
-    toastMessage.value = "Loading...";
+  if (!loading.value){
+    loading.value = true;
     const userExists = await checkEmailExists(values.email);
     if(userExists){
       userEmail.value = values.email;
@@ -133,7 +130,10 @@ async function formSubmit(values:Record<string, any>){
         email: values.email,
         type: "sign-in",
       });
-      toastMessage.value = "OTP code sent!";
+      toasts.add({
+        title: "OTP code sent!",
+        duration: 15000
+      });
       if(error){
        console.log(error);
       }
@@ -141,8 +141,11 @@ async function formSubmit(values:Record<string, any>){
     }
     else{
       userEmail.value = '';
-      toastMessage.value = "User not found. Please try again.";
+      toasts.add({
+        title: "User not found. Please try again."
+      });
     }
+    loading.value = false;
   }
 }
 
@@ -154,7 +157,9 @@ async function checkEmailExists(email:string){
       return true;
     } 
     else{
-      toastMessage.value = "Email does not exist.";
+      toasts.add({
+        title: "Email does not exist."
+      });
       return false;
     }
     
@@ -163,25 +168,31 @@ async function checkEmailExists(email:string){
 }
 
 async function checkCode(values:Record<string, any>){
-   if(values.otp_code && toastMessage.value !== "Loading..."){ // TODO: prevent button press if toast equals loading
-    toastMessage.value = "Loading...";
+   if(values.otp_code && !loading.value){ // TODO: prevent button press if toast equals loading
+    loading.value = true;
      try{
        const { data, error } = await authClient.signIn.emailOtp({
          email: userEmail.value,
          otp: values.otp_code.trim(),
        });
        if(error){
-         console.error(error);
-         toastMessage.value = "Invalid code. Please try again."
+        console.error(error);
+        toasts.add({
+          title: "Invalid code. Please try again."
+        });
        }
        else{
-        toastMessage.value = "Success!"
+        toasts.add({
+          title: "Success!",
+          duration: 5000
+        });
         window.location.replace("/dashboard");
        }
      }
      catch(error){
       console.error(error)
      }
+     loading.value = false;
    }
 }
 

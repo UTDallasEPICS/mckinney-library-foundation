@@ -36,9 +36,12 @@ const AccReqFormProps ={
   function: createAccount,
   type: false,
 }
+const toasts = useToast()
 
 async function createAccount(values:Record<string,any>){
-    //alert("account created");
+    toasts.add({
+      title: "Account created!"
+    });
     const info = await $fetch("/api/user",{
         method: "POST",
         body:{

@@ -69,11 +69,14 @@ const props = defineProps<{
 
 const {grantMethods,grantPurposes} = useGrantsDropDown(props.grants)
 const {grantorOrganizations} = useGrantorDropDown(props.grantors)
+const toasts = useToast()
 
 async function createGrantor(values:Record<string,any>){
     const result = await postGrantor(values, props.user)
     if(result.error.code === 'P2002'){
-        alert('Grantor already exists');
+        toasts.add({
+            title: "Grantor already exists!"
+      });
     }
     else if(result.data){
         if(props.grantors){

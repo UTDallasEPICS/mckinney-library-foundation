@@ -119,6 +119,7 @@ const emailFormProps ={
   cancelEmail:cancelEmail,
 
 }
+const toasts = useToast()
 
 function cancelEmail() {
   sendEmail.value = false;
@@ -199,7 +200,9 @@ async function removeDonor(donor:Donor,index:number) {
   if(result.success){
     donorTableData.value.splice(index,1);
   }else if(result.error.code == 'P2003'){
-    alert("Cannot delete donor with donations"); 
+    toasts.add({
+      title: "Cannot delete a donor with donations on record."
+    });
   }
 }
 
