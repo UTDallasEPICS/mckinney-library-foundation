@@ -36,7 +36,7 @@ jobs:
           IMAGE_TAG: ${{ github.sha}}
           DATABASE_URL: "file:./dev.db"
           CLUSTER_NAME: ${{ secrets.CLUSTERNAME }}
-          SERVICE_NAME: "${REPOSITORY}-stage"
+          SERVICE_NAME: ${{REPOSITORY}}-stage-service
         run: |
           docker build --output type=image,push=true --platform linux/arm64 -t $ECR_REGISTRY/$REPOSITORY:$IMAGE_TAG .
           docker build --output type=image,push=true --platform linux/arm64 -t $ECR_REGISTRY/$REPOSITORY:stage .
