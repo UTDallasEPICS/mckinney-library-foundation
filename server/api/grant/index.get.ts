@@ -1,9 +1,11 @@
 import prisma from '~~/server/utils/prisma'
+import { requireSession } from "~~/server/utils/requireSession";
 
 
 
 export default defineEventHandler(async (event) => {
     try {        
+        await requireSession(event, 0);
         const grants = await prisma.grant.findMany({
             include: {
                 boardMember:{
