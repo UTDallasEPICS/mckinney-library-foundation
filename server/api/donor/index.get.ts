@@ -1,7 +1,9 @@
 import prisma from '~~/server/utils/prisma'
+import { requireSession } from "~~/server/utils/requireSession";
 
-export default defineEventHandler(async () =>{
+export default defineEventHandler(async (event) =>{
     try{
+        await requireSession(event, 0);
         const data = await prisma.donor.findMany({
             include:{
                 donations:{
@@ -34,4 +36,3 @@ export default defineEventHandler(async () =>{
         await prisma.$disconnect();
     }
 });
-
