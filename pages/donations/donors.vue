@@ -17,9 +17,9 @@
   <div v-if="sendEmail" class="fixed top-0 left-0 w-full h-full flex justify-center items-center z-20 bg-black/50">
     <EmailForm
       :name-list="nameList"
-      :email-list="emailFormProps.emails"
-      :group-email="emailFormProps.groupEmail"
-      :cancel-email="emailFormProps.cancelEmail"
+      :email-list="emailList"
+      :group-email="groupEmail"
+      :cancel-email="cancelEmail"
     />
   </div>
 
@@ -172,10 +172,9 @@ async function prepEmail(selected:boolean[]) {
 // for updating donor info
 async function prepDonorUpdate(donor:Donor,index:number){
   donorFormData.value.donor = {
-    ...(donor as DonorWithCount),
+    ...donor,
     isAuthor: Boolean((donor as any).isAuthor),
-  };
-  donorFormData.value.donor = donor as DonorWithCount;
+  } as DonorWithCount;
   updateDonor.value = true;
   donorIndex.value = index;
 }
@@ -185,7 +184,7 @@ async function prepDonorView(donor: Donor, index: number) {
     ...donor,
     isAuthor: Boolean((donor as any).isAuthor),
     donationCount: (donor as any).donationCount ?? 0  
-  };
+  } as DonorWithCount;
   viewDonor.value = true;
 }
 

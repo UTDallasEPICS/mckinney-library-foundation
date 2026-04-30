@@ -6,17 +6,10 @@
             </div>     
             <VeeField autocomplete="off" hidden name="id"></VeeField>
             <VeeField autocomplete="off" hidden name="index"></VeeField>  
-            <div class="grid grid-cols-2 gap-4 mb-2">
-                <h2 class = "form-field-label"> First Name </h2>        
-                <h2 class = "form-field-label"> Last Name </h2>
-                <VeeField autocomplete="off" :disabled="viewOnly" name="fName" class="form-input focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px]"></VeeField>
-                <VeeField autocomplete="off" :disabled="viewOnly" name="lName" class="form-input focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px]"></VeeField>
-                <div>
-                    <VeeErrorMessage class="text-red-500" name= "fName" />
-                </div>
-                <div>
-                    <VeeErrorMessage class="text-red-500" name= "lName" />
-                </div>
+            <div class="grid gap-4 mb-2">
+                <h2 class="form-field-label">Donor <span class = "text-red-500">*</span></h2>
+                <VeeField autocomplete="off" :disabled="viewOnly" name="donorName" class="form-input focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px]"></VeeField>
+                <VeeErrorMessage class="text-red-500" name= "donorName" />
             </div>
             <div class = "gap-4 mb-5">
                 <VeeField v-slot="{field}" name="isAuthor" type="checkbox" :value="true" :unchecked-value="false">
@@ -71,11 +64,11 @@
                 </p>
              </div>
             </div>
-            <h2 class = "form-field-label"> notes </h2>
-            <VeeField autocomplete="off" v-slot="{field}" :disabled="viewOnly" name="notes">
-                <textarea :disabled="viewOnly" v-bind="field" class="form-field focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px]"></textarea>
-            </VeeField>   
-            <div class="flex justify-center gap-4 my-2">
+                <h2 class = "form-field-label mb-3"> Notes </h2>
+                <VeeField autocomplete="off" v-slot="{field}" :disabled="viewOnly" name="notes">
+                    <textarea :disabled="viewOnly" v-bind="field" class="form-field focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px]"></textarea>
+                </VeeField>  
+            <div class="flex justify-center gap-4 my-3">
                 <button @click="cancelSubmisison()" class ="form-button bg-gray-600 hover:bg-gray-700">Cancel</button>
                 <button v-if="!viewOnly" class ="form-button bg-blue-600 hover:bg-blue-700">Submit</button>
             </div>         
@@ -83,13 +76,14 @@
     </div>
 </template>
 
+
 <script setup lang="ts">
 import type { Donor } from '~~/server/utils/generated/prisma/browser';
 
 type DonorWithCount = Donor & { donationCount?: number; isAuthor?: boolean }
 
-
 import * as yup from 'yup';
+
 
     const props = defineProps<{
         donor?:DonorWithCount,
@@ -101,11 +95,11 @@ import * as yup from 'yup';
 }>();
 
 
+
 const initValues = props.donor ?{
     index:props.index, 
     id: props.donor.id,
-    fName: props.donor.name.split(' ')[0],
-    lName: props.donor.name.split(' ')[1],
+    donorName: props.donor.name,
     organization: props.donor.organization,
     email: props.donor.email,
     phone:props.donor.phone,
@@ -116,10 +110,11 @@ const initValues = props.donor ?{
     webLink:props.donor.webLink
 } : undefined
 
+
 const schema = yup.object({
-    fName: yup.string().required("first name is required"),
-    lName: yup.string().required("last name is required"),
+    donorName: yup.string().required("Name is required"),
     isAuthor: yup.boolean(),
+
 
 })
 </script>
