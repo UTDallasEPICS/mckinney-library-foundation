@@ -70,18 +70,24 @@
     </div>
 </template>
 
+
 <script setup lang="ts">
 import type { Donor } from '~~/server/utils/generated/prisma/browser';
+
+type DonorWithCount = Donor & { donationCount?: number; isAuthor?: boolean }
+
 import * as yup from 'yup';
 
+
     const props = defineProps<{
-        donor?:Donor,
+        donor?:DonorWithCount,
         cancelSubmisison:() => void,
         submitDonor: (values: Record<string,any>) => Promise<void>
         organizations:string[],
         viewOnly: boolean
         index?:number
 }>();
+
 
 
 const initValues = props.donor ?{
@@ -98,9 +104,11 @@ const initValues = props.donor ?{
     webLink:props.donor.webLink
 } : undefined
 
+
 const schema = yup.object({
     donorName: yup.string().required("Name is required"),
     isAuthor: yup.boolean(),
+
 
 })
 </script>
