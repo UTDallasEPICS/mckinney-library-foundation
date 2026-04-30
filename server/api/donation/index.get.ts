@@ -1,8 +1,14 @@
-import prisma from '~~/server/utils/prisma'
 
-export default defineEventHandler (async (event)=>{
+import prisma from "~~/server/utils/prisma"
+import { requireSession } from "~~/server/utils/requireSession"
+
+export default defineEventHandler(async (event) => {
+
+    const session = await requireSession(event, 0);
+    const donationOmit = session.user.permission < 1 ? { notes: true } as const : undefined;
     try{
         const donations = await prisma.donation.findMany({
+            omit: donationOmit,
             include: {
                 boardMember: {
                     select: {
@@ -32,5 +38,4 @@ export default defineEventHandler (async (event)=>{
             data:null
         }
     }
-
 })

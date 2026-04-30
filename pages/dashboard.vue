@@ -94,6 +94,12 @@ const { grantors } = useGrantor();
 
 const { session, getSession } = useAuth()
 session.value = await getSession()
+if (!session.value?.user) {
+  await navigateTo("/")
+}
+
+const {donationsData, getDonations, postDonation} = useDonation();
+await getDonations();
 
 const donorTableData:Ref<{donor:Donor, donations:Donation[]}[]> = ref([]);
 donors.value.map((thisDonor:Donor,index:number) => {
@@ -116,9 +122,6 @@ const user:Ref<{id:string, permissionLevel:number}> = ref({id:"",permissionLevel
 if (session.value?.user) {
   user.value.id = session.value.user.id
   user.value.permissionLevel = session.value.user.permission
-}
-else{
-  navigateTo("/");
 }
 
 const showDonationForm = ref(false)

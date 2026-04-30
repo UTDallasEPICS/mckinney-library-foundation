@@ -4,7 +4,7 @@
     <div class = "basis-1/2 bg-[#34495e]" id="site_info">
       <div class="w-3/4 mx-auto">
         <div class="mt-6 mb-6 flex flex-col items-center">
-          <img src="/logo.jpg" alt="MPLF Logo" class="h-24 w-48">
+          <img src="/logo.jpg" alt="MPLF Logo" class="h-24 w-auto">
         </div>
         <div class = "text-center text-white">
           <h1 className ="text-[42px] bg-red-500 mb-4 leading-tight" style ="font-weight: 700; letter-spacing: -0.5px;" >McKinney Public Library Foundation</h1>

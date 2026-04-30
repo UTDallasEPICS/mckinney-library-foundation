@@ -1,24 +1,17 @@
 <template>
-    <div class="bg-[#e5e9ec] p-0 gap-0 border-0 rounded-md">
-        <VeeForm :initial-values="initValues" :validation-schema="schema" va @submit="submitDonor" class= "w-[800px] max-h-[130vh] overflow-y-auto mx-4">
-            <div class = "flex flex-col gap-2 sm:text-left px-6 pt-6 pb-4 space-y-0">
+    <div class="bg-[#e5e9ec] rounded-md p-6">
+        <VeeForm :initial-values="initValues" :validation-schema="schema" va @submit="submitDonor" class= "w-full max-w-3xl max-h-[80vh] overflow-y-auto mx-auto">
+            <div class = "px-6 pt-6 pb-5">
               <h1 class = "form-title"> Donor Information</h1>
             </div>     
             <VeeField autocomplete="off" hidden name="id"></VeeField>
             <VeeField autocomplete="off" hidden name="index"></VeeField>  
-            <div class="grid grid-cols-2 gap-4 mb-2">
-                <h2 class = "form-field-label"> First Name </h2>        
-                <h2 class = "form-field-label"> Last Name </h2>
-                <VeeField autocomplete="off" :disabled="viewOnly" name="fName" class="form-input focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px]"></VeeField>
-                <VeeField autocomplete="off" :disabled="viewOnly" name="lName" class="form-input focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px]"></VeeField>
-                <div>
-                    <VeeErrorMessage class="text-red-500" name= "fName" />
-                </div>
-                <div>
-                    <VeeErrorMessage class="text-red-500" name= "lName" />
-                </div>
+            <div class="grid gap-6 px-6 mb-4">
+                <h2 class="form-field-label">Donor <span class = "text-red-500">*</span></h2>
+                <VeeField autocomplete="off" :disabled="viewOnly" name="donorName" class="form-input focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px]"></VeeField>
+                <VeeErrorMessage class="text-red-500 text-sm" name= "donorName" />
             </div>
-            <div class = "gap-4 mb-5">
+            <div class = "gap-4 px-6 mb-5">
                 <VeeField v-slot="{field}" name="isAuthor" type="checkbox" :value="true" :unchecked-value="false">
                         <div class="flex items-center gap-2">
                             <input
@@ -32,12 +25,12 @@
                         </div>
                 </VeeField>
             </div>
-            <div class = "grid grid-cols-3 gap-4 mb-5">
+            <div class = "grid grid-cols-3 gap-4 px-6 mb-5">
                 <h2 class = "form-field-label"> Phone </h2>
                 <h2 class = "form-field-label"> Email </h2>
                 <h2 class = "form-field-label"> Communication Preference </h2> 
-                <VeeErrorMessage class="text-red-500" name="phone" />
-                <VeeErrorMessage class="text-red-500" name="email" />
+                <VeeErrorMessage class="text-red-500 text-sm" name="phone" />
+                <VeeErrorMessage class="text-red-500 text-sm" name="email" />
                 <VeeField autocomplete="off" :disabled="viewOnly" name="phone" class="form-input focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px]"></VeeField>
                 <VeeField autocomplete="off" :disabled="viewOnly" name="email" class="form-input focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px]"></VeeField>
                 <VeeField v-slot="{field}" autocomplete="off" :disabled="viewOnly" name="preferredCommunication"class="form-input focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px]">
@@ -48,7 +41,7 @@
                     </select>
                 </VeeField>
             </div>
-            <div class = "mt-5 grid grid-cols-3 gap-4 my-8">
+            <div class = "grid grid-cols-3 gap-4 px-6 mb-5">
                 <h2 class = "form-field-label"> Organization </h2>
                 <h2 class = "form-field-label"> Address </h2>
                 <h2 class = "form-field-label"> Web Link </h2>
@@ -71,7 +64,7 @@
                 </p>
              </div>
             </div>
-            <h2 class = "form-field-label"> notes </h2>
+            <h2 class = "form-field-label"> Notes </h2>
             <VeeField autocomplete="off" v-slot="{field}" :disabled="viewOnly" name="notes">
                 <textarea :disabled="viewOnly" v-bind="field" class="form-field focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px]"></textarea>
             </VeeField>   
@@ -83,6 +76,7 @@
     </div>
 </template>
 
+
 <script setup lang="ts">
 import type { Donor } from '~~/server/utils/generated/prisma/browser';
 
@@ -90,6 +84,7 @@ type DonorWithCount = Donor & { donationCount?: number; isAuthor?: boolean }
 
 
 import * as yup from 'yup';
+
 
     const props = defineProps<{
         donor?:DonorWithCount,
@@ -101,11 +96,11 @@ import * as yup from 'yup';
 }>();
 
 
+
 const initValues = props.donor ?{
     index:props.index, 
     id: props.donor.id,
-    fName: props.donor.name.split(' ')[0],
-    lName: props.donor.name.split(' ')[1],
+    donorName: props.donor.name,
     organization: props.donor.organization,
     email: props.donor.email,
     phone:props.donor.phone,
@@ -116,10 +111,11 @@ const initValues = props.donor ?{
     webLink:props.donor.webLink
 } : undefined
 
+
 const schema = yup.object({
-    fName: yup.string().required("first name is required"),
-    lName: yup.string().required("last name is required"),
+    donorName: yup.string().required("Name is required"),
     isAuthor: yup.boolean(),
+
 
 })
 </script>
