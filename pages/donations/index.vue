@@ -40,14 +40,11 @@
 
 </template>
 
-<script setup lang = ts>
+<script setup lang ="ts">
 import DonationBar from '~/components/Bars/DonationBar.vue';
 import DonationTable from '~/components/Tables/DonationTable.vue';
 import DonationForm from '~/components/Forms/DonationForm.vue';
 import { useAuth } from '~/composables/useAuth';
-import { useDonor } from '~/composables/useDonor';
-import { useDonationDropDown } from '~/composables/useDonationDropDown';
-import { useDonation } from '~/composables/useDonation';
 import type { Donation, Donor } from '~~/server/utils/generated/prisma/browser';
 
 
@@ -68,11 +65,10 @@ const showUpdateDonation = ref(false);
 const showViewDonation = ref(false);
 
 
-const {donors, getDonors} = useDonor();
-await getDonors();
+const { donors } = useDonor();
 
-const {donationsData, getDonations, putDonation, deleteDonation} = useDonation();
-await getDonations();
+const { donationsData, putDonation, deleteDonation } = useDonation();
+
 
 const {donationEvents, donationMethods} = useDonationDropDown(donationsData.value)
 

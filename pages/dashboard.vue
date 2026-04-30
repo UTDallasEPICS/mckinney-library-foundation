@@ -76,7 +76,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref, computed, type Ref } from 'vue'
 import DashboardCard from '~/components/Cards/DashboardCard/DashboardCard.vue'
 import DashboardStat from '~/components/Banners/DashboardBanner.vue'
 import DonationForm from '~/components/Forms/DonationForm.vue'
@@ -84,29 +84,16 @@ import GrantForm from '~/components/Forms/GrantForm.vue'
 import { useDonationDropDown } from '~/composables/useDonationDropDown'
 import { useGrantsDropDown } from '~/composables/useGrantDropDowns'
 import { useAuth } from '~/composables/useAuth'
-import { useDonor } from '~/composables/useDonor'
-import { useGrant } from '~/composables/useGrant'
-import { useGrantor } from '~/composables/useGrantor'
 import { navigateTo } from '#app'
 import type { Donation, Donor, Grant, Grantor } from '~~/server/utils/generated/prisma/browser'
-import { useDonation } from '~/composables/useDonation';
 
-const {donationsData, getDonations, postDonation} = useDonation();
-await getDonations();
+const { donationsData, postDonation } = useDonation();
+const { donors } = useDonor();
+const { grantsData, postGrant } = useGrant();
+const { grantors } = useGrantor();
 
 const { session, getSession } = useAuth()
 session.value = await getSession()
-
-const {donors, getDonors} = useDonor();
-await getDonors();
-
-const {grantsData, getGrants, postGrant} = useGrant();
-await getGrants();
-
-const {grantors , getGrantors} = useGrantor();
-await getGrantors();
-
-
 
 const donorTableData:Ref<{donor:Donor, donations:Donation[]}[]> = ref([]);
 donors.value.map((thisDonor:Donor,index:number) => {

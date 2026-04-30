@@ -40,15 +40,12 @@
 
 </template>
 
-<script setup lang = ts>
+<script setup lang ="ts">
 import GrantBar from '~/components/Bars/GrantBar.vue';
 import GrantTable from '~/components/Tables/GrantTable.vue';
 import GrantForm from '~/components/Forms/GrantForm.vue';
 import { useAuth } from '~/composables/useAuth';
-import { useGrantor } from '~/composables/useGrantor';
-import { useGrant } from '~/composables/useGrant';
 import type { Grant, Grantor } from '~~/server/utils/generated/prisma/browser';
-import { useGrantsDropDown } from '~/composables/useGrantDropDowns';
 
 
 const {session, getSession} = useAuth();
@@ -68,11 +65,10 @@ const showUpdateGrant = ref(false);
 const showViewGrant = ref(false);
 
 
-const {grantors, getGrantors} = useGrantor();
-await getGrantors();
+const { grantors } = useGrantor();
 
-const {grantsData, getGrants, putGrant, deleteGrant} = useGrant();
-await getGrants();
+const { grantsData, putGrant, deleteGrant } = useGrant();
+
 
 const {grantPurposes,grantMethods} = useGrantsDropDown(grantsData.value)
 

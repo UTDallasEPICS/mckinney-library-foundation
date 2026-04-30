@@ -47,8 +47,6 @@ import EmailForm from '~/components/Forms/EmailForm.vue';
 import GrantorForm from '~/components/Forms/GrantorForm.vue';
 import GrantBar from '~/components/Bars/GrantBar.vue'
 import { useAuth } from '~/composables/useAuth';
-import { useGrant } from '~/composables/useGrant';
-import { useGrantorDropDown } from '~/composables/useGrantDropDowns';
 import type { Grant, Grantor } from '~~/server/utils/generated/prisma/browser';
 
 
@@ -67,12 +65,11 @@ else{
 const sendEmail = ref(false);
 const updateGrantor = ref(false);
 const viewGrantor = ref(false);
-const {grantors, getGrantors, putGrantor, deleteGrantor} = useGrantor();
+const { grantors, putGrantor, deleteGrantor } = useGrantor();
 const emailList: Ref<string[]> = ref([])
 const nameList = ref("")
 const grantorIndex = ref(0);
 
-await getGrantors();
 
 const grantorTableData:Ref<{grantor:Grantor, grants:Grant[], boardMember:{name:string} | null}[]> = ref([]);
 
@@ -96,8 +93,7 @@ grantors.value.map((thisGrantor:Grantor,index:number) => {
 
 const {grantorOrganizations} = useGrantorDropDown(grantorTableData.value)
 
-const {grantsData, getGrants} = useGrant();
-await getGrants();
+const { grantsData } = useGrant();
 
 const GrantorTableProps ={
   grantorTableData:grantorTableData.value,

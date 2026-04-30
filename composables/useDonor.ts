@@ -1,12 +1,10 @@
 import type { Donor } from "~~/server/utils/generated/prisma/browser";
 
 export const useDonor = () => {
-    const donors = ref();
 
-    const getDonors = async () =>{
-        const result = await useFetch("/api/donor");
-        donors.value = result.data.value?.data;
-    } 
+    const { data: rawData } = useFetch('/api/donor');
+
+    const donors = computed(() => rawData.value?.data ?? []);
 
     const postDonor = async (values:Record<string,any>,user:{id:string, permissionLevel:number}) =>{
         const result = await $fetch('/api/donor',{
@@ -23,9 +21,10 @@ export const useDonor = () => {
                 permissionLevel:user.permissionLevel,
                 boardMemberId:user.id
             }
-        })
-        return result
-    }
+        });
+        return result;
+    };
+
     const putDonor = async (values:Record<string,any>,user:{id:string, permissionLevel:number}) =>{
         const result = await $fetch(`/api/donor/${values.id}`,{
             method:'PUT',
@@ -55,10 +54,9 @@ export const useDonor = () => {
         return result
     }
     return {
-        getDonors,
+        donors,
         putDonor,
         postDonor,
         deleteDonor,
-        donors
-    }
-}
+    };
+};

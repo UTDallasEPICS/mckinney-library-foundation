@@ -49,10 +49,6 @@ import DonorTable from '~/components/Tables/DonorTable.vue';
 import EmailForm from '~/components/Forms/EmailForm.vue';
 import DonorForm from '~/components/Forms/DonorForm.vue';
 import DonationBar from '~/components/Bars/DonationBar.vue'
-//import { useAuth } from '~/composables/useAuth';
-//import { useDonation } from '~/composables/useDonation';
-//import { useDonor } from '~/composables/useDonor';
-//import { useDonorDropDown } from '~/composables/useDonationDropDown';
 import type { Donation, Donor } from '~~/server/utils/generated/prisma/browser';
 
 type DonorWithCount = Donor & { donationCount: number; isAuthor?: boolean }
@@ -73,12 +69,11 @@ else{
 const sendEmail = ref(false);
 const updateDonor = ref(false);
 const viewDonor = ref(false);
-const {donors, putDonor, deleteDonor, getDonors} = useDonor();
+const { donors, putDonor, deleteDonor } = useDonor();
 const emailList: Ref<string[]> = ref([])
 const nameList = ref("")
 const donorIndex = ref(0);
 
-await getDonors();
 
 const donorTableData:Ref<{donor:DonorWithCount, donations:Donation[], boardMember:{name:string} | null}[]> = ref([]);
 
@@ -110,8 +105,8 @@ donors.value.map((thisDonor: any, index: number) => {
 
 const {donorOrganizations} = useDonorDropDown(donorTableData.value)
 
-const {donationsData, getDonations} = useDonation();
-await getDonations();
+const { donationsData } = useDonation();
+
 
 const DonorTableProps ={
   donorTableData:donorTableData.value,

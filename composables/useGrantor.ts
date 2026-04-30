@@ -1,12 +1,13 @@
 import type { Grantor } from "~~/server/utils/generated/prisma/browser";
 
 export const useGrantor = () => {
-    const grantors = ref();
 
-    const getGrantors = async () =>{
-        const result = await useFetch("/api/grantor");
-        grantors.value = result.data.value?.data;
-    } 
+    const { data: rawData } = useFetch('/api/grantor');
+    
+    const grantors = computed(() => rawData.value?.data ?? []);
+
+
+ 
     async function postGrantor(values:Record<string,any>,user:{id:string, permissionLevel:number}) {
        const result = await $fetch('/api/grantor',{
             method:"POST",
@@ -54,10 +55,9 @@ export const useGrantor = () => {
         return result
     }
     return {
-        getGrantors,
+        grantors,
         postGrantor,
         putGrantor,
         deleteGrantor,
-        grantors
-    }
-}
+    };
+};

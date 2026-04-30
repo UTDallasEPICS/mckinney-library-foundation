@@ -49,12 +49,9 @@
 import type { Grant, Grantor } from '~~/server/utils/generated/prisma/browser';
 import GrantForm from '../Forms/GrantForm.vue';
 import GrantorForm from '../Forms/GrantorForm.vue';
-import {useGrant} from '~/composables/useGrant';
-import { useGrantor } from '~/composables/useGrantor';
-import { useGrantorDropDown,useGrantsDropDown } from '~/composables/useGrantDropDowns';
 
-const {postGrant} = useGrant();
-const {postGrantor} = useGrantor();
+const { postGrant } = useGrant();
+const { postGrantor } = useGrantor();
 
 
 
