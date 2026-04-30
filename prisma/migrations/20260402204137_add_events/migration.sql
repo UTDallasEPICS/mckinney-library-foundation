@@ -7,7 +7,7 @@
 */
 -- DropTable
 PRAGMA foreign_keys=off;
-DROP TABLE "Expenditure";
+DROP TABLE IF EXISTS "Expenditure";
 PRAGMA foreign_keys=on;
 
 -- CreateTable

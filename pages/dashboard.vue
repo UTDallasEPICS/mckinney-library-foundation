@@ -16,7 +16,7 @@
         @button-click="handleDashboardButtonClick"
       />
       <DashboardCard
-        :img="EventCardProps.img"
+        :icon="EventCardProps.icon"
         :title="EventCardProps.title"
         :description="EventCardProps.description"
         :buttons="EventCardProps.buttons"
@@ -220,12 +220,12 @@ const GrantCardProps = {
 }
 
 const EventCardProps = {
-    img:{ paths:["M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z","M14 2v4a2 2 0 0 0 2 2h4", "M10 9H8","M16 13H8","M16 17H8"] },
+    icon:"/icons/book.svg",
     title:"Events",
     description:"Manage hosted events and group donors per attendees.",
     buttons: [
-    { name:"Add Events", paths:['M5 12h14','M12 5v14'], accessLevel:1 },
-    { name:"View Events", link:"/events", paths:['M2.062 12.348a1 1 0 0 1 0-.696 10.75 10.75 0 0 1 19.876 0 1 1 0 0 1 0 .696 10.75 10.75 0 0 1-19.876 0'], circles:[['12','12','3']], accessLevel:1 },
+    { name:"Add Events", icon: "/icons/plus.svg", accessLevel:1 },
+    { name:"View Events", link:"/events", icon: "/icons/eye.svg", accessLevel:1 },
   ]
 }
 
