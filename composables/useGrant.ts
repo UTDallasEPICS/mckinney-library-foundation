@@ -6,8 +6,9 @@ export function useGrant() {
     const selectedGrant = ref(null);
 
     const getGrants = async () =>{
-            const grants = await $fetch('/api/grant');
-            if(grants.success && grants.data){
+            const result = await useFetch('/api/grant');
+            const grants = result.data.value;
+            if(grants?.success && grants.data){
                 const tempGrants:Ref<Grant[]> = ref([])
                 grants.data.map((grant) =>{
                     tempGrants.value.push({

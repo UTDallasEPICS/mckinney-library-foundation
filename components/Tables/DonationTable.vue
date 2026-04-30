@@ -140,7 +140,7 @@
                                 <button v-if="permissionLevel > 0" class ="rounded-md text-sm font-medium outline-none h-9 py-2 bg-red-600 hover:bg-red-700 text-white px-6"@click=deleteFunction(row.donation.id,props.data.indexOf(row)) > Delete </button>
                                 <button class ="rounded-md text-sm font-medium outline-none h-9 py-2 bg-green-600 hover:bg-green-700 text-white px-6" @click="viewFunction(row,props.data.indexOf(row))" > View </button>
                             </div>
-                        </td>     
+                        </td>    
                     </tr>
                 </tbody>
             </table>

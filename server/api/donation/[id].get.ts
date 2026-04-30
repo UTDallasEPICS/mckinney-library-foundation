@@ -1,10 +1,15 @@
-import prisma from '~~/server/utils/prisma'
+import prisma from "~~/server/utils/prisma"
+import { requireSession } from "~~/server/utils/requireSession"
 
 export default defineEventHandler(async (event) => {
+
+    const session = await requireSession(event, 0);
+    const donationOmit = session.user.permission < 1 ? { notes: true } as const : undefined;
     try {
-        const id = getRouterParam(event, 'id');  
+        const id = event.context.params?.id;  
         const donation = await prisma.donation.findUnique({
             where: { id:id },
+            omit: donationOmit,
             include:{
                 donor:true,
                 boardMember:{
@@ -27,8 +32,5 @@ export default defineEventHandler(async (event) => {
             message: "Failed to fetch donation",
             error: error, 
         }
-    }finally {
-        await prisma.$disconnect()
-    }   
-
- })
+    }
+})
