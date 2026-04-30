@@ -43,7 +43,7 @@ async function createAccount(values:Record<string,any>){
         method: "POST",
         body:{
             name: values.fName + " " + values.lName,
-            email: values.email,
+            email: values.email.toLowerCase(),
             permission: parseInt(values.permission),
             permissionLevel:permissionLevel.value
         }
