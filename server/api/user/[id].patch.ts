@@ -13,6 +13,18 @@ export default defineEventHandler(async (event) =>{
         }
 
         const body = await readBody(event);
+        const bodyKeys = Object.keys(body ?? {});
+        const hasUnsupportedField = bodyKeys.some(
+            (key) => key !== "permission" && key !== "status"
+        );
+
+        if (hasUnsupportedField) {
+            throw createError({
+                statusCode: 400,
+                statusMessage: "Only permission and status can be updated"
+            });
+        }
+
         const targetUser = await prisma.user.findUnique({
             where: { id },
             select: { id: true, permission: true }
@@ -32,7 +44,7 @@ export default defineEventHandler(async (event) =>{
         if(nextPermission === undefined && nextStatus === undefined){
             throw createError({
                 statusCode: 400,
-                statusMessage: "Only permission or status can be updated"
+                statusMessage: "Permission or status is required"
             });
         }
 
@@ -52,14 +64,19 @@ export default defineEventHandler(async (event) =>{
             }
         }
 
+        const updateData: Record<string, unknown> = {};
+        if (nextPermission !== undefined) {
+            updateData.permission = nextPermission;
+        }
+        if (nextStatus !== undefined) {
+            updateData.status = nextStatus;
+        }
+
         const data = await prisma.user.update({
             where: {
                 id: id,
             },
-            data: {
-                ...(nextPermission !== undefined ? { permission: nextPermission } : {}),
-                ...(nextStatus !== undefined ? { status: nextStatus } : {}),
-            },
+            data: updateData,
         });
         return{
             success: true,
