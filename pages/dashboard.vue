@@ -98,8 +98,7 @@ if (!session.value?.user) {
   await navigateTo("/")
 }
 
-const {donationsData, getDonations, postDonation} = useDonation();
-await getDonations();
+
 
 const donorTableData:Ref<{donor:Donor, donations:Donation[]}[]> = ref([]);
 donors.value.map((thisDonor:Donor,index:number) => {
