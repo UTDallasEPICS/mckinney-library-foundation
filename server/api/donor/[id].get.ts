@@ -1,5 +1,4 @@
 import prisma from '~~/server/utils/prisma';
-import { requireSession } from "~~/server/utils/requireSession";
 
 ;
 
@@ -8,7 +7,6 @@ export default defineEventHandler(async (event) => {
 
     console.log("router reached")
     try {
-        await requireSession(event, 0);
         const id = getRouterParam(event, 'id');
 
         console.log("id found:", id);   

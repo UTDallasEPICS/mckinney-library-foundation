@@ -3,6 +3,8 @@ import { prismaAdapter } from "better-auth/adapters/prisma";
 import prisma from "~~/server/utils/prisma"
 import { emailOTP } from "better-auth/plugins"
 
+const {sendMail} = useNodeMailer();
+
 export const auth = betterAuth({
     database: prismaAdapter(prisma, {
         provider: "sqlite", 
@@ -27,7 +29,6 @@ export const auth = betterAuth({
             async sendVerificationOTP({ email, otp, type }) { 
                 if (type === "sign-in") { 
                       try{
-                          const { sendMail } = useNodeMailer();
                           const info = await sendMail({
                               subject: "MPLF OTP",
                            text: "your one-time passcode: " + otp,

@@ -1,10 +1,14 @@
 import prisma from '~~/server/utils/prisma'
-import { requireSession } from "~~/server/utils/requireSession";
 
 export default defineEventHandler(async (event) => {
-  const session = await requireSession(event, 1);
   const body = await readBody(event);
   try {
+    if(body.permissionLevel < 1){
+            throw createError({
+                statusCode: 401,
+                statusMessage:"User not authorized to create donations"
+            });
+        }
     let donorRecord = await prisma.donor.findFirst({
       where: {
         name: body.donor? body.donor : "anonymous"
@@ -20,13 +24,13 @@ export default defineEventHandler(async (event) => {
           phone: "",
           preferredCommunication: "",
           notes: "",
-          boardMemberId: session.user.id
+          boardMemberId: body.boardMemberId
         }
       })
     }
     const donation = await prisma.donation.create({
       data: {
-        boardMemberId: session.user.id,
+        boardMemberId: body.boardMemberId,
         donorId: donorRecord.id,
         isAuthor: donorRecord.isAuthor,
         event: body.event,

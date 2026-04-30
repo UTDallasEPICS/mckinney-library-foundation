@@ -1,14 +1,13 @@
 <template>
     <div class="flex-1 p-8 ">
         <button v-if="permissionLevel>1" :disabled="!isEnabled" @click="emailFunction(isChecked)" class ="disabled:bg-slate-300 rounded-md text-sm font-medium outline-none h-9 py-2 bg-blue-600 hover:bg-blue-700 text-white px-6 my-3 ">Email Grantors</button>
-        <div class = "bg-white rounded-lg shadow-lg overflow-x-auto mx-auto">       
+        <div class = "bg-white rounded-lg shadow-lg overflow-hidden mx-auto">       
             <table class="w-full">
-                <thead class="bg-[#c5d0d8] sticky top-0 z-10">
+                <thead  class="bg-[#c5d0d8] sticky top-0 z-10">
                     <tr>
-                        <th class="px-4 py-3 text-left text-sm text-[#2d3e4d] border-b-2 border-[#a8b5bf] cursor-pointer transition-colors">
+                        <th class="px-4 py-3 text-left text-xs text-[#2d3e4d] border-b-2 border-[#a8b5bf] cursor-pointer transition-colors">
                             <div class="w-full flex gap-2">
                                 <span v-if="!activeSearch[0].active">Name</span>
-                 
                                 <button @click="toggleSearch(0)" v-if="!activeSearch[0].active"><FunnelIcon class="w-4 h-4"/></button>
                                 <div  v-else>
                                     <input autocomplete="off" v-model="searchInputs.name" @click.stop class="mt-2 px-2 py-1 border rounded"placeholder="Search Names"/>
@@ -18,7 +17,7 @@
                                 <button v-else @click="toggleSort(0)"><NumberedListIcon class="w-4 h-4"/></button>
                             </div>
                         </th>
-                        <th class="px-4 py-3 text-left text-sm text-[#2d3e4d] border-b-2 border-[#a8b5bf] cursor-pointer transition-colors">
+                        <th class="px-4 py-3 text-left text-xs text-[#2d3e4d] border-b-2 border-[#a8b5bf] cursor-pointer transition-colors">
                              <div class="w-full flex gap-2">
                                 <span v-if="!activeSearch[1].active">Organization</span>
                                 <button @click="toggleSearch(1)" v-if="!activeSearch[1].active"><FunnelIcon class="w-4 h-4"/></button>
@@ -30,7 +29,7 @@
                                 <button v-else @click="toggleSort(1)"><NumberedListIcon class="w-4 h-4"/></button>
                             </div>
                         </th>
-                        <th class="px-4 py-3 text-left text-sm text-[#2d3e4d] border-b-2 border-[#a8b5bf] cursor-pointer transition-colors">
+                        <th class="px-4 py-3 text-left text-xs text-[#2d3e4d] border-b-2 border-[#a8b5bf] cursor-pointer transition-colors">
                              <div class="w-full flex gap-2">
                                 <span @click="toggleSearch(2)" v-if="!activeSearch[2].active">Email</span>
                                 <button @click="toggleSearch(2)" v-if="!activeSearch[2].active"><FunnelIcon class="w-4 h-4"/></button>
@@ -42,7 +41,7 @@
                                 <button v-else @click="toggleSort(2)"><NumberedListIcon class="w-4 h-4"/></button>
                             </div>
                         </th>
-                        <th class="px-4 py-3 text-left text-sm text-[#2d3e4d] border-b-2 border-[#a8b5bf] cursor-pointer transition-colors">
+                        <th class="px-4 py-3 text-left text-xs text-[#2d3e4d] border-b-2 border-[#a8b5bf] cursor-pointer transition-colors">
                              <div class="w-full flex gap-2">
                                 <span v-if="!activeSearch[3].active">Phone</span>
                                 <button @click="toggleSearch(3)" v-if="!activeSearch[3].active"><FunnelIcon class="w-4 h-4"/></button>
@@ -54,7 +53,7 @@
                                 <button v-else @click="toggleSort(3)"><NumberedListIcon class="w-4 h-4"/></button>
                             </div>
                         </th>
-                        <th class="px-4 py-3 text-left text-sm text-[#2d3e4d] border-b-2 border-[#a8b5bf] cursor-pointer transition-colors">
+                        <th class="px-4 py-3 text-left text-xs text-[#2d3e4d] border-b-2 border-[#a8b5bf] cursor-pointer transition-colors">
                             <div class="w-full flex gap-2">
                                 <span v-if="!activeSearch[4].active">First Grant</span>
                                 <button @click="toggleSearch(4)" v-if="!activeSearch[4].active"><FunnelIcon class="w-4 h-4"/></button>
@@ -69,7 +68,7 @@
                                 <button v-else @click="toggleSort(4)"><NumberedListIcon class="w-4 h-4"/></button>
                             </div>
                         </th>
-                         <th class="px-4 py-3 text-left text-sm text-[#2d3e4d] border-b-2 border-[#a8b5bf] cursor-pointer transition-colors">
+                         <th class="px-4 py-3 text-left text-xs text-[#2d3e4d] border-b-2 border-[#a8b5bf] cursor-pointer transition-colors">
                             <div class="w-full flex gap-2">
                                 <span v-if="!activeSearch[5].active">Last Grant</span>
                                 <button @click="toggleSearch(5)" v-if="!activeSearch[5].active"><FunnelIcon class="w-4 h-4"/></button>
@@ -84,7 +83,7 @@
                                 <button v-else @click="toggleSort(5)"><NumberedListIcon class="w-4 h-4"/></button>
                             </div>
                         </th>
-                        <th class="px-4 py-3 text-left text-sm text-[#2d3e4d] border-b-2 border-[#a8b5bf] cursor-pointer transition-colors">
+                        <th class="px-4 py-3 text-left text-xs text-[#2d3e4d] border-b-2 border-[#a8b5bf] cursor-pointer transition-colors">
                             <div class="w-full flex gap-2">
                                 <span v-if="!activeSearch[6].active">Last Editor</span>
                                 <button @click="toggleSearch(6)" v-if="!activeSearch[6].active"><FunnelIcon class="w-4 h-4"/></button>
@@ -96,7 +95,7 @@
                                 <button v-else @click="toggleSort(6)"><NumberedListIcon class="w-4 h-4"/></button>
                             </div>
                         </th> 
-                        <th class="px-4 py-3 text-center text-sm text-[#2d3e4d] border-b-2 border-[#a8b5bf] cursor-pointer transition-colors">Actions</th>
+                        <th class="px-4 py-3 text-center text-xs text-[#2d3e4d] border-b-2 border-[#a8b5bf] cursor-pointer transition-colors">Actions</th>
                         <th v-if="permissionLevel>1" class="px-4 py-3 text-center text-sm text-[#2d3e4d] border-b-2 border-[#a8b5bf] cursor-pointer transition-colors">
                             <div class="flex justify-center gap-2">
                                 <span>Select</span>
@@ -123,7 +122,7 @@
                         </td>
                         <td v-if="permissionLevel>1">
                             <div class="flex justify-center">
-                                <input autocomplete="off" v-if="row.grantor.email" v-model="isChecked[row.grantor.id]" type="checkbox"></input>
+                                <input autocomplete="off" v-if="row.grantor.email" v-model="isChecked[idx]" type="checkbox"></input>
                             </div>     
                         </td>
                     </tr>
@@ -146,22 +145,21 @@ const props = defineProps<{
     viewFunction: (grantor:Grantor,idx:number) => Promise<void>
     permissionLevel:number
     }>();
-// use grantor ID instead of index
-const isChecked = ref<Record<string, boolean>>({})
+const isChecked: Ref<boolean[]> = ref([])
 
-props.data.forEach( (row) =>{
-    isChecked.value[row.grantor.id] = false;
+props.data.forEach( (item,index) =>{
+    isChecked.value[index] = false;
 })
 
 const selectedCount = computed(() => 
-  Object.values(isChecked.value).filter(Boolean).length
+  isChecked.value.filter(Boolean).length
 );
 
 function selectAll(){
     const checkAll = !allSelected.value
-    props.data.forEach((row) =>{
+    props.data.forEach((row,index) =>{
         if(row.grantor.email !== ''){
-            isChecked.value[row.grantor.id] = checkAll;
+            isChecked.value[index] = checkAll;
         }
     })
 }

@@ -17,9 +17,9 @@
   <div v-if="sendEmail" class="fixed top-0 left-0 w-full h-full flex justify-center items-center z-20 bg-black/50">
     <EmailForm
       :name-list="nameList"
-      :email-list="emailList"
-      :group-email="groupEmail"
-      :cancel-email="cancelEmail"
+      :email-list="emailFormProps.emails"
+      :group-email="emailFormProps.groupEmail"
+      :cancel-email="emailFormProps.cancelEmail"
     />
   </div>
 
@@ -150,25 +150,18 @@ function cancelUpdate(){
 }
 
 
-async function prepEmail(selected: Record<string, boolean>) {
-  emailList.value = [];
-  nameList.value = "";
-
-  donors.value.forEach((item) => {
-    if(selected[item.id] && item.email !== "") {
+async function prepEmail(selected:boolean[]) {
+  donors.value.forEach((item: { email: string; name: string; },index: number) =>{
+    if(selected[index] && item.email !== ""){
       emailList.value.push(item.email);
-
       if (nameList.value != "") {
         nameList.value += ", " + item.name;
       } else {
-        nameList.value = item.name;
+        nameList.value += item.name;
       }
+      sendEmail.value = true;
     }
   });
-
-  if (emailList.value.length > 0) {
-    sendEmail.value = true;
-  }
 }
 
 // for updating donor info
@@ -218,17 +211,10 @@ async function removeDonor(donor:Donor,index:number) {
   }
 }
 
-const addDonor = (data: any) => { 
-//hi there
 
-
-  console.log("donros",donors)
-  donors.value.push(data);
-};
 
 async function groupEmail(values:Record<string, any>){
-  try {
-    await $fetch("/api/email",{
+  await $fetch("/api/email",{
     method:"POST",
     body:{
       permissionLevel:user.value.permissionLevel,
@@ -241,9 +227,13 @@ async function groupEmail(values:Record<string, any>){
   sendEmail.value = false;
   emailList.value = [];
   nameList.value = "";
-} catch (error) {
-  alert("Failed to send email.");
-  console.error(error);
-  }
 }
+
+const addDonor = (data: any) => { 
+//hi there
+
+
+  console.log("donros",donors)
+  donors.value.push(data);
+};
 </script>

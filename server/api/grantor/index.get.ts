@@ -1,9 +1,7 @@
 import prisma from '~~/server/utils/prisma'
-import { requireSession } from "~~/server/utils/requireSession";
 
-export default defineEventHandler(async (event) =>{
+export default defineEventHandler(async () =>{
     try{
-        await requireSession(event, 0);
         const data = await prisma.grantor.findMany({
             include:{
                 grants:{
@@ -33,3 +31,4 @@ export default defineEventHandler(async (event) =>{
         await prisma.$disconnect();
     }
 });
+

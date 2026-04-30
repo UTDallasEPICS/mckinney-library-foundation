@@ -16,11 +16,10 @@
   <div  v-if="sendEmail" class="fixed top-0 left-0 w-full h-full flex justify-center items-center z-20 bg-black/50">
     <EmailForm
       :name-list="nameList"
-      :email-list="emailList"
-      :group-email="groupEmail"
-      :cancel-email="cancelEmail"
-      user-name="Grantor(s)"
-      />
+      :email-list="emailFormProps.emails"
+      :group-email="emailFormProps.groupEmail"
+      :cancel-email="emailFormProps.cancelEmail"
+    />
   </div>
   <div v-if="updateGrantor" class="fixed top-0 left-0 w-full h-full flex justify-center items-center z-20 bg-black/50">
     <GrantorForm
@@ -136,25 +135,20 @@ function cancelUpdate(){
 }
 
 
-async function prepEmail(selected: Record<string, boolean>) {
-  emailList.value = [];
-  nameList.value = "";
-
-  grantors.value.forEach((item) => {
-    if(selected[item.id] && item.email !== "") {
+async function prepEmail(selected:boolean[]) {
+  grantors.value.forEach((item: { email: string; name: string; },index: number) =>{
+    if(selected[index] && item.email !== ""){
       emailList.value.push(item.email);
-
-      if (nameList.value != "") {
-        nameList.value += ", " + item.name;
-      } else {
-        nameList.value = item.name;
+      if(nameList.value != ""){
+        nameList.value += ", " + item.name 
       }
+      else{
+        nameList.value += item.name
+      }
+        
     }
-  });
-
-  if (emailList.value.length > 0) {
     sendEmail.value = true;
-  }
+  });
 }
 
 async function prepGrantorUpdate(grantor:Grantor,index:number){
@@ -191,8 +185,7 @@ async function removeGrantor(grantor:Grantor,index:number) {
 
 
 async function groupEmail(values:Record<string, any>){
-  try {
-    await $fetch("/api/email",{
+  await $fetch("/api/email",{
     method:"POST",
     body:{
       permissionLevel:user.value.permissionLevel,
@@ -201,12 +194,9 @@ async function groupEmail(values:Record<string, any>){
       emails:emailList.value,
     }
   })
-  sendEmail.value= false;
+
+  sendEmail.value=false;
   emailList.value = [];
   nameList.value = "";
-} catch (error) {
-  alert("Failed to send email.");
-  console.error(error);
-  }
 }
 </script>

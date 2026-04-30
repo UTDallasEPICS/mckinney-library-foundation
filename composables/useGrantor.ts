@@ -12,7 +12,7 @@ export const useGrantor = () => {
        const result = await $fetch('/api/grantor',{
             method:"POST",
             body:{
-                name:values.grantorName,
+                name:values.fName.trim() + " " + values.lName.trim(),
                 email: values.email? values.email.trim(): "",
                 phone: values.phone? values.phone.trim(): "",
                 address: values.address? values.address.trim(): "",
@@ -31,7 +31,7 @@ export const useGrantor = () => {
         const result = await $fetch(`/api/grantor/${values.id}`,{
             method:"PUT",
             body:{
-            name:values.grantorName,
+            name:values.fName.trim() + " " + values.lName.trim(),
             boardMemberId: user.id,
             email: values.email? values.email.trim() : "",
             phone: values.phone? values.phone.trim(): "",

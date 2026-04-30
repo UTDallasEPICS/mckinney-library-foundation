@@ -1,11 +1,16 @@
 import prisma from '~~/server/utils/prisma'
-import { requireSession } from "~~/server/utils/requireSession";
 
 export default defineEventHandler (async (event)=>{
-    await requireSession(event, 1);
     try{
 
-        const id = event.context.params?.id;
+        const body = await readBody(event);
+        const id = await getRouterParam(event, 'id');
+        if(body.permissionLevel < 1){
+            throw createError({
+                statusCode:401,
+                statusMessage:"User does not have permission to delete donations"
+            })
+        }
         if(!id){
             throw createError({
                 statusCode: 400,
