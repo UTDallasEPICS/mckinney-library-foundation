@@ -1,6 +1,6 @@
 <template>
-  <div class="flex-1 p-8 ">
-    <div class="bg-white rounded-lg shadow-lg overflow-hidden mx-auto">
+  <div class="bg-white flex-1 p-8 pb-1000">
+    <div class="rounded-lg shadow-lg overflow-hidden mx-auto">
       <table class="w-full">
         <thead  class="bg-[#c5d0d8] sticky top-0 z-10"> 
           <tr>

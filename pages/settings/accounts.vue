@@ -1,5 +1,5 @@
 <template>
-<h1 class="text-[36px] text-[#2c3e50] text-center py-5 mb-2"> Manage Accounts </h1>
+<h1 class="bg-white text-[36px] text-[#2c3e50] text-center py-5 mb-2"> Manage Accounts </h1>
  <AccountTable v-if="users && users.length > 0"
   key= "ExistingAccounts"
   :accounts="users"

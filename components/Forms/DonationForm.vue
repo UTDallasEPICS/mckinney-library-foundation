@@ -35,8 +35,8 @@
             <div class="grid grid-cols-2 gap-4 mb-5">
                 <h2 class="form-field-label">Monetary amount</h2>
                 <h2 class="form-field-label">Non-Monetary Amount</h2>
-                <VeeField autocomplete="off" :disabled="viewOnly" class="form-input focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px]" name="monetaryAmount"/>
-                <VeeField autocomplete="off" :disabled="viewOnly" class="form-input focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px]" name="nonMonetaryAmount"/>
+                <VeeField autocomplete="off" :disabled="viewOnly" class="form-input focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] text-black" name="monetaryAmount"/>
+                <VeeField autocomplete="off" :disabled="viewOnly" class="form-input focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] text-black" name="nonMonetaryAmount"/>
                 <div>
                     <VeeErrorMessage class="text-red-500"  name="monetaryAmount" />
                 </div>
@@ -63,7 +63,7 @@
                     </select>
                 </VeeField>
                 <VeeField v-slot="{field}" autocomplete="off" :disabled="viewOnly" class="form-input focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px]" name="receivedDate">
-                    <input id="reqDate"  autocomplete="off" :disabled="viewOnly" v-bind="field" type="date"></input>
+                    <input id="reqDate"  autocomplete="off" :disabled="viewOnly" v-bind="field" type="date" class="outline-none text-black md:text-sm bg-white border-gray-300 h-11"></input>
                 </VeeField>
                 <div>
                     <VeeErrorMessage class="text-red-500"  name="method" />
@@ -77,11 +77,11 @@
             </div>
             <h2 class="form-field-label mb-3">Notes</h2>
             <VeeField autocomplete="off" :disabled="viewOnly" v-slot="{field}" name="notes">
-                <textarea v-bind="field" :disabled="viewOnly" class="form-field focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px]"></textarea>
+                <textarea v-bind="field" :disabled="viewOnly" class="form-field focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] text-black"></textarea>
             </VeeField>
             <h2 class="form-field-label mb-2">Reason</h2>
             <VeeField autocomplete="off" :disabled="viewOnly" v-slot="{field}" name="reason">
-                <textarea v-bind="field" :disabled="viewOnly" class="form-field focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px]"></textarea>
+                <textarea v-bind="field" :disabled="viewOnly" class="form-field focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] text-black"></textarea>
             </VeeField>
             <div class="flex justify-center gap-4 my-3">
                 <button class="form-button bg-gray-600 hover:bg-gray-700" @click="cancelSubmisison">Cancel</button>

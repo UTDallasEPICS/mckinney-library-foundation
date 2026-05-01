@@ -1,5 +1,5 @@
 <template>
-   <div class = "flex items-center basis-1/2">
+   <div class = "bg-white flex items-center basis-1/2">
       <div class = "bg-white rounded-3xl shadow-2xl p-10 border border-gray-100 w-2/5 mx-auto my-8 my">
         <AccReqForm
         key="AdminAccCreate"

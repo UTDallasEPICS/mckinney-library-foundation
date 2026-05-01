@@ -1,5 +1,5 @@
 <template>
-  <div class="container mx-auto px-6 py-12 max-w-full">
+  <div class="container mx-auto bg-white px-6 py-12 max-w-full">
     <div class="mb-8 text-center w-full">
       <h1 class="text-[#2d3e4d] mb-2 text-xl">MPLF Donor Dashboard</h1>
       <p class="text-gray-600 text-lg">Manage your donations, grants, and system settings</p>

@@ -36,8 +36,8 @@
             <div class="grid grid-cols-2 gap-4 mb-3">
                 <h2 class="form-field-label">Monetary Amount</h2>
                 <h2 class="form-field-label">Non-Monetary Amount</h2>
-                <VeeField autocomplete="off" :disabled="viewOnly" class="form-input focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px]" name="monetaryAmount"/>
-                <VeeField autocomplete="off" :disabled="viewOnly" class="form-input focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px]" name="nonMonetaryAmount"/>
+                <VeeField autocomplete="off" :disabled="viewOnly" class="form-input focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] text-black" name="monetaryAmount"/>
+                <VeeField autocomplete="off" :disabled="viewOnly" class="form-input focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] text-black" name="nonMonetaryAmount"/>
                 <div>
                     <VeeErrorMessage class="text-red-500"  name="monetaryAmount" />
                 </div>
@@ -73,10 +73,10 @@
                 <h2 class="form-field-label">Proposed Date</h2>
                 <h2 class="form-field-label">Received Date<span class = "text-red-500">*</span></h2>
                 <VeeField v-slot="{field}" autocomplete="off" :disabled="viewOnly" class="form-input focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px]" name="proposedDate">
-                    <input id="propDate"  autocomplete="off" :disabled="viewOnly" v-model="proposedDateRef" v-bind="field" type="date"></input>
+                    <input id="propDate"  autocomplete="off" :disabled="viewOnly" v-model="proposedDateRef" v-bind="field" type="date" class="w-full px-3 py-2 bg-white border border-gray-300 rounded text-[#2d3e4d] focus:outline-none focus:ring-2 focus:ring-[#5a6a77] cursor-pointer"></input>
                 </VeeField>
                 <VeeField v-slot="{field}" autocomplete="off" :disabled="viewOnly" class="form-input focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px]" name="receivedDate">
-                    <input id="reqDate"  autocomplete="off" :disabled="viewOnly" v-model="recievedDateRef" v-bind="field" type="date"></input>
+                    <input id="reqDate"  autocomplete="off" :disabled="viewOnly" v-model="recievedDateRef" v-bind="field" type="date" class="w-full px-3 py-2 bg-white border border-gray-300 rounded text-[#2d3e4d] focus:outline-none focus:ring-2 focus:ring-[#5a6a77] cursor-pointer"></input>
                 </VeeField>
                 <div>
                     <VeeErrorMessage class="text-red-500" name="proposedDate" />
@@ -93,7 +93,7 @@
                                 type="checkbox"
                                 id="reimburse"
                                 :disabled="viewOnly"
-                                class="accent-[#64748b] w-4 h-4 mt-[10px]"
+                                class="accent-[#64748b] w-4 h-4 mt-[10px] "
                             />
                             <label for="reimburse" class="form-field-label">Will this grant reimburse MPLF?</label>
                         </div>
