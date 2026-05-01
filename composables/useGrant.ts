@@ -35,9 +35,6 @@ export function useGrant() {
         }
     });
 
-    const selectedGrant = ref<Grant | null>(null);
-    
-
     const postGrant = async (values:Record<string,any>,user:{id:string, permissionLevel:number}) => {
         const result = await $fetch('/api/grant',{
             method:"POST",
@@ -105,19 +102,8 @@ export function useGrant() {
         return result;
     }
 
-    async function getGrant(selectedGrantItem: Grant) {
-        try {
-            const route: string = `/api/grants/${selectedGrantItem.id}`;
-            selectedGrant.value = await $fetch<Grant>(route);
-        } catch (error) {
-            console.error('getGrant Error:', error);
-        }
-    }
-
     return {
         grantsData,
-        selectedGrant,
-        getGrant,
         putGrant,
         postGrant,
         deleteGrant,

@@ -1,8 +1,12 @@
+import type { Donation } from "~~/server/utils/generated/prisma/browser";
+
+type DonationEvent = { eventName: string; eventDate: Date | string | null } | null;
+
 export const useDonation = () => {
     const { data: rawData } = useFetch('/api/donation');
 
     type DonationRow = {
-        donation: Record<string, any>;
+        donation: Donation & { event?: DonationEvent };
         donor: any;
         boardMember: any;
     };
@@ -15,6 +19,10 @@ export const useDonation = () => {
                 ...donation,
                 receivedDate: donation.receivedDate ? new Date(donation.receivedDate) : null,
                 lastEditDate: donation.lastEditDate ? new Date(donation.lastEditDate) : null,
+                event: donation.event ? {
+                    ...donation.event,
+                    eventDate: donation.event.eventDate ? new Date(donation.event.eventDate) : null,
+                } : null,
             },
             donor: donation.donor,
             boardMember: donation.boardMember,
@@ -100,7 +108,3 @@ export const useDonation = () => {
         deleteDonation,
     };
 };
-
- 
-
-    

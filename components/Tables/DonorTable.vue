@@ -377,15 +377,18 @@ function formatDate(value: Date | string | null | undefined) {
 }
 
 function exportCsv() {
-    downloadCsv('donors.csv', sortedIndices.value.map((row) => ({
-        name: row.donor.name ?? '',
-        author: row.donor.isAuthor ? 'true' : 'false',
-        organization: row.donor.organization ?? '',
-        email: row.donor.email ?? '',
-        phone: row.donor.phone ?? '',
-        firstDonation: formatDate(row.donations[0]?.receivedDate),
-        lastDonation: formatDate(row.donations[row.donations.length - 1]?.receivedDate),
-        lastEditor: row.boardMember?.name ?? '',
-    })))
+    downloadCsv('donors.csv', sortedIndices.value.map((row) => {
+        const donations = row.donations ?? [];
+        return {
+            name: row.donor.name ?? '',
+            author: row.donor.isAuthor ? 'true' : 'false',
+            organization: row.donor.organization ?? '',
+            email: row.donor.email ?? '',
+            phone: row.donor.phone ?? '',
+            firstDonation: formatDate(donations[0]?.receivedDate),
+            lastDonation: formatDate(donations[donations.length - 1]?.receivedDate),
+            lastEditor: row.boardMember?.name ?? '',
+        };
+    }));
 }
 </script>
