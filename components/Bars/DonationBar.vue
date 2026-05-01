@@ -53,8 +53,8 @@ import { useDonationDropDown, useDonorDropDown } from '~/composables/useDonation
 import { useDonation } from '~/composables/useDonation';
 import { useDonor } from '~/composables/useDonor'
 
-const {postDonation} = useDonation()
-const {postDonor} = useDonor();
+const {postDonation, donationsData} = useDonation();
+const {postDonor, donors: donorData} = useDonor();
 
 const addDonation = ref(false);
 const addDonor = ref(false);
@@ -64,53 +64,36 @@ const props = defineProps<{
     donors:{donor:Donor, donations:Donation[],boardMember:{name:string}|null}[],
     donations:{
         donation:Donation
-        boardMember:{name:string}| null, 
+        boardMember:{name:string}| null,
         donor: {name: string | null} | null,
     }[]
 }>();
 
-const {donationEvents,donationMethods} = useDonationDropDown(props.donations)
-const {donorOrganizations} = useDonorDropDown(props.donors)
+const {donationEvents,donationMethods} = useDonationDropDown(props.donations);
+const {donorOrganizations} = useDonorDropDown(props.donors);
 
 async function createDonor(values:Record<string,any>){
     const result = await postDonor(values,props.user);
-    if(result.error.code === 'P2002'){
+    if(result.error?.code === 'P2002'){
         alert('Donor already exists');
     }
     else if(result.data){
-        if(props.donors){
-            props.donors.push({
-                donor:{...result.data},
-                donations: [],
-                boardMember: result.data.boardMember? result.data.boardMember : null
-            })
-                   
-        }
-    addDonor.value=false;
+        addDonor.value=false;
     }
 }
 function cancelDonor(){
     addDonor.value = false;
 }
 async function createDonation(values:Record<string,any>){
-    const result = await postDonation(values,props.user)
+    const result = await postDonation(values,props.user);
     if(result.data){
-        props.donations?.push({
-            ...result.data, 
-            donation:{
-                ...result.data,
-                receivedDate: result.data.receivedDate ? new Date(result.data.receivedDate) : null,
-                lastEditDate: result.data.lastEditDate ? new Date(result.data.lastEditDate) : null,
-            }        
-        })
+        addDonation.value = false;
     }else{
         console.error(result.error);
     }
-    addDonation.value = false;
 }
 function cancelDonation(){
     addDonation.value = false;
 }
-
 
 </script>

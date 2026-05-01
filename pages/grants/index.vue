@@ -99,10 +99,13 @@ const grantData:Ref<{
 const grantIndex = ref(0);
 
 
-const grantorTableData:Ref<{grantor:Grantor, grants:Grant[],boardMember:{name:string} }[]> = ref([]);
- grantors.value.map((thisGrantor:Grantor,index:number) => {
-   grantorTableData.value.push({grantor:thisGrantor,grants:grantors.value[index].grants, boardMember:{name:grantors.value[index].boardMember.name} })
- })
+const grantorTableData = computed(() =>
+    grantors.value.map((thisGrantor: any) => ({
+        grantor: thisGrantor,
+        grants: thisGrantor.grants,
+        boardMember: thisGrantor.boardMember
+    }))
+);
 
 async function prepGrantUpdate(grantInfo:{grant:Grant,boardMember:{name:string}| null, grantor: {name: string} | null},index:number){
     grantData.value.grant = grantInfo.grant;
@@ -122,17 +125,7 @@ async function prepGrantView(grantInfo:{grant:Grant,boardMember:{name:string}| n
 
 
 async function updateGrant(values:Record<string, any>){
-    const result = await putGrant(values,user.value)
-    if(result.data){
-        grantsData.value[values.index].grant ={
-            ...result.data, 
-            proposedDate: result.data.proposedDate ? new Date(result.data.proposedDate) : null,
-            receivedDate: result.data.receivedDate ? new Date(result.data.receivedDate) : null,
-            lastEditDate: result.data.lastEditDate ? new Date(result.data.lastEditDate) : null,
-        }
-        grantsData.value[values.index].boardMember = result.data.boardMember
-        grantsData.value[values.index].grantor = result.data.grantor
-    }
+    await putGrant(values, user.value);
     showUpdateGrant.value = false;
 }
 
@@ -160,11 +153,8 @@ function cancelUpdate(){
     }
 }
 
-async function removeGrant(id:string,index:number){
-    const result = await deleteGrant(id, user.value.permissionLevel)
-    if(result.success){
-        grantsData.value.splice(index,1)
-    }
+async function removeGrant(id:string, index:number){
+    await deleteGrant(id, user.value.permissionLevel);
 }
 
 
