@@ -21,8 +21,10 @@
         :cancel-submisison="cancelUpdate"
         :data="donationData"
         :index="donationIndex"
-        :events="donationEvents"
+        :events="eventNames"
+        :event-date-lookup="eventDateLookup"
         :methods="donationMethods"
+        @request-create-event="openEventFormFromDonation"
     />
 </div>
 
@@ -33,9 +35,14 @@
         :submit-donation="updateDonation"
         :cancel-submisison="cancelUpdate"
         :data="donationData"
-        :events="donationEvents"
+        :events="eventNames"
+        :event-date-lookup="eventDateLookup"
         :methods="donationMethods"
     />
+</div>
+
+<div v-if="showEventForm" class="fixed top-0 left-0 w-full h-full flex justify-center items-center z-20 bg-black/50">
+    <EventForm :submit-event="createEvent" :cancel-submisison="cancelEvent" :view-only="false" />
 </div>
 
 </template>
@@ -44,7 +51,13 @@
 import DonationBar from '~/components/Bars/DonationBar.vue';
 import DonationTable from '~/components/Tables/DonationTable.vue';
 import DonationForm from '~/components/Forms/DonationForm.vue';
+import EventForm from '~/components/Forms/EventForm.vue';
 import { useAuth } from '~/composables/useAuth';
+import { useDonor } from '~/composables/useDonor';
+import { useDonation } from '~/composables/useDonation';
+import { useDonationDropDown } from '~/composables/useDonationDropDown';
+import { useEvent } from '~/composables/useEvent';
+import { useEventDropDown } from '~/composables/useEventDropDown';
 import type { Donation, Donor } from '~~/server/utils/generated/prisma/browser';
 
 
@@ -63,13 +76,26 @@ else{
 
 const showUpdateDonation = ref(false);
 const showViewDonation = ref(false);
+const showEventForm = ref(false);
 
 
 const { donors } = useDonor();
 
 const { donationsData, putDonation, deleteDonation } = useDonation();
 
-const {donationEvents, donationMethods} = useDonationDropDown(donationsData.value);
+const { eventsData, postEvent } = useEvent();
+
+const { eventNames } = useEventDropDown(eventsData);
+const { donationMethods } = useDonationDropDown(donationsData.value);
+const eventDateLookup = computed<Record<string, string>>(() => {
+    const lookup: Record<string, string> = {}
+    eventsData.value.forEach((row) => {
+        if (row.event.eventName && row.event.eventDate) {
+            lookup[row.event.eventName] = row.event.eventDate.toISOString().split('T')[0] ?? ''
+        }
+    })
+    return lookup
+})
 
 const donationData:Ref<{ 
     donation:Donation,
@@ -80,7 +106,7 @@ const donationData:Ref<{
             boardMemberId:"",
             donorId:"",
             method:"",
-            event:"",
+            event:null,
             monetaryAmount:"",
             nonMonetaryAmount:"",
             status:0,
@@ -135,7 +161,7 @@ function cancelUpdate(){
         boardMemberId:"",
         donorId:"",
         method:"",
-        event:"",
+        event:null,
         monetaryAmount:"",
         nonMonetaryAmount:"",
         status:0,
@@ -148,6 +174,23 @@ function cancelUpdate(){
         boardMember:null,
         donor:null
     }
+}
+
+async function createEvent(values:Record<string,any>) {
+    const result = await postEvent(values, user.value);
+    if (result.success) {
+        showEventForm.value = false;
+    } else if ((result as any).error?.code === 'EVENT_ALREADY_EXISTS' || (result as any).message === 'The event already exists') {
+        alert('The event already exists');
+    }
+}
+
+function openEventFormFromDonation(){
+    showEventForm.value = true;
+}
+
+function cancelEvent(){
+    showEventForm.value = false;
 }
 
 async function removeDonation(id:string, index:number){

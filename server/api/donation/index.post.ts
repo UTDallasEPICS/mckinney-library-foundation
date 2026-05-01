@@ -5,6 +5,20 @@ export default defineEventHandler(async (event) => {
   const session = await requireSession(event, 1);
   const body = await readBody(event);
   try {
+    if(body.permissionLevel < 1){
+        throw createError({
+            statusCode: 401,
+            statusMessage:"User not authorized to create donations"
+        });
+      }
+    const eventName = typeof body.event === 'string' ? body.event.trim() : '';
+    const matchedEvent = eventName
+      ? await prisma.event.findFirst({
+          where: {
+            eventName,
+          },
+        })
+      : null;
     let donorRecord = await prisma.donor.findFirst({
       where: {
         name: body.donor? body.donor : "anonymous"
@@ -29,7 +43,7 @@ export default defineEventHandler(async (event) => {
         boardMemberId: session.user.id,
         donorId: donorRecord.id,
         isAuthor: donorRecord.isAuthor,
-        event: body.event,
+        eventId: matchedEvent?.id ?? null,
         method: body.method,
         monetaryAmount: body.monetaryAmount,
         nonMonetaryAmount: body.nonMonetaryAmount,
@@ -40,6 +54,12 @@ export default defineEventHandler(async (event) => {
         lastEditDate: new Date()
       },
       include: {
+        event: {
+          select: {
+            eventName: true,
+            eventDate: true,
+          }
+        },
         donor: true,
         boardMember:{
             select:{

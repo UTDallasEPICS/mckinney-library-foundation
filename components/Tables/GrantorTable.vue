@@ -356,14 +356,17 @@ function formatDate(value: Date | string | null | undefined) {
 }
 
 function exportCsv() {
-    downloadCsv('grantors.csv', sortedIndices.value.map((row) => ({
-        name: row.grantor.name ?? '',
-        organization: row.grantor.organization ?? '',
-        email: row.grantor.email ?? '',
-        phone: row.grantor.phone ?? '',
-        firstGrant: formatDate(row.grants[0]?.receivedDate),
-        lastGrant: formatDate(row.grants[row.grants.length - 1]?.receivedDate),
-        lastEditor: row.boardMember?.name ?? '',
-    })))
+    downloadCsv('grantors.csv', sortedIndices.value.map((row) => {
+        const grants = row.grants ?? [];
+        return {
+            name: row.grantor.name ?? '',
+            organization: row.grantor.organization ?? '',
+            email: row.grantor.email ?? '',
+            phone: row.grantor.phone ?? '',
+            firstGrant: formatDate(grants[0]?.receivedDate),
+            lastGrant: formatDate(grants[grants.length - 1]?.receivedDate),
+            lastEditor: row.boardMember?.name ?? '',
+        };
+    }));
 }
 </script>
