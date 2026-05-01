@@ -2,7 +2,7 @@
     <div class="flex-1 p-8">
         <div class="my-3 flex flex-wrap justify-start gap-3">
             <button class="rounded-md text-sm font-medium outline-none h-9 py-2 bg-slate-700 hover:bg-slate-800 text-white px-6" @click="exportCsv">Export CSV</button>
-            <button v-if="permissionLevel>1" :disabled="!isEnabled" @click="emailFunction(isChecked)" class ="disabled:bg-slate-300 rounded-md text-sm font-medium outline-none h-9 py-2 bg-blue-600 hover:bg-blue-700 text-white px-6">Email Donors</button>
+            <button v-if="permissionLevel>1" :disabled="!isEnabled" @click="handleEmailClick" class ="disabled:bg-slate-300 rounded-md text-sm font-medium outline-none h-9 py-2 bg-blue-600 hover:bg-blue-700 text-white px-6">Email Donors</button>
         </div>
         <div class = "bg-white rounded-lg shadow-lg overflow-x-auto mx-auto">       
             <table class="w-full">
@@ -156,7 +156,7 @@ import { useCsvExport } from '~/composables/useCsvExport';
 
 const props = defineProps<{
     data:{donor:Donor, donations:Donation[], boardMember:{name:string} | null}[]
-    emailFunction: (selected:boolean[]) => Promise<void>
+    emailFunction: (selected:Record<string, boolean>) => Promise<void>
     editFunction: (donor:Donor,idx:number) => Promise<void>
     deleteFunction: (donor:Donor,idx:number) => Promise<void>
     viewFunction: (donor:Donor,idx:number) => Promise<void>
@@ -180,6 +180,16 @@ function selectAll(){
             isChecked.value[index] = checkAll;
         }
     })
+}
+
+function handleEmailClick() {
+    const selected: Record<string, boolean> = {}
+    props.data.forEach((row, index) => {
+        if (row.donor.email && isChecked.value[index]) {
+            selected[row.donor.id] = true
+        }
+    })
+    props.emailFunction(selected)
 }
 
 
