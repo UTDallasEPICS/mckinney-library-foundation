@@ -11,6 +11,12 @@ export default defineEventHandler(async (event) => {
             where: { id:id },
             omit: donationOmit,
             include:{
+                event: {
+                    select: {
+                        eventName: true,
+                        eventDate: true,
+                    }
+                },
                 donor:true,
                 boardMember:{
                     select:{

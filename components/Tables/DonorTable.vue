@@ -1,6 +1,9 @@
 <template>
     <div class="flex-1 p-8">
-        <button v-if="permissionLevel>1" :disabled="!isEnabled" @click="emailFunction(isChecked)" class ="disabled:bg-slate-300 rounded-md text-sm font-medium outline-none h-9 py-2 bg-blue-600 hover:bg-blue-700 text-white px-6 my-3 ">Email Donors</button>
+        <div class="my-3 flex flex-wrap justify-start gap-3">
+            <button class="rounded-md text-sm font-medium outline-none h-9 py-2 bg-slate-700 hover:bg-slate-800 text-white px-6" @click="exportCsv">Export CSV</button>
+            <button v-if="permissionLevel>1" :disabled="!isEnabled" @click="emailFunction(isChecked)" class ="disabled:bg-slate-300 rounded-md text-sm font-medium outline-none h-9 py-2 bg-blue-600 hover:bg-blue-700 text-white px-6">Email Donors</button>
+        </div>
         <div class = "bg-white rounded-lg shadow-lg overflow-x-auto mx-auto">       
             <table class="w-full">
                 <thead  class="bg-[#c5d0d8] sticky top-0 z-10">
@@ -135,7 +138,7 @@
                         </td>
                         <td v-if="permissionLevel>1">
                             <div class="flex justify-center">
-                                <input autocomplete="off" v-if="row.donor.email" v-model="isChecked[row.donor.id]" type="checkbox"></input>
+                                <input autocomplete="off" v-if="row.donor.email" v-model="isChecked[idx]" type="checkbox"></input>
                             </div>     
                         </td>
                     </tr>
@@ -149,6 +152,7 @@
 import type { Donation, Donor } from '~~/server/utils/generated/prisma/browser';
 import { NumberedListIcon } from '@heroicons/vue/24/outline';
 import {FunnelIcon } from '@heroicons/vue/24/solid';
+import { useCsvExport } from '~/composables/useCsvExport';
 
 const props = defineProps<{
     data:{donor:Donor, donations:Donation[], boardMember:{name:string} | null}[]
@@ -158,22 +162,22 @@ const props = defineProps<{
     viewFunction: (donor:Donor,idx:number) => Promise<void>
     permissionLevel:number
     }>();
-// use donor ID instead of index
-const isChecked = ref<Record<string, boolean>>({})
+const { downloadCsv } = useCsvExport()
+const isChecked: Ref<boolean[]> = ref([])
 
-props.data.forEach( (row) =>{
-    isChecked.value[row.donor.id] = false;
+props.data.forEach( (item,index) =>{
+    isChecked.value[index] = false;
 })
 
 const selectedCount = computed(() => 
-  Object.values(isChecked.value).filter(Boolean).length
+  isChecked.value.filter(Boolean).length
 );
 
 function selectAll(){
     const checkAll = !allSelected.value
-    props.data.forEach((row) =>{
+    props.data.forEach((row,index) =>{
         if(row.donor.email !== ''){
-            isChecked.value[row.donor.id] = checkAll;
+            isChecked.value[index] = checkAll;
         }
     })
 }
@@ -359,4 +363,32 @@ const sortedIndices = computed(() => {
         })
     }
 })
+
+function formatDate(value: Date | string | null | undefined) {
+    if (!value) {
+        return ''
+    }
+
+    if (value instanceof Date) {
+        return value.toISOString().split('T')[0]
+    }
+
+    return value.toString().split('T')[0]
+}
+
+function exportCsv() {
+    downloadCsv('donors.csv', sortedIndices.value.map((row) => {
+        const donations = row.donations ?? [];
+        return {
+            name: row.donor.name ?? '',
+            author: row.donor.isAuthor ? 'true' : 'false',
+            organization: row.donor.organization ?? '',
+            email: row.donor.email ?? '',
+            phone: row.donor.phone ?? '',
+            firstDonation: formatDate(donations[0]?.receivedDate),
+            lastDonation: formatDate(donations[donations.length - 1]?.receivedDate),
+            lastEditor: row.boardMember?.name ?? '',
+        };
+    }));
+}
 </script>

@@ -5,12 +5,21 @@
       <p class="text-gray-600 text-lg">Manage your donations, grants, and system settings</p>
     </div>
 
+    <!-- the actual cards on the dashboard -->
     <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
       <DashboardCard
         :icon="DonationCardProps.icon"
         :title="DonationCardProps.title"
         :description="DonationCardProps.description"
         :buttons="DonationCardProps.buttons"
+        :permission-level="user.permissionLevel"
+        @button-click="handleDashboardButtonClick"
+      />
+      <DashboardCard
+        :icon="EventCardProps.icon"
+        :title="EventCardProps.title"
+        :description="EventCardProps.description"
+        :buttons="EventCardProps.buttons"
         :permission-level="user.permissionLevel"
         @button-click="handleDashboardButtonClick"
       />
@@ -22,16 +31,19 @@
         :permission-level="user.permissionLevel"
         @button-click="handleDashboardButtonClick"
       />
-      <DashboardCard
-        :icon="SettingsCardProps.icon"
-        :title="SettingsCardProps.title"
-        :description="SettingsCardProps.description"
-        :buttons="SettingsCardProps.buttons"
-        :permission-level="user.permissionLevel"
-        @button-click="handleDashboardButtonClick"
-      />
+      <div class="lg:col-start-2">
+        <DashboardCard
+          :icon="SettingsCardProps.icon"
+          :title="SettingsCardProps.title"
+          :description="SettingsCardProps.description"
+          :buttons="SettingsCardProps.buttons"
+          :permission-level="user.permissionLevel"
+          @button-click="handleDashboardButtonClick"
+        />
+      </div>
     </div>
 
+    <!-- the totals at the bottom -->
     <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
       <DashboardStat
         title="Total Donations"
@@ -50,14 +62,25 @@
       />
     </div>
 
+    <!-- overlay forms to add stuff -->
     <div v-if="showDonationForm" class="fixed top-0 left-0 w-full h-full flex justify-center items-center z-20 bg-black/50">
       <DonationForm
         :submit-donation="createDonation"
         :cancel-submisison="cancelDonation"
         :view-only="false"
         :donors="donorTableData"
-        :events="donationEvents"
+        :events="eventNames"
+        :event-date-lookup="eventDateLookup"
         :methods="donationMethods"
+        @request-create-event="openEventFormFromDonation"
+      />
+    </div>
+
+    <div v-if="showEventForm" class="fixed top-0 left-0 w-full h-full flex justify-center items-center z-20 bg-black/50">
+      <EventForm 
+        :submit-event="createEvent"  
+        :cancel-submisison="cancelEvent"
+        :view-only="false" 
       />
     </div>
 
@@ -76,20 +99,23 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref, computed, type Ref } from 'vue'
 import DashboardCard from '~/components/Cards/DashboardCard/DashboardCard.vue'
 import DashboardStat from '~/components/Banners/DashboardBanner.vue'
 import DonationForm from '~/components/Forms/DonationForm.vue'
 import GrantForm from '~/components/Forms/GrantForm.vue'
+import EventForm from '~/components/Forms/EventForm.vue'
 import { useDonationDropDown } from '~/composables/useDonationDropDown'
 import { useGrantsDropDown } from '~/composables/useGrantDropDowns'
+import { useEventDropDown } from '~/composables/useEventDropDown'
 import { useAuth } from '~/composables/useAuth'
+import { useDonation } from '~/composables/useDonation'
+import { useEvent } from '~/composables/useEvent'
 import { useDonor } from '~/composables/useDonor'
 import { useGrant } from '~/composables/useGrant'
 import { useGrantor } from '~/composables/useGrantor'
 import { navigateTo } from '#app'
 import type { Donation, Donor, Grant, Grantor } from '~~/server/utils/generated/prisma/browser'
-import { useDonation } from '~/composables/useDonation';
 
 const { session, getSession } = useAuth()
 session.value = await getSession()
@@ -97,36 +123,42 @@ if (!session.value?.user) {
   await navigateTo("/")
 }
 
-const {donationsData, getDonations, postDonation} = useDonation();
-await getDonations();
+const { donationsData, postDonation } = useDonation();
+const { donors } = useDonor();
+const { grantsData, postGrant } = useGrant();
+const { grantors } = useGrantor();
+const { eventsData, postEvent } = useEvent();
 
-const {donors, getDonors} = useDonor();
-await getDonors();
+const donorTableData = computed(() =>
+    donors.value.map((thisDonor: any) => ({
+        donor: thisDonor,
+        donations: thisDonor.donations,
+    }))
+);
 
-const {grantsData, getGrants, postGrant} = useGrant();
-await getGrants();
-
-const {grantors , getGrantors} = useGrantor();
-await getGrantors();
-
-
-
-const donorTableData:Ref<{donor:Donor, donations:Donation[]}[]> = ref([]);
-donors.value.map((thisDonor:Donor,index:number) => {
-  donorTableData.value.push({donor:thisDonor,donations:donors.value[index].donations})
-})
-
-const grantorTableData:Ref<{grantor:Grantor, grants:Grant[]}[]> = ref([]);
-grantors.value.map((thisGrantor:Grantor,index:number) => {
-  grantorTableData.value.push({grantor:thisGrantor,grants:grantors.value[index].grants})
-})
+const grantorTableData = computed(() =>
+    grantors.value.map((thisGrantor: any) => ({
+        grantor: thisGrantor,
+        grants: thisGrantor.grants,
+    }))
+);
 
 
 const totalDonors = donors.value
 
-const {donationEvents, donationMethods} = useDonationDropDown(donationsData.value)
+const { eventNames } = useEventDropDown(eventsData)
+const { donationMethods } = useDonationDropDown(donationsData.value)
+const eventDateLookup = computed<Record<string, string>>(() => {
+  const lookup: Record<string, string> = {}
+  eventsData.value.forEach((row) => {
+    if (row.event.eventName && row.event.eventDate) {
+      lookup[row.event.eventName] = row.event.eventDate.toISOString().split('T')[0] ?? ''
+    }
+  })
+  return lookup
+})
 
-const {grantPurposes, grantMethods} = useGrantsDropDown(grantsData.value)
+const { grantPurposes, grantMethods } = useGrantsDropDown(grantsData.value)
 
 const user:Ref<{id:string, permissionLevel:number}> = ref({id:"",permissionLevel:0});
 if (session.value?.user) {
@@ -134,9 +166,12 @@ if (session.value?.user) {
   user.value.permissionLevel = session.value.user.permission
 }
 
+// default: no forms shown
 const showDonationForm = ref(false)
 const showGrantForm = ref(false)
+const showEventForm = ref(false)
 
+// handling clicks
 const handleDashboardButtonClick = (button: any) => {
   if (button.name === 'Add Donations') {
     showDonationForm.value = true
@@ -144,6 +179,10 @@ const handleDashboardButtonClick = (button: any) => {
   }
   if (button.name === 'Add Grants') {
     showGrantForm.value = true
+    return
+  }
+  if (button.name === 'Add Events') {
+    showEventForm.value = true
     return
   }
   if (button.link) {
@@ -173,17 +212,28 @@ const GrantCardProps = {
   ]
 }
 
+const EventCardProps = {
+    icon:"/icons/book.svg",
+    title:"Events",
+    description:"Manage hosted events and group donors per attendees.",
+    buttons: [
+    { name:"Add Events", icon: "/icons/plus.svg", accessLevel:1 },
+    { name:"View Events", link:"/events", icon: "/icons/eye.svg", accessLevel:1 },
+  ]
+}
+
 const SettingsCardProps = {
   icon:"/icons/settings.svg",
   title:"Settings",
   description:"Configure system settings, Manage user accounts, and control access.",
   buttons: [
-    { name:"Create Accounts", link:"/settings", icon:"/icons/plus.svg", accessLevel:3 },
+    { name:"Add Accounts", link:"/settings", icon:"/icons/plus.svg", accessLevel:3 },
     { name:"View Roles", link:"/settings/roles", icon:"/icons/eye.svg", accessLevel: 1},
     { name:"View Accounts", link:"/settings/accounts", icon: "/icons/people.svg", accessLevel:2 }
   ]
 }
 
+// handling hitting submit on the forms
 async function createDonation(values:Record<string,any>){
     const result = await postDonation(values,user.value)
     if(result.success){
@@ -200,10 +250,30 @@ async function createGrant(values:Record<string,any>){
     showGrantForm.value = false;
 }
 
+async function createEvent(values:Record<string,any>){
+    const result = await postEvent(values, user.value)
+    if(result.success){
+      alert("event created")
+      showEventForm.value = false;
+    } else if ((result as any).error?.code === 'EVENT_ALREADY_EXISTS' || (result as any).message === 'The event already exists') {
+      alert('The event already exists')
+    }
+}
 
+// when clicking "create event" from donation form, opens event form
+function openEventFormFromDonation(){
+    showEventForm.value = true;
+}
+
+// handling clicking cancel on forms to close them 
 function cancelDonation(){
     showDonationForm.value = false;
 }
+
+function cancelEvent(){
+  showEventForm.value = false;
+}
+
 function cancelGrant(){
   showGrantForm.value = false;
 }

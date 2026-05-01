@@ -1,6 +1,9 @@
 <template>
     <div class="flex-1 p-8 ">
-        <div class = "bg-white rounded-lg shadow-lg overflow-x-auto mx-auto">       
+        <div class="mb-3 flex justify-end">
+            <button class="rounded-md text-sm font-medium outline-none h-9 py-2 bg-slate-700 hover:bg-slate-800 text-white px-6" @click="exportCsv">Export CSV</button>
+        </div>
+        <div class = "bg-white rounded-lg shadow-lg overflow-hidden mx-auto">       
             <table class="w-full">
                 <thead  class="bg-[#c5d0d8] sticky top-0 z-10">
                     <tr>
@@ -139,6 +142,7 @@
 import type { Grant } from '~~/server/utils/generated/prisma/browser';
 import { FunnelIcon } from '@heroicons/vue/24/solid';
 import { NumberedListIcon } from '@heroicons/vue/24/outline';
+import { useCsvExport } from '~/composables/useCsvExport';
 const props = defineProps<{
     data:{grant:Grant,boardMember:{name:string} | null, grantor: {name: string} | null}[],
     editFunction: (grantData:{grant:Grant,boardMember:{name:string}| null, grantor: {name: string} | null},index:number) => Promise<void>,
@@ -147,6 +151,7 @@ const props = defineProps<{
     permissionLevel:number
 }>();
 
+const { downloadCsv } = useCsvExport()
 
 
 
@@ -298,5 +303,18 @@ const sortedIndices = computed(() => {
         })
     }
 })
+
+function exportCsv() {
+    downloadCsv('grants.csv', sortedIndices.value.map((row) => ({
+        grantor: row.grantor?.name ?? '',
+        purpose: row.grant.purpose ?? '',
+        monetaryAmount: row.grant.monetaryAmount ?? '',
+        nonMonetaryAmount: row.grant.nonMonetaryAmount ?? '',
+        paymentMethod: row.grant.method ?? '',
+        status: row.grant.status === 0 ? 'pending' : 'received',
+        receivedDate: row.grant.receivedDate ? row.grant.receivedDate.toISOString().split('T')[0] : '',
+        lastEditor: row.boardMember?.name ?? '',
+    })))
+}
 
 </script>
