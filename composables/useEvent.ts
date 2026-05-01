@@ -1,20 +1,31 @@
 import type { Event } from '~~/server/utils/generated/prisma/browser';
 
 export const useEvent = () => {
-    const eventsData: Ref<{ event: Event, boardMember: { name: string } | null }[]> = ref([]);
+    const { data: rawData } = useFetch('/api/event');
 
-    const getEvents = async () => {
-        const events = await $fetch('/api/event');
-        if (events.success && events.data) {
-            eventsData.value = events.data.map((event: any) => ({
-                event: {
-                    ...event,
-                    eventDate: event.eventDate ? new Date(event.eventDate) : null,
-                },
-                boardMember: event.boardMember,
-            }));
+    type EventRow = { event: Event & { eventDate: Date | null }; boardMember: { name: string } | null };
+
+    const eventsData = useState<EventRow[]>('events-data', () => []);
+
+    function transformEvent(event: any): EventRow {
+        return {
+            event: {
+                ...event,
+                eventDate: event.eventDate ? new Date(event.eventDate) : null,
+            },
+            boardMember: event.boardMember,
+        };
+    }
+
+    if (rawData.value?.success && rawData.value?.data) {
+        eventsData.value = rawData.value.data.map(transformEvent);
+    }
+
+    watch(rawData, (newData) => {
+        if (newData?.success && newData?.data) {
+            eventsData.value = newData.data.map(transformEvent);
         }
-    };
+    });
 
     const postEvent = async (values: Record<string, any>, user: { id: string, permissionLevel: number }) => {
         const result = await $fetch('/api/event', {
@@ -27,6 +38,9 @@ export const useEvent = () => {
                 description: values.description,
             }
         });
+        if (result.data) {
+            eventsData.value.push(transformEvent(result.data));
+        }
         return result;
     };
 
@@ -41,6 +55,12 @@ export const useEvent = () => {
                 description: values.description,
             }
         });
+        if (result.data) {
+            const idx = eventsData.value.findIndex(e => e.event.id === values.id);
+            if (idx !== -1) {
+                eventsData.value[idx] = transformEvent(result.data);
+            }
+        }
         return result;
     };
 
@@ -51,12 +71,17 @@ export const useEvent = () => {
                 permissionLevel,
             }
         });
+        if (result.success) {
+            const idx = eventsData.value.findIndex(e => e.event.id === id);
+            if (idx !== -1) {
+                eventsData.value.splice(idx, 1);
+            }
+        }
         return result;
     };
 
     return {
         eventsData,
-        getEvents,
         postEvent,
         putEvent,
         deleteEvent,

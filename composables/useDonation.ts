@@ -3,38 +3,42 @@ import type { Donation } from "~~/server/utils/generated/prisma/browser";
 type DonationEvent = { eventName: string; eventDate: Date | string | null } | null;
 
 export const useDonation = () => {
-    const donationsData:Ref<{donation: Donation & { event?: DonationEvent }, donor: {name: string} | null, boardMember: {name:string} | null}[]> = ref([]);
-    const getDonations = async () =>{
-        const result = await useFetch('/api/donation');
-        const donations = result.data.value;
-        if(donations?.success && donations.data){
-            const tempDonations:Ref<Donation[]> = ref([])
-            donations.data.map((donation) =>{
-                tempDonations.value.push({
-                        ...donation,
-                        receivedDate: donation.receivedDate? new Date(donation.receivedDate) : null,
-                        lastEditDate: donation.lastEditDate? new Date(donation.lastEditDate) : null,
-                    }
-                )
+    const { data: rawData } = useFetch('/api/donation');
 
-            })
-            tempDonations.value.map((thisDonation:Donation, index:number) => {  
-                donationsData.value.push({
-                    donation:{
-                        ...thisDonation,
-                        receivedDate: thisDonation.receivedDate? new Date(thisDonation.receivedDate) : null,
-                        lastEditDate: thisDonation.lastEditDate? new Date(thisDonation.lastEditDate) : null,
-                        event: thisDonation.event ? {
-                            ...thisDonation.event,
-                            eventDate: thisDonation.event.eventDate ? new Date(thisDonation.event.eventDate) : null,
-                        } : null,
-                    },
-                    donor: donations.data[index].donor,
-                    boardMember:donations.data[index].boardMember            
-                })
-            });
+    type DonationRow = {
+        donation: Donation & { event?: DonationEvent };
+        donor: any;
+        boardMember: any;
+    };
+
+    const donationsData = useState<DonationRow[]>('donations-data', () => []);
+
+    function transformDonation(donation: any): DonationRow {
+        return {
+            donation: {
+                ...donation,
+                receivedDate: donation.receivedDate ? new Date(donation.receivedDate) : null,
+                lastEditDate: donation.lastEditDate ? new Date(donation.lastEditDate) : null,
+                event: donation.event ? {
+                    ...donation.event,
+                    eventDate: donation.event.eventDate ? new Date(donation.event.eventDate) : null,
+                } : null,
+            },
+            donor: donation.donor,
+            boardMember: donation.boardMember,
+        };
+    }
+
+    if (rawData.value?.success && rawData.value?.data) {
+        donationsData.value = rawData.value.data.map(transformDonation);
+    }
+
+    watch(rawData, (newData) => {
+        if (newData?.success && newData?.data) {
+            donationsData.value = newData.data.map(transformDonation);
         }
-    } 
+    });
+
     const postDonation = async (values:Record<string,any>,user:{id:string, permissionLevel:number}) =>{
         const result = await $fetch('/api/donation',{
             method:"POST",
@@ -52,6 +56,9 @@ export const useDonation = () => {
                 receivedDate: values.receivedDate,
             }
         })
+        if (result.data) {
+            donationsData.value.push(transformDonation(result.data));
+        }
         return result;
     }
     const putDonation = async (values:Record<string,any>,user:{id:string, permissionLevel:number}) =>{
@@ -71,6 +78,12 @@ export const useDonation = () => {
                 receivedDate: values.receivedDate,
             }
         })
+        if (result.data) {
+            const idx = donationsData.value.findIndex(d => d.donation.id === values.id);
+            if (idx !== -1) {
+                donationsData.value[idx] = transformDonation(result.data);
+            }
+        }
         return result;
     }
     const deleteDonation = async (id:string,permissionLevel:number) =>{
@@ -80,17 +93,18 @@ export const useDonation = () => {
                 permissionLevel: permissionLevel
             }
         })
+        if (result.success) {
+            const idx = donationsData.value.findIndex(d => d.donation.id === id);
+            if (idx !== -1) {
+                donationsData.value.splice(idx, 1);
+            }
+        }
         return result;
     }
-return {
-        getDonations,
+    return {
+        donationsData,
         postDonation,
         putDonation,
         deleteDonation,
-        donationsData
-    }
-}
-
- 
-
-    
+    };
+};

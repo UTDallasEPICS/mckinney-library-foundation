@@ -99,7 +99,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref, computed, type Ref } from 'vue'
 import DashboardCard from '~/components/Cards/DashboardCard/DashboardCard.vue'
 import DashboardStat from '~/components/Banners/DashboardBanner.vue'
 import DonationForm from '~/components/Forms/DonationForm.vue'
@@ -109,13 +109,13 @@ import { useDonationDropDown } from '~/composables/useDonationDropDown'
 import { useGrantsDropDown } from '~/composables/useGrantDropDowns'
 import { useEventDropDown } from '~/composables/useEventDropDown'
 import { useAuth } from '~/composables/useAuth'
+import { useDonation } from '~/composables/useDonation'
+import { useEvent } from '~/composables/useEvent'
 import { useDonor } from '~/composables/useDonor'
 import { useGrant } from '~/composables/useGrant'
 import { useGrantor } from '~/composables/useGrantor'
 import { navigateTo } from '#app'
 import type { Donation, Donor, Grant, Grantor } from '~~/server/utils/generated/prisma/browser'
-import { useDonation } from '~/composables/useDonation';
-import { useEvent } from '~/composables/useEvent'
 
 const { session, getSession } = useAuth()
 session.value = await getSession()
@@ -123,38 +123,31 @@ if (!session.value?.user) {
   await navigateTo("/")
 }
 
-const {donationsData, getDonations, postDonation} = useDonation();
-await getDonations();
+const { donationsData, postDonation } = useDonation();
+const { donors } = useDonor();
+const { grantsData, postGrant } = useGrant();
+const { grantors } = useGrantor();
+const { eventsData, postEvent } = useEvent();
 
-const { eventsData, getEvents, postEvent } = useEvent();
-await getEvents();
+const donorTableData = computed(() =>
+    donors.value.map((thisDonor: any) => ({
+        donor: thisDonor,
+        donations: thisDonor.donations,
+    }))
+);
 
-const {donors, getDonors} = useDonor();
-await getDonors();
-
-const {grantsData, getGrants, postGrant} = useGrant();
-await getGrants();
-
-const {grantors , getGrantors} = useGrantor();
-await getGrantors();
-
-
-
-const donorTableData:Ref<{donor:Donor, donations:Donation[]}[]> = ref([]);
-donors.value.map((thisDonor:Donor,index:number) => {
-  donorTableData.value.push({donor:thisDonor,donations:donors.value[index].donations})
-})
-
-const grantorTableData:Ref<{grantor:Grantor, grants:Grant[]}[]> = ref([]);
-grantors.value.map((thisGrantor:Grantor,index:number) => {
-  grantorTableData.value.push({grantor:thisGrantor,grants:grantors.value[index].grants})
-})
+const grantorTableData = computed(() =>
+    grantors.value.map((thisGrantor: any) => ({
+        grantor: thisGrantor,
+        grants: thisGrantor.grants,
+    }))
+);
 
 
 const totalDonors = donors.value
 
-const {eventNames} = useEventDropDown(eventsData)
-const {donationMethods} = useDonationDropDown(donationsData.value)
+const { eventNames } = useEventDropDown(eventsData)
+const { donationMethods } = useDonationDropDown(donationsData.value)
 const eventDateLookup = computed<Record<string, string>>(() => {
   const lookup: Record<string, string> = {}
   eventsData.value.forEach((row) => {
@@ -165,7 +158,7 @@ const eventDateLookup = computed<Record<string, string>>(() => {
   return lookup
 })
 
-const {grantPurposes, grantMethods} = useGrantsDropDown(grantsData.value)
+const { grantPurposes, grantMethods } = useGrantsDropDown(grantsData.value)
 
 const user:Ref<{id:string, permissionLevel:number}> = ref({id:"",permissionLevel:0});
 if (session.value?.user) {
@@ -261,7 +254,6 @@ async function createEvent(values:Record<string,any>){
     const result = await postEvent(values, user.value)
     if(result.success){
       alert("event created")
-      await getEvents()
       showEventForm.value = false;
     } else if ((result as any).error?.code === 'EVENT_ALREADY_EXISTS' || (result as any).message === 'The event already exists') {
       alert('The event already exists')

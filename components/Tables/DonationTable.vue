@@ -1,5 +1,8 @@
 <template>
     <div class="flex-1 p-8 ">
+        <div class="mb-3 flex justify-start">
+            <button class="rounded-md text-sm font-medium outline-none h-9 py-2 bg-slate-700 hover:bg-slate-800 text-white px-6" @click="exportCsv">Export CSV</button>
+        </div>
         <div class = "bg-white rounded-lg shadow-lg overflow-x-auto mx-auto">       
             <table class="w-full">
                 <thead  class="bg-[#c5d0d8] sticky top-0 z-10">
@@ -140,7 +143,7 @@
                                 <button v-if="permissionLevel > 0" class ="rounded-md text-sm font-medium outline-none h-9 py-2 bg-red-600 hover:bg-red-700 text-white px-6"@click=deleteFunction(row.donation.id,props.data.indexOf(row)) > Delete </button>
                                 <button class ="rounded-md text-sm font-medium outline-none h-9 py-2 bg-green-600 hover:bg-green-700 text-white px-6" @click="viewFunction(row,props.data.indexOf(row))" > View </button>
                             </div>
-                        </td>    
+                        </td>     
                     </tr>
                 </tbody>
             </table>
@@ -152,6 +155,7 @@
 import type { Donation } from '~~/server/utils/generated/prisma/browser';
 import { NumberedListIcon } from '@heroicons/vue/24/outline';
 import {FunnelIcon } from '@heroicons/vue/24/solid';
+import { useCsvExport } from '~/composables/useCsvExport';
 const props = defineProps<{
     data:{donation: Donation & {isAuthor: boolean}, boardMember:{name:string} | null, donor: {name: string} | null}[],
     editFunction: (donationData:{donation:Donation,boardMember:{name:string}| null, donor: {name: string} | null},index:number) => Promise<void>,
@@ -160,6 +164,7 @@ const props = defineProps<{
     permissionLevel:number
 }>();
 
+const { downloadCsv } = useCsvExport()
 
 
 
@@ -320,5 +325,19 @@ const sortedIndices = computed(() => {
         })
     }
 })
+
+function exportCsv() {
+    downloadCsv('donations.csv', sortedIndices.value.map((row) => ({
+        donor: row.donor?.name ?? '',
+        author: row.donation.isAuthor ? 'true' : 'false',
+        event: row.donation.event?.eventName ?? row.donation.event ?? '',
+        monetaryAmount: row.donation.monetaryAmount ?? '',
+        nonMonetaryAmount: row.donation.nonMonetaryAmount ?? '',
+        paymentMethod: row.donation.method ?? '',
+        status: row.donation.status === 0 ? 'pending' : 'received',
+        receivedDate: row.donation.receivedDate ? row.donation.receivedDate.toISOString().split('T')[0] : '',
+        lastEditor: row.boardMember?.name ?? '',
+    })))
+}
 
 </script>

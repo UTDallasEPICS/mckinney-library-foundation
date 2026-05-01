@@ -1,16 +1,37 @@
 import prisma from '~~/server/utils/prisma'
+import { requireSession } from "~~/server/utils/requireSession";
 
 
 export default defineEventHandler(async (event) =>{
     try{
-        const id = await getRouterParam(event, 'id');
-        const body = await readBody(event);
-        if(body.permissionLevel < 2){
+        const session = await requireSession(event, 2);
+        const id = getRouterParam(event, 'id');
+        if(!id){
             throw createError({
-                statusCode:401,
-                statusMessage:"User does not have permission to delete users"
-            })
+                statusCode: 400,
+                statusMessage: "User id is required"
+            });
         }
+
+        const targetUser = await prisma.user.findUnique({
+            where: { id },
+            select: { id: true, permission: true }
+        });
+
+        if(!targetUser){
+            throw createError({
+                statusCode: 404,
+                statusMessage: "User not found"
+            });
+        }
+
+        if (session.user.permission === 2 && targetUser.permission > 1) {
+            throw createError({
+                statusCode: 403,
+                statusMessage: "Admins can only delete viewer/editor accounts"
+            });
+        }
+
         const user = await prisma.user.delete({
             where:{
                 id:id
@@ -29,7 +50,5 @@ export default defineEventHandler(async (event) =>{
             message: "Failed to delete user",
             error: error, 
         }
-    }finally{
-        await prisma.$disconnect();
     }
 });

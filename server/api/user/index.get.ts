@@ -1,7 +1,9 @@
 import prisma from '~~/server/utils/prisma'
+import { requireSession } from "~~/server/utils/requireSession";
 
 export default defineEventHandler(async (event) =>{
     try{
+        await requireSession(event, 1);
         const data = await prisma.user.findMany();
         return{
             data:data,
@@ -17,7 +19,5 @@ export default defineEventHandler(async (event) =>{
             error: error, 
             data:null
         }
-    } finally {
-        await prisma.$disconnect()
-    } 
+    }
 });

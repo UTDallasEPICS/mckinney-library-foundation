@@ -20,8 +20,7 @@
       :email-list="emailList"
       :group-email="groupEmail"
       :cancel-email="cancelEmail"
-      user-name="Donor(s)"
-      />
+    />
   </div>
 
   <div v-if="updateDonor" class="fixed top-0 left-0 w-full h-full flex justify-center items-center z-20 bg-black/50">
@@ -50,11 +49,9 @@ import DonorTable from '~/components/Tables/DonorTable.vue';
 import EmailForm from '~/components/Forms/EmailForm.vue';
 import DonorForm from '~/components/Forms/DonorForm.vue';
 import DonationBar from '~/components/Bars/DonationBar.vue'
-//import { useAuth } from '~/composables/useAuth';
-//import { useDonation } from '~/composables/useDonation';
-//import { useDonor } from '~/composables/useDonor';
-//import { useDonorDropDown } from '~/composables/useDonationDropDown';
 import type { Donation, Donor } from '~~/server/utils/generated/prisma/browser';
+
+type DonorWithCount = Donor & { donationCount: number; isAuthor?: boolean }
 
 
 const {session, getSession} = useAuth();
@@ -72,16 +69,20 @@ else{
 const sendEmail = ref(false);
 const updateDonor = ref(false);
 const viewDonor = ref(false);
-const {donors, putDonor, deleteDonor, getDonors} = useDonor();
+const { donors, putDonor, deleteDonor } = useDonor();
 const emailList: Ref<string[]> = ref([])
 const nameList = ref("")
 const donorIndex = ref(0);
 
-await getDonors();
+const donorTableData = computed(() =>
+    donors.value.map((thisDonor: any) => ({
+        donor: thisDonor as DonorWithCount,
+        donations: thisDonor.donations,
+        boardMember: thisDonor.boardMember
+    }))
+);
 
-const donorTableData:Ref<{donor:Donor, donations:Donation[], boardMember:{name:string} | null}[]> = ref([]);
-
-const donorFormData:Ref<{donor:Donor}> = ref({
+const donorFormData:Ref<{donor: DonorWithCount}> = ref({
   donor:{
   id:"",
   boardMemberId:"",
@@ -93,17 +94,16 @@ const donorFormData:Ref<{donor:Donor}> = ref({
   notes:"",
   webLink:"",
   isAuthor: false,
-  preferredCommunication:""}
+  preferredCommunication:"",
+  donationCount: 0
+  }
 });
 
-donors.value.map((thisDonor:Donor,index:number) => {
-  donorTableData.value.push({donor:thisDonor,donations:donors.value[index].donations,boardMember:donors.value[index].boardMember})
-})
 
 const {donorOrganizations} = useDonorDropDown(donorTableData.value)
 
-const {donationsData, getDonations} = useDonation();
-await getDonations();
+const { donationsData } = useDonation();
+
 
 const DonorTableProps ={
   donorTableData:donorTableData.value,
@@ -139,6 +139,8 @@ function cancelUpdate(){
     webLink:"",
     isAuthor: false,
     preferredCommunication:"",
+    donationCount: 0
+
   }};
   updateDonor.value= false;
   viewDonor.value=false;
@@ -165,56 +167,40 @@ async function prepEmail(selected: Record<string, boolean>) {
     sendEmail.value = true;
   }
 }
-
-// for updating donor info
 async function prepDonorUpdate(donor:Donor,index:number){
   donorFormData.value.donor = {
-    ...donor,
-    isAuthor: Boolean(donor.isAuthor),
+    ...(donor as DonorWithCount),
+    isAuthor: Boolean((donor as any).isAuthor),
   };
   updateDonor.value = true;
   donorIndex.value = index;
 }
 
-async function prepDonorView(donor:Donor){
+async function prepDonorView(donor: Donor, index: number) {
   donorFormData.value.donor = {
     ...donor,
-    isAuthor: Boolean(donor.isAuthor),
-  }
+    isAuthor: Boolean((donor as any).isAuthor),
+    donationCount: (donor as any).donationCount ?? 0  
+  };
   viewDonor.value = true;
-  donorId.value = donor.id;
 }
-
- // prisma recieves a boolean when submitted
 async function editDonor(values:Record<string,any>) {
   const payload = {
     ...values,
     isAuthor: !!values.isAuthor
   };
-  // values.isAuthor = Boolean(values.isAuthor)
-  const result = await putDonor(values, user.value)
-  if(result.success && result.data){
-    donorTableData.value[donorIndex.value].donor={
-      ...result.data,
-    }
-    donorTableData.value[donorIndex.value].boardMember = result.data.boardMember? result.data.boardMember : null
-  }
+  await putDonor(values, user.value);
   updateDonor.value = false;
 }
 
 async function removeDonor(donor:Donor,index:number) {
   const result = await deleteDonor(donor,user.value.permissionLevel);
-  if(result.success){
-    donorTableData.value.splice(index,1);
-  }else if(result.error.code == 'P2003'){
+  if(result.error?.code == 'P2003'){
     alert("Cannot delete donor with donations"); 
   }
 }
 
 const addDonor = (data: any) => { 
-//hi there
-
-
   console.log("donros",donors)
   donors.value.push(data);
 };

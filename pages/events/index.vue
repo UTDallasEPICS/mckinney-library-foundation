@@ -49,8 +49,7 @@ if (session.value?.user) {
   navigateTo('/')
 }
 
-const { eventsData, getEvents, postEvent, putEvent, deleteEvent } = useEvent()
-await getEvents()
+const { eventsData, postEvent, putEvent, deleteEvent } = useEvent()
 
 const showEventForm = ref(false)
 const updateEvent = ref(false)
@@ -88,7 +87,6 @@ function cancelUpdate() {
 async function createEvent(values: Record<string, any>) {
   const result = await postEvent(values, user.value)
   if (result.success) {
-    await getEvents()
     showEventForm.value = false
   } else if ((result as any).error?.code === 'EVENT_ALREADY_EXISTS' || (result as any).message === 'The event already exists') {
     alert('The event already exists')
@@ -125,14 +123,7 @@ async function prepEventView(eventData: { event: { id: string, eventName: string
 
 async function editEvent(values: Record<string, any>) {
   const result = await putEvent(values, user.value)
-  if (result.success && result.data) {
-    eventsData.value[eventIndex.value] = {
-      event: {
-        ...result.data,
-        eventDate: result.data.eventDate ? new Date(result.data.eventDate) : null,
-      },
-      boardMember: result.data.boardMember,
-    }
+  if (result.success) {
     updateEvent.value = false
     viewEvent.value = false
   } else if ((result as any).error?.code === 'EVENT_ALREADY_EXISTS' || (result as any).message === 'The event already exists') {
@@ -142,12 +133,10 @@ async function editEvent(values: Record<string, any>) {
 
 async function removeEvent(id: string, index: number) {
   const result = await deleteEvent(id, user.value.permissionLevel)
-  if (result.success) {
-    eventsData.value.splice(index, 1)
-  } else {
+  if (!result.success) {
     const deleteResult = result as any
     if (deleteResult.message === 'There are donations under this event' || deleteResult.error?.code === 'EVENT_HAS_DONATIONS' || deleteResult.error?.code === 'P2003') {
-    alert('There are donations under this event')
+      alert('There are donations under this event')
     }
   }
 }

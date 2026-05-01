@@ -34,15 +34,13 @@ const props = defineProps<{
     user: { id: string, permissionLevel: number }
 }>();
 
-const { postEvent, getEvents } = useEvent();
-await getEvents();
+const { postEvent } = useEvent();
 
 const addEvent = ref(false);
 
 async function createEvent(values: Record<string, any>) {
     const result = await postEvent(values, props.user);
     if (result.success) {
-        await getEvents();
         addEvent.value = false;
     } else if ((result as any).error?.code === 'EVENT_ALREADY_EXISTS' || (result as any).message === 'The event already exists') {
         alert('The event already exists');
