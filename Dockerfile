@@ -1,18 +1,19 @@
 # Build container
-FROM node:22-alpine AS builder
-COPY . ./
-
+FROM node:alpine AS builder
+COPY package.json ./
+COPY pnpm-lock.yaml ./
+COPY pnpm-workspace.yaml ./
 ENV PNPM_HOME="/pnpm"
 ENV PATH="$PNPM_HOME:$PATH"
-RUN corepack enable
-
+RUN npm i -g pnpm
 RUN pnpm i --frozen-lockfile
+
+COPY . ./
 RUN pnpm prisma generate
 RUN pnpm run build
 
 # Deployment container
-FROM node:22-alpine AS deployment
-
+FROM node:alpine AS deployment
 # Copy stuff from build container to ensure we have prisma and everything it needs
 COPY --from=builder /.output /
 COPY --from=builder /package.json /
