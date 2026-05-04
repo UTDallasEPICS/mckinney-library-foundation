@@ -1,12 +1,20 @@
 <template>
     <div class="flex-1 p-8">
-        <button
-            v-if="permissionLevel > 0"
-            @click="addFunction()"
-            class="disabled:bg-slate-300 rounded-md text-sm font-medium outline-none h-9 py-2 bg-blue-600 hover:bg-blue-700 text-white px-6 my-3 "
-        >
-            Add Event
-        </button>
+        <div class="my-3 flex flex-wrap justify-start gap-3">
+            <button
+                class="rounded-md text-sm font-medium outline-none h-9 py-2 bg-slate-700 hover:bg-slate-800 text-white px-6"
+                @click="exportCsv"
+            >
+                Export CSV
+            </button>
+            <button
+                v-if="permissionLevel > 0"
+                @click="addFunction()"
+                class="disabled:bg-slate-300 rounded-md text-sm font-medium outline-none h-9 py-2 bg-blue-600 hover:bg-blue-700 text-white px-6"
+            >
+                Add Event
+            </button>
+        </div>
         <div class="bg-white rounded-lg shadow-lg overflow-x-auto mx-auto">
             <table class="w-full">
                 <thead class="bg-[#c5d0d8] sticky top-0 z-10">
@@ -93,6 +101,7 @@
 import type { Event as PrismaEvent } from '~~/server/utils/generated/prisma/browser';
 import { FunnelIcon } from '@heroicons/vue/24/solid';
 import { NumberedListIcon } from '@heroicons/vue/24/outline';
+import { useCsvExport } from '~/composables/useCsvExport';
 
 const props = defineProps<{
     data: { event: PrismaEvent, boardMember: { name: string } | null }[]
@@ -102,6 +111,7 @@ const props = defineProps<{
     deleteFunction: (id: string, index: number) => Promise<void>
     permissionLevel: number
 }>();
+const { downloadCsv } = useCsvExport()
 
 const activeSearch: Ref<{ name: 'eventName' | 'eventDate' | 'boardName', active: boolean }[]> = ref([
     { name: 'eventName', active: false },
@@ -209,6 +219,15 @@ const sortedIndices = computed(() => {
 
 function formatDate(dateValue: Date | null) {
     return dateValue ? dateValue.toISOString().split('T')[0] ?? '' : '';
+}
+
+function exportCsv() {
+    downloadCsv('events.csv', sortedIndices.value.map((row) => ({
+        eventName: row.event.eventName ?? '',
+        eventDate: formatDate(row.event.eventDate),
+        description: row.event.description ?? '',
+        lastEditor: row.boardMember?.name ?? '',
+    })))
 }
 
 </script>
