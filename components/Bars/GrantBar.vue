@@ -49,14 +49,9 @@
 import type { Grant, Grantor } from '~~/server/utils/generated/prisma/browser';
 import GrantForm from '../Forms/GrantForm.vue';
 import GrantorForm from '../Forms/GrantorForm.vue';
-import {useGrant} from '~/composables/useGrant';
-import { useGrantor } from '~/composables/useGrantor';
-import { useGrantorDropDown,useGrantsDropDown } from '~/composables/useGrantDropDowns';
 
-const {postGrant} = useGrant();
-const {postGrantor} = useGrantor();
-
-
+const { postGrant, grantsData } = useGrant();
+const { postGrantor, grantors: grantorData } = useGrantor();
 
 const addGrant = ref(false);
 const addGrantor = ref(false);
@@ -67,49 +62,34 @@ const props = defineProps<{
     grants:{grant:Grant,boardMember:{name:string}| null, grantor: {name: string} | null,}[]
 }>();
 
-const {grantMethods,grantPurposes} = useGrantsDropDown(props.grants)
-const {grantorOrganizations} = useGrantorDropDown(props.grantors)
+const {grantMethods,grantPurposes} = useGrantsDropDown(props.grants);
+const {grantorOrganizations} = useGrantorDropDown(props.grantors);
+const toasts = useToast()
 
 async function createGrantor(values:Record<string,any>){
-    const result = await postGrantor(values, props.user)
-    if(result.error.code === 'P2002'){
-        alert('Grantor already exists');
+    const result = await postGrantor(values, props.user);
+    if(result.error?.code === 'P2002'){
+        toasts.add({
+            title: "Grantor already exists!"
+        });
     }
     else if(result.data){
-        if(props.grantors){
-            props.grantors.push({
-                grantor:{...result.data},
-                grants: [],
-                boardMember: result.data.boardMember? result.data.boardMember : null
-            })
-                   
-        }
-    addGrantor.value=false;
+        addGrantor.value=false;
     }
 }
 function cancelGrantor(){
     addGrantor.value = false;
 }
 async function createGrant(values:Record<string,any>){
-    const result = await postGrant(values,props.user)
+    const result = await postGrant(values,props.user);
     if(result.data){
-        props.grants?.push({
-            ...result.data, 
-            grant:{
-                ...result.data,
-                proposedDate: result.data.proposedDate ? new Date(result.data.proposedDate) : null,
-                receivedDate: result.data.receivedDate ? new Date(result.data.receivedDate) : null,
-                lastEditDate: result.data.lastEditDate ? new Date(result.data.lastEditDate) : null,
-            }        
-        })
+        addGrant.value = false;
     }else{
         console.error(result.error);
     }
-    addGrant.value = false;
 }
 function cancelGrant(){
     addGrant.value = false;
 }
-
 
 </script>

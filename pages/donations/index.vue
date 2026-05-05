@@ -21,8 +21,10 @@
         :cancel-submisison="cancelUpdate"
         :data="donationData"
         :index="donationIndex"
-        :events="donationEvents"
+        :events="eventNames"
+        :event-date-lookup="eventDateLookup"
         :methods="donationMethods"
+        @request-create-event="openEventFormFromDonation"
     />
 </div>
 
@@ -33,21 +35,29 @@
         :submit-donation="updateDonation"
         :cancel-submisison="cancelUpdate"
         :data="donationData"
-        :events="donationEvents"
+        :events="eventNames"
+        :event-date-lookup="eventDateLookup"
         :methods="donationMethods"
     />
 </div>
 
+<div v-if="showEventForm" class="fixed top-0 left-0 w-full h-full flex justify-center items-center z-20 bg-black/50">
+    <EventForm :submit-event="createEvent" :cancel-submisison="cancelEvent" :view-only="false" />
+</div>
+
 </template>
 
-<script setup lang = ts>
+<script setup lang ="ts">
 import DonationBar from '~/components/Bars/DonationBar.vue';
 import DonationTable from '~/components/Tables/DonationTable.vue';
 import DonationForm from '~/components/Forms/DonationForm.vue';
+import EventForm from '~/components/Forms/EventForm.vue';
 import { useAuth } from '~/composables/useAuth';
 import { useDonor } from '~/composables/useDonor';
-import { useDonationDropDown } from '~/composables/useDonationDropDown';
 import { useDonation } from '~/composables/useDonation';
+import { useDonationDropDown } from '~/composables/useDonationDropDown';
+import { useEvent } from '~/composables/useEvent';
+import { useEventDropDown } from '~/composables/useEventDropDown';
 import type { Donation, Donor } from '~~/server/utils/generated/prisma/browser';
 
 
@@ -66,34 +76,45 @@ else{
 
 const showUpdateDonation = ref(false);
 const showViewDonation = ref(false);
+const showEventForm = ref(false);
 
 
-const {donors, getDonors} = useDonor();
-await getDonors();
+const { donors } = useDonor();
 
-const {donationsData, getDonations, putDonation, deleteDonation} = useDonation();
-await getDonations();
+const { donationsData, putDonation, deleteDonation } = useDonation();
 
-const {donationEvents, donationMethods} = useDonationDropDown(donationsData.value)
+const { eventsData, postEvent } = useEvent();
+
+const { eventNames } = useEventDropDown(eventsData);
+const { donationMethods } = useDonationDropDown(donationsData.value);
+const eventDateLookup = computed<Record<string, string>>(() => {
+    const lookup: Record<string, string> = {}
+    eventsData.value.forEach((row) => {
+        if (row.event.eventName && row.event.eventDate) {
+            lookup[row.event.eventName] = row.event.eventDate.toISOString().split('T')[0] ?? ''
+        }
+    })
+    return lookup
+})
 
 const donationData:Ref<{ 
     donation:Donation,
     boardMember:{name:string}| null, 
     donor: {name: string } | null}> = ref({
         donation:{
-        id:"",
-        boardMemberId:"",
-        donorId:"",
-        method:"",
-        event:"",
-        monetaryAmount:"",
-        nonMonetaryAmount:"",
-        status:0,
-        isAuthor: false,
-        notes:"",
-        reason:"",
-        receivedDate:null,
-        lastEditDate:null,
+            id:"",
+            boardMemberId:"",
+            donorId:"",
+            method:"",
+            event:null,
+            monetaryAmount:"",
+            nonMonetaryAmount:"",
+            status:0,
+            isAuthor: false,
+            notes:"",
+            reason:"",
+            receivedDate:null,
+            lastEditDate:null,
         },
         boardMember:null,
         donor:null
@@ -101,10 +122,13 @@ const donationData:Ref<{
 const donationIndex = ref(0);
 
 
-const donorTableData:Ref<{donor:Donor, donations:Donation[],boardMember:{name:string} }[]> = ref([]);
-donors.value.map((thisDonor:Donor,index:number) => {
-  donorTableData.value.push({donor:thisDonor,donations:donors.value[index].donations, boardMember:{name:donors.value[index].boardMember.name} })
-})
+const donorTableData = computed(() =>
+    donors.value.map((thisDonor: any) => ({
+        donor: thisDonor,
+        donations: thisDonor.donations,
+        boardMember: thisDonor.boardMember
+    }))
+);
 
 async function prepDonationUpdate(donationInfo:{donation:Donation,boardMember:{name:string}| null, donor: {name: string} | null},index:number){
     donationData.value.donation = donationInfo.donation;
@@ -124,16 +148,7 @@ async function prepDonationView(donationInfo:{donation:Donation,boardMember:{nam
 
 
 async function updateDonation(values:Record<string, any>){
-    const result = await putDonation(values,user.value)
-    if(result.data){
-        donationsData.value[values.index].donation ={
-            ...result.data, 
-            receivedDate: result.data.receivedDate ? new Date(result.data.receivedDate) : null,
-            lastEditDate: result.data.lastEditDate ? new Date(result.data.lastEditDate) : null,
-        }
-        donationsData.value[values.index].boardMember = result.data.boardMember
-        donationsData.value[values.index].donor = result.data.donor
-    }
+    await putDonation(values, user.value);
     showUpdateDonation.value = false;
 }
 
@@ -146,7 +161,7 @@ function cancelUpdate(){
         boardMemberId:"",
         donorId:"",
         method:"",
-        event:"",
+        event:null,
         monetaryAmount:"",
         nonMonetaryAmount:"",
         status:0,
@@ -161,11 +176,25 @@ function cancelUpdate(){
     }
 }
 
-async function removeDonation(id:string,index:number){
-    const result = await deleteDonation(id, user.value.permissionLevel)
-    if(result.success){
-        donationsData.value.splice(index,1)
+async function createEvent(values:Record<string,any>) {
+    const result = await postEvent(values, user.value);
+    if (result.success) {
+        showEventForm.value = false;
+    } else if ((result as any).error?.code === 'EVENT_ALREADY_EXISTS' || (result as any).message === 'The event already exists') {
+        alert('The event already exists');
     }
+}
+
+function openEventFormFromDonation(){
+    showEventForm.value = true;
+}
+
+function cancelEvent(){
+    showEventForm.value = false;
+}
+
+async function removeDonation(id:string, index:number){
+    await deleteDonation(id, user.value.permissionLevel);
 }
 
 

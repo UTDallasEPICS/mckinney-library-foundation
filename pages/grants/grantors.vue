@@ -48,8 +48,6 @@ import EmailForm from '~/components/Forms/EmailForm.vue';
 import GrantorForm from '~/components/Forms/GrantorForm.vue';
 import GrantBar from '~/components/Bars/GrantBar.vue'
 import { useAuth } from '~/composables/useAuth';
-import { useGrant } from '~/composables/useGrant';
-import { useGrantorDropDown } from '~/composables/useGrantDropDowns';
 import type { Grant, Grantor } from '~~/server/utils/generated/prisma/browser';
 
 
@@ -68,14 +66,19 @@ else{
 const sendEmail = ref(false);
 const updateGrantor = ref(false);
 const viewGrantor = ref(false);
-const {grantors, getGrantors, putGrantor, deleteGrantor} = useGrantor();
+const { grantors, putGrantor, deleteGrantor } = useGrantor();
 const emailList: Ref<string[]> = ref([])
 const nameList = ref("")
 const grantorIndex = ref(0);
+const toasts = useToast();
 
-await getGrantors();
-
-const grantorTableData:Ref<{grantor:Grantor, grants:Grant[], boardMember:{name:string} | null}[]> = ref([]);
+const grantorTableData = computed(() =>
+    grantors.value.map((thisGrantor: any) => ({
+        grantor: thisGrantor,
+        grants: thisGrantor.grants,
+        boardMember: thisGrantor.boardMember
+    }))
+);
 
 const grantorFormData:Ref<{grantor:Grantor}> = ref({
   grantor:{
@@ -91,14 +94,10 @@ const grantorFormData:Ref<{grantor:Grantor}> = ref({
   preferredCommunication:""}
 });
 
-grantors.value.map((thisGrantor:Grantor,index:number) => {
-  grantorTableData.value.push({grantor:thisGrantor,grants:grantors.value[index].grants,boardMember:grantors.value[index].boardMember})
-})
 
 const {grantorOrganizations} = useGrantorDropDown(grantorTableData.value)
 
-const {grantsData, getGrants} = useGrant();
-await getGrants();
+const { grantsData } = useGrant();
 
 const GrantorTableProps ={
   grantorTableData:grantorTableData.value,
@@ -173,25 +172,18 @@ async function prepGrantorView(grantor:Grantor){
 }
 
 async function editGrantor(values:Record<string,any>) {
-  const result = await putGrantor(values,user.value)
-  if(result.success && result.data){
-    grantorTableData.value[grantorIndex.value].grantor={
-      ...result.data,
-    }
-    grantorTableData.value[grantorIndex.value].boardMember = result.data.boardMember? result.data.boardMember : null
-  }
+  await putGrantor(values,user.value);
   updateGrantor.value = false;
 }
 
 async function removeGrantor(grantor:Grantor,index:number) {
-  const result = await deleteGrantor(grantor,user.value.permissionLevel)
-  if(result.success){
-    grantorTableData.value.splice(index,1);
-  }else if(result.error.code == 'P2003'){
-    alert("Cannot delete grantor with grants"); 
+  const result = await deleteGrantor(grantor,user.value.permissionLevel);
+  if(result.error?.code == 'P2003'){
+    toasts.add({
+      title: "Cannot delete a grantor with grants on record"
+    });
   }
 }
-
 
 
 async function groupEmail(values:Record<string, any>){
@@ -204,7 +196,7 @@ async function groupEmail(values:Record<string, any>){
       text:values.Message,
       emails:emailList.value,
     }
-  })
+  });
   sendEmail.value= false;
   emailList.value = [];
   nameList.value = "";
