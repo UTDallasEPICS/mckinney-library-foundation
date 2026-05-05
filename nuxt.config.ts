@@ -18,8 +18,8 @@ export default defineNuxtConfig({
   modules: [
     '@vee-validate/nuxt',
     'nuxt-nodemailer',
-    '@nuxtjs/tailwindcss',
-    'nuxt-lucide-icons'
+    'nuxt-lucide-icons',
+    '@nuxt/ui'
   ],
   css: ['~/assets/css/main.css'],
   veeValidate: {
