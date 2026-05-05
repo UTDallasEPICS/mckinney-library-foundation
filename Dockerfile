@@ -1,5 +1,5 @@
 # Build container
-FROM node:22-alpine AS builderRUN apk add --no-cache build-base python3
+FROM node:alpine AS builder
 
 # Use Workdir because things like tailwind will scan the entire workdir and can cause issues
 WORKDIR /app
@@ -18,7 +18,7 @@ RUN pnpm prisma generate
 RUN pnpm run build
 
 # Deployment container
-FROM node:22-alpine AS deployment
+FROM node:alpine AS deployment
 WORKDIR /app
 
 # Copy stuff from build container to ensure we have prisma and everything it needs
