@@ -70,6 +70,7 @@ const { grantors, putGrantor, deleteGrantor } = useGrantor();
 const emailList: Ref<string[]> = ref([])
 const nameList = ref("")
 const grantorIndex = ref(0);
+const toasts = useToast();
 
 const grantorTableData = computed(() =>
     grantors.value.map((thisGrantor: any) => ({
@@ -178,7 +179,9 @@ async function editGrantor(values:Record<string,any>) {
 async function removeGrantor(grantor:Grantor,index:number) {
   const result = await deleteGrantor(grantor,user.value.permissionLevel);
   if(result.error?.code == 'P2003'){
-    alert("Cannot delete grantor with grants"); 
+    toasts.add({
+      title: "Cannot delete a grantor with grants on record"
+    });
   }
 }
 

@@ -21,6 +21,7 @@ const {session, getSession} = useAuth();
 session.value = await getSession();
 
 const permissionLevel = ref(0);
+const toasts = useToast()
 
 if(session.value?.user){
   permissionLevel.value = session.value.user.permission;
@@ -38,7 +39,9 @@ const AccReqFormProps ={
 }
 
 async function createAccount(values:Record<string,any>){
-    alert("account created");
+    toasts.add({
+      title: "Account created!"
+    });
     const info = await $fetch("/api/user",{
         method: "POST",
         body:{

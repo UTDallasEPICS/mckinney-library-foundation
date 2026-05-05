@@ -83,6 +83,7 @@ const props = defineProps<{
 const {eventNames} = useEventDropDown(eventsData)
 const {donationMethods} = useDonationDropDown(props.donations);
 const {donorOrganizations} = useDonorDropDown(props.donors);
+const toasts = useToast()
 const eventDateLookup = computed<Record<string, string>>(() => {
     const lookup: Record<string, string> = {};
     eventsData.value.forEach((row) => {
@@ -96,7 +97,9 @@ const eventDateLookup = computed<Record<string, string>>(() => {
 async function createDonor(values:Record<string,any>){
     const result = await postDonor(values,props.user);
     if(result.error?.code === 'P2002'){
-        alert('Donor already exists');
+        toasts.add({
+            title: "Donor already exists!"
+        });
     }
     else if(result.data){
         addDonor.value=false;
