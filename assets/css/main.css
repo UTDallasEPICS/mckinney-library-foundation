@@ -1,8 +1,21 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import "tailwindcss";
+@import "@nuxt/ui";
 
-@layer components{
+:root {
+    --ui-primary: #224344;
+}
+.dark {
+    --ui-primary: #224344;
+}
+
+@layer base {
+    body {
+        background-color: white !important;
+        color: #111827 !important;
+    }
+}
+
+@layer components {
     .form-field-label{
         @apply text-sm leading-none font-medium text-[#5a6a77] mt-3;
     }

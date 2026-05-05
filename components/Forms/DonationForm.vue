@@ -95,7 +95,7 @@
                     </select>
                 </VeeField>
                 <VeeField v-slot="{field}" autocomplete="off" :disabled="viewOnly" class="form-input focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px]" name="receivedDate">
-                    <input ref="receivedDateInputEl" id="reqDate"  autocomplete="off" :disabled="viewOnly" v-bind="field" type="date"></input>
+                    <input ref="receivedDateInputEl" id="reqDate"  autocomplete="off" :disabled="viewOnly" v-bind="field" type="date" class="outline-none text-black md:text-sm bg-white border-gray-300 h-11"></input>
                 </VeeField>
                 <div>
                     <VeeErrorMessage class="text-red-500 text-sm"  name="method" />

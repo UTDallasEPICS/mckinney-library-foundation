@@ -28,13 +28,16 @@
 
 <script setup lang="ts">
 
+const toasts = useToast();
 const props = defineProps<{
   requests: {id: string;name: string;email: string;}[] | null
   permissionLevel:number,
   accounts: {id:string, name:string, email:string, permission:number, status:boolean}[]
 }>();
 async function createAccount(account: {id:string, name: string, email: string},index:number){
-  alert("account created for : " + account.email);
+  toasts.add({
+    title: "Created an account for : " + account.email
+  });
   const result = await $fetch("/api/user",{
     method: "POST",
     body:{
