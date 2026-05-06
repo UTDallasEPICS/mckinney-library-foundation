@@ -48,7 +48,7 @@
       <DashboardStat
         title="Total Donations"
         :value="totalDonations"
-        description="All time total ammount"
+        description="All time total amount"
       />
       <DashboardStat
         title="Total Grants"
@@ -226,7 +226,7 @@ const EventCardProps = {
 const SettingsCardProps = {
   icon:"/icons/settings.svg",
   title:"Settings",
-  description:"Configure system settings, Manage user accounts, and control access.",
+  description:"Configure system settings, manage user accounts, and control access.",
   buttons: [
     { name:"Add Accounts", link:"/settings", icon:"/icons/plus.svg", accessLevel:3 },
     { name:"View Roles", link:"/settings/roles", icon:"/icons/eye.svg", accessLevel: 1},

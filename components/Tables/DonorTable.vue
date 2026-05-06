@@ -73,9 +73,9 @@
                                 <span @click="toggleSearch(5)">First Donation</span>
                                 <button @click="toggleSearch(5)" v-if="!activeSearch[5].active"><FunnelIcon class="w-4 h-4"/></button>
                                 <div  v-else>
-                                    <p>start date</p>
+                                    <p>Start Date</p>
                                     <input autocomplete="off" v-model="earliestFirstDono" type="date"  @click.stop class="mt-2 px-2 py-1 border rounded"placeholder="minimum"/>
-                                    <p>end date</p>
+                                    <p>End Date</p>
                                     <input autocomplete="off" v-model="latestFirstDono" type="date" @click.stop class="mt-2 px-2 py-1 border rounded"placeholder="maximum"/>
                                     <button class="text-lg" @click="toggleSearch(5)">&#x24E7;</button>
                                 </div>
@@ -88,9 +88,9 @@
                                 <span v-if="!activeSearch[6].active">Last Donation</span>
                                 <button @click="toggleSearch(6)" v-if="!activeSearch[6].active"><FunnelIcon class="w-4 h-4"/></button>
                                 <div  v-else>
-                                    <p>start date</p>
+                                    <p>Start Date</p>
                                     <input autocomplete="off" v-model="earliestLastDono" type="date"  @click.stop class="mt-2 px-2 py-1 border rounded"placeholder="minimum"/>
-                                    <p>end date</p>
+                                    <p>End Date</p>
                                     <input autocomplete="off" v-model="latestLastDono" type="date" @click.stop class="mt-2 px-2 py-1 border rounded"placeholder="maximum"/>
                                     <button class="text-lg" @click="toggleSearch(6)">&#x24E7;</button>
                                 </div>
