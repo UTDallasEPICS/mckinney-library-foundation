@@ -1,6 +1,6 @@
 <template>
-    <div class="bg-[#e5e9ec] rounded-md p-6">
-        <VeeForm :initial-values="initValues" :validation-schema="schema" class= "w-full max-w-3xl max-h-[80vh] overflow-y-auto mx-auto" @submit="submitGrant">
+    <div class="bg-[#e5e9ec] rounded-md p-6 flex justify-center items-start">
+        <VeeForm :initial-values="initValues" :validation-schema="schema" class= "w-full sm:w-[700px] max-h-[80vh] overflow-y-auto" @submit="submitGrant">
             <div class = "px-6 pt-6 pb-5">
               <h1 class = "form-title"> Grant Information</h1>
             </div>
