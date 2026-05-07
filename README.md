@@ -77,7 +77,7 @@ git clone https://github.com/UTDallasEPICS/mckinney-library-foundation.git
 ### 2. Open the folder on Visual Studio Code
 ### 3. Install the dependencies
 ```bash
-npm install
+pnpm install
 ```
 ### 4. Set up the environment variables in the .env file
 - For the Better-Auth variables, follow only step 2 in this guide: <https://www.better-auth.com/docs/installation>
@@ -103,7 +103,7 @@ npx prisma db push --force-reset
 ```
 ### 6. Run the site locally 
 ```bash
-npm run dev
+pnpm run dev
 ```
 ### 7. Access your database on <http://localhost:5555/>
 ```bash
