@@ -57,7 +57,6 @@ The MPLF Donor & Grant Tracker intends to provide the Foundation the ability to 
 - The Gmail SMTP server sends the emails directly from a Gmail account
 
 ## Tech Stacks
-
 * **Meta Framework:** Nuxt
 * **Database:** SQLite 
 * **ORM:** Prisma 
@@ -66,7 +65,9 @@ The MPLF Donor & Grant Tracker intends to provide the Foundation the ability to 
 
 ## Migration Scripts
 
-Our partner has no existing system. Therefore, we do not have to migrate any system.
+Prisma migrations cannot be deleted and recreated because this project is currently in deployment.
+- Future Prisma migrations should be reviewed carefully before being committed or applied.
+- Pay attention to generated SQL inside Prisma migration files to ensure there is no accidental data loss
 
 ## Instructions for Setting up Development Environment
 
@@ -80,7 +81,7 @@ git clone https://github.com/UTDallasEPICS/mckinney-library-foundation.git
 pnpm install
 ```
 ### 4. Set up the environment variables in the .env file
-- Copy the .env-example file and rename the copy to .env
+- Copy the .env-example file and use it as a template
 
 - For the Better-Auth variables, follow only step 2 in this guide: <https://www.better-auth.com/docs/installation>
 
@@ -99,8 +100,7 @@ NUXT_NODEMAILER_HOST="smtp.gmail.com"
 NUXT_NODEMAILER_PORT="587"
 NUXT_NODEMAILER_FROM= 'MPLF Signin'
 ```
-- NUXT_NODEMAILER_PORT should be set to 587 for Gmail SMTP.
-Other SMTP ports may cause issues when sending emails.
+- NUXT_NODEMAILER_PORT should be set to 587 for Gmail SMTP. Other SMTP ports may cause issues when sending emails.
 - Get the values for these from your mentor
 ### 5. Initialize the database
 ```bash
