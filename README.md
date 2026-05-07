@@ -26,15 +26,29 @@ The MPLF Donor & Grant Tracker intends to provide the Foundation the ability to 
 - View all the donations with their relevant data
 - Sort and filter donations
 - Add, edit, and delete donations
+- Export the data
 
 ### `/donations/donors`
-- See all contact info
+- See all contact info of donors
 - Select one or more donors to email from within the webapp
+- Export the data
 
 ### `/grants`
 - View all the grants with their relevant data
 - Sort and filter grants
-- Add, edit, and delete, donations
+- Add, edit, and delete grants
+- Export the data
+
+### `/grants/grantors`
+- See all contact info of grantors
+- Select one or more grantors to email from within the webapp
+- Export the data
+
+### `/events`
+- View all the events with their relevant data
+- Sort and filter events
+- Add, edit, and delete events
+- Export the data
 
 ### `/settings` (user creation page)
 - Create users
