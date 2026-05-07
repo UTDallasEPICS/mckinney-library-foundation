@@ -2,7 +2,7 @@
 
 ## Conceptual Overview
 
-The MPLF Donor & Grant Tracker intends to provide the Foundation the ability to track their donations, donors, grants, and send mass emails to donors. Each user will have a specified role. The roles are Viewer, Editor, Admin, and Main Admin.
+The MPLF Donor & Grant Tracker intends to provide the Foundation the ability to track their donations, donors, grants, events, and send mass emails to donors and grantors. Each user will have a specified role. The roles are Viewer, Editor, Admin, and Main Admin.
 
 ### Roles:
 
