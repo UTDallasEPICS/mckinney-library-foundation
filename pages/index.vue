@@ -1,10 +1,10 @@
 <template>
-  <div class = "flex min-h-screen min-w-screen bg-blue-100">
+  <div class = "flex min-h-screen w-auto bg-blue-100">
 
     <div class = "basis-1/2 bg-[#34495e]" id="site_info">
       <div class="w-3/4 mx-auto">
         <div class="mt-6 mb-6 flex flex-col items-center">
-          <img src="/logo.jpg" alt="MPLF Logo" class="h-24 w-auto">
+          <img src="/logo.png" alt="MPLF Logo" class="h-24 w-auto" style="background-color: white; padding: 8px; border-radius: 4px;" />
         </div>
         <div class = "text-center text-white">
           <h1 className ="text-[42px] bg-red-500 mb-4 leading-tight" style ="font-weight: 700; letter-spacing: -0.5px;" >McKinney Public Library Foundation</h1>
@@ -31,7 +31,7 @@
     </div>
     <div class = "flex items-center basis-1/2" id="login">
       <div class = "bg-white rounded-3xl shadow-2xl p-10 border border-gray-100 w-4/5 mx-auto my">
-        <img src="/logo.jpg" alt="MPLF Logo" class ="h-14 mx-auto" />
+        <img src="/logo.png" alt="MPLF Logo" class ="h-14 mx-auto" />
         <div v-if="userEmail" class = "text-center">
           <h2 class = "text-[36px] text-[#2c3e50] mb-2" style="font-weight: 700;">WELCOME!</h2>
           <p class = "text-[15px] text-[#6b7785]">Sign in to access the Donor &amp; Grant Tracker</p>
