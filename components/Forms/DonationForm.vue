@@ -274,7 +274,7 @@ const schema = yup.object({
     monetaryAmount: yup.number().positive().nullable().min(0.01,"minimum is at least 0.01").typeError('must be a number'),
     nonMonetaryAmount: yup.string().nullable().test(
     'amount-not-empty',
-    'donation must include either monetary or non-monetary amount',
+    'Donation must include either monetary or non-monetary amount',
     function (value) {
         const {monetaryAmount} = this.parent
         return (value != null && value !== '') || (monetaryAmount != null && monetaryAmount !== '')
