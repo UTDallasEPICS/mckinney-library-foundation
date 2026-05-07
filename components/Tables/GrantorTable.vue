@@ -2,7 +2,7 @@
     <div class="flex-1 p-8 ">
         <div class="my-3 flex flex-wrap gap-3">
             <button class="rounded-md text-sm font-medium outline-none h-9 py-2 bg-slate-700 hover:bg-slate-800 text-white px-6" @click="exportCsv">Export CSV</button>
-            <button v-if="permissionLevel>1" :disabled="!isEnabled" @click="emailFunction(isChecked)" class ="disabled:bg-slate-300 rounded-md text-sm font-medium outline-none h-9 py-2 bg-blue-600 hover:bg-blue-700 text-white px-6">Email Grantors</button>
+            <button v-if="permissionLevel>1" :disabled="!isEnabled" @click="handleEmailClick" class ="disabled:bg-slate-300 rounded-md text-sm font-medium outline-none h-9 py-2 bg-blue-600 hover:bg-blue-700 text-white px-6">Email Grantors</button>
         </div>
         <div class = "bg-white rounded-lg shadow-lg overflow-x-auto mx-auto">       
             <table class="w-full">
@@ -143,18 +143,30 @@ import { useCsvExport } from '~/composables/useCsvExport';
 
 const props = defineProps<{
     data:{grantor:Grantor, grants:Grant[], boardMember:{name:string} | null}[]
-    emailFunction: (selected:boolean[]) => Promise<void>
+    emailFunction: (selected: Record<string, boolean>) => Promise<void>
     editFunction: (grantor:Grantor,idx:number) => Promise<void>
     deleteFunction: (grantor:Grantor,idx:number) => Promise<void>
     viewFunction: (grantor:Grantor,idx:number) => Promise<void>
     permissionLevel:number
-    }>();
+}>();
 const { downloadCsv } = useCsvExport()
 const isChecked: Ref<boolean[]> = ref([])
 
-props.data.forEach( (item,index) =>{
+props.data.forEach((item,index) =>{
     isChecked.value[index] = false;
 })
+
+function handleEmailClick() {
+    const selected: Record<string, boolean> = {}
+
+    props.data.forEach((row, index) => {
+        if (row.grantor.email && isChecked.value[index]) {
+            selected[row.grantor.id] = true
+        }
+    })
+
+    props.emailFunction(selected)
+}
 
 const selectedCount = computed(() => 
   isChecked.value.filter(Boolean).length
@@ -162,8 +174,9 @@ const selectedCount = computed(() =>
 
 function selectAll(){
     const checkAll = !allSelected.value
+
     props.data.forEach((row,index) =>{
-        if(row.grantor.email !== ''){
+        if(row.grantor.email){
             isChecked.value[index] = checkAll;
         }
     })
@@ -171,9 +184,10 @@ function selectAll(){
 
 
 const isEnabled  = computed(() => selectedCount.value > 0);
-const allSelected = computed(() => selectedCount.value == props.data.filter((row) =>{
-    return row.grantor.email !== ''
-}).length)
+const allSelected = computed(() =>
+    selectedCount.value ==
+    props.data.filter((row) => row.grantor.email).length
+)
 
 
 
