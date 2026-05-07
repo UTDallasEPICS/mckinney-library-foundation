@@ -80,9 +80,17 @@ git clone https://github.com/UTDallasEPICS/mckinney-library-foundation.git
 pnpm install
 ```
 ### 4. Set up the environment variables in the .env file
+- Copy the .env-example file and rename the copy to .env
+
 - For the Better-Auth variables, follow only step 2 in this guide: <https://www.better-auth.com/docs/installation>
+
+You can use the shared Better Auth secret provided in Discord.
+
 - Follow steps 1-3 to be able to use the Gmail SMTP server: <https://www.geeksforgeeks.org/techtips/how-to-use-the-gmail-smtp-server-to-send-emails-for-free/#>
-- - Then, modify the NUXT_NODEMAILER_EMAIL and NUXT_NODEMAILER_PASS variables in the .env file to match
+
+You do not need to create a new Gmail account. Use the shared Gmail credentials provided in Discord.
+
+- Then, modify the NUXT_NODEMAILER_EMAIL and NUXT_NODEMAILER_PASS variables in the .env file to match
 - The other variables are:
 ```bash
 DATABASE_URL="file:./mplf.db"
@@ -91,15 +99,13 @@ NUXT_NODEMAILER_HOST="smtp.gmail.com"
 NUXT_NODEMAILER_PORT="587"
 NUXT_NODEMAILER_FROM= 'MPLF Signin'
 ```
+- NUXT_NODEMAILER_PORT should be set to 587 for Gmail SMTP.
+Other SMTP ports may cause issues when sending emails.
 - Get the values for these from your mentor
 ### 5. Initialize the database
 ```bash
-npx prisma generate
-npx prisma migrate dev
-```
-- If encountering Prisma errors, try resetting the database. This will wipe the database, so you will need to do step 8 again.
-```bash
-npx prisma db push --force-reset
+pnpm prisma generate
+pnpm prisma migrate dev
 ```
 ### 6. Run the site locally 
 ```bash
@@ -107,7 +113,7 @@ pnpm run dev
 ```
 ### 7. Access your database on <http://localhost:5555/>
 ```bash
-npx prisma studio
+pnpm prisma studio
 ```
 ### 8. Create a user record on <http://localhost:5555/>
 - Enter your email in the email field
