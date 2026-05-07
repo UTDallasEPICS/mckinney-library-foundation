@@ -32,47 +32,30 @@
     <div class = "flex items-center basis-1/2" id="login">
       <div class = "bg-white rounded-3xl shadow-2xl p-10 border border-gray-100 w-4/5 mx-auto my">
         <img src="/logo.jpg" alt="MPLF Logo" class ="h-14 mx-auto" />
-        <div v-if="!reqAccount || userEmail" class = "text-center">
+        <div v-if="userEmail" class = "text-center">
           <h2 class = "text-[36px] text-[#2c3e50] mb-2" style="font-weight: 700;">WELCOME!</h2>
           <p class = "text-[15px] text-[#6b7785]">Sign in to access the Donor &amp; Grant Tracker</p>
         </div>
-        <div v-if="reqAccount && !userEmail">
-          <h2 class = "text-[36px] text-[#2c3e50] mb-2 text-center" style="font-weight: 700;">SIGN UP!</h2>
-          <p class = "text-[15px] text-[#6b7785] text-center">Fill out the form to request an account.</p>
-        </div>
         <LoginForm 
-          v-if="userEmail === '' && !reqAccount" 
-          key="loginForm1" 
+          v-if="userEmail === ''" 
+          key="emailLoginForm" 
           :message="emailFormProps.message"
-          :field-name="emailFormProps.fieldname"  
+          :field-name="emailFormProps.fieldname"
           :placeholder-txt="emailFormProps.placeholderTxt"
           :validation="emailFormProps.validation"
           :field-type="emailFormProps.fieldType"
           :function="emailFormProps.onSubmit"
         />
         <LoginForm  
-          key="loginForm2" 
+          key="otpLoginForm"
           v-if="userEmail !== ''"
           :message="otpFormProps.message"
-          :field-name="otpFormProps.fieldname"  
+          :field-name="otpFormProps.fieldname"
           :placeholder-txt="otpFormProps.placeholderTxt"
           :validation="otpFormProps.validation"
           :field-type="otpFormProps.fieldType"
           :function="otpFormProps.onSubmit"
         />
-        <AccReqForm
-          key="loginAccReq"
-          v-if="reqAccount && !userEmail"
-          :function="AccReqFormProps.function"
-          :type="AccReqFormProps.type"
-          button-text="Request Account"
-
-        />
-        <div v-if="!userEmail">
-          <span v-if="!reqAccount">Don't have an account? </span> 
-          <button v-if="!reqAccount" @click="ShowAccountRequest" style = "font-weight: 500;" class ="hover:underline text-[14px] text-[#4a5f7a] transition-colors" type="button">Request an Invitation</button>
-          <button v-if="reqAccount" @click="ShowAccountRequest" style = "font-weight: 500;" class ="hover:underline text-[14px] text-[#4a5f7a] transition-colors" type="button">Cancel Request</button>
-        </div>
       </div>
     </div>
   </div>
@@ -81,7 +64,6 @@
 <script setup lang="ts">
 import { navigateTo } from '#app';
 import * as yup from 'yup';
-import AccReqForm from '~/components/Forms/AccReqForm.vue';
 import LoginForm from '~/components/Forms/LoginForm.vue';
 import { useAuth } from '~/composables/useAuth';
 import { authClient } from '~/server/utils/authClient';
@@ -97,7 +79,8 @@ if(session.value?.user){
     navigateTo("/dashboard");
 }
 const userEmail = ref("");
-const reqAccount = ref(false);
+const loading = ref();
+const toasts = useToast();
 
 const emailSchema = yup.object({
   email: 
@@ -108,7 +91,7 @@ const emailSchema = yup.object({
 const otpSchema = yup.object({
   otp_code: 
     yup.string()
-    .required('Code is requried')
+    .required('Code is required')
     .min(6,"Please enter a valid code")
     .max(6,"Please enter a valid code")
     .test('type', 'Please enter a valid code', code => {
@@ -121,33 +104,33 @@ const otpSchema = yup.object({
 
 
 const emailFormProps ={
-  fieldname: 'email',  
-  placeholderTxt: 'Enter your email',  
-  fieldType: 'email',  
-  message: 'Email Address',  
-  validation: emailSchema,  
+  fieldname: 'email',
+  placeholderTxt: 'Enter your email',
+  fieldType: 'email',
+  message: 'Email Address',
+  validation: emailSchema,
   onSubmit: formSubmit
 }
 
 const otpFormProps ={
-  fieldname: 'otp_code',  
-  placeholderTxt: 'Code',  
-  fieldType: 'otp',  
-  message: 'Enter Code',  
-  validation: otpSchema,    
+  fieldname: 'otp_code',
+  placeholderTxt: 'Code',
+  fieldType: 'otp',
+  message: 'Enter Code',
+  validation: otpSchema,
   onSubmit: checkCode,
 }
 
-const AccReqFormProps ={
-  function: requestAccount,
-  type: false,
-}
-
 async function formSubmit(values:Record<string, any>){
-  userEmail.value = values.email;
-   const userExists = await checkEmailExists(values.email);
+  if (!loading.value){
+    loading.value = true;
+    const userExists = await checkEmailExists(values.email);
     if(userExists){
-      alert("otp sent to email");
+      userEmail.value = values.email;
+      toasts.add({
+        title: "OTP code sent!",
+        duration: 15000
+      });
       const { data, error } = await authClient.emailOtp.sendVerificationOtp({
         email: values.email,
         type: "sign-in",
@@ -155,13 +138,16 @@ async function formSubmit(values:Record<string, any>){
       if(error){
        console.log(error);
       }
-    
-   }
-   else{
-     alert("user not found");
-     userEmail.value = '';
-   }
-}
+    }
+    else{
+        userEmail.value = '';
+        toasts.add({
+          title: "User not found. Please try again."
+        });
+      }
+      loading.value = false;
+    }
+  }
 
 async function checkEmailExists(email:string){
   const id = email;
@@ -171,7 +157,9 @@ async function checkEmailExists(email:string){
       return true;
     } 
     else{
-      alert("Your account is frozen, contact admin for more details")
+      toasts.add({
+        title: "Email does not exist."
+      });
       return false;
     }
     
@@ -183,40 +171,32 @@ async function checkEmailExists(email:string){
 }
 
 async function checkCode(values:Record<string, any>){
-   if(values.otp_code){
-     try{
-       const { data, error } = await authClient.signIn.emailOtp({
+  if(values.otp_code && !loading.value){
+    loading.value = true;
+    try{
+      const { data, error } = await authClient.signIn.emailOtp({
          email: userEmail.value,
-         otp: values.otp_code.trim(), 
+         otp: values.otp_code.trim(),
        });
        if(error){
-         console.error(error);
-         alert("Invalide Code");
+          console.error(error);
+          toasts.add({
+            title: "Invalid code. Please try again."
+          });
        }
        else{
+        toasts.add({
+          title: "Success!",
+          duration: 5000
+        });
         window.location.replace("/dashboard");
        }
      }
      catch(error){
-     console.error(error)
-     }
-   }
-}
-
-async function requestAccount(values:Record<string,any>){
-    alert("account requested");
-    const info = await $fetch("/api/request",{
-        method: "POST",
-        body:{
-            name: values.fName + " " + values.lName,
-            email: values.email
-        }
-    });
-    reloadNuxtApp();
-}
-
-async function ShowAccountRequest(){
-  reqAccount.value = !reqAccount.value;
+      console.error(error)
+      loading.value = false;
+    }
+  }
 }
 
 </script>

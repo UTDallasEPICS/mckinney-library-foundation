@@ -36,14 +36,18 @@ const route = useRoute();
 session.value = await getSession();
 const signedIn = computed(() => !!session.value?.session);
 const showDashboardBackArrow = computed(() => route.path !== '/dashboard');
+const toasts = useToast();
 
 async function signOut(){
   const result = await $fetch(`/api/session/${session.value?.session.id}`,{
     method: "DELETE"
   });
   if(result.success){
-    alert("signed out");
     reloadNuxtApp();
+    toasts.add({
+      title: "Signed out",
+      duration: 5000
+    });
   }
 }
 </script>

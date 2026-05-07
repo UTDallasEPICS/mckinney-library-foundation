@@ -103,6 +103,7 @@ const donorFormData:Ref<{donor: DonorWithCount}> = ref({
 const {donorOrganizations} = useDonorDropDown(donorTableData.value)
 
 const { donationsData } = useDonation();
+const toasts = useToast()
 
 
 const DonorTableProps ={
@@ -196,7 +197,9 @@ async function editDonor(values:Record<string,any>) {
 async function removeDonor(donor:Donor,index:number) {
   const result = await deleteDonor(donor,user.value.permissionLevel);
   if(result.error?.code == 'P2003'){
-    alert("Cannot delete donor with donations"); 
+    toasts.add({
+      title: "Cannot delete a donor with donations on record."
+    });
   }
 }
 

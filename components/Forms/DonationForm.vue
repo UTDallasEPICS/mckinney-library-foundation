@@ -65,7 +65,7 @@
                 </div>                       
             </div>
             <div class="grid grid-cols-2 gap-6 px-6">
-                <h2 class="form-field-label">Monetary amount</h2>
+                <h2 class="form-field-label">Monetary Amount</h2>
                 <h2 class="form-field-label">Non-Monetary Amount</h2>
                 <VeeField autocomplete="off" :disabled="viewOnly" class="form-input focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px]" name="monetaryAmount"/>
                 <VeeField autocomplete="off" :disabled="viewOnly" class="form-input focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px]" name="nonMonetaryAmount"/>
@@ -91,11 +91,11 @@
                 <VeeField autocomplete="off" :disabled="viewOnly" v-slot="{field}" class="form-input focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px]" name="status">
                     <select :disabled="viewOnly" v-bind="field" class="w-full px-3 py-2 bg-white border border-gray-300 rounded text-[#2d3e4d] focus:outline-none focus:ring-2 focus:ring-[#5a6a77] cursor-pointer">
                         <option :disabled="viewOnly" value = 0> Pending </option>
-                        <option :disabled="viewOnly" value = 1> Recieved </option>
+                        <option :disabled="viewOnly" value = 1> Received </option>
                     </select>
                 </VeeField>
                 <VeeField v-slot="{field}" autocomplete="off" :disabled="viewOnly" class="form-input focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px]" name="receivedDate">
-                    <input ref="receivedDateInputEl" id="reqDate"  autocomplete="off" :disabled="viewOnly" v-bind="field" type="date"></input>
+                    <input ref="receivedDateInputEl" id="reqDate"  autocomplete="off" :disabled="viewOnly" v-bind="field" type="date" class="outline-none text-black md:text-sm bg-white border-gray-300 h-11"></input>
                 </VeeField>
                 <div>
                     <VeeErrorMessage class="text-red-500 text-sm"  name="method" />

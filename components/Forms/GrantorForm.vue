@@ -84,6 +84,6 @@ const initValues = props.grantor?{
 }: undefined
 
 const schema = yup.object({
-    grantorName: yup.string().required("Enter anonymous if grantor unknown'"),
+    grantorName: yup.string().required("Enter anonymous if grantor unknown"),
 })
 </script>

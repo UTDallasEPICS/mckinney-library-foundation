@@ -48,7 +48,7 @@
       <DashboardStat
         title="Total Donations"
         :value="totalDonations"
-        description="All time total ammount"
+        description="All time total amount"
       />
       <DashboardStat
         title="Total Grants"
@@ -128,6 +128,7 @@ const { donors } = useDonor();
 const { grantsData, postGrant } = useGrant();
 const { grantors } = useGrantor();
 const { eventsData, postEvent } = useEvent();
+const toasts = useToast();
 
 const donorTableData = computed(() =>
     donors.value.map((thisDonor: any) => ({
@@ -204,7 +205,7 @@ const DonationCardProps = {
 const GrantCardProps = {
   icon:"/icons/file-text.svg",
   title:"Grants",
-  description:"Track grant applications, manage awards, and monitor grant progress.",
+  description:"Track garant applications, manage awards, and monitor grant progress.",
   buttons: [
     { name:"View Grants", link:"/grants", icon: "/icons/eye.svg", accessLevel:0 },
     { name:"Add Grants", icon: "/icons/plus.svg", accessLevel:1 },
@@ -225,7 +226,7 @@ const EventCardProps = {
 const SettingsCardProps = {
   icon:"/icons/settings.svg",
   title:"Settings",
-  description:"Configure system settings, Manage user accounts, and control access.",
+  description:"Configure system settings, manage user accounts, and control access.",
   buttons: [
     { name:"Add Accounts", link:"/settings", icon:"/icons/plus.svg", accessLevel:3 },
     { name:"View Roles", link:"/settings/roles", icon:"/icons/eye.svg", accessLevel: 1},
@@ -237,7 +238,9 @@ const SettingsCardProps = {
 async function createDonation(values:Record<string,any>){
     const result = await postDonation(values,user.value)
     if(result.success){
-      alert("donation created");
+      toasts.add({
+        title: "Donation created!"
+      });
     }
     showDonationForm.value = false;
 }
@@ -245,7 +248,9 @@ async function createDonation(values:Record<string,any>){
 async function createGrant(values:Record<string,any>){
     const result = await postGrant(values,user.value)
     if(result.success){
-      alert("grant created")
+      toasts.add({
+        title: "Grant created!"
+      });
     }
     showGrantForm.value = false;
 }
