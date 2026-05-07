@@ -29,7 +29,5 @@ export default defineEventHandler(async (event) =>{
             message: "Failed to delete request",
             error: error,
         }
-    }finally{
-        await prisma.$disconnect();
     }
 });

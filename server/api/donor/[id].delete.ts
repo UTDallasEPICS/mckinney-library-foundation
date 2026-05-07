@@ -24,7 +24,5 @@ export default defineEventHandler(async (event) => {
             message: "Failed to delete donor",
             error: error, 
         }
-    } finally {
-        await prisma.$disconnect()
     }
 });
