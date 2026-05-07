@@ -29,7 +29,5 @@ export default defineEventHandler(async (event) => {
             message: "Failed to find grant",
             error: error, 
         }
-    } finally {
-        await prisma.$disconnect()
     }
 });
