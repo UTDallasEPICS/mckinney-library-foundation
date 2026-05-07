@@ -2,12 +2,12 @@
 
 ## Conceptual Overview
 
-The MPLF Donor & Grant Tracker intends to provide the Foundation the ability to track their donations, donors, grants, and send mass emails to donors. Each user will have a specified role. The roles are Viewer, Editor, Admin, and Main Admin.
+The MPLF Donor & Grant Tracker intends to provide the Foundation the ability to track their donations, donors, grants, events, and send mass emails to donors and grantors. Each user will have a specified role. The roles are Viewer, Editor, Admin, and Main Admin.
 
 ### Roles:
 
 * **Viewer:** The viewer is only able to view the donations and grants pages
-* **Editor:** In addition to Viewer permissions, able to  add & edit donations and grants. Can also view user roles
+* **Editor:** In addition to Viewer permissions, able to add & edit donations, grants, and events. Can also view user roles
 * **Admin:** In addition to Editor permissions, able to view the Manage Accounts page. Thus, able to un/freeze, delete, or edit users
 * **Main Admin:** In addition to Admin permissions, able to create accounts on the Create Accounts page
 
@@ -26,15 +26,29 @@ The MPLF Donor & Grant Tracker intends to provide the Foundation the ability to 
 - View all the donations with their relevant data
 - Sort and filter donations
 - Add, edit, and delete donations
+- Export the data
 
 ### `/donations/donors`
-- See all contact info
+- See all contact info of donors
 - Select one or more donors to email from within the webapp
+- Export the data
 
 ### `/grants`
 - View all the grants with their relevant data
 - Sort and filter grants
-- Add, edit, and delete, donations
+- Add, edit, and delete grants
+- Export the data
+
+### `/grants/grantors`
+- See all contact info of grantors
+- Select one or more grantors to email from within the webapp
+- Export the data
+
+### `/events`
+- View all the events with their relevant data
+- Sort and filter events
+- Add, edit, and delete events
+- Export the data
 
 ### `/settings` (user creation page)
 - Create users
