@@ -57,7 +57,8 @@ The MPLF Donor & Grant Tracker intends to provide the Foundation the ability to 
 - The Gmail SMTP server sends the emails directly from a Gmail account
 
 ## Tech Stacks
-* **Meta Framework:** Nuxt
+* **Frontend:** Vue
+* **Meta Framework:** Nuxt, Typescript
 * **Database:** SQLite 
 * **ORM:** Prisma 
 * **UI:** Tailwind CSS
