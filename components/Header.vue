@@ -3,7 +3,7 @@
     <div class="mx-auto px-6 py-4 flex items-center justify-between">
       <div class="flex items-center gap-4">
         <div>
-          <img src="/book.png" alt="MPLF Logo" class="w-12 h-auto object-cover">
+          <img src="/book.png" alt="MPLF Logo" class="w-12 h-auto object-cover" style="background-color: whitesmoke; padding: 4px; border-radius: 4px;">
         </div>
         <div>  
           <h1 class="text-lg font-semibold">MPLF Donor & Grant Tracker</h1>
