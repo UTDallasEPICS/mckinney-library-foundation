@@ -3,7 +3,7 @@
         <div class="mb-3 flex justify-end">
             <button class="rounded-md text-sm font-medium outline-none h-9 py-2 bg-slate-700 hover:bg-slate-800 text-white px-6" @click="exportCsv">Export CSV</button>
         </div>
-        <div class = "bg-white rounded-lg shadow-lg overflow-hidden mx-auto">       
+        <div class = "bg-white rounded-lg shadow-lg overflow-x-auto mx-auto">       
             <table class="w-full">
                 <thead  class="bg-[#c5d0d8] sticky top-0 z-10">
                     <tr>
