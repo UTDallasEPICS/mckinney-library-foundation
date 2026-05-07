@@ -63,11 +63,15 @@ The MPLF Donor & Grant Tracker intends to provide the Foundation the ability to 
 * **UI:** Tailwind CSS
 * **API Testing:** Postman
 
+## Deployment Notes
+
+This project is currently in deployment.
+
 ## Migration Scripts
 
 Prisma migrations cannot be deleted and recreated because this project is currently in deployment.
-- Future Prisma migrations should be reviewed carefully before being committed or applied.
-- Pay attention to generated SQL inside Prisma migration files to ensure there is no accidental data loss
+
+Future Prisma migrations should be reviewed carefully. Pay attention to the SQL inside Prisma migration files to ensure there is no unintentional data loss.
 
 ## Instructions for Setting up Development Environment
 
@@ -92,6 +96,7 @@ You can use the shared Better Auth secret provided in Discord.
 You do not need to create a new Gmail account. Use the shared Gmail credentials provided in Discord.
 
 - Then, modify the NUXT_NODEMAILER_EMAIL and NUXT_NODEMAILER_PASS variables in the .env file to match
+- NUXT_NODEMAILER_PORT should be set to 587 for Gmail SMTP. Other SMTP ports may cause issues when sending emails
 - The other variables are:
 ```bash
 DATABASE_URL="file:./mplf.db"
@@ -100,7 +105,6 @@ NUXT_NODEMAILER_HOST="smtp.gmail.com"
 NUXT_NODEMAILER_PORT="587"
 NUXT_NODEMAILER_FROM= 'MPLF Signin'
 ```
-- NUXT_NODEMAILER_PORT should be set to 587 for Gmail SMTP. Other SMTP ports may cause issues when sending emails.
 - Get the values for these from your mentor
 ### 5. Initialize the database
 ```bash
