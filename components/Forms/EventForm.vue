@@ -1,6 +1,6 @@
 <template>
-	<div class="bg-[#e5e9ec] p-0 gap-0 border-0 rounded-md">
-		<VeeForm v-slot="{ submitCount }" :initial-values="initValues" :validation-schema="schema" class="w-[800px] max-h-[130vh] overflow-y-auto mx-4" @submit="submitEvent">
+	<div class="bg-[#e5e9ec] rounded-md p-6 flex justify-center items-start">
+		<VeeForm v-slot="{ submitCount }" :initial-values="initValues" :validation-schema="schema" class="w-full sm:w-[600px] max-h-[80vh] overflow-y-auto" @submit="submitEvent">
 			<div class="flex flex-col gap-2 sm:text-left px-6 pt-6 pb-4 space-y-0">
 				<h1 class="form-title">Event Information</h1>
 			</div>

@@ -1,23 +1,28 @@
 <template>
-    <div class="bg-[#e5e9ec] rounded-md p-6">
-        <VeeForm :initial-values="initValues" :validation-schema="schema" class= "w-full max-w-3xl max-h-[80vh] overflow-y-auto mx-auto" @submit="submitDonationForm">
+    <div class="bg-[#e5e9ec] rounded-md p-6 flex justify-center items-start">
+        <VeeForm :initial-values="initValues" :validation-schema="schema" class= "w-full sm:w-[700px] max-h-[80vh] overflow-y-auto" @submit="submitDonationForm">
             <div class = "px-6 pt-6 pb-5">
               <h1 class = "form-title"> Donation Information</h1>
             </div>
             <VeeField hidden name="id"></VeeField>
             <VeeField  hidden name="index"></VeeField> 
-            <div class="grid grid-cols-2 gap-6 px-6">
-                <h2 class="form-field-label">Donor <span class = "text-red-500">*</span></h2>
-                <h2 class="form-field-label">Event Name</h2>          
-                <VeeField autocomplete="off" v-slot="{field}" :disabled="viewOnly" name="donorName" class="form-input focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px]">
-                    <input :disabled="viewOnly" autocomplete="off" v-bind="field" list="donor-list" class="w-full px-3 py-2 bg-white border border-gray-300 rounded text-[#2d3e4d] focus:outline-none focus:ring-2 focus:ring-[#5a6a77] cursor-pointer">
-                        <datalist id="donor-list">
-                            <option></option>
-                            <option v-if="donors.length > 0" v-for="donor in donors" :value="donor.donor.name"></option>
-                        </datalist>
-                    </input>
-                </VeeField>  
-                <VeeField autocomplete="off" :disabled="viewOnly" v-slot="{field}" name="event" class="form-input focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px]">
+            <div class="grid grid-cols-2 gap-6 px-6 mb-4">
+                <div>
+                    <h2 class="form-field-label mb-2">Donor <span class = "text-red-500">*</span></h2>
+                    <VeeField autocomplete="off" v-slot="{field}" :disabled="viewOnly" name="donorName" class="form-input focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px]">
+                        <input :disabled="viewOnly" autocomplete="off" v-bind="field" list="donor-list" class="w-full px-3 py-2 bg-white border border-gray-300 rounded text-[#2d3e4d] focus:outline-none focus:ring-2 focus:ring-[#5a6a77] cursor-pointer">
+                            <datalist id="donor-list">
+                                <option></option>
+                                <option v-if="donors.length > 0" v-for="donor in donors" :value="donor.donor.name"></option>
+                            </datalist>
+                        </input>
+                    </VeeField> 
+                    <VeeErrorMessage class="text-red-500 text-sm"  name="donorName" /> 
+                </div>
+
+                <div>
+                    <h2 class="form-field-label mb-2">Event Name</h2>   
+                    <VeeField autocomplete="off" :disabled="viewOnly" v-slot="{field}" name="event" class="form-input focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px]">
                     <div class="relative">
                         <input
                             ref="eventInputEl"
@@ -56,54 +61,50 @@
                             </button>
                         </div>
                     </div>
-                </VeeField>  
-                <div>
-                    <VeeErrorMessage class="text-red-500 text-sm"  name="donorName" />
-                </div>
-                <div>
+                    </VeeField> 
                     <VeeErrorMessage class="text-red-500 text-sm"  name="event" />
-                </div>                       
+                </div>
             </div>
-            <div class="grid grid-cols-2 gap-6 px-6">
-                <h2 class="form-field-label">Monetary Amount</h2>
-                <h2 class="form-field-label">Non-Monetary Amount</h2>
-                <VeeField autocomplete="off" :disabled="viewOnly" class="form-input focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px]" name="monetaryAmount"/>
-                <VeeField autocomplete="off" :disabled="viewOnly" class="form-input focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px]" name="nonMonetaryAmount"/>
+            <div class="grid grid-cols-2 gap-6 px-6 mb-4">
                 <div>
+                    <h2 class="form-field-label mb-2">Monetary Amount</h2>
+                    <VeeField autocomplete="off" :disabled="viewOnly" class="form-input focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px]" name="monetaryAmount"/>
                     <VeeErrorMessage class="text-red-500 text-sm"  name="monetaryAmount" />
                 </div>
                 <div>
+                    <h2 class="form-field-label mb-2">Non-Monetary Amount</h2>
+                    <VeeField autocomplete="off" :disabled="viewOnly" class="form-input focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px]" name="nonMonetaryAmount"/>
                     <VeeErrorMessage class="text-red-500 text-sm"  name="nonMonetaryAmount" />
                 </div>
             </div>
-            <div class="grid grid-cols-3 gap-6 px-6">
-                <h2 class="form-field-label">Method <span class = "text-red-500">*</span></h2>
-                <h2 class="form-field-label">Status<span class = "text-red-500">*</span></h2>
-                <h2 class="form-field-label">Received Date<span class = "text-red-500">*</span></h2>
-                <VeeField v-slot="{field}" autocomplete="off" :disabled="viewOnly"name="method" class="form-input focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px]">
-                    <input :disabled="viewOnly" autocomplete="off" v-bind="field" list="method-list" class="w-full px-3 py-2 bg-white border border-gray-300 rounded text-[#2d3e4d] focus:outline-none focus:ring-2 focus:ring-[#5a6a77] cursor-pointer">
-                        <datalist id="method-list">
-                            <option></option>
-                            <option v-if="methods.length > 0" v-for="method in methods" :value="method"></option>
-                        </datalist>
-                    </input>
-                </VeeField>
-                <VeeField autocomplete="off" :disabled="viewOnly" v-slot="{field}" class="form-input focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px]" name="status">
-                    <select :disabled="viewOnly" v-bind="field" class="w-full px-3 py-2 bg-white border border-gray-300 rounded text-[#2d3e4d] focus:outline-none focus:ring-2 focus:ring-[#5a6a77] cursor-pointer">
-                        <option :disabled="viewOnly" value = 0> Pending </option>
-                        <option :disabled="viewOnly" value = 1> Received </option>
-                    </select>
-                </VeeField>
-                <VeeField v-slot="{field}" autocomplete="off" :disabled="viewOnly" class="form-input focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px]" name="receivedDate">
-                    <input ref="receivedDateInputEl" id="reqDate"  autocomplete="off" :disabled="viewOnly" v-bind="field" type="date" class="outline-none text-black md:text-sm bg-white border-gray-300 h-11"></input>
-                </VeeField>
+            <div class="grid grid-cols-3 gap-6 px-6 mb-4">
                 <div>
+                    <h2 class="form-field-label mb-2">Method <span class = "text-red-500">*</span></h2>
+                    <VeeField v-slot="{field}" autocomplete="off" :disabled="viewOnly"name="method" class="form-input focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px]">
+                        <input :disabled="viewOnly" autocomplete="off" v-bind="field" list="method-list" class="w-full px-3 py-2 bg-white border border-gray-300 rounded text-[#2d3e4d] focus:outline-none focus:ring-2 focus:ring-[#5a6a77] cursor-pointer">
+                            <datalist id="method-list">
+                                <option></option>
+                                <option v-if="methods.length > 0" v-for="method in methods" :value="method"></option>
+                            </datalist>
+                        </input>
+                    </VeeField>
                     <VeeErrorMessage class="text-red-500 text-sm"  name="method" />
                 </div>
                 <div>
+                    <h2 class="form-field-label mb-2">Status<span class = "text-red-500">*</span></h2>
+                    <VeeField autocomplete="off" :disabled="viewOnly" v-slot="{field}" class="form-input focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px]" name="status">
+                        <select :disabled="viewOnly" v-bind="field" class="w-full px-3 py-2 bg-white border border-gray-300 rounded text-[#2d3e4d] focus:outline-none focus:ring-2 focus:ring-[#5a6a77] cursor-pointer">
+                            <option :disabled="viewOnly" value = 0> Pending </option>
+                            <option :disabled="viewOnly" value = 1> Received </option>
+                        </select>
+                    </VeeField>
                     <VeeErrorMessage class="text-red-500 text-sm"  name="status" />
                 </div>
                 <div>
+                    <h2 class="form-field-label mb-2">Received Date<span class = "text-red-500">*</span></h2>
+                    <VeeField v-slot="{field}" autocomplete="off" :disabled="viewOnly" class="form-input focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px]" name="receivedDate">
+                        <input ref="receivedDateInputEl" id="reqDate"  autocomplete="off" :disabled="viewOnly" v-bind="field" type="date" class="w-full px-3 py-2 bg-white border border-gray-300 rounded text-[#2d3e4d] focus:outline-none focus:ring-2 focus:ring-[#5a6a77] cursor-pointer"></input>
+                    </VeeField>
                     <VeeErrorMessage class="text-red-500 text-sm" name="receivedDate" />
                 </div>
             </div>
@@ -273,7 +274,7 @@ const schema = yup.object({
     monetaryAmount: yup.number().positive().nullable().min(0.01,"minimum is at least 0.01").typeError('must be a number'),
     nonMonetaryAmount: yup.string().nullable().test(
     'amount-not-empty',
-    'donation must include either monetary or non-monetary amount',
+    'Donation must include either monetary or non-monetary amount',
     function (value) {
         const {monetaryAmount} = this.parent
         return (value != null && value !== '') || (monetaryAmount != null && monetaryAmount !== '')
