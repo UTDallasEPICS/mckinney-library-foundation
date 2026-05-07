@@ -183,6 +183,7 @@ async function checkCode(values:Record<string, any>){
           toasts.add({
             title: "Invalid code. Please try again."
           });
+          loading.value = false;
        }
        else{
         toasts.add({
