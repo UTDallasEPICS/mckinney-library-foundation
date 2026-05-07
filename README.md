@@ -7,7 +7,7 @@ The MPLF Donor & Grant Tracker intends to provide the Foundation the ability to 
 ### Roles:
 
 * **Viewer:** The viewer is only able to view the donations and grants pages
-* **Editor:** In addition to Viewer permissions, able to  add & edit donations and grants. Can also view user roles
+* **Editor:** In addition to Viewer permissions, able to add & edit donations, grants, and events. Can also view user roles
 * **Admin:** In addition to Editor permissions, able to view the Manage Accounts page. Thus, able to un/freeze, delete, or edit users
 * **Main Admin:** In addition to Admin permissions, able to create accounts on the Create Accounts page
 
