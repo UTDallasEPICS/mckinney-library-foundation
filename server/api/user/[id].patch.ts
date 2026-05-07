@@ -84,11 +84,21 @@ export default defineEventHandler(async (event) =>{
             data: data
         }
     }catch(error){
+        const statusCode =
+            typeof error === "object" && error && "statusCode" in error
+                ? Number((error as { statusCode?: number }).statusCode) || 500
+                : 500;
+        const statusMessage =
+            typeof error === "object" && error && "statusMessage" in error
+                ? String((error as { statusMessage?: string }).statusMessage || "Failed to update user")
+                : "Failed to update user";
+
+        setResponseStatus(event, statusCode, statusMessage);
         console.error(error);
         return { 
             success: false,
-            statusCode: 500,
-            message: "Failed to update user",
+            statusCode,
+            message: statusMessage,
             error: error, 
         }
     }
