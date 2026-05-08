@@ -1,6 +1,6 @@
 <template>
     <div class="flex-1 p-8 ">
-        <div class="mb-3 flex justify-end">
+        <div class="mb-3 flex justify-start">
             <button class="rounded-md text-sm font-medium outline-none h-9 py-2 bg-slate-700 hover:bg-slate-800 text-white px-6" @click="exportCsv">Export CSV</button>
         </div>
         <div class = "bg-white rounded-lg shadow-lg overflow-x-auto mx-auto">       
