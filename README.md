@@ -82,6 +82,10 @@ The MPLF Donor & Grant Tracker intends to provide the Foundation the ability to 
 
 This project is currently in deployment.
 
+Merging into the stage branch will automatically trigger an update to the stage deployment, and merging into the the main branch will automatically trigger an update to the production deployment. Make sure stage is working correctly before merging into main.
+
+The stage branch will be taken down and you will need to request to have stage again at the start of a semester (if it is not automatically brought back up).
+
 ## Migration Scripts
 
 Prisma migrations cannot be deleted and recreated because this project is currently in deployment.
