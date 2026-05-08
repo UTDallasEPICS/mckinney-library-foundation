@@ -2,13 +2,13 @@
 
 ## Conceptual Overview
 
-The MPLF Donor & Grant Tracker intends to provide the Foundation the ability to track their donations, donors, grants, events, and send mass emails to donors and grantors. Each user will have a specified role. The roles are Viewer, Editor, Admin, and Main Admin.
+The MPLF Donor & Grant Tracker intends to provide the Foundation the ability to track their donations, donors, grants, and events. Each user will have a specified role. The roles are Viewer, Editor, Admin, and Main Admin.
 
 ### Roles:
 
-* **Viewer:** The viewer is only able to view the donations and grants pages
-* **Editor:** In addition to Viewer permissions, able to add & edit donations, grants, and events. Can also view user roles
-* **Admin:** In addition to Editor permissions, able to view the Manage Accounts page. Thus, able to un/freeze, delete, or edit users
+* **Viewer:** The viewer is only able to view the donors, donations, grantors, grants, and event pages.
+* **Editor:** In addition to Viewer permissions, able to add & edit donors, donations, grantors, grants, and events. The Editor can also view user roles.
+* **Admin:** In addition to Editor permissions, able to view the Manage Accounts page. Thus, able to un/freeze, delete, or edit users. The Admin is also able to send mass emails to donors and grantors.
 * **Main Admin:** In addition to Admin permissions, able to create accounts on the Create Accounts page
 
 ## Functional Requirements (by page)
@@ -81,6 +81,10 @@ The MPLF Donor & Grant Tracker intends to provide the Foundation the ability to 
 ## Deployment Notes
 
 This project is currently in deployment.
+
+Merging into the stage branch will automatically trigger an update to the stage deployment, and merging into the the main branch will automatically trigger an update to the production deployment. Make sure stage is working correctly before merging into main.
+
+The stage branch will be taken down and you will need to request to have stage again at the start of a semester (if it is not automatically brought back up).
 
 ## Migration Scripts
 
