@@ -31,7 +31,7 @@
             <td class="px-6 py-4 text-[#2d3e4d] text-center"> {{ account.name }}</td>
             <td class="px-6 py-4 text-[#2d3e4d] text-center">{{ account.email }} </td> 
             <td class="px-6 py-4">
-                <select :disabled="(parseInt(permissions[index]) >= permissionLevel) && permissionLevel < 3" v-model="permissions[index]" @change="updatePermission(account.id,permissions[index],account.status)" class="w-full px-3 py-2 bg-white border border-gray-300 rounded text-[#2d3e4d] cursor-pointer">
+                <select :disabled="(parseInt(permissions[index]) >= permissionLevel) && permissionLevel < 3" v-model="permissions[index]" @change="updatePermission(account,index)" class="w-full px-3 py-2 bg-white border border-gray-300 rounded text-[#2d3e4d] cursor-pointer">
                     <option value="0">Viewer</option>
                     <option value="1">Editor</option>
                     <option :disabled="permissionLevel < 3" value="2">Admin</option>
@@ -68,16 +68,23 @@ if(props.accounts){
     }
 }
 
-async function updatePermission(id:string,permission:string, status:boolean){
-    await $fetch(`/api/user/${id}`,{
-        method:"PATCH",
-        body:{
-            permission:Number(permission),
-            status:status,
-            permissionLevel:props.permissionLevel
-        }
+async function updatePermission(account:{id:string, name:string, email:string, permission:number, status:boolean}, index:number){
+    const nextPermission = Number(permissions.value[index]);
+    const previousPermission = account.permission;
+
+    try {
+      await $fetch(`/api/user/${account.id}`,{
+          method:"PATCH",
+          body:{
+              permission: nextPermission,
+              status: account.status,
+          }
+      });
+      account.permission = nextPermission;
+    } catch (error) {
+      permissions.value[index] = previousPermission.toString();
+      console.error(error);
     }
-    )
 }
 
 async function freezeAccount(account: {id: string, name: string, email: string, permission: number, status: boolean}){
@@ -87,7 +94,6 @@ async function freezeAccount(account: {id: string, name: string, email: string, 
       body:{
         status: !account.status,
         permission:account.permission,
-        permissionLevel:props.permissionLevel
       }
     });
     if(success){
@@ -98,9 +104,6 @@ async function freezeAccount(account: {id: string, name: string, email: string, 
 async function deleteAccount(id:string, index:number){
   const {success} = await $fetch(`/api/user/${id}`,{
     method:"DELETE",
-    body:{
-      permissionLevel:props.permissionLevel
-    }
   })
   if(success){
     props.accounts.splice(index,1);

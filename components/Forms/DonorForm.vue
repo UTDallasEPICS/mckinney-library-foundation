@@ -1,6 +1,6 @@
 <template>
-    <div class="bg-[#e5e9ec] rounded-md p-6">
-        <VeeForm :initial-values="initValues" :validation-schema="schema" va @submit="submitDonor" class= "w-full max-w-3xl max-h-[80vh] overflow-y-auto mx-auto">
+    <div class="bg-[#e5e9ec] rounded-md p-6 flex justify-center items-start">
+        <VeeForm :initial-values="initValues" :validation-schema="schema" va @submit="submitDonor" class= "w-full sm:w-[700px] max-h-[80vh] overflow-y-auto">
             <div class = "px-6 pt-6 pb-5">
               <h1 class = "form-title"> Donor Information</h1>
             </div>     
@@ -64,10 +64,12 @@
                 </p>
              </div>
             </div>
-            <h2 class = "form-field-label"> Notes </h2>
-            <VeeField autocomplete="off" v-slot="{field}" :disabled="viewOnly" name="notes">
-                <textarea :disabled="viewOnly" v-bind="field" class="form-field focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px]"></textarea>
-            </VeeField>   
+            <div class="px-6 mb-6">
+                <h2 class="form-field-label mb-2">Notes</h2>
+                <VeeField autocomplete="off" :disabled="viewOnly" v-slot="{field}" name="notes">
+                    <textarea v-bind="field" :disabled="viewOnly" class="form-field focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px]"></textarea>
+                </VeeField>
+            </div> 
             <div class="flex justify-center gap-4 my-2">
                 <button @click="cancelSubmisison()" class ="form-button bg-gray-600 hover:bg-gray-700">Cancel</button>
                 <button v-if="!viewOnly" class ="form-button bg-blue-600 hover:bg-blue-700">Submit</button>

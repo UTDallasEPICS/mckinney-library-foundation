@@ -41,7 +41,5 @@ export default defineEventHandler(async (event) =>{
             message: "Failed to create request",
             error: error,
         }
-    }finally{
-        await prisma.$disconnect()
     }
 })

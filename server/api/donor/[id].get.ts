@@ -31,7 +31,5 @@ export default defineEventHandler(async (event) => {
             message: "Failed to fetch donor",
             error: error, 
         }
-    } finally {
-        await prisma.$disconnect()
     }
 });

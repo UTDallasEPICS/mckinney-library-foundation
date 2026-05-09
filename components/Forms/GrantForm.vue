@@ -1,6 +1,6 @@
 <template>
-    <div class="bg-[#e5e9ec] rounded-md p-6">
-        <VeeForm :initial-values="initValues" :validation-schema="schema" class= "w-full max-w-3xl max-h-[80vh] overflow-y-auto mx-auto" @submit="submitGrant">
+    <div class="bg-[#e5e9ec] rounded-md p-6 flex justify-center items-start">
+        <VeeForm :initial-values="initValues" :validation-schema="schema" class= "w-full sm:w-[700px] max-h-[80vh] overflow-y-auto" @submit="submitGrant">
             <div class = "px-6 pt-6 pb-5">
               <h1 class = "form-title"> Grant Information</h1>
             </div>
@@ -167,7 +167,7 @@ const schema = yup.object({
     monetaryAmount: yup.number().nullable().min(0.01,"minimum is at least 0.01").typeError('must be a number'),
     nonMonetaryAmount: yup.string().nullable().test(
     'amount-not-empty',
-    'grant must include either monetary or non-monetary amount',
+    'Grant must include either monetary or non-monetary amount',
     function (value) {
         const {monetaryAmount} = this.parent
         return (value != null && value !== '') || (monetaryAmount != null && monetaryAmount !== '')

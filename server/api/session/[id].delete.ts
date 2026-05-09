@@ -22,8 +22,6 @@ export default defineEventHandler(async (event) =>{
             message: "Failed to delete session",
             error: error, 
         }
-     }finally{
-        await prisma.$disconnect();
     }
     
 
