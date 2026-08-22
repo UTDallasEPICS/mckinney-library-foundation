@@ -18,25 +18,10 @@ COPY . ./
 RUN pnpm prisma generate
 RUN pnpm run build
 
+
 # Deployment container
 FROM node:lts-alpine AS deployment
 WORKDIR /app
-# Copy stuff from build container to ensure we have prisma and everything it needs
 COPY --from=builder /app/.output ./
-COPY --from=builder /app/package.json ./
-COPY --from=builder /app/pnpm-lock.yaml ./
-COPY --from=builder /app/pnpm-workspace.yaml ./
-COPY --from=builder /app/prisma ./prisma
-COPY --from=builder /app/prisma.config.ts ./
-RUN npm i -g pnpm
-# We just need prisma without nuxt build scripts or anything else
-# I am installing again because pnpm 11 tries to install prisma again in prisma generate and does not like preexisting node modules
-RUN pnpm i --dev --ignore-scripts --frozen-lockfile
-RUN pnpm prisma generate
-COPY --from=builder /app/entrypoint.sh /entrypoint
-
-# Ensure we can actually run the entrypoint script
-RUN chmod +x /entrypoint
 EXPOSE 3000
-ENTRYPOINT ["/entrypoint"]
 CMD ["node", "./server/index.mjs"]
