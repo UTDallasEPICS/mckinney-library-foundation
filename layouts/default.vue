@@ -1,6 +1,6 @@
 <template>
   <div>
-    <Header v-if="logedIn" />
+    <Header v-if="loggedIn" />
     <NuxtPage />
   </div>
 </template>
@@ -9,9 +9,9 @@
   import Header from '@/components/Header.vue'; 
 
 const session = await useFetch("/api/session");
-  const logedIn = ref(false);
+  const loggedIn = ref(false);
   if(session.data.value?.user){
-    logedIn.value = true;
+    loggedIn.value = true;
   }
   </script>
   
