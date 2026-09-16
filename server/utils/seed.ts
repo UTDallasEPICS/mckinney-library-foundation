@@ -38,6 +38,7 @@ const populateDonations = async () => {
   const donationData = [
     {
       donorName: "Mike's Health Collection",
+      eventName: "Literature Festival",
       method: "cash",
       monetaryAmount: "1000",
       status: 1,
@@ -46,6 +47,7 @@ const populateDonations = async () => {
     },
     {
       donorName: "Ronald Lynn",
+      eventName: "April Event",
       method: "gift",
       monetaryAmount: "100",
       status: 1,
@@ -54,6 +56,7 @@ const populateDonations = async () => {
     },
     {
       donorName: "Blake Boyd",
+      eventName: "Literature Festival",
       method: "cash",
       monetaryAmount: "500",
       status: 1,
@@ -65,26 +68,53 @@ const populateDonations = async () => {
   for (const donation of donationData) {
     const donor = await prisma.donor.findUnique({
       where: {
-        name: donation.donorName
-      }
-    })
+        name: donation.donorName,
+      },
+    });
+
+    const event = await prisma.event.findFirst({
+      where: {
+        eventName: donation.eventName,
+      },
+    });
 
     await prisma.donation.create({
       data: {
         donorId: donor.id,
+        eventId: event.id,
         method: donation.method,
         monetaryAmount: donation.monetaryAmount,
         status: donation.status,
         notes: donation.notes,
-        receivedDate: donation.receivedDate
-      }
-    })
+        receivedDate: donation.receivedDate,
+      },
+    });
   }
 };
 
+const events = [
+  {
+    eventName: "April Event",
+    eventDate: new Date("04/01/2026"),
+    description: "",
+  },
+  {
+    eventName: "Literature Festival",
+    eventDate: new Date("09/14/2026"),
+    description: "",
+  },
+];
+
+const populateEvents = async () => {
+  await prisma.event.createMany({
+    data: events,
+  });
+};
+
 const main = async () => {
-  await populateDonors();
   await createUsers();
+  await populateDonors();
+  await populateEvents();
   await populateDonations();
 
   console.info(`Database has been seeded`);
