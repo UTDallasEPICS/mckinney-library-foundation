@@ -6,7 +6,6 @@ const adapter = new PrismaBetterSqlite3({ url: connectionString });
 const prisma = new PrismaClient({ adapter });
 
 const validUsers = [
-  { name: "Jaden Tran", email: "tranjad001@gmail.com", permission: 3 },
 ];
 
 const donors = [
