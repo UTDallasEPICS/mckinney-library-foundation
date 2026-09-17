@@ -60,7 +60,7 @@ if(requests && requests.length > 0){
 }
 
 const usersOBJ = await useFetch("/api/user");
-const users = usersOBJ.data.value?.data;
+const users = ref(usersOBJ.data.value?.data ?? []);
 
 const user:Ref<{
     id: string;
@@ -70,7 +70,7 @@ const user:Ref<{
 const userIndex = ref(0);
 async function PrepEditAccount(index:number){
   if(users){
-    user.value = users[index];
+    user.value = users.value[index];
   }
   showEdit.value=true
   userIndex.value=index;
@@ -89,7 +89,7 @@ async function editAccount(values: Record<string, any>){
     if(users){
       users[userIndex.value].name = values.fName + ' ' + values.lName;
       users[userIndex.value].email = values.email.toLowerCase();
-      users[userIndex.value].permission = values.permision
+      users[userIndex.value].permission = values.permission
     } 
   }
   cancelEdit();
