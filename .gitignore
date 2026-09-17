@@ -41,3 +41,5 @@ package-lock.json
 #prisma/migrations/
 # Ignore prisma generated files
 server/utils/generated/
+# Ignore prisma seed file
+primsa/seed.ts
