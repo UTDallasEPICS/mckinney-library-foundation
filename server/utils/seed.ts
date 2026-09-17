@@ -8,7 +8,10 @@ const prisma = new PrismaClient({ adapter });
 const validUsers = [
   { name: "Jaden Tran", email: "tranjad001@gmail.com", permission: 3 },
   { name: "Jack Matthews", email: "jxm230082@utdallas.edu", permission: 3},
-  { name: "", email: "", permission: 3},
+  { name: "Mahdia Shahid", email: "mahdia.shahid.ms@gmail.com", permission: 3},
+  { name: "Jesus Romero Arteaga", email: "jgr230000@utdallas.edu", permission: 3},
+  { name: "Kieran Roundy", email: "kdr240000@utdallas.edu", permission: 3},
+  { name: "Srinivasan Nishanth", email: "nxs230112@utdallas.edu", permission: 3}
 ];
 
 const donors = [
