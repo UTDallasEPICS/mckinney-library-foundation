@@ -1,7 +1,13 @@
 <template>
     <div class="flex-1 p-8 ">
-        <div class="mb-3 flex justify-start">
+        <div class="mb-3 flex justify-start gap-4">
             <button class="rounded-md text-sm font-medium outline-none h-9 py-2 bg-slate-700 hover:bg-slate-800 text-white px-6" @click="exportCsv">Export CSV</button>
+            <select v-model="fiscalYearFilter" class="h-9 px-3 border border-gray-300 rounded-md bg-white text-sm text-[#2d3e4d]">
+                <option value="all">All fiscal years</option>
+                <option value="current">Current fiscal year (FY{{ currentFiscalYear }})</option>
+                <option value="past">Past fiscal years</option>
+                <option v-for="fy in pastFiscalYears" :key="fy" :value="String(fy)">FY{{ fy }}</option>
+            </select>
         </div>
         <div class = "bg-white rounded-lg shadow-lg overflow-x-auto mx-auto">       
             <table class="w-full">
@@ -153,6 +159,27 @@ const props = defineProps<{
 
 const { downloadCsv } = useCsvExport()
 
+// Fiscal years run Oct 1 - Sep 30 and are named by the year they end in (Oct 2025 - Sep 2026 = FY2026).
+const FISCAL_YEAR_START_MONTH = 10
+function fiscalYearOf(date: Date | null) {
+    if (!date) return null
+    return FISCAL_YEAR_START_MONTH > 1 && date.getUTCMonth() + 1 >= FISCAL_YEAR_START_MONTH ? date.getUTCFullYear() + 1 : date.getUTCFullYear()
+}
+const currentFiscalYear = fiscalYearOf(new Date())!
+const fiscalYearFilter = ref('all')
+const pastFiscalYears = computed(() =>
+    [...new Set(props.data.map((row) => fiscalYearOf(row.grant.receivedDate)).filter((fy): fy is number => fy !== null && fy < currentFiscalYear))].sort((a, b) => b - a)
+)
+function matchesFiscalYear(date: Date | null) {
+    const fy = fiscalYearOf(date)
+    switch (fiscalYearFilter.value) {
+        case 'all': return true
+        case 'current': return fy === currentFiscalYear
+        case 'past': return fy !== null && fy < currentFiscalYear
+        default: return fy === Number(fiscalYearFilter.value)
+    }
+}
+
 
 
 const activeSearch:Ref<{name:'status' | 'purpose' | 'method' | 'nonMonetaryAmount' |'grantorName' | 'boardName' |'monetaryAmount' | 'receivedDate', active:boolean}[]> = ref([
@@ -191,7 +218,7 @@ const latestDono= ref("");
 
 
 const visibleIndices = computed(() => {
-  return props.data.filter((row) =>
+  return props.data.filter((row) => matchesFiscalYear(row.grant.receivedDate)).filter((row) =>
     searchFields.every((field) => {
         const search = searchInputs.value[field].toLowerCase().trim() 
         if (!search && (!activeSearch.value[2].active && !activeSearch.value[6].active)){
