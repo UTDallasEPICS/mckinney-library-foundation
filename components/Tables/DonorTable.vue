@@ -192,13 +192,10 @@ function handleEmailClick() {
     props.emailFunction(selected)
 }
 
-
 const isEnabled  = computed(() => selectedCount.value > 0);
 const allSelected = computed(() => selectedCount.value == props.data.filter((row) =>{
     return row.donor.email !== ''
 }).length)
-
-
 
 const activeSearch:Ref<{name:'name' | 'author' | 'organization' | 'boardMember' | 'firstDonoDate' | 'lastDonoDate' | 'email' | 'phone', active:boolean}[]> = ref([
     {name:'name',active:false},
