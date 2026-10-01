@@ -1,12 +1,12 @@
 <template>
-<DonationBar 
-  :user="user"
-  :donors="donorTableData"
-  :donations="donationsData"
-/>
-  <DonorTable 
+  <DonationBar
+    :user="user"
+    :donors="donorTableData"
+    :donations="donationsData"
+  />
+  <DonorTable
     key="DonoTable"
-    :data="DonorTableProps.donorTableData" 
+    :data="DonorTableProps.donorTableData"
     :email-function="DonorTableProps.emailFunction"
     :edit-function="DonorTableProps.editFunction"
     :delete-function="DonorTableProps.deleteFunciton"
@@ -14,7 +14,10 @@
     :permission-level="user.permissionLevel"
   />
 
-  <div v-if="sendEmail" class="fixed top-0 left-0 w-full h-full flex justify-center items-center z-20 bg-black/50">
+  <div
+    v-if="sendEmail"
+    class="fixed top-0 left-0 w-full h-full flex justify-center items-center z-20 bg-black/50"
+  >
     <EmailForm
       :name-list="nameList"
       :email-list="emailList"
@@ -23,46 +26,53 @@
     />
   </div>
 
-  <div v-if="updateDonor" class="fixed top-0 left-0 w-full h-full flex justify-center items-center z-20 bg-black/50">
+  <div
+    v-if="updateDonor"
+    class="fixed top-0 left-0 w-full h-full flex justify-center items-center z-20 bg-black/50"
+  >
     <DonorForm
       :donor="donorFormData.donor"
       :submit-donor="editDonor"
       :cancel-submisison="cancelUpdate"
-      :view-only="false" 
-      :organizations="donorOrganizations"  
+      :view-only="false"
+      :organizations="donorOrganizations"
     />
   </div>
 
-  <div v-if="viewDonor" class="fixed top-0 left-0 w-full h-full flex justify-center items-center z-20 bg-black/50">
+  <div
+    v-if="viewDonor"
+    class="fixed top-0 left-0 w-full h-full flex justify-center items-center z-20 bg-black/50"
+  >
     <DonorForm
       :donor="donorFormData.donor"
       :submit-donor="editDonor"
       :cancel-submisison="cancelUpdate"
-      :view-only="true" 
+      :view-only="true"
       :organizations="donorOrganizations"
     />
-  </div> 
+  </div>
 </template>
 
 <script setup lang="ts">
-import DonorTable from '~/components/Tables/DonorTable.vue';
-import EmailForm from '~/components/Forms/EmailForm.vue';
-import DonorForm from '~/components/Forms/DonorForm.vue';
-import DonationBar from '~/components/Bars/DonationBar.vue'
-import type { Donation, Donor } from '~~/server/utils/generated/prisma/browser';
+import DonorTable from "~/components/Tables/DonorTable.vue";
+import EmailForm from "~/components/Forms/EmailForm.vue";
+import DonorForm from "~/components/Forms/DonorForm.vue";
+import DonationBar from "~/components/Bars/DonationBar.vue";
+import type { Donation, Donor } from "~~/server/utils/generated/prisma/browser";
 
-type DonorWithCount = Donor & { donationCount: number; isAuthor?: boolean }
+type DonorWithCount = Donor & { donationCount: number; isAuthor?: boolean };
 
-
-const {session, getSession} = useAuth();
+const { session, getSession } = useAuth();
 session.value = await getSession();
 
-const user:Ref<{id:string,permissionLevel:number}> = ref({id:"",permissionLevel:0});
-if(session.value?.user){
+const user: Ref<{ id: string; permissionLevel: number }> = ref({
+  id: "",
+  permissionLevel: 0,
+});
+if (session.value?.user) {
   user.value.permissionLevel = session.value.user.permission;
   user.value.id = session.value.user.id;
-}
-else{
+} else {
   navigateTo("/");
 }
 
@@ -70,81 +80,79 @@ const sendEmail = ref(false);
 const updateDonor = ref(false);
 const viewDonor = ref(false);
 const { donors, putDonor, deleteDonor } = useDonor();
-const emailList: Ref<string[]> = ref([])
-const nameList = ref("")
+const emailList: Ref<string[]> = ref([]);
+const nameList = ref("");
 const donorIndex = ref(0);
 
 const donorTableData = computed(() =>
-    donors.value.map((thisDonor: any) => ({
-        donor: thisDonor as DonorWithCount,
-        donations: thisDonor.donations,
-        boardMember: thisDonor.boardMember
-    }))
+  donors.value.map((thisDonor: any) => ({
+    donor: thisDonor as DonorWithCount,
+    donations: thisDonor.donations,
+    boardMember: thisDonor.boardMember,
+  })),
 );
 
-const donorFormData:Ref<{donor: DonorWithCount}> = ref({
-  donor:{
-  id:"",
-  boardMemberId:"",
-  name:"",
-  organization:"",
-  email:"",
-  phone:"",
-  address:"",
-  notes:"",
-  webLink:"",
-  isAuthor: false,
-  preferredCommunication:"",
-  donationCount: 0
-  }
+const donorFormData: Ref<{ donor: DonorWithCount }> = ref({
+  donor: {
+    id: "",
+    boardMemberId: "",
+    name: "",
+    organization: "",
+    email: "",
+    phone: "",
+    address: "",
+    notes: "",
+    webLink: "",
+    isAuthor: false,
+    preferredCommunication: "",
+    donationCount: 0,
+  },
 });
 
-
-const {donorOrganizations} = useDonorDropDown(donorTableData.value)
+const { donorOrganizations } = useDonorDropDown(donorTableData.value);
 
 const { donationsData } = useDonation();
-const toasts = useToast()
+const toasts = useToast();
 
-
-const DonorTableProps ={
-  donorTableData:donorTableData.value,
+const DonorTableProps = {
+  donorTableData: donorTableData.value,
   emailFunction: prepEmail,
-  editFunction:prepDonorUpdate,
-  deleteFunciton:removeDonor,
-  viewFunction:prepDonorView
-}
+  editFunction: prepDonorUpdate,
+  deleteFunciton: removeDonor,
+  viewFunction: prepDonorView,
+};
 
-const emailFormProps ={
-  names:nameList.value,
-  emails:emailList.value,
-  groupEmail:groupEmail,
-  cancelEmail:cancelEmail,
-
-}
+const emailFormProps = {
+  names: nameList.value,
+  emails: emailList.value,
+  groupEmail: groupEmail,
+  cancelEmail: cancelEmail,
+};
 
 function cancelEmail() {
   sendEmail.value = false;
   emailList.value = [];
   nameList.value = "";
 }
-function cancelUpdate(){
-  donorFormData.value = {donor:
-    {id:"",
-    boardMemberId:"",
-    name:"",
-    organization:"",
-    email:"",
-    phone:"",
-    address:"",
-    notes:"",
-    webLink:"",
-    isAuthor: false,
-    preferredCommunication:"",
-    donationCount: 0
-
-  }};
-  updateDonor.value= false;
-  viewDonor.value=false;
+function cancelUpdate() {
+  donorFormData.value = {
+    donor: {
+      id: "",
+      boardMemberId: "",
+      name: "",
+      organization: "",
+      email: "",
+      phone: "",
+      address: "",
+      notes: "",
+      webLink: "",
+      isAuthor: false,
+      preferredCommunication: "",
+      donationCount: 0,
+    },
+  };
+  updateDonor.value = false;
+  viewDonor.value = false;
 }
 
 async function prepEmail(selected: Record<string, boolean>) {
@@ -152,7 +160,7 @@ async function prepEmail(selected: Record<string, boolean>) {
   nameList.value = "";
 
   donors.value.forEach((item) => {
-    if(selected[item.id] && item.email !== "") {
+    if (selected[item.id] && item.email !== "") {
       emailList.value.push(item.email);
 
       if (nameList.value != "") {
@@ -167,7 +175,7 @@ async function prepEmail(selected: Record<string, boolean>) {
     sendEmail.value = true;
   }
 }
-async function prepDonorUpdate(donor:Donor,index:number){
+async function prepDonorUpdate(donor: Donor, index: number) {
   donorFormData.value.donor = {
     ...(donor as DonorWithCount),
     isAuthor: Boolean((donor as any).isAuthor),
@@ -180,51 +188,64 @@ async function prepDonorView(donor: Donor, index: number) {
   donorFormData.value.donor = {
     ...donor,
     isAuthor: Boolean((donor as any).isAuthor),
-    donationCount: (donor as any).donationCount ?? 0  
+    donationCount: (donor as any).donationCount ?? 0,
   };
   viewDonor.value = true;
 }
-async function editDonor(values:Record<string,any>) {
+async function editDonor(values: Record<string, any>) {
   const payload = {
     ...values,
-    isAuthor: !!values.isAuthor
+    isAuthor: !!values.isAuthor,
   };
-  await putDonor(values, user.value);
+  //await putDonor(values, user.value);
+  const result = await putDonor(payload, user.value);
+  if (!result.success) {
+    if (result.error?.code === "P2002") {
+      toasts.add({
+        title: "This contact information is already in use!",
+      });
+    } else {
+      toasts.add({
+        title: "Unable to update donor",
+      });
+    }
+    return;
+  }
   updateDonor.value = false;
 }
 
-async function removeDonor(donor:Donor,index:number) {
-  const result = await deleteDonor(donor,user.value.permissionLevel);
-  if(result.error?.code == 'P2003'){
+async function removeDonor(donor: Donor, index: number) {
+  const result = await deleteDonor(donor, user.value.permissionLevel);
+  if (result.error?.code == "P2003") {
     toasts.add({
-      title: "Cannot delete a donor with donations on record."
+      title: "Cannot delete a donor with donations on record.",
     });
   }
 }
 
-const addDonor = (data: any) => { 
-  console.log("donros",donors)
+const addDonor = (data: any) => {
+  console.log("donros", donors);
   donors.value.push(data);
 };
 
-async function groupEmail(values:Record<string, any>){
+async function groupEmail(values: Record<string, any>) {
   try {
-    await $fetch("/api/email",{
-    method:"POST",
-    body:{
-      permissionLevel:user.value.permissionLevel,
-      subject:values.Subject,
-      text:values.Message,
-      emails:emailList.value,
-    }
-  });
+    await $fetch("/api/email", {
+      method: "POST",
+      body: {
+        permissionLevel: user.value.permissionLevel,
+        subject: values.Subject,
+        text: values.Message,
+        emails: emailList.value,
+      },
+    });
 
-  sendEmail.value = false;
-  emailList.value = [];
-  nameList.value = "";
-} catch (error) {
-  alert("Failed to send email.");
-  console.error(error);
+    sendEmail.value = false;
+    emailList.value = [];
+    nameList.value = "";
+  } catch (error) {
+    alert("Failed to send email.");
+    console.error(error);
   }
 }
 </script>
