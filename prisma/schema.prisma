@@ -90,10 +90,10 @@ model Donor {
   id                     String     @id @default(cuid())
   boardMemberId          String?
   boardMember            User?      @relation(fields: [boardMemberId], references: [id], onDelete: Restrict)
-  name                   String     @unique @default("Anonymous")
+  name                   String     @default("Anonymous") //@unique @default("Anonymous")
   address                String?
-  phone                  String?
-  email                  String?
+  phone                  String?    @unique 
+  email                  String?    @unique 
   preferredCommunication String? // phone or email
   notes                  String?
   webLink                String?
