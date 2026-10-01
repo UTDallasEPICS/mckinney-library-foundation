@@ -14,6 +14,7 @@
             >
                 Add Event
             </button>
+            <button v-if="permissionLevel>1" :disabled="!isEnabled" @click="handleEmailClick" class ="disabled:bg-slate-300 rounded-md text-sm font-medium outline-none h-9 py-2 bg-blue-600 hover:bg-blue-700 text-white px-6">Email Donors</button>
         </div>
         <div class="bg-white rounded-lg shadow-lg overflow-x-auto mx-auto">
             <table class="w-full">
@@ -59,6 +60,12 @@
                             </div>
                         </th>
                         <th class="px-6 py-3 text-center text-xs text-[#2d3e4d] border-b-2 border-[#a8b5bf]">Actions</th>
+                        <th v-if="permissionLevel>1" class="px-4 py-3 text-center text-sm text-[#2d3e4d] border-b-2 border-[#a8b5bf] cursor-pointer transition-colors">
+                            <div class="flex justify-center gap-2">
+                                <span>Select</span>
+                                <input autocomplete="off" @click="selectAll"  type="checkbox" :checked="allSelected"></input>
+                            </div> 
+                        </th>
                     </tr>
                 </thead>
                 <tbody>
@@ -90,6 +97,7 @@
                                 </button>
                             </div>
                         </td>
+                        <td v-if="permissionLevel>1" class="px-4 py-3 text-center"> <input type="checkbox" v-model="selectedEvents[row.event.id]"></td>
                     </tr>
                 </tbody>
             </table>
@@ -103,15 +111,55 @@ import { FunnelIcon } from '@heroicons/vue/24/solid';
 import { NumberedListIcon } from '@heroicons/vue/24/outline';
 import { useCsvExport } from '~/composables/useCsvExport';
 
+type PrismaEventDonations = PrismaEvent & {
+    donations: {
+        donor: {
+            email: string | null
+        } | null
+    }[]
+}
+
 const props = defineProps<{
-    data: { event: PrismaEvent, boardMember: { name: string } | null }[]
+    data: { event: PrismaEventDonations, boardMember: { name: string } | null }[]
     addFunction: () => void
+    emailFunction: (selected: Record<string, boolean>) => Promise<void>
     editFunction: (eventData: { event: PrismaEvent, boardMember: { name: string } | null }, index: number) => Promise<void>
     viewFunction: (eventData: { event: PrismaEvent, boardMember: { name: string } | null }, index: number) => Promise<void>
     deleteFunction: (id: string, index: number) => Promise<void>
     permissionLevel: number
 }>();
 const { downloadCsv } = useCsvExport()
+const selectedEvents = ref<Record<string, boolean>>({})
+
+const selectedCount = computed(() => Object.values(selectedEvents.value).filter(Boolean).length)
+
+function selectAll() {
+    const checkAll =!allSelected.value
+
+    props.data.forEach((row) => {
+        const hasEmail = row.event.donations?.some(
+            donation => donation.donor?.email
+        )
+
+        if (hasEmail) {
+            selectedEvents.value[row.event.id] = checkAll
+        }
+    })
+}
+
+function handleEmailClick() {
+    props.emailFunction(selectedEvents.value)
+}
+
+const isEnabled = computed(() => selectedCount.value > 0)
+const allSelected = computed(() => 
+    selectedCount.value === props.data.filter((row) => 
+        row.event.donations?.some(
+            donation => donation.donor?.email
+        )
+    ).length
+) 
+
 
 const activeSearch: Ref<{ name: 'eventName' | 'eventDate' | 'boardName', active: boolean }[]> = ref([
     { name: 'eventName', active: false },

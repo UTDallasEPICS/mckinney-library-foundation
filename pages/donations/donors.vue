@@ -147,7 +147,6 @@ function cancelUpdate(){
   viewDonor.value=false;
 }
 
-
 async function prepEmail(selected: Record<string, boolean>) {
   emailList.value = [];
   nameList.value = "";
