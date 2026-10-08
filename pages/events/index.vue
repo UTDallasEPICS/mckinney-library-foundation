@@ -20,7 +20,45 @@
     />
   </div>
 
-  <div v-if="sendEmail" class="fixed top-0 left-0 w-full h-full flex justify-center items-center z-20 bg-black/50">
+  <div
+    v-if="showDonorSelection"
+    class="fixed top-0 left-0 w-full h-full flex justify-center items-center z-20 bg-black/50"
+  >
+    <div class="bg-white p-6 rounded-md">
+      <h2 class="text-lg font-semibold mb-4">Select Available Donors</h2>
+
+      <div class="max-h-80 overflow-y-auto pr-2">
+        <div
+          v-for="donor in eventDonors"
+          :key="donor.id"
+          class="flex items-center gap-3 mb-2"
+        >
+          <input type="checkbox" v-model="selectedDonors[donor.id]" />
+          <p>{{ donor.name }}, {{ donor.email }}</p>
+        </div>
+      </div>
+      <div>
+        <button
+          class="bg-blue-600 text-white px-4 py-2 rounded-md"
+          @click="confirmEventDonors"
+        >
+          Continue
+        </button>
+
+        <button
+          class="bg-gray-500 text-white px-4 py-2 rounded-md"
+          @click="cancelDonorSelection"
+        >
+          Cancel
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div
+    v-if="sendEmail"
+    class="fixed top-0 left-0 w-full h-full flex justify-center items-center z-20 bg-black/50"
+  >
     <EmailForm
       :name-list="nameList"
       :email-list="emailList"
@@ -56,7 +94,7 @@
 
 <script setup lang="ts">
 import { ref } from "vue";
-import EmailForm from '~/components/Forms/EmailForm.vue';
+import EmailForm from "~/components/Forms/EmailForm.vue";
 import EventForm from "~/components/Forms/EventForm.vue";
 import EventTable from "~/components/Tables/EventTable.vue";
 import { useAuth } from "~/composables/useAuth";
@@ -81,7 +119,10 @@ const { eventsData, postEvent, putEvent, deleteEvent } = useEvent();
 const sendEmail = ref(false);
 const emailList = ref<string[]>([]);
 const nameList = ref("");
+const eventDonors = ref<any[]>([]);
 const showEventForm = ref(false);
+const showDonorSelection = ref(false);
+const selectedDonors = ref<Record<string, boolean>>({});
 const updateEvent = ref(false);
 const viewEvent = ref(false);
 const eventIndex = ref(0);
@@ -131,32 +172,50 @@ function cancelEvent() {
 }
 
 async function prepEventEmail(selected: Record<string, boolean>) {
-  console.log("selected:", selected)
-  emailList.value = []
-  nameList.value = ""
+  const selectedRows = eventsData.value.filter((row) => selected[row.event.id]);
 
-  const donors = eventsData.value
-    .filter((row) => selected[row.event.id])
-    .flatMap((row) =>
-      row.event.donations
-        .map((donation) => donation.donor)
-        .filter((donor) => donor?.email)
-    )
+  const donors = selectedRows.flatMap((row) =>
+    row.event.donations
+      .map((donation) => donation.donor)
+      .filter((donor) => donor?.email),
+  );
 
-  emailList.value = [
-    ...new Set(donors.map((donor) => donor.email)
-  )]
+  eventDonors.value = Array.from(
+    new Map(donors.map((donor) => [donor.id, donor])).values(),
+  );
 
-  nameList.value = [
-    ...new Set(donors.map((donor) => donor.name))
-  ].join(", ")
+  selectedDonors.value = {};
+
+  eventDonors.value.forEach((donor) => {
+    selectedDonors.value[donor.id] = true;
+  });
+
+  if (eventDonors.value.length > 0) {
+    showDonorSelection.value = true;
+  }
+}
+
+function confirmEventDonors() {
+  const donors = eventDonors.value.filter(
+    (donor) => selectedDonors.value[donor.id],
+  );
+
+  emailList.value = donors.map((donor) => donor.email);
+
+  nameList.value = donors.map((donor) => donor.name).join(", ");
+
+  showDonorSelection.value = false;
 
   if (emailList.value.length > 0) {
     sendEmail.value = true;
   }
 }
 
-console.log("EVENTS DATA: ", eventsData.value);
+function cancelDonorSelection() {
+  showDonorSelection.value = false;
+  eventDonors.value = [];
+  selectedDonors.value = {};
+}
 
 async function prepEventUpdate(
   eventData: {
@@ -237,24 +296,24 @@ function cancelEmail() {
   nameList.value = "";
 }
 
-async function groupEmail(values: Record<string, any>){
+async function groupEmail(values: Record<string, any>) {
   try {
-    await $fetch("/api/email",{
-    method:"POST",
-    body:{
-      permissionLevel:user.value.permissionLevel,
-      subject:values.Subject,
-      text:values.Message,
-      emails:emailList.value,
-    }
-  });
+    await $fetch("/api/email", {
+      method: "POST",
+      body: {
+        permissionLevel: user.value.permissionLevel,
+        subject: values.Subject,
+        text: values.Message,
+        emails: emailList.value,
+      },
+    });
 
-  sendEmail.value = false;
-  emailList.value = [];
-  nameList.value = "";
-} catch (error) {
-  alert("Failed to send email.");
-  console.error(error);
+    sendEmail.value = false;
+    emailList.value = [];
+    nameList.value = "";
+  } catch (error) {
+    alert("Failed to send email.");
+    console.error(error);
   }
 }
 </script>
