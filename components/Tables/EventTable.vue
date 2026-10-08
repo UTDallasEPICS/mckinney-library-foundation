@@ -59,11 +59,12 @@
                                 <button v-else @click="toggleSort(2)"><NumberedListIcon class="w-4 h-4"/></button>
                             </div>
                         </th>
+                        <th class="px-6 py-3 text-center text-xs text-[#2d3e4d] border-b-2 border-[#a8b5bf]">Event Donor Count</th>
                         <th class="px-6 py-3 text-center text-xs text-[#2d3e4d] border-b-2 border-[#a8b5bf]">Actions</th>
                         <th v-if="permissionLevel>1" class="px-4 py-3 text-center text-sm text-[#2d3e4d] border-b-2 border-[#a8b5bf] cursor-pointer transition-colors">
                             <div class="flex justify-center gap-2">
                                 <span>Select</span>
-                                <input autocomplete="off" @click="selectAll"  type="checkbox" :checked="allSelected"></input>
+                                <input autocomplete="off" @click="selectAll" type="checkbox" :checked="allSelected"></input>
                             </div> 
                         </th>
                     </tr>
@@ -73,8 +74,9 @@
                         <td class="px-6 py-4 text-[#2d3e4d] text-left text-sm">{{ row.event.eventName }}</td>
                         <td class="px-6 py-4 text-[#2d3e4d] text-left text-sm">{{ formatDate(row.event.eventDate) }}</td>
                         <td class="px-6 py-4 text-[#2d3e4d] text-left text-sm">{{ row.boardMember?.name }}</td>
+                        <td class="px-6 py-4 text-center text-[#2d3e4d]">{{ row.event.donations?.length ?? 0 }}</td>
                         <td class="px-6 py-4">
-                            <div class="flex justify-evenly gap-3">
+                            <div class="flex justify-evenly">
                                 <button
                                     v-if="permissionLevel > 0"
                                     class="rounded-md text-sm font-medium outline-none h-9 py-2 bg-blue-600 hover:bg-blue-700 text-white px-6"
@@ -97,7 +99,7 @@
                                 </button>
                             </div>
                         </td>
-                        <td v-if="permissionLevel>1" class="px-4 py-3 text-center"> <input type="checkbox" v-model="selectedEvents[row.event.id]"></td>
+                        <td v-if="permissionLevel>1" class="px-4 py-3 text-center"> <input v-if="row.event.donations.length > 0" type="checkbox" v-model="selectedEvents[row.event.id]"></td>
                     </tr>
                 </tbody>
             </table>
