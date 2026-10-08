@@ -43,17 +43,23 @@
       </div>
     </div>
 
+    <!-- date range filters for the totals below -->
+    <div class="grid md:grid-cols-2 gap-6 mb-4">
+      <DateRangeFilter v-model="donationDateRange" label="Donations date range" placeholder="All time" />
+      <DateRangeFilter v-model="grantDateRange" label="Grants date range" placeholder="All time" />
+    </div>
+
     <!-- the totals at the bottom -->
     <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
       <DashboardStat
         title="Total Donations"
         :value="totalDonations"
-        description="All time total amount"
+        :description="donationsDescription"
       />
       <DashboardStat
         title="Total Grants"
         :value="totalGrants"
-        description="All grants added"
+        :description="grantsDescription"
       />
       <DashboardStat
         title="Total Donors"
@@ -105,6 +111,7 @@ import DashboardStat from '~/components/Banners/DashboardBanner.vue'
 import DonationForm from '~/components/Forms/DonationForm.vue'
 import GrantForm from '~/components/Forms/GrantForm.vue'
 import EventForm from '~/components/Forms/EventForm.vue'
+import DateRangeFilter, { type DateRangeValue } from '~/components/Forms/DateRangeFilter.vue'
 import { useDonationDropDown } from '~/composables/useDonationDropDown'
 import { useGrantsDropDown } from '~/composables/useGrantDropDowns'
 import { useEventDropDown } from '~/composables/useEventDropDown'
@@ -283,20 +290,58 @@ function cancelGrant(){
   showGrantForm.value = false;
 }
 
-const donationsArray = donationsData?.value || [];
+// date range filters for the totals below
+const donationDateRange = ref<DateRangeValue>(null)
+const grantDateRange = ref<DateRangeValue>(null)
 
-const totalDonations = new Intl.NumberFormat("en-US", {
+function isWithinRange(date: Date | null | undefined, range: DateRangeValue): boolean {
+  if (!range?.start || !range?.end) return true
+  if (!date) return false
+  // received dates are stored as UTC midnight, so compare calendar days rather than local timestamps
+  const day = date.toISOString().slice(0, 10)
+  return day >= range.start.toString() && day <= range.end.toString()
+}
+
+const filteredDonations = computed(() =>
+  donationsData.value.filter((row) => isWithinRange(row.donation.receivedDate, donationDateRange.value))
+)
+
+const filteredGrants = computed(() =>
+  grantsData.value.filter((row) => isWithinRange(row.grant.receivedDate, grantDateRange.value))
+)
+
+const currencyFormatter = new Intl.NumberFormat("en-US", {
   style: "currency",
   currency: "USD",
   maximumFractionDigits: 0
-}).format(
-  donationsArray.reduce((sum, row) => {
+});
+
+const totalDonations = computed(() => currencyFormatter.format(
+  filteredDonations.value.reduce((sum, row) => {
     const amount = parseFloat(row.donation.monetaryAmount || "0");
     return sum + (isNaN(amount) ? 0 : amount);
   }, 0)
-);
+));
 
-const totalGrants = grantsData.value.length.toLocaleString();
+function countDescription(count: number, singular: string, plural: string, range: DateRangeValue) {
+  const scope = range?.start && range?.end ? 'in selected range' : 'all time'
+  return `${count.toLocaleString()} ${count === 1 ? singular : plural}, ${scope}`
+}
+
+const donationsDescription = computed(() =>
+  countDescription(filteredDonations.value.length, 'donation', 'donations', donationDateRange.value)
+)
+
+const grantsDescription = computed(() =>
+  countDescription(filteredGrants.value.length, 'grant', 'grants', grantDateRange.value)
+)
+
+const totalGrants = computed(() => currencyFormatter.format(
+  filteredGrants.value.reduce((sum, row) => {
+    const amount = parseFloat(row.grant.monetaryAmount || "0");
+    return sum + (isNaN(amount) ? 0 : amount);
+  }, 0)
+));
 
 
 
