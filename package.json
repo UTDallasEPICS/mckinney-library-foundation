@@ -12,6 +12,7 @@
   },
   "dependencies": {
     "@heroicons/vue": "^2.2.0",
+    "@internationalized/date": "^3.12.1",
     "@nuxt/ui": "^4.7.1",
     "@prisma/adapter-better-sqlite3": "^7.3.0",
     "@prisma/client": "^7.3.0",
