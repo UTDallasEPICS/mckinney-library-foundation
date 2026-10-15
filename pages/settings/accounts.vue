@@ -1,5 +1,22 @@
 <template>
-<h1 class="text-[36px] text-[#2c3e50] text-center py-5 mb-2"> Manage Accounts </h1>
+<div class="pt-6 pb-2 px-8">
+  <div class="flex items-center gap-3 max-w-7xl mx-auto">
+  <button
+    class="bg-[#2c3e50] text-white px-4 py-2 rounded-md font-medium shadow-sm cursor-default"
+    disabled
+  >
+    Manage Accounts
+  </button>
+
+  <button
+    @click="navigateTo('/settings/logs')"
+    class="bg-white border border-gray-300 text-[#2c3e50] px-4 py-2 rounded-md font-medium hover:bg-gray-50 transition shadow-sm"
+  >
+    View Audit Log
+  </button>
+  </div>
+</div>
+
  <AccountTable v-if="users && users.length > 0"
   key= "ExistingAccounts"
   :accounts="users"

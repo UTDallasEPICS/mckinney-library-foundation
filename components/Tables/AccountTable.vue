@@ -1,8 +1,6 @@
 <template>
-  <div class="flex-1 p-8">
-    <div
-      class="bg-white rounded-lg shadow-lg overflow-hidden max-w-7xl mx-auto"
-    >
+  <div class="flex-1 px-8 pt-4 pb-8">
+    <div class= "bg-white rounded-lg shadow-lg overflow-hidden max-w-7xl mx-auto">
       <table class="w-full">
         <thead class="bg-[#5a6a77] text-white">
           <tr>
