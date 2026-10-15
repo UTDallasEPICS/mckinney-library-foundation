@@ -1,13 +1,13 @@
 <template>
-    <div v-if="activeButtons.length > 0" class="bg-white rounded-xl shadow-lg p-6 hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
+    <div v-if="activeButtons.length > 0" class="h-full flex flex-col bg-white rounded-xl shadow-lg p-6 hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
       <div class="flex items-center space-x-3 mb-4">
         <div class="w-12 h-12 bg-[#4a5f6d] rounded-lg flex items-center justify-center">
           <img :src="icon" class="w-6 h-6 brightness-0 invert" aria-hidden="true" />
         </div>
         <h3 class="text-[#2d3e4d]">{{ title }}</h3>
       </div>
-      <p class="text-sm text-gray-600 mb-6">{{ description }}</p>
-      <div class="space-y-3">
+      <p class="min-h-[2lh] text-sm text-gray-600 mb-6">{{ description }}</p>
+      <div class="flex flex-col gap-3">
         <CardButton
           v-for="button in activeButtons"
           :key="button.name"
