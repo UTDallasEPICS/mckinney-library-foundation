@@ -53,6 +53,18 @@
         <option value="received">Received</option>
     </select>
     </div>
+
+    <div class="flex flex-col">
+    <label class="text-sm text-slate-600">Recurring</label>
+    <select
+        v-model.number="recurring"
+        class="w-full mt-1 px-3 py-2 rounded-md border border-slate-300"
+    >
+        <option value="0">One Time</option>
+        <option value="1">Monthly</option>
+        <option value="2">Annually</option>
+    </select>
+    </div>
     
     <div>
     <label class="text-sm text-slate-600">Received Date</label>
@@ -89,6 +101,7 @@
     const receivedDate = ref("")
   
     const status = ref("pending")
+    const recurring = ref("one time")
     const boardMemberId = ref("")
     const boardMember = ref("")
 
@@ -149,6 +162,14 @@ console.log("responsess",response.data.donor.name)
                 status.value = "pending"
             }
 
+            if (response.data.recurring == 0) {
+                recurring.value = "one time"
+            } else if (response.data.recurring == 1) {
+                recurring.value = "monthly"
+            } else {
+                recurring.value = "annually"
+            }
+
 
         } catch(err) { 
             console.log('error',err)
@@ -174,6 +195,7 @@ getInfo()
         proposedDate.value = ""
         receivedDate.value = ""
         status.value = "pending"
+        recurring.value = "one time"
     }
 
     const submit = async () => { 
@@ -209,6 +231,7 @@ getInfo()
                 receivedDate: receivedDate.value,
         
                 status: status.value,
+                recurring: recurring.value,
                 boardMemberId: boardMemberId.value,
                 boardMember: boardMember.value,
             }

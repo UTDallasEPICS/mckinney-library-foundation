@@ -102,6 +102,7 @@ CREATE TABLE "Donation" (
     "monetaryAmount" TEXT,
     "nonMonetaryAmount" TEXT,
     "status" INTEGER NOT NULL DEFAULT 0,
+    "recurring" INTEGER NOT NULL DEFAULT 0,
     "notes" TEXT,
     "reason" TEXT,
     "receivedDate" DATETIME,

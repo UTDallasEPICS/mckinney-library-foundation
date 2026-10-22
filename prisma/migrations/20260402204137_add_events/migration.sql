@@ -41,6 +41,7 @@ CREATE TABLE "new_Donation" (
     "monetaryAmount" TEXT,
     "nonMonetaryAmount" TEXT,
     "status" INTEGER NOT NULL DEFAULT 0,
+    "recurring" INTEGER NOT NULL DEFAULT 0,
     "notes" TEXT,
     "reason" TEXT,
     "receivedDate" DATETIME,
@@ -49,7 +50,7 @@ CREATE TABLE "new_Donation" (
     CONSTRAINT "Donation_donorId_fkey" FOREIGN KEY ("donorId") REFERENCES "Donor" ("id") ON DELETE RESTRICT ON UPDATE CASCADE,
     CONSTRAINT "Donation_eventId_fkey" FOREIGN KEY ("eventId") REFERENCES "Event" ("id") ON DELETE RESTRICT ON UPDATE CASCADE
 );
-INSERT INTO "new_Donation" ("boardMemberId", "donorId", "id", "isAuthor", "lastEditDate", "method", "monetaryAmount", "nonMonetaryAmount", "notes", "reason", "receivedDate", "status") SELECT "boardMemberId", "donorId", "id", "isAuthor", "lastEditDate", "method", "monetaryAmount", "nonMonetaryAmount", "notes", "reason", "receivedDate", "status" FROM "Donation";
+INSERT INTO "new_Donation" ("boardMemberId", "donorId", "id", "isAuthor", "lastEditDate", "method", "monetaryAmount", "nonMonetaryAmount", "notes", "reason", "receivedDate", "status", "recurring") SELECT "boardMemberId", "donorId", "id", "isAuthor", "lastEditDate", "method", "monetaryAmount", "nonMonetaryAmount", "notes", "reason", "receivedDate", "status", "recurring" FROM "Donation";
 DROP TABLE "Donation";
 ALTER TABLE "new_Donation" RENAME TO "Donation";
 PRAGMA foreign_keys=ON;

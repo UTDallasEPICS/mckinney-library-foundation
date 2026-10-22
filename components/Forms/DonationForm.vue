@@ -65,7 +65,7 @@
                     <VeeErrorMessage class="text-red-500 text-sm"  name="event" />
                 </div>
             </div>
-            <div class="grid grid-cols-2 gap-6 px-6 mb-4">
+            <div class="grid grid-cols-3 gap-6 px-6 mb-4">
                 <div>
                     <h2 class="form-field-label mb-2">Monetary Amount</h2>
                     <VeeField autocomplete="off" :disabled="viewOnly" class="form-input focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px]" name="monetaryAmount"/>
@@ -76,8 +76,6 @@
                     <VeeField autocomplete="off" :disabled="viewOnly" class="form-input focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px]" name="nonMonetaryAmount"/>
                     <VeeErrorMessage class="text-red-500 text-sm"  name="nonMonetaryAmount" />
                 </div>
-            </div>
-            <div class="grid grid-cols-3 gap-6 px-6 mb-4">
                 <div>
                     <h2 class="form-field-label mb-2">Method <span class = "text-red-500">*</span></h2>
                     <VeeField v-slot="{field}" autocomplete="off" :disabled="viewOnly"name="method" class="form-input focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px]">
@@ -90,8 +88,10 @@
                     </VeeField>
                     <VeeErrorMessage class="text-red-500 text-sm"  name="method" />
                 </div>
+            </div>
+            <div class="grid grid-cols-3 gap-6 px-6 mb-4">
                 <div>
-                    <h2 class="form-field-label mb-2">Status<span class = "text-red-500">*</span></h2>
+                    <h2 class="form-field-label mb-2">Status <span class = "text-red-500">*</span></h2>
                     <VeeField autocomplete="off" :disabled="viewOnly" v-slot="{field}" class="form-input focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px]" name="status">
                         <select :disabled="viewOnly" v-bind="field" class="w-full px-3 py-2 bg-white border border-gray-300 rounded text-[#2d3e4d] focus:outline-none focus:ring-2 focus:ring-[#5a6a77] cursor-pointer">
                             <option :disabled="viewOnly" value = 0> Pending </option>
@@ -101,13 +101,28 @@
                     <VeeErrorMessage class="text-red-500 text-sm"  name="status" />
                 </div>
                 <div>
-                    <h2 class="form-field-label mb-2">Received Date<span class = "text-red-500">*</span></h2>
+                    <h2 class="form-field-label mb-2">Received Date <span class = "text-red-500">*</span></h2>
                     <VeeField v-slot="{field}" autocomplete="off" :disabled="viewOnly" class="form-input focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px]" name="receivedDate">
                         <input ref="receivedDateInputEl" id="reqDate"  autocomplete="off" :disabled="viewOnly" v-bind="field" type="date" class="w-full px-3 py-2 bg-white border border-gray-300 rounded text-[#2d3e4d] focus:outline-none focus:ring-2 focus:ring-[#5a6a77] cursor-pointer"></input>
                     </VeeField>
                     <VeeErrorMessage class="text-red-500 text-sm" name="receivedDate" />
                 </div>
+
+                <div>
+                    <h2 class="form-field-label mb-2">Recurring <span class = "text-red-500">*</span></h2>
+                    <VeeField v-slot="{field}" autocomplete="off" :disabled="viewOnly" class="form-input focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px]" name="recurring">
+                        <select :disabled="viewOnly" v-bind="field" class="w-full px-3 py-2 bg-white border border-gray-300 rounded text-[#2d3e4d] focus:outline-none focus:ring-2 focus:ring-[#5a6a77] cursor-pointer">
+                            <option :disabled="viewOnly" value = 0> One Time </option>
+                            <option :disabled="viewOnly" value = 1> Monthly </option>
+                            <option :disabled="viewOnly" value = 2> Annually </option>
+                        </select>
+                    </VeeField>
+                    <VeeErrorMessage class="text-red-500 text-sm" name="recurring" />
+                </div>
             </div>
+
+
+
             <div class="px-6 mb-6">
                 <h2 class="form-field-label mb-2">Notes</h2>
                 <VeeField autocomplete="off" :disabled="viewOnly" v-slot="{field}" name="notes">
@@ -131,6 +146,7 @@
 <script setup lang="ts">
 import type { Donation, Donor } from '~~/server/utils/generated/prisma/browser';
 import * as yup from 'yup';
+import { TableProperties } from 'lucide-vue-next';
 
 const props = defineProps<{
     cancelSubmisison:() => void,
@@ -260,9 +276,10 @@ const initValues: Record<string, any> | undefined = props.data ? {
     donorName: props.data.donor? props.data.donor.name : null,
     event: props.data.donation.event?.eventName ?? '',
     monetaryAmount: props.data.donation.monetaryAmount,
-    nonMonetaryAmount:props.data.donation.nonMonetaryAmount,
+    nonMonetaryAmount: props.data.donation.nonMonetaryAmount,
     method:props.data.donation.method,
     status:props.data.donation.status,
+    recurring:props.data.donation.recurring,
     notes:props.data.donation.notes,
     reason:props.data.donation.reason,
     receivedDate: props.data.donation.receivedDate ? new Date(props.data.donation.receivedDate).toISOString().split('T')[0] : '',
@@ -281,6 +298,7 @@ const schema = yup.object({
     }),
     method: yup.string().required('Must enter payment method'),
     status: yup.string().required('Must enter status'),
+    recurring: yup.string().required('Must enter recurring'),
     receivedDate: yup.date().required("Must be a valid date")
 })
 
