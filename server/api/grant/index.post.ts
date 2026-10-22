@@ -32,6 +32,7 @@ export default defineEventHandler(async (event) => {
                 method: body.method,
                 monetaryAmount: body.monetaryAmount,
                 nonMonetaryAmount: body.nonMonetaryAmount,
+                status: parseInt(body.status) || 0,
                 reimburse: body.reimburse,
                 notes: body.notes,
                 proposedDate: body.proposedDate ? new Date(body.proposedDate) : null,
