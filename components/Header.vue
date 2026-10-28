@@ -29,20 +29,17 @@
 
 <script setup lang="ts">
 import { ArrowLeftIcon } from "@heroicons/vue/24/outline"; 
-import { useAuth } from '~/composables/useAuth';
+import { useAuth, authClient } from '~/composables/useAuth';
 
-const {session, getSession} = useAuth();
+const { data: session } = await useAuth();
 const route = useRoute();
-session.value = await getSession();
 const signedIn = computed(() => !!session.value?.session);
 const showDashboardBackArrow = computed(() => route.path !== '/dashboard');
 const toasts = useToast();
 
 async function signOut(){
-  const result = await $fetch(`/api/session/${session.value?.session.id}`,{
-    method: "DELETE"
-  });
-  if(result.success){
+  const { error } = await authClient.signOut();
+  if(!error){
     reloadNuxtApp();
     toasts.add({
       title: "Signed out",

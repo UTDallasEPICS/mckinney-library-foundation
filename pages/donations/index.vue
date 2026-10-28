@@ -61,8 +61,7 @@ import { useEventDropDown } from '~/composables/useEventDropDown';
 import type { Donation, Donor } from '~~/server/utils/generated/prisma/browser';
 
 
-const {session, getSession} = useAuth();
-session.value = await getSession();
+const { data: session } = await useAuth();
 
 const user:Ref<{id:string, permissionLevel:number}> = ref({id:"",permissionLevel:0});
 

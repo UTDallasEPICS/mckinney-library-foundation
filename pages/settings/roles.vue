@@ -54,8 +54,7 @@
 <script setup lang="ts">
 import { useAuth } from '~/composables/useAuth';
 
-const {session, getSession} = useAuth();
-session.value = await getSession();
+const { data: session } = await useAuth();
 
 const permissionLevel = ref(0);
 if(session.value?.user){

@@ -100,8 +100,7 @@ import EventTable from "~/components/Tables/EventTable.vue";
 import { useAuth } from "~/composables/useAuth";
 import { useEvent } from "~/composables/useEvent";
 
-const { session, getSession } = useAuth();
-session.value = await getSession();
+const { data: session } = await useAuth();
 
 const user: Ref<{ id: string; permissionLevel: number }> = ref({
   id: "",
