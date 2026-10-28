@@ -25,7 +25,6 @@ model User {
   createdAt     DateTime      @default(now())
   updatedAt     DateTime      @default(now()) @updatedAt
   sessions      Session[]
-  accounts      Account[]
   donations     Donation[]
   donors        Donor[]
   grants        Grant[]
@@ -49,24 +48,6 @@ model Session {
 
   @@unique([token])
   @@map("session")
-}
-
-model Account {
-  id                    String    @id @default(cuid())
-  accountId             String
-  providerId            String
-  userId                String
-  user                  User      @relation(fields: [userId], references: [id], onDelete: Cascade)
-  accessToken           String?
-  refreshToken          String?
-  idToken               String?
-  accessTokenExpiresAt  DateTime?
-  refreshTokenExpiresAt DateTime?
-  scope                 String?
-  createdAt             DateTime  @default(now())
-  updatedAt             DateTime  @updatedAt
-
-  @@map("account")
 }
 
 model Verification {
