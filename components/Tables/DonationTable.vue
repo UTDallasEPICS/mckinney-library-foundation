@@ -98,6 +98,22 @@
                         </th>
                         <th class="px-4 py-3 text-left text-sm text-[#2d3e4d] border-b-2 border-[#a8b5bf] cursor-pointer transition-colors">
                             <div class="w-full flex gap-2">
+                                <span v-if="!activeSearch[9]?.active">Recurring </span>
+                                <button @click="toggleSearch(9)" v-if="!activeSearch[9]?.active"><FunnelIcon class="w-4 h-4"/></button>
+                                <div  v-else>
+                                    <select autocomplete="off" v-model="searchInputs.recurring" @click.stop class="mt-2 px-2 py-1 border rounded">
+                                        <option value=0>One Time</option>
+                                        <option value=1>Monthly</option>
+                                        <option value=2>Annually</option>
+                                    </select>
+                                    <button class="text-lg" @click="toggleSearch(9)">&#x24E7;</button>
+                                </div>
+                                <button v-if="activeSorts[9]?.active" @click="toggleSort(9)" class="bg-[#c8c9c9] outline-double outline-black"><NumberedListIcon class="w-4 h-4"/></button>
+                                <button v-else @click="toggleSort(9)"><NumberedListIcon class="w-4 h-4"/></button>
+                            </div>
+                        </th>
+                        <th class="px-4 py-3 text-left text-sm text-[#2d3e4d] border-b-2 border-[#a8b5bf] cursor-pointer transition-colors">
+                            <div class="w-full flex gap-2">
                                 <span @click="toggleSearch(7)" v-if="!activeSearch[7].active">Recieved Date</span>
                                 <button @click="toggleSearch(7)" v-if="!activeSearch[7].active"><FunnelIcon class="w-4 h-4"/></button>
                                 <div  v-else>
@@ -134,7 +150,8 @@
                         <td class="px-6 py-4 text-[#2d3e4d] text-left text-sm">{{ row.donation.monetaryAmount }}</td>
                         <td class="px-6 py-4 text-[#2d3e4d] text-left text-sm">{{ row.donation.nonMonetaryAmount }}</td>
                         <td class="px-6 py-4 text-[#2d3e4d] text-left text-sm">{{ row.donation.method }}</td>
-                        <td class="px-6 py-4 text-[#2d3e4d] text-left text-sm">{{ row.donation.status == 0? "pending" : "recieved" }}</td>             
+                        <td class="px-6 py-4 text-[#2d3e4d] text-left text-sm">{{ row.donation.status == 0? "pending" : "recieved" }}</td>
+                        <td class="px-6 py-4 text-[#2d3e4d] text-left text-sm">{{ recurringLabel(row.donation.recurring) }}</td>
                         <td v-if= "row.donation.receivedDate" class="px-6 py-4 text-[#2d3e4d] text-left text-sm">{{row.donation.receivedDate? row.donation.receivedDate.toISOString().split('T')[0] : ""}}</td>
                         <td class="px-6 py-4 text-[#2d3e4d] text-left text-sm">{{ row.boardMember?.name }}</td>
                         <td class="px-6 py-4">
@@ -168,7 +185,9 @@ const { downloadCsv } = useCsvExport()
 
 
 
-const activeSearch:Ref<{name:'status' | 'author' | 'event' | 'method' | 'nonMonetaryAmount' |'donorName' | 'boardName' |'monetaryAmount' | 'receivedDate', active:boolean}[]> = ref([
+const recurringLabel = (recurring: number) => ['one time', 'monthly', 'annually'][recurring] ?? 'one time'
+
+const activeSearch:Ref<{name:'status' | 'author' | 'event' | 'method' | 'nonMonetaryAmount' |'donorName' | 'boardName' |'monetaryAmount' | 'receivedDate' | 'recurring', active:boolean}[]> = ref([
     {name:'donorName',active:false},
     {name:'author', active:false},
     {name:'event',active:false},
@@ -178,9 +197,10 @@ const activeSearch:Ref<{name:'status' | 'author' | 'event' | 'method' | 'nonMone
     {name:'status',active:false},
     {name:'receivedDate',active:false},
     {name:'boardName',active:false},
+    {name:'recurring',active:false},
 ])
-const searchInputs = ref({ status:'', author: '', event: '', method:'', nonMonetaryAmount:'', donorName:'' , boardName:'', monetaryAmount:'', receivedDate:''})
-const searchFields = ['status', 'author', 'event', 'method', 'nonMonetaryAmount', 'donorName', 'boardName', 'monetaryAmount', 'receivedDate'] as const
+const searchInputs = ref({ status:'', author: '', event: '', method:'', nonMonetaryAmount:'', donorName:'' , boardName:'', monetaryAmount:'', receivedDate:'', recurring:''})
+const searchFields = ['status', 'author', 'event', 'method', 'nonMonetaryAmount', 'donorName', 'boardName', 'monetaryAmount', 'receivedDate', 'recurring'] as const
 
 
 const maxMoney = ref(0);
@@ -238,7 +258,7 @@ const visibleIndices = computed(() => {
   )
 })
 
-const activeSorts:Ref<{name: 'donorName'| 'author' | 'status' | 'event' | 'method' | 'nonMonetaryAmount' | 'boardName' |'monetaryAmount' | 'receivedDate',active:boolean}[]>=ref([
+const activeSorts:Ref<{name: 'donorName'| 'author' | 'status' | 'event' | 'method' | 'nonMonetaryAmount' | 'boardName' |'monetaryAmount' | 'receivedDate' | 'recurring',active:boolean}[]>=ref([
     {name: 'donorName', active:false},
     {name: 'author', active: false},
     {name: 'event',active: false},
@@ -248,7 +268,8 @@ const activeSorts:Ref<{name: 'donorName'| 'author' | 'status' | 'event' | 'metho
     {name: 'status',active: false},
     {name: 'receivedDate', active:true},
     {name: 'boardName', active:false},
-]) 
+    {name: 'recurring', active:false},
+])
 
 function toggleSort(index:number){
     activeSorts.value[index].active = !activeSorts.value[index].active;
@@ -315,6 +336,9 @@ const sortedIndices = computed(() => {
                         const bBName = b.boardMember?.name || '';
                         comparison = aBName.localeCompare(bBName);
                         break;
+                    case 'recurring':
+                        comparison = a.donation.recurring - b.donation.recurring;
+                        break;
                 }
                 if(comparison !== 0){
                     return comparison
@@ -335,6 +359,7 @@ function exportCsv() {
         nonMonetaryAmount: row.donation.nonMonetaryAmount ?? '',
         paymentMethod: row.donation.method ?? '',
         status: row.donation.status === 0 ? 'pending' : 'received',
+        recurring: recurringLabel(row.donation.recurring),
         receivedDate: row.donation.receivedDate ? row.donation.receivedDate.toISOString().split('T')[0] : '',
         lastEditor: row.boardMember?.name ?? '',
     })))

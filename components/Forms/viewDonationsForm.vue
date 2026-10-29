@@ -3,6 +3,7 @@
     <div class="bg-slate-100  w-[30vw] h-[75vh] overflow-y-auto rounded-xl shadow-xl p-8 relative">
     
     <div class="flex items-center justify-between mb-6">
+
     <h2 class="text-2xl font-semibold text-slate-700">Donations</h2>
     <button @click="emit('close')" class="text-slate-500 hover:text-slate-700">✕</button>
     </div>
@@ -53,12 +54,20 @@
         <option value="received">Received</option>
     </select>
     </div>
-    
+
+    <div class = "flex flex-col">
+    <label class="text-sm text-slate-600">recurring</label>
+    <select disabled v-model = "recurring"  class="w-full mt-1 px-3 py-2 rounded-md border border-slate-300">
+        <option value="one time">One Time</option>
+        <option value="monthly">Monthly</option>
+        <option value="annually">Annually</option>
+    </select>
+    </div>
+
     <div>
     <label  class="text-sm text-slate-600">Received</label>
     <input disabled v-model = "receivedDate" type="date" class="w-full mt-1 px-3 py-2 rounded-md border border-slate-300" />
     </div>
-    
  
     
     </div>
@@ -78,6 +87,7 @@
     const notes = ref("")
     const reason = ref("")
     const status = ref("pending")
+    const recurring = ref("one time")
     const receivedDate = ref("")
 
 
@@ -107,12 +117,19 @@ console.log("response",response.data.donor.name)
         reason.value = response.data?.reason
 
         receivedDate.value = response.data.receivedDate.split("T")[0]
-        endDate.value = response.data.lastEditDate.split("T")[0]
 
         if(response.data?.status == 1) { 
             status.value = "received"
         } else { 
             status.value = "pending"
+        }
+
+        if(response.data?.recurring == 0) {
+            recurring.value = "one time"
+        } else if (response.data?.recurring == 1) {
+            recurring.value = "monthly"
+        } else {
+            recurring.value = "annually"
         }
 
         console.log("donoree date.value",receivedDate.value)

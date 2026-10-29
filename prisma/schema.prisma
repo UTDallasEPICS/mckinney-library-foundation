@@ -131,6 +131,7 @@ model Donation {
   monetaryAmount    String?
   nonMonetaryAmount String?
   status            Int       @default(0) // 0: pending, 1: completed
+  recurring         Int       @default(0) // 0: one time, 1: monthly, 2: annually
   notes             String?
   reason            String?
   receivedDate      DateTime?

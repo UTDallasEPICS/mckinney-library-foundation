@@ -49,6 +49,10 @@
     Status
   </th>
 
+  <th class="px-4 py-3 text-left text-sm text-[#2d3e4d] border-b-2 border-[#a8b5bf]">
+    Recurring
+  </th>
+
   <th class="px-4 py-3 text-center text-sm text-[#2d3e4d] border-b-2 border-[#a8b5bf]">
     Notes
   </th>
@@ -94,6 +98,7 @@
   <td class="px-6 py-4">{{ donation.monetaryAmount }}</td>
   <td class="px-6 py-4">{{ donation.nonMonetaryAmount }}</td>
   <td class="px-6 py-4">{{ donation.status == 0 ? 'pending' : 'approved' }}</td>
+  <td class="px-6 py-4">{{ ['one time', 'monthly', 'annually'][donation.recurring] ?? 'one time' }}</td>
   <td class="px-6 py-4">{{ donation.notes }}</td>
   <td class="px-6 py-4">{{ donation.reason }}</td>
 

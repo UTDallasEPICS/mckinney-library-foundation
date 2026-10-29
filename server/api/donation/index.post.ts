@@ -48,6 +48,7 @@ export default defineEventHandler(async (event) => {
         monetaryAmount: body.monetaryAmount,
         nonMonetaryAmount: body.nonMonetaryAmount,
         status: parseInt(body.status) ?? 0,
+        recurring: parseInt(body.recurring) || 0,
         notes: body.notes,
         reason: body.reason,
         receivedDate: new Date(body.receivedDate),
