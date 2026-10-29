@@ -9,6 +9,14 @@
 }
 
 @layer base {
+    /*the app is light-only. Without this, browsers in dark mode render native controls */ 
+    :root {
+        color-scheme: light;
+    }
+    option {
+        background-color: white;
+        color: #111827;
+    }
     body {
         background-color: white !important;
         color: #111827 !important;
