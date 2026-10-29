@@ -156,7 +156,7 @@ async function checkEmailExists(email:string){
     } 
     else{
       toasts.add({
-        title: "Email does not exist."
+        title: "[ERROR] Email does not exist."
       });
       return false;
     }

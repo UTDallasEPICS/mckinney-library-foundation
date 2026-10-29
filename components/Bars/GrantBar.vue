@@ -70,7 +70,7 @@ async function createGrantor(values:Record<string,any>){
     const result = await postGrantor(values, props.user);
     if(result.error?.code === 'P2002'){
         toasts.add({
-            title: "Grantor already exists!"
+            title: "[ERROR] Grantor already exists"
         });
     }
     else if(result.data){

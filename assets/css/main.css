@@ -37,7 +37,7 @@
         @apply min-h-44 resize-y w-full flex min-w-0 rounded-md border px-3 py-1 text-base transition-[color,box-shadow] outline-none  md:text-sm bg-white border-gray-300 h-11;
     }
     .form-button{
-       @apply rounded-md text-sm font-medium outline-none h-9 py-2 text-white px-6;
+       @apply rounded-md text-sm font-medium outline-none h-9 py-2 text-white px-6 cursor-pointer;
     }
     /* Always-visible scrollbars for scrollable tables. macOS hides scrollbars until you scroll,
        which leaves no hint that a table can be scrolled; styling them keeps them on screen. */

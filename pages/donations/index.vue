@@ -62,6 +62,7 @@ import type { Donation, Donor } from '~~/server/utils/generated/prisma/browser';
 
 
 const { data: session } = await useAuth();
+const toasts = useToast();
 
 const user:Ref<{id:string, permissionLevel:number}> = ref({id:"",permissionLevel:0});
 
@@ -180,7 +181,9 @@ async function createEvent(values:Record<string,any>) {
     if (result.success) {
         showEventForm.value = false;
     } else if ((result as any).error?.code === 'EVENT_ALREADY_EXISTS' || (result as any).message === 'The event already exists') {
-        alert('The event already exists');
+        toasts.add({
+            title: "[ERROR] This event already exists",
+        });
     }
 }
 

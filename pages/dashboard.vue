@@ -264,10 +264,14 @@ async function createGrant(values:Record<string,any>){
 async function createEvent(values:Record<string,any>){
     const result = await postEvent(values, user.value)
     if(result.success){
-      alert("event created")
+      toasts.add({
+        title: "Event created!",
+      });
       showEventForm.value = false;
     } else if ((result as any).error?.code === 'EVENT_ALREADY_EXISTS' || (result as any).message === 'The event already exists') {
-      alert('The event already exists')
+      toasts.add({
+        title: "[ERROR] This event already exists",
+      });
     }
 }
 

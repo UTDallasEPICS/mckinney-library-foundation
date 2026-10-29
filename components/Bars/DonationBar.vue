@@ -120,7 +120,7 @@ async function createDonor(values: Record<string, any>) {
   const result = await postDonor(values, props.user);
   if (result.error?.code === "P2002") {
     toasts.add({
-      title: "This contact information is already in use!",
+      title: "[ERROR] This contact information is already in use!",
     });
   } else if (result.data) {
     addDonor.value = false;
@@ -149,7 +149,9 @@ async function createEvent(values: Record<string, any>) {
     (result as any).error?.code === "EVENT_ALREADY_EXISTS" ||
     (result as any).message === "The event already exists"
   ) {
-    alert("The event already exists");
+    toasts.add({
+      title: "[ERROR] This event already exists",
+    });
   }
 }
 

@@ -148,6 +148,7 @@ const emit = defineEmits<{
     (e: 'request-create-event'): void
 }>();
 
+const toasts = useToast();
 const eventInputEl = ref<HTMLInputElement | null>(null);
 const receivedDateInputEl = ref<HTMLInputElement | null>(null);
 const currentEventInput = ref('');
@@ -243,7 +244,9 @@ async function submitDonationForm(values: Record<string, any>) {
     if (eventValue.length > 0) {
         const matchedEventName = getMatchingEventName(eventValue);
         if (!matchedEventName) {
-            alert('Invalid Event');
+            toasts.add({
+                title: "[ERROR] Invalid event",
+            });
             return;
         }
         // Only autofill on submit when date is empty so manual user edits are preserved.
