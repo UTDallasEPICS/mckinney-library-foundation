@@ -25,6 +25,7 @@
   <div v-if="addGrant || addGrantor" class="fixed top-0 left-0 w-full h-full flex justify-center items-center z-20 bg-black/50">
     <div v-if = "addGrant">
         <GrantForm
+            v-model="selectedFile"
             :submit-grant="createGrant"
             :cancel-submisison="cancelGrant"
             :view-only="false"
@@ -50,11 +51,12 @@ import type { Grant, Grantor } from '~~/server/utils/generated/prisma/browser';
 import GrantForm from '../Forms/GrantForm.vue';
 import GrantorForm from '../Forms/GrantorForm.vue';
 
-const { postGrant, grantsData } = useGrant();
+const { postGrant, grantsData, uploadGrantAttachment } = useGrant();
 const { postGrantor, grantors: grantorData } = useGrantor();
 
 const addGrant = ref(false);
 const addGrantor = ref(false);
+const selectedFile = ref<File | null>(null);
 
 const props = defineProps<{
     user:{id:string, permissionLevel:number}
@@ -83,12 +85,20 @@ function cancelGrantor(){
 async function createGrant(values:Record<string,any>){
     const result = await postGrant(values,props.user);
     if(result.data){
+        const grantId = result.data.id;
+
+        if (selectedFile.value) {
+            await uploadGrantAttachment(grantId, selectedFile.value)
+        }
+
+        selectedFile.value = null;
         addGrant.value = false;
     }else{
         console.error(result.error);
     }
 }
 function cancelGrant(){
+    selectedFile.value = null;
     addGrant.value = false;
 }
 

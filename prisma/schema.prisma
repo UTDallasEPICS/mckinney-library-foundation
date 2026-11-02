@@ -150,6 +150,7 @@ model Grant {
   status            Int?      @default(0) // 0: requested, 1: completed
   reimburse         Boolean   @default(false)
   notes             String?
+  fileName          String?
   proposedDate      DateTime?
   receivedDate      DateTime?
   lastEditDate      DateTime?
