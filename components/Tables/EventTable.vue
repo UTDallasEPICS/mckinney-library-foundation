@@ -10,7 +10,7 @@
     >
         <template #toolbar="{ selectedRows, getVisibleRows }">
             <button
-                class="rounded-md text-sm font-medium outline-none h-9 py-2 bg-slate-700 hover:bg-slate-800 text-white px-6"
+                class="rounded-md text-sm font-medium outline-none h-9 py-2 bg-slate-700 hover:bg-slate-800 text-white px-6 form-button"
                 @click="exportCsv(getVisibleRows())"
             >
                 Export CSV
@@ -18,7 +18,7 @@
             <button
                 v-if="permissionLevel > 0"
                 @click="addFunction()"
-                class="disabled:bg-slate-300 rounded-md text-sm font-medium outline-none h-9 py-2 bg-blue-600 hover:bg-blue-700 text-white px-6"
+                class="disabled:bg-slate-300 rounded-md text-sm font-medium outline-none h-9 py-2 bg-blue-600 hover:bg-blue-700 text-white px-6 form-button"
             >
                 Add Event
             </button>
@@ -26,7 +26,7 @@
                 v-if="permissionLevel > 1"
                 :disabled="selectedRows.length === 0"
                 @click="handleEmailClick(selectedRows)"
-                class="disabled:bg-slate-300 rounded-md text-sm font-medium outline-none h-9 py-2 bg-blue-600 hover:bg-blue-700 text-white px-6"
+                class="disabled:cursor-default disabled:bg-slate-300 rounded-md text-sm font-medium outline-none h-9 py-2 bg-blue-600 hover:bg-blue-700 text-white px-6 form-button"
             >
                 Email Donors{{ selectedRows.length ? ` (${selectedRows.length} events)` : '' }}
             </button>
@@ -34,20 +34,20 @@
         <template #actions="{ row }">
             <button
                 v-if="permissionLevel > 0"
-                class="rounded-md text-sm font-medium outline-none h-9 py-2 bg-blue-600 hover:bg-blue-700 text-white px-6"
+                class="rounded-md text-sm font-medium outline-none h-9 py-2 bg-blue-600 hover:bg-blue-700 text-white px-6 form-button"
                 @click="editFunction(row, props.data.indexOf(row))"
             >
                 Edit
             </button>
             <button
                 v-if="permissionLevel > 0"
-                class="rounded-md text-sm font-medium outline-none h-9 py-2 bg-red-600 hover:bg-red-700 text-white px-6"
+                class="rounded-md text-sm font-medium outline-none h-9 py-2 bg-red-600 hover:bg-red-700 text-white px-6 form-button"
                 @click="deleteFunction(row.event.id, props.data.indexOf(row))"
             >
                 Delete
             </button>
             <button
-                class="rounded-md text-sm font-medium outline-none h-9 py-2 bg-green-600 hover:bg-green-700 text-white px-6"
+                class="rounded-md text-sm font-medium outline-none h-9 py-2 bg-green-600 hover:bg-green-700 text-white px-6 form-button"
                 @click="viewFunction(row, props.data.indexOf(row))"
             >
                 View

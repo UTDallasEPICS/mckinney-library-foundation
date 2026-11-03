@@ -13,7 +13,7 @@
           :key="button.name"
           :name="button.name"
           :link="button.link"
-          :icon="button.icon"  
+          :icon="button.icon"
           @click="handleClick(button)"
         />
       </div>

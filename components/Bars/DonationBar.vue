@@ -4,24 +4,24 @@
       <button
         v-if="user.permissionLevel > 0"
         @click="addDonation = true"
-        class="px-3 py-1 rounded hover:bg-slate-600 transition"
+        class="px-3 py-1 rounded hover:bg-slate-600 transition cursor-pointer"
       >
         Add Donation
       </button>
       <NuxtLink to="/donations/" default>
-        <button class="px-3 py-1 rounded hover:bg-slate-600 transition">
+        <button class="px-3 py-1 rounded hover:bg-slate-600 transition cursor-pointer">
           View Donation
         </button>
       </NuxtLink>
       <NuxtLink to="/donations/donors">
-        <button class="px-3 py-1 rounded hover:bg-slate-600 transition">
+        <button class="px-3 py-1 rounded hover:bg-slate-600 transition cursor-pointer">
           View Donors
         </button>
       </NuxtLink>
       <button
         v-if="user.permissionLevel > 0"
         @click="addDonor = true"
-        class="px-3 py-1 rounded hover:bg-slate-600 transition"
+        class="px-3 py-1 rounded hover:bg-slate-600 transition cursor-pointer"
       >
         Add Donor
       </button>

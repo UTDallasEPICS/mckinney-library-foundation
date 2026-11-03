@@ -2,22 +2,22 @@
     <div class="w-full bg-slate-500 text-white px-6 py-3 flex justify-center ">
         <div class = "w-[90vw] flex justify-between">
             <button v-if="user.permissionLevel>0" @click="addGrant = true"
-                class="px-3 py-1 rounded hover:bg-slate-600 transition">
+                class="px-3 py-1 rounded hover:bg-slate-600 transition cursor-pointer">
                 Add Grant
             </button>
             <NuxtLink to = '/grants/'default>
                 <button 
-                class="px-3 py-1 rounded hover:bg-slate-600 transition">
+                class="px-3 py-1 rounded hover:bg-slate-600 transition cursor-pointer">
                     View Grant
                 </button>
             </NuxtLink>
             <NuxtLink to="/grants/grantors">
-                <button class="px-3 py-1 rounded hover:bg-slate-600 transition">
+                <button class="px-3 py-1 rounded hover:bg-slate-600 transition cursor-pointer">
                     View Grantors
                 </button>
             </NuxtLink>
             <button v-if="user.permissionLevel>0" @click="addGrantor = true"
-                class="px-3 py-1 rounded hover:bg-slate-600 transition">
+                class="px-3 py-1 rounded hover:bg-slate-600 transition cursor-pointer">
                 Add Grantor
             </button>
         </div>
