@@ -40,6 +40,7 @@
         :event-date-lookup="eventDateLookup"
         :donors="donors"
         :methods="donationMethods"
+        @request-create-donor="openDonorFormFromDonation"
         @request-create-event="openEventFormFromDonation"
       />
     </div>
@@ -153,6 +154,10 @@ async function createEvent(values: Record<string, any>) {
       title: "[ERROR] This event already exists",
     });
   }
+}
+
+function openDonorFormFromDonation() {
+  addDonor.value = true;
 }
 
 function openEventFormFromDonation() {
