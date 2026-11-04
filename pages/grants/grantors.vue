@@ -51,8 +51,7 @@ import { useAuth } from '~/composables/useAuth';
 import type { Grant, Grantor } from '~~/server/utils/generated/prisma/browser';
 
 
-const {session, getSession} = useAuth();
-session.value = await getSession();
+const { data: session } = await useAuth();
 
 const user:Ref<{id:string,permissionLevel:number}> = ref({id:"",permissionLevel:0});
 if(session.value?.user){

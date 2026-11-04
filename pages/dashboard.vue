@@ -124,8 +124,7 @@ import { useGrantor } from '~/composables/useGrantor'
 import { navigateTo } from '#app'
 import type { Donation, Donor, Grant, Grantor } from '~~/server/utils/generated/prisma/browser'
 
-const { session, getSession } = useAuth()
-session.value = await getSession()
+const { data: session } = await useAuth();
 if (!session.value?.user) {
   await navigateTo("/")
 }

@@ -17,6 +17,7 @@ export default defineEventHandler(async (event) => {
                 method: body.method,
                 monetaryAmount: body.monetaryAmount,
                 nonMonetaryAmount: body.nonMonetaryAmount,
+                status: body.status,
                 reimburse: body.reimburse,
                 notes: body.notes,
                 proposedDate: body.proposedDate ? new Date(body.proposedDate) : null,
