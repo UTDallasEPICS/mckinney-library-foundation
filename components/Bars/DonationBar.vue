@@ -103,7 +103,7 @@ const props = defineProps<{
 
 const { eventNames } = useEventDropDown(eventsData);
 const { donationMethods } = useDonationDropDown(props.donations);
-const { donorOrganizations } = useDonorDropDown(props.donors);
+const { donorOrganizations } = useDonorDropDown(() => props.donors);
 const toasts = useToast();
 const eventDateLookup = computed<Record<string, string>>(() => {
   const lookup: Record<string, string> = {};
