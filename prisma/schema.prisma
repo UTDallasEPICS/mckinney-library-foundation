@@ -149,7 +149,7 @@ model Event {
   donations         Donation[]
 }
 
-model auditLog {
+model AuditLog {
   id                String    @id @default(cuid())
   userId            String?
   action            String

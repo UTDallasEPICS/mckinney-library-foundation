@@ -17,45 +17,165 @@
     </div>
   </div>
 
-  <div class="max-w-7xl mx-auto px-8 py-4">
-    <div v-if="logs && logs.length > 0">
-      <table class="w-full border-collapse border border-gray-300 bg-white">
-        <thead>
-          <tr class="bg-gray-100 text-left">
-            <th class="border border-gray-300 p-3">Time</th>
-            <th class="border border-gray-300 p-3">User ID</th>
-            <th class="border border-gray-300 p-3">Action</th>
-            <th class="border border-gray-300 p-3">Record Type</th>
-            <th class="border border-gray-300 p-3">Record ID</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr v-for="log in logs" :key="log.id">
-            <td class="border border-gray-300 p-3 text-sm">{{ new Date(log.createdAt).toLocaleString() }}</td>
-            <td class="border border-gray-300 p-3 text-sm">{{ log.userId }}</td>
-            <td class="border border-gray-300 p-3 text-sm font-bold">{{ log.action }}</td>
-            <td class="border border-gray-300 p-3 text-sm">{{ log.recordType }}</td>
-            <td class="border border-gray-300 p-3 text-sm">{{ log.recordId }}</td>
-          </tr>
-        </tbody>
-      </table>
+  <div class="flex-1 px-8 pt-4 pb-8">
+    <div v-if="error" class="max-w-7xl mx-auto text-[#2d3e4d]">
+      Failed to load audit logs.
     </div>
-    <div v-else class="text-gray-500">
+
+    <div
+      v-else-if="logs.length > 0"
+      class="bg-white rounded-lg overflow-hidden max-w-7xl mx-auto"
+    >
+      <div class="overflow-x-auto">
+        <table class="w-full">
+          <thead class="bg-[#5a6a77] text-white">
+            <tr>
+              <th class="px-6 py-4 text-center text-sm">Time</th>
+              <th class="px-6 py-4 text-center text-sm">User</th>
+              <th class="px-6 py-4 text-center text-sm">Action</th>
+              <th class="px-6 py-4 text-center text-sm">Record Type</th>
+              <th class="px-6 py-4 text-center text-sm">Details</th>
+            </tr>
+          </thead>
+
+          <tbody>
+            <tr v-for="log in logs" :key="log.id" class="bg-[#e5e9ec]">
+              <td
+                class="px-6 py-4 text-[#2d3e4d] text-center whitespace-nowrap"
+              >
+                {{ new Date(log.createdAt).toLocaleString() }}
+              </td>
+              <td class="px-6 py-4 text-[#2d3e4d] text-center">
+                {{ getActorName(log) }}
+              </td>
+              <td class="px-6 py-4 text-[#2d3e4d] text-center">
+                {{ log.action }}
+              </td>
+              <td class="px-6 py-4 text-[#2d3e4d] text-center">
+                {{ log.recordType }}
+              </td>
+              <td class="px-6 py-4 text-[#2d3e4d] text-left">
+                <div v-if="log.snapshot">
+                  <div v-if="log.action === 'DELETE'">
+                    <span class="font-medium">Deleted:</span>
+                    {{ getDeletedName(log.snapshot) }}
+                  </div>
+                  <div v-else-if="log.action === 'CREATE'">
+                    <span class="font-medium">Created:</span>
+                    {{ getCreatedName(log.snapshot) }}
+                  </div>
+                  <div
+                    v-else
+                    v-for="change in getSnapshotChanges(log.snapshot)"
+                    :key="change.field"
+                  >
+                    <span class="font-medium">{{ change.field }}:</span>
+                    {{ change.before }} → {{ change.after }}
+                  </div>
+                </div>
+                <span v-else>—</span>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div v-else class="max-w-7xl mx-auto text-center text-[#2d3e4d] py-4">
       No audit logs found.
+    </div>
+
+    <div
+      v-if="!error && logs.length > 0"
+      class="max-w-7xl mx-auto flex items-center justify-between mt-4"
+    >
+      <button
+        @click="currentPage--"
+        :disabled="currentPage <= 1"
+        class="rounded-md text-sm font-medium outline-none h-9 py-2 bg-[#2c3e50] hover:bg-[#1e2b36] text-white px-6 disabled:opacity-50 disabled:cursor-not-allowed"
+      >
+        Previous
+      </button>
+
+      <span class="text-sm text-[#2d3e4d]">
+        Page {{ pagination?.page ?? currentPage }} of
+        {{ pagination?.totalPages ?? 0 }}
+      </span>
+
+      <button
+        @click="currentPage++"
+        :disabled="currentPage >= (pagination?.totalPages ?? 0)"
+        class="rounded-md text-sm font-medium outline-none h-9 py-2 bg-[#2c3e50] hover:bg-[#1e2b36] text-white px-6 disabled:opacity-50 disabled:cursor-not-allowed"
+      >
+        Next
+      </button>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { useAuth } from '~/composables/useAuth';
+import { computed, ref } from "vue";
+import { useAuth } from "~/composables/useAuth";
 
-const { session, getSession } = useAuth();
-session.value = await getSession();
+const { data: session } = await useAuth();
 
 if (!session.value?.user) {
-  navigateTo("/");
+  await navigateTo("/");
 }
 
-const auditObj = await useFetch("/api/audit-logs");
-const logs = auditObj.data.value?.data;
+const currentPage = ref(1);
+
+const { data, error } = await useFetch("/api/logs", {
+  query: {
+    page: currentPage,
+  },
+  watch: [currentPage],
+});
+
+const logs = computed(() => data.value?.data ?? []);
+const pagination = computed(() => data.value?.pagination);
+
+function getSnapshotChanges(snapshot: any) {
+  const before = snapshot.before || {};
+  const after = snapshot.after || {};
+  const fields = [...new Set([...Object.keys(before), ...Object.keys(after)])];
+
+  return fields
+    .filter((field) => before[field] !== after[field])
+    .map((field) => ({
+      field: formatFieldName(field),
+      before: formatSnapshotValue(before[field], "Not set"),
+      after: formatSnapshotValue(after[field], "Removed"),
+    }));
+}
+
+function formatFieldName(field: string) {
+  return field
+    .replace(/([a-z])([A-Z])/g, "$1 $2")
+    .replace(/^./, (character) => character.toUpperCase());
+}
+
+function formatSnapshotValue(value: unknown, emptyLabel = "Not set") {
+  if (value == null || value === "") return emptyLabel;
+  if (typeof value === "boolean") return value ? "Yes" : "No";
+  return String(value);
+}
+
+function getDeletedName(snapshot: any) {
+  return snapshot?.before?.name || "";
+}
+
+function getCreatedName(snapshot: any) {
+  return snapshot?.after?.name || "";
+}
+
+function getActorName(log: any) {
+  const name = log.user?.name?.trim();
+  if (name) return name;
+
+  const email = log.user?.email?.trim();
+  if (email) return email;
+
+  return log.userId ? "Unknown User" : "System";
+}
 </script>

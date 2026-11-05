@@ -3,7 +3,7 @@ import { requireSession } from "~~/server/utils/requireSession";
 
 export default defineEventHandler(async (event) => {
   try {
-    await requireSession(event, 1);
+    const session = await requireSession(event, 1);
     const body = await readBody(event);
     const email = body.email?.trim() || null;
     const phone = body.phone?.trim() || null;
@@ -26,8 +26,9 @@ export default defineEventHandler(async (event) => {
       }
     }
 
-    const donor = await prisma.donor.create({
-      data: {
+    const donor = await prisma.$transaction(async (tx) => {
+      const donor = await tx.donor.create({
+        data: {
         name: body.name,
         boardMemberId: body.boardMemberId,
         email,
@@ -48,12 +49,32 @@ export default defineEventHandler(async (event) => {
         },
       },
     });
+
+    await tx.auditLog.create({
+      data: {
+        userId: session.user.id,
+        action: "CREATE",
+        recordType: "DONOR",
+        recordId: donor.id,
+        snapshot: {
+          before: {},
+          after: {
+            name: donor.name,
+          },
+        },
+      },
+    });
+
+    return donor;
+    });
+
     return {
       success: true,
       statusCode: 200,
       data: donor,
       error: { code: "" },
     };
+
   } catch (error) {
     console.error(error);
     if (error instanceof Prisma.PrismaClientKnownRequestError) {

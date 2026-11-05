@@ -3,7 +3,7 @@ import { requireSession } from "~~/server/utils/requireSession";
 
 export default defineEventHandler(async (event) => {
   try {
-    await requireSession(event, 1);
+    const session = await requireSession(event, 1);
     const id = await getRouterParam(event, "id");
     const body = await readBody(event);
     const email = body.email?.trim() || null;
@@ -29,7 +29,21 @@ export default defineEventHandler(async (event) => {
       };
     }
 
-    const updatedDonor = await prisma.donor.update({
+  const updatedDonor = await prisma.$transaction(async (tx) => {
+    const previousDonor = await tx.donor.findUnique({
+      where: { id },
+    });
+
+    if (!previousDonor) {
+      return {
+        success: false,
+        statusCode: 404,
+        message: "Donor not found",
+        data: null,
+      };
+    }
+
+    const donor = await tx.donor.update({
       where: { id },
       data: {
         name: body.name,
@@ -51,34 +65,75 @@ export default defineEventHandler(async (event) => {
         },
       },
     });
-    await prisma.donation.updateMany({
+
+    await tx.donation.updateMany({
       where: { donorId: id },
-      data: { isAuthor: updatedDonor.isAuthor },
+      data: { isAuthor: donor.isAuthor },
     });
-    return {
-      success: true,
-      statusCode: 200,
-      data: updatedDonor,
-    };
-  } catch (error) {
-    console.error(error);
-    if (error instanceof Prisma.PrismaClientKnownRequestError) {
-      if (error.code === "P2002") {
-        return {
-          success: false,
-          statusCode: 400,
-          message: "This contact information is already in use!",
-          error: { code: error.code },
-          data: null,
-        };
-      }
+
+    await tx.auditLog.create({
+      data: {
+        userId: session.user.id,
+        action: "UPDATE",
+        recordType: "DONOR",
+        recordId: donor.id,
+        snapshot: { 
+          before: {
+            name: previousDonor.name,
+            email: previousDonor.email,
+            phone: previousDonor.phone,
+            address: previousDonor.address,
+            preferredCommunication: previousDonor.preferredCommunication,
+            notes: previousDonor.notes,
+            webLink: previousDonor.webLink,
+            isAuthor: previousDonor.isAuthor,
+            organization: previousDonor.organization,
+          },
+          after: {
+            name: donor.name,
+            email: donor.email,
+            phone: donor.phone,
+            address: donor.address,
+            preferredCommunication: donor.preferredCommunication,
+            notes: donor.notes,
+            webLink: donor.webLink,
+            isAuthor: donor.isAuthor,
+            organization: donor.organization,
+          }
+                    
+         }
+      },
+    });
+
+    return donor;
+  });
+  
+  return {
+    success: true,
+    statusCode: 200,
+    data: updatedDonor,
+    error: { code: "" },
+  };
+  
+} catch (error) {
+  console.error(error);
+  if (error instanceof Prisma.PrismaClientKnownRequestError) {
+    if (error.code === "P2002") {
+      return {
+        success: false,
+        statusCode: 400,
+        message: "This contact information is already in use. ",
+        error: { code: error.code },
+        data: null,
+      };
     }
-    return {
-      success: false,
-      statusCode: 500,
-      message: "Failed to update donor",
-      error: error,
-      data: null,
-    };
   }
+  return {
+    success: false,
+    statusCode: 500,
+    message: "Failed to update donor",
+    error: error,
+    data: null,
+  };
+}
 });
