@@ -17,8 +17,7 @@ import AccReqForm from '~/components/Forms/AccReqForm.vue';
 import * as yup from "yup";
 import { useAuth } from '~/composables/useAuth';
 
-const {session, getSession} = useAuth();
-session.value = await getSession();
+const { data: session } = await useAuth();
 
 const permissionLevel = ref(0);
 const toasts = useToast()

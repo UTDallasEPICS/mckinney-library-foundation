@@ -74,6 +74,7 @@
     
     <script setup > 
     import { ref,onMounted } from 'vue';
+    import { authClient } from "~/composables/useAuth";
     const emit = defineEmits(['close','update-donation','add-donation']);
 
     
@@ -107,10 +108,9 @@
    })
     onMounted(() => { 
         const getSession = async () => { 
-         const response = await $fetch('/api/session')
-         console.log("response",response.data.user)
-         boardMemberId.value = response.data.user.id
-         boardMember.value = response.data.user.name
+         const { data } = await authClient.getSession()
+         boardMemberId.value = data?.user.id ?? ""
+         boardMember.value = data?.user.name ?? ""
  
         
        }

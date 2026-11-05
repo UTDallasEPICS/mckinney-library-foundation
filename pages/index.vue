@@ -65,16 +65,14 @@
 import { navigateTo } from '#app';
 import * as yup from 'yup';
 import LoginForm from '~/components/Forms/LoginForm.vue';
-import { useAuth } from '~/composables/useAuth';
-import { authClient } from '~/server/utils/authClient';
+import { useAuth, authClient } from '~/composables/useAuth';
 import InfoBanner from '~/components/Banners/InfoBanner.vue';
 
 
 const route = useRoute();
 route.params.id
 
-const {session, getSession} = useAuth();
-session.value = await getSession();
+const { data: session } = await useAuth();
 if(session.value?.user){
     navigateTo("/dashboard");
 }

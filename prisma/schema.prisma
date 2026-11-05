@@ -25,7 +25,6 @@ model User {
   createdAt     DateTime      @default(now())
   updatedAt     DateTime      @default(now()) @updatedAt
   sessions      Session[]
-  accounts      Account[]
   donations     Donation[]
   donors        Donor[]
   grants        Grant[]
@@ -51,24 +50,6 @@ model Session {
   @@map("session")
 }
 
-model Account {
-  id                    String    @id @default(cuid())
-  accountId             String
-  providerId            String
-  userId                String
-  user                  User      @relation(fields: [userId], references: [id], onDelete: Cascade)
-  accessToken           String?
-  refreshToken          String?
-  idToken               String?
-  accessTokenExpiresAt  DateTime?
-  refreshTokenExpiresAt DateTime?
-  scope                 String?
-  createdAt             DateTime  @default(now())
-  updatedAt             DateTime  @updatedAt
-
-  @@map("account")
-}
-
 model Verification {
   id         String   @id @default(cuid())
   identifier String
@@ -90,10 +71,10 @@ model Donor {
   id                     String     @id @default(cuid())
   boardMemberId          String?
   boardMember            User?      @relation(fields: [boardMemberId], references: [id], onDelete: Restrict)
-  name                   String     @unique @default("Anonymous")
+  name                   String     @default("Anonymous") //@unique @default("Anonymous")
   address                String?
-  phone                  String?
-  email                  String?
+  phone                  String?    @unique 
+  email                  String?    @unique 
   preferredCommunication String? // phone or email
   notes                  String?
   webLink                String?

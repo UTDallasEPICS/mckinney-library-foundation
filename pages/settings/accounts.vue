@@ -38,8 +38,7 @@ import RequestTable from '~/components/Tables/RequestTable.vue';
 import AccReqForm from '~/components/Forms/AccReqForm.vue';
 import { useAuth } from '~/composables/useAuth';
 
-const {session, getSession} = useAuth();
-session.value = await getSession();
+const { data: session } = await useAuth();
 
 const permissionLevel = ref(0);
 

@@ -21,6 +21,11 @@ export default defineNuxtConfig({
     'nuxt-lucide-icons',
     '@nuxt/ui'
   ],
+  colorMode: {
+    preference: 'light',
+    fallback: 'light',
+    storageKey: 'mplf-color-mode',
+  },
   css: ['~/assets/css/main.css'],
   veeValidate: {
     autoImports: true,
