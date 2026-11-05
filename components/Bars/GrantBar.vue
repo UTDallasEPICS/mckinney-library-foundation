@@ -65,7 +65,7 @@ const props = defineProps<{
 }>();
 
 const {grantMethods,grantPurposes} = useGrantsDropDown(props.grants);
-const {grantorOrganizations} = useGrantorDropDown(props.grantors);
+const {grantorOrganizations} = useGrantorDropDown(() => props.grantors);
 const toasts = useToast()
 
 async function createGrantor(values:Record<string,any>){

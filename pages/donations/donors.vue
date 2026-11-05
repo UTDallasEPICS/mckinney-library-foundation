@@ -6,7 +6,7 @@
   />
   <DonorTable
     key="DonoTable"
-    :data="DonorTableProps.donorTableData"
+    :data="donorTableData"
     :email-function="DonorTableProps.emailFunction"
     :edit-function="DonorTableProps.editFunction"
     :delete-function="DonorTableProps.deleteFunciton"
@@ -108,13 +108,12 @@ const donorFormData: Ref<{ donor: DonorWithCount }> = ref({
   },
 });
 
-const { donorOrganizations } = useDonorDropDown(donorTableData.value);
+const { donorOrganizations } = useDonorDropDown(donorTableData);
 
 const { donationsData } = useDonation();
 const toasts = useToast();
 
 const DonorTableProps = {
-  donorTableData: donorTableData.value,
   emailFunction: prepEmail,
   editFunction: prepDonorUpdate,
   deleteFunciton: removeDonor,
