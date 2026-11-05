@@ -114,6 +114,21 @@
                 </VeeField>
             </div>
 
+            <div class="px-6 mb-6">
+                <h2 class="form-field-label mb-2">Grant Attachment</h2>
+                <UFileUpload 
+                    v-model="selectedFile" 
+                    :disabled="viewOnly" 
+                    accept=".pdf, .jpg, .jpeg, .png, .webp" 
+                    label="Upload grant document" 
+                    class="w-full"
+                />
+
+                <p v-if="selectedFile" class="text-sm mt-2"> Selected: {{ selectedFile.name }}</p>
+
+                <a v-if="data?.grant.fileName" :href="`/api/grant/file?id=${encodeURIComponent(data.grant.id)}`" class="text-blue-600 hover:underline">Download Attachment</a>
+            </div>
+
             <div class="flex justify-center gap-4 pb-6">
                 <button class="form-button bg-gray-600 hover:bg-gray-700" @click="cancelSubmisison">Cancel</button>
                 <button v-if="!viewOnly" class ="form-button bg-blue-600 hover:bg-blue-700">Submit </button>
@@ -137,6 +152,9 @@ const props = defineProps<{
     data?:{grant:Grant,boardMember:{name:string}| null, grantor: {name: string | null} | null},
 }>();
 
+const selectedFile = defineModel<File | null>({
+    default: null
+});
 const recievedDateRef = ref(new Date().toISOString());
 const proposedDateRef = ref('');
 const initValues = props.data?{

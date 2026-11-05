@@ -1,161 +1,182 @@
 <template>
-<GrantBar
-    :user="user"
-    :grantors="grantorTableData"
-    :grants="grantsData"
-/>
+  <GrantBar :user="user" :grantors="grantorTableData" :grants="grantsData" />
 
-<GrantTable
+  <GrantTable
     :data="grantsData"
     :edit-function="prepGrantUpdate"
     :view-function="prepGrantView"
     :delete-function="removeGrant"
     :permission-level="user.permissionLevel"
-/>
+  />
 
-<div v-if="showUpdateGrant" class="fixed top-0 left-0 w-full h-full flex justify-center items-center z-20 bg-black/50">
-    <GrantForm 
-        :grantors="grantorTableData"
-        :view-only="false"
-        :submit-grant="updateGrant"
-        :cancel-submisison="cancelUpdate"
-        :data="grantData"
-        :index="grantIndex"
-        :methods="grantMethods"
-        :purposes="grantPurposes"
+  <div
+    v-if="showUpdateGrant"
+    class="fixed top-0 left-0 w-full h-full flex justify-center items-center z-20 bg-black/50"
+  >
+    <GrantForm
+      v-model="selectedFile"
+      :grantors="grantorTableData"
+      :view-only="false"
+      :submit-grant="updateGrant"
+      :cancel-submisison="cancelUpdate"
+      :data="grantData"
+      :index="grantIndex"
+      :methods="grantMethods"
+      :purposes="grantPurposes"
     />
-</div>
+  </div>
 
-<div v-if="showViewGrant" class="fixed top-0 left-0 w-full h-full flex justify-center items-center z-20 bg-black/50">
-    <GrantForm 
-        :grantors="grantorTableData"
-        :view-only="true"
-        :submit-grant="updateGrant"
-        :cancel-submisison="cancelUpdate"
-        :data="grantData"
-        :methods="grantMethods"
-        :purposes="grantPurposes"
+  <div
+    v-if="showViewGrant"
+    class="fixed top-0 left-0 w-full h-full flex justify-center items-center z-20 bg-black/50"
+  >
+    <GrantForm
+      :grantors="grantorTableData"
+      :view-only="true"
+      :submit-grant="updateGrant"
+      :cancel-submisison="cancelUpdate"
+      :data="grantData"
+      :methods="grantMethods"
+      :purposes="grantPurposes"
     />
-</div>
-
+  </div>
 </template>
 
-<script setup lang ="ts">
-import GrantBar from '~/components/Bars/GrantBar.vue';
-import GrantTable from '~/components/Tables/GrantTable.vue';
-import GrantForm from '~/components/Forms/GrantForm.vue';
-import { useAuth } from '~/composables/useAuth';
-import type { Grant, Grantor } from '~~/server/utils/generated/prisma/browser';
-
+<script setup lang="ts">
+import GrantBar from "~/components/Bars/GrantBar.vue";
+import GrantTable from "~/components/Tables/GrantTable.vue";
+import GrantForm from "~/components/Forms/GrantForm.vue";
+import { useAuth } from "~/composables/useAuth";
+import type { Grant, Grantor } from "~~/server/utils/generated/prisma/browser";
 
 const { data: session } = await useAuth();
 
-const user:Ref<{id:string, permissionLevel:number}> = ref({id:"",permissionLevel:0});
+const user: Ref<{ id: string; permissionLevel: number }> = ref({
+  id: "",
+  permissionLevel: 0,
+});
 
-if(session.value?.user){
+if (session.value?.user) {
   user.value.permissionLevel = session.value.user.permission;
   user.value.id = session.value.user.id;
-}
-else{
+} else {
   navigateTo("/");
 }
 
 const showUpdateGrant = ref(false);
 const showViewGrant = ref(false);
-
+const selectedFile = ref<File | null>(null);
 
 const { grantors } = useGrantor();
 
-const { grantsData, putGrant, deleteGrant } = useGrant();
+const { grantsData, putGrant, deleteGrant, uploadGrantAttachment } = useGrant();
 
+const { grantPurposes, grantMethods } = useGrantsDropDown(grantsData.value);
 
-const {grantPurposes,grantMethods} = useGrantsDropDown(grantsData.value)
-
-
-
-const grantData:Ref<{ 
-    grant:Grant,
-    boardMember:{name:string}| null, 
-    grantor: {name: string } | null}> = ref({
-        grant:{
-        id:"",
-        boardMemberId:"",
-        grantorId:"",
-        method:"",
-        purpose:"",
-        monetaryAmount:"",
-        nonMonetaryAmount:"",
-        status:0,
-        notes:"",
-        reimburse: false,
-        proposedDate:null,
-        receivedDate:null,
-        lastEditDate:null,
-        },
-        boardMember:null,
-        grantor:null
-    });
+const grantData: Ref<{
+  grant: Grant;
+  boardMember: { name: string } | null;
+  grantor: { name: string } | null;
+}> = ref({
+  grant: {
+    id: "",
+    boardMemberId: "",
+    grantorId: "",
+    method: "",
+    purpose: "",
+    monetaryAmount: "",
+    nonMonetaryAmount: "",
+    status: 0,
+    notes: "",
+    reimburse: false,
+    proposedDate: null,
+    receivedDate: null,
+    lastEditDate: null,
+  },
+  boardMember: null,
+  grantor: null,
+});
 const grantIndex = ref(0);
 
-
 const grantorTableData = computed(() =>
-    grantors.value.map((thisGrantor: any) => ({
-        grantor: thisGrantor,
-        grants: thisGrantor.grants,
-        boardMember: thisGrantor.boardMember
-    }))
+  grantors.value.map((thisGrantor: any) => ({
+    grantor: thisGrantor,
+    grants: thisGrantor.grants,
+    boardMember: thisGrantor.boardMember,
+  })),
 );
 
-async function prepGrantUpdate(grantInfo:{grant:Grant,boardMember:{name:string}| null, grantor: {name: string} | null},index:number){
-    grantData.value.grant = grantInfo.grant;
-    grantData.value.boardMember = grantInfo.boardMember? grantInfo.boardMember : null
-    grantData.value.grantor =  grantInfo.grantor? grantInfo.grantor : null
-    grantIndex.value = index
-    showUpdateGrant.value = true;
+async function prepGrantUpdate(
+  grantInfo: {
+    grant: Grant;
+    boardMember: { name: string } | null;
+    grantor: { name: string } | null;
+  },
+  index: number,
+) {
+  grantData.value.grant = grantInfo.grant;
+  grantData.value.boardMember = grantInfo.boardMember
+    ? grantInfo.boardMember
+    : null;
+  grantData.value.grantor = grantInfo.grantor ? grantInfo.grantor : null;
+  grantIndex.value = index;
+  showUpdateGrant.value = true;
 }
 
-async function prepGrantView(grantInfo:{grant:Grant,boardMember:{name:string}| null, grantor: {name: string} | null},index:number){
-    grantData.value.grant = grantInfo.grant;
-    grantData.value.boardMember = grantInfo.boardMember? grantInfo.boardMember : null
-    grantData.value.grantor =  grantInfo.grantor? grantInfo.grantor : null
-    grantIndex.value = index
-    showViewGrant.value = true;
+async function prepGrantView(
+  grantInfo: {
+    grant: Grant;
+    boardMember: { name: string } | null;
+    grantor: { name: string } | null;
+  },
+  index: number,
+) {
+  grantData.value.grant = grantInfo.grant;
+  grantData.value.boardMember = grantInfo.boardMember
+    ? grantInfo.boardMember
+    : null;
+  grantData.value.grantor = grantInfo.grantor ? grantInfo.grantor : null;
+  grantIndex.value = index;
+  showViewGrant.value = true;
 }
 
+async function updateGrant(values: Record<string, any>) {
+  await putGrant(values, user.value);
 
-async function updateGrant(values:Record<string, any>){
-    await putGrant(values, user.value);
-    showUpdateGrant.value = false;
+  if (selectedFile.value) {
+    await uploadGrantAttachment(values.id, selectedFile.value);
+  }
+
+  selectedFile.value = null;
+  showUpdateGrant.value = false;
 }
 
-function cancelUpdate(){
-
-    showUpdateGrant.value = false;
-    showViewGrant.value = false;
-    grantData.value = {
-        grant:{id:"",
-        boardMemberId:"",
-        grantorId:"",
-        method:"",
-        purpose:"",
-        monetaryAmount:"",
-        nonMonetaryAmount:"",
-        status:0,
-        notes:"",
-        reimburse: false,
-        proposedDate:null,
-        receivedDate:null,
-        lastEditDate:null,
-        },
-        boardMember:null,
-        grantor:null
-    }
+function cancelUpdate() {
+  selectedFile.value = null;
+  showUpdateGrant.value = false;
+  showViewGrant.value = false;
+  grantData.value = {
+    grant: {
+      id: "",
+      boardMemberId: "",
+      grantorId: "",
+      method: "",
+      purpose: "",
+      monetaryAmount: "",
+      nonMonetaryAmount: "",
+      status: 0,
+      notes: "",
+      reimburse: false,
+      proposedDate: null,
+      receivedDate: null,
+      lastEditDate: null,
+    },
+    boardMember: null,
+    grantor: null,
+  };
 }
 
-async function removeGrant(id:string, index:number){
-    await deleteGrant(id, user.value.permissionLevel);
+async function removeGrant(id: string, index: number) {
+  await deleteGrant(id, user.value.permissionLevel);
 }
-
-
-
 </script>
