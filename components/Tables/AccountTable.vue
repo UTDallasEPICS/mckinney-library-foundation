@@ -47,6 +47,7 @@
           Delete
         </button>
         <button
+          v-if="permissionLevel === 3"
           class="rounded-md text-sm font-medium outline-none h-9 py-2 bg-green-600 hover:bg-green-700 text-white px-6"
           @click="editAccount(accounts.indexOf(account))"
         >

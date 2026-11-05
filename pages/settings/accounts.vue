@@ -13,7 +13,7 @@
       <AccReqForm
       :function="editAccount"
       button-text="Save"
-      :type="false"
+      :type="true"
       :account="user"
       :cancel-funciton="cancelEdit"
     />
@@ -39,6 +39,7 @@ import AccReqForm from '~/components/Forms/AccReqForm.vue';
 import { useAuth } from '~/composables/useAuth';
 
 const { data: session } = await useAuth();
+const toasts = useToast();
 
 const permissionLevel = ref(0);
 
@@ -75,23 +76,29 @@ async function PrepEditAccount(index:number){
   userIndex.value=index;
 }
 async function editAccount(values: Record<string, any>){
-  const {success} = await $fetch(`/api/user/${user.value.id}`,{
-    method:"PATCH",
-    body:{
-      email:values.email.toLowerCase(),
-      name:values.fName+ ' ' + values.lName,
-      permission:values.permission,
-      permissionLevel:permissionLevel.value
-    }
-  })
-  if(success){
-    if(users){
-      users[userIndex.value].name = values.fName + ' ' + values.lName;
-      users[userIndex.value].email = values.email.toLowerCase();
-      users[userIndex.value].permission = values.permission
-    } 
+  const name = values.fName.trim() + ' ' + values.lName.trim();
+  const email = values.email.trim().toLowerCase();
+  const permission = Number(values.permission);
+  try{
+    await $fetch(`/api/user/${user.value.id}`,{
+      method:"PATCH",
+      body:{
+        email:email,
+        name:name,
+        permission:permission
+      }
+    })
+    const account = users.value[userIndex.value];
+    account.name = name;
+    account.email = email;
+    account.permission = permission;
+    cancelEdit();
+  }catch(error:any){
+    toasts.add({
+      title: error?.data?.message ?? "Failed to update account",
+      color: "error"
+    });
   }
-  cancelEdit();
 }
 function cancelEdit(){
   user.value={id:"",name:"",email:"",permission:0}
