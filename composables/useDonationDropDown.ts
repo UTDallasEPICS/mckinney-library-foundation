@@ -25,11 +25,12 @@ export const useDonationDropDown = (donations:{donation: Donation,boardMember: {
     }
 }
 
-export const useDonorDropDown = (donors:{donor:Donor, donations:Donation[],boardMember:{name:string}|null}[]) => {
+export const useDonorDropDown = (donors:MaybeRefOrGetter<{donor:Donor, donations:Donation[],boardMember:{name:string}|null}[]>) => {
     const donorOrganizations:ComputedRef<string[]> = computed(() => {
-        if (donors) {
+        const rows = toValue(donors)
+        if (rows) {
             const uniqueOrgs = new Set(
-                donors.map((row) => row.donor.organization).filter((organization) => organization != null)
+                rows.map((row) => row.donor.organization).filter((organization) => organization != null)
             )
             return Array.from(uniqueOrgs)
         }

@@ -57,7 +57,8 @@ export const useGrantor = () => {
         })
         if (result.data) {
             const idx = grantors.value.findIndex(g => g.id === values.id);
-            if (idx !== -1) grantors.value[idx] = result.data;
+            // The response omits grants, so keep the row's existing ones.
+            if (idx !== -1) grantors.value[idx] = { ...grantors.value[idx], ...result.data };
         }
         return result;
     }

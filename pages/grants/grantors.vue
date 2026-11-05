@@ -6,7 +6,7 @@
 />
   <GrantorTable 
     key="GrantorTable"
-    :data="GrantorTableProps.grantorTableData" 
+    :data="grantorTableData" 
     :email-function="GrantorTableProps.emailFunction"
     :edit-function="GrantorTableProps.editFunction"
     :delete-function="GrantorTableProps.deleteFunciton"
@@ -94,12 +94,11 @@ const grantorFormData:Ref<{grantor:Grantor}> = ref({
 });
 
 
-const {grantorOrganizations} = useGrantorDropDown(grantorTableData.value)
+const {grantorOrganizations} = useGrantorDropDown(grantorTableData)
 
 const { grantsData } = useGrant();
 
 const GrantorTableProps ={
-  grantorTableData:grantorTableData.value,
   emailFunction: prepEmail,
   editFunction:prepGrantorUpdate,
   deleteFunciton:removeGrantor,
