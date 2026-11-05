@@ -119,15 +119,22 @@ async function freezeAccount(account: Account) {
 }
 
 async function deleteAccount(id: string) {
-  const { success } = await $fetch(`/api/user/${id}`, {
+  const toast = useToast();
+  const response = await $fetch<{ success: boolean; message?: string }>(`/api/user/${id}`, {
     method: "DELETE",
   });
-  if (success) {
+
+  if (response.success) {
     const index = props.accounts.findIndex((account) => account.id === id);
 
     if (index !== -1) {
       props.accounts.splice(index, 1);
     }
+    return;
   }
+
+  toast.add({
+    title: "Cannot delete a user with existing records. Freeze this account instead.",
+  });
 }
 </script>
