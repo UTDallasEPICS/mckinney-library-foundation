@@ -15,13 +15,13 @@ export default defineEventHandler(async (event) =>{
         const body = await readBody(event);
         const bodyKeys = Object.keys(body ?? {});
         const hasUnsupportedField = bodyKeys.some(
-            (key) => key !== "permission" && key !== "status"
+            (key) => !["permission", "status", "name", "email"].includes(key)
         );
 
         if (hasUnsupportedField) {
             throw createError({
                 statusCode: 400,
-                statusMessage: "Only permission and status can be updated"
+                statusMessage: "Only permission, status, name, and email can be updated"
             });
         }
 
@@ -40,12 +40,56 @@ export default defineEventHandler(async (event) =>{
         const nextPermission =
             body.permission !== undefined ? Number(body.permission) : undefined;
         const nextStatus = body.status;
+        const nextName =
+            body.name !== undefined ? String(body.name).trim() : undefined;
+        const nextEmail =
+            body.email !== undefined ? String(body.email).trim().toLowerCase() : undefined;
 
-        if(nextPermission === undefined && nextStatus === undefined){
+        if(
+            nextPermission === undefined &&
+            nextStatus === undefined &&
+            nextName === undefined &&
+            nextEmail === undefined
+        ){
             throw createError({
                 statusCode: 400,
-                statusMessage: "Permission or status is required"
+                statusMessage: "Permission, status, name, or email is required"
             });
+        }
+
+        if ((nextName !== undefined || nextEmail !== undefined) && session.user.permission !== 3) {
+            throw createError({
+                statusCode: 403,
+                statusMessage: "Only main admins can edit names and emails"
+            });
+        }
+
+        if (nextName !== undefined && !nextName) {
+            throw createError({
+                statusCode: 400,
+                statusMessage: "Name is required"
+            });
+        }
+
+        if (nextEmail !== undefined) {
+            if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(nextEmail)) {
+                throw createError({
+                    statusCode: 400,
+                    statusMessage: "A valid email is required"
+                });
+            }
+
+            const emailOwner = await prisma.user.findUnique({
+                where: { email: nextEmail },
+                select: { id: true }
+            });
+
+            if (emailOwner && emailOwner.id !== id) {
+                throw createError({
+                    statusCode: 409,
+                    statusMessage: "Another account already uses this email"
+                });
+            }
         }
 
         if (session.user.permission === 2) {
@@ -70,6 +114,12 @@ export default defineEventHandler(async (event) =>{
         }
         if (nextStatus !== undefined) {
             updateData.status = nextStatus;
+        }
+        if (nextName !== undefined) {
+            updateData.name = nextName;
+        }
+        if (nextEmail !== undefined) {
+            updateData.email = nextEmail;
         }
 
         const data = await prisma.user.update({
