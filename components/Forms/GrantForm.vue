@@ -190,6 +190,10 @@ const initValues = props.data?{
     proposedDate: props.data.grant.proposedDate? props.data.grant.proposedDate.toISOString().split('T')[0] : '',
 }: undefined
 
+const emit = defineEmits<{
+    (e: 'request-create-grantor'): void
+}>();
+
 // donor dropdown
 const filteredGrantorOptions = computed(() => {
     const normalized = currentGrantorInput.value.trim().toLowerCase();
@@ -225,7 +229,7 @@ function requestCreateGrantor() {
     }
     currentGrantorInput.value = '';
     isGrantorDropdownOpen.value = false;
-    //emit('request-create-grantor');
+    emit('request-create-grantor');
 }
 
 function selectExistingGrantor(donorName: string) {
@@ -237,14 +241,6 @@ function selectExistingGrantor(donorName: string) {
     grantorInputEl.value.dispatchEvent(new Event('input', { bubbles: true }));
     grantorInputEl.value.dispatchEvent(new Event('change', { bubbles: true }));
     isGrantorDropdownOpen.value = false;
-}
-
-function getMatchingGrantorName(value: string) {
-    const normalized = value.trim().toLowerCase();
-    if (!normalized) {
-        return undefined;
-    }
-    return props.grantors.find((grantor) => grantor.grantor.name.trim().toLowerCase() === normalized);
 }
 
 function closeGrantorDropdown() {

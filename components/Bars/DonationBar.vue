@@ -33,6 +33,7 @@
   >
     <div v-if="addDonation">
       <DonationForm
+        :donorInputEl="heldDonor"
         :submit-donation="createDonation"
         :cancel-submisison="cancelDonation"
         :view-only="false"
@@ -53,6 +54,17 @@
       />
     </div>
   </div>
+
+  <div 
+    v-if="addDonorWithinDonation"
+    class="fixed top-0 left-0 w-full h-full flex justify-center items-center z-20 bg-black/50">
+      <DonorForm
+        :submit-donor="createDonorFromDonation"
+        :cancel-submisison="cancelDonorFormFromDonation"
+        :view-only="false"
+        :organizations="donorOrganizations"
+      />
+    </div>
 
   <div
     v-if="addEvent"
@@ -84,9 +96,11 @@ const { postDonation, donationsData } = useDonation();
 const { postDonor, donors: donorData } = useDonor();
 const { eventsData, postEvent } = useEvent();
 
+const heldDonor = ref();
 const addDonation = ref(false);
 const addDonor = ref(false);
 const addEvent = ref(false);
+const addDonorWithinDonation = ref(false);
 
 const props = defineProps<{
   user: { id: string; permissionLevel: number };
@@ -124,9 +138,15 @@ async function createDonor(values: Record<string, any>) {
       title: "[ERROR] This contact information is already in use!",
     });
   } else if (result.data) {
+    heldDonor.value = values.donor
     addDonor.value = false;
+    addDonorWithinDonation.value = false;
   }
 }
+async function createDonorFromDonation(values: Record<string, any>) {
+  createDonor(values);
+}
+
 function cancelDonor() {
   addDonor.value = false;
 }
@@ -157,7 +177,11 @@ async function createEvent(values: Record<string, any>) {
 }
 
 function openDonorFormFromDonation() {
-  addDonor.value = true;
+  addDonorWithinDonation.value = true;
+}
+
+function cancelDonorFormFromDonation() {
+  addDonorWithinDonation.value = false;
 }
 
 function openEventFormFromDonation() {

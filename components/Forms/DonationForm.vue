@@ -40,6 +40,7 @@
                             <button
                                 v-if="showCreateDonorOption"
                                 type="button"
+                                title="Create Donor"
                                 class="block w-full text-left px-3 py-2 text-[#2d3e4d] hover:bg-gray-100 border-t border-gray-200"
                                 @mousedown.prevent="requestCreateDonor()"
                             >
@@ -214,6 +215,7 @@ const showDonorDropdown = computed(() => {
 function handleDonorInput(value: string) {
     currentDonorInput.value = value;
     isDonorDropdownOpen.value = true;
+    setNameFromDonor(value);
 }
 
 function requestCreateDonor() {
@@ -238,12 +240,21 @@ function selectExistingDonor(donorName: string) {
     isDonorDropdownOpen.value = false;
 }
 
-function getMatchingDonorName(value: string) {
-    const normalized = value.trim().toLowerCase();
-    if (!normalized) {
-        return undefined;
+function setNameFromDonor(donorName: string) {
+    if (!donorInputEl.value) {
+        return;
     }
-    return props.donors.find((donor) => donor.donor.name.trim().toLowerCase() === normalized);
+
+    const lookup = props.donors ?? {};
+    const lookupKey = Object.keys(lookup).find((donor) => donor.trim().toLowerCase() === donorName.trim().toLowerCase());
+    const passedName = lookupKey ? lookup[lookupKey] : undefined;
+    if (!passedName) {
+        return;
+    }
+
+    donorInputEl.value.value = passedName;
+    donorInputEl.value.dispatchEvent(new Event('input', { bubbles: true }));
+    donorInputEl.value.dispatchEvent(new Event('change', { bubbles: true }));
 }
 
 function closeDonorDropdown() {

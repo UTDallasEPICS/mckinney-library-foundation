@@ -78,12 +78,22 @@
         :events="eventNames"
         :event-date-lookup="eventDateLookup"
         :methods="donationMethods"
+        @request-create-donor="openDonorFormFromDonation"
         @request-create-event="openEventFormFromDonation"
       />
     </div>
 
+    <div v-if="showDonorForm" class="fixed top-0 left-0 w-full h-full flex justify-center items-center z-20 bg-black/50">
+    <DonorForm
+        :submit-donor="createDonor"
+        :cancel-submisison="cancelDonor"
+        :view-only="false"
+        :organizations="donorOrganizations"
+      />
+    </div>
+
     <div v-if="showEventForm" class="fixed top-0 left-0 w-full h-full flex justify-center items-center z-20 bg-black/50">
-      <EventForm 
+      <EventForm
         :submit-event="createEvent"  
         :cancel-submisison="cancelEvent"
         :view-only="false" 
@@ -109,6 +119,7 @@ import { ref, computed, type Ref } from 'vue'
 import DashboardCard from '~/components/Cards/DashboardCard/DashboardCard.vue'
 import DashboardStat from '~/components/Banners/DashboardBanner.vue'
 import DonationForm from '~/components/Forms/DonationForm.vue'
+import DonorForm from '~/components/Forms/DonorForm.vue'
 import GrantForm from '~/components/Forms/GrantForm.vue'
 import EventForm from '~/components/Forms/EventForm.vue'
 import DateRangeFilter, { type DateRangeValue } from '~/components/Forms/DateRangeFilter.vue'
@@ -130,9 +141,10 @@ if (!session.value?.user) {
 }
 
 const { donationsData, postDonation } = useDonation();
-const { donors } = useDonor();
+const { donors, putDonor } = useDonor();
+const { donorOrganizations } = useDonorDropDown(donors.value);
 const { grantsData, postGrant } = useGrant();
-const { grantors } = useGrantor();
+const { grantors, putGrantor } = useGrantor();
 const { eventsData, postEvent } = useEvent();
 const toasts = useToast();
 
@@ -155,6 +167,7 @@ const totalDonors = donors.value
 
 const { eventNames } = useEventDropDown(eventsData)
 const { donationMethods } = useDonationDropDown(donationsData.value)
+const { grantPurposes, grantMethods } = useGrantsDropDown(grantsData.value)
 const eventDateLookup = computed<Record<string, string>>(() => {
   const lookup: Record<string, string> = {}
   eventsData.value.forEach((row) => {
@@ -165,8 +178,6 @@ const eventDateLookup = computed<Record<string, string>>(() => {
   return lookup
 })
 
-const { grantPurposes, grantMethods } = useGrantsDropDown(grantsData.value)
-
 const user:Ref<{id:string, permissionLevel:number}> = ref({id:"",permissionLevel:0});
 if (session.value?.user) {
   user.value.id = session.value.user.id
@@ -175,7 +186,9 @@ if (session.value?.user) {
 
 // default: no forms shown
 const showDonationForm = ref(false)
+const showDonorForm = ref(false)
 const showGrantForm = ref(false)
+const showGrantorForm = ref(false)
 const showEventForm = ref(false)
 
 // handling clicks
@@ -251,6 +264,20 @@ async function createDonation(values:Record<string,any>){
     showDonationForm.value = false;
 }
 
+async function createDonor(values:Record<string,any>){
+    const result = await putDonor(values, user.value)
+    if(result.success){
+      toasts.add({
+        title: "Donor created!",
+      });
+      showDonorForm.value = false;
+    } else if ((result as any).error?.code === 'DONOR_ALREADY_EXISTS' || (result as any).message === 'The donor already exists') {
+      toasts.add({
+        title: "[ERROR] This donor already exists",
+      });
+    }
+}
+
 async function createGrant(values:Record<string,any>){
     const result = await postGrant(values,user.value)
     if(result.success){
@@ -259,6 +286,20 @@ async function createGrant(values:Record<string,any>){
       });
     }
     showGrantForm.value = false;
+}
+
+async function createGrantor(values:Record<string,any>){
+    const result = await putGrantor(values, user.value)
+    if(result.success){
+      toasts.add({
+        title: "Grantor created!",
+      });
+      showGrantorForm.value = false;
+    } else if ((result as any).error?.code === 'GRANTOR_ALREADY_EXISTS' || (result as any).message === 'The grantor already exists') {
+      toasts.add({
+        title: "[ERROR] This grantor already exists",
+      });
+    }
 }
 
 async function createEvent(values:Record<string,any>){
@@ -273,6 +314,14 @@ async function createEvent(values:Record<string,any>){
         title: "[ERROR] This event already exists",
       });
     }
+}
+
+function openDonorFormFromDonation(){
+    showDonorForm.value = true;
+}
+
+function cancelDonor(){
+    showDonorForm.value = false;
 }
 
 // when clicking "create event" from donation form, opens event form
