@@ -145,7 +145,7 @@
                 </VeeField>
             </div>
 
-            <div class="px-6 mb-6">
+            <div class="px-6 mb-6 cursor-pointer">
                 <h2 class="form-field-label mb-2">Grant Attachment</h2>
                 <UFileUpload 
                     v-model="selectedFile" 
