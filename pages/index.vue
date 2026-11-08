@@ -89,7 +89,7 @@ const emailSchema = yup.object({
 const otpSchema = yup.object({
   otp_code: 
     yup.string()
-    .required('Code is required')
+    .required('  Code is required')
     .min(6,"  Please enter a valid code")
     .max(6,"  Please enter a valid code")
     .test('type', '  Please enter a valid code', code => {

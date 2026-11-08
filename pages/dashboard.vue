@@ -84,7 +84,7 @@
     </div>
 
     <div v-if="showDonorForm" class="fixed top-0 left-0 w-full h-full flex justify-center items-center z-20 bg-black/50">
-    <DonorForm
+      <DonorForm
         :submit-donor="createDonor"
         :cancel-submisison="cancelDonor"
         :view-only="false"
@@ -108,6 +108,16 @@
             :purposes="grantPurposes"
             :grantors="grantorTableData"
             :methods="grantMethods"
+            @request-create-grantor="openGrantorFormFromGrant"
+        />
+    </div>
+
+    <div v-if="showGrantorForm" class="fixed top-0 left-0 w-full h-full flex justify-center items-center z-20 bg-black/50"> 
+        <GrantorForm
+            :submit-grantor="createGrantor"
+            :cancel-submisison="cancelGrantor"
+            :view-only="false"
+            :organizations="grantorOrganizations"
         />
     </div>
 
@@ -121,10 +131,11 @@ import DashboardStat from '~/components/Banners/DashboardBanner.vue'
 import DonationForm from '~/components/Forms/DonationForm.vue'
 import DonorForm from '~/components/Forms/DonorForm.vue'
 import GrantForm from '~/components/Forms/GrantForm.vue'
+import GrantorForm from '~/components/Forms/GrantorForm.vue'
 import EventForm from '~/components/Forms/EventForm.vue'
 import DateRangeFilter, { type DateRangeValue } from '~/components/Forms/DateRangeFilter.vue'
-import { useDonationDropDown } from '~/composables/useDonationDropDown'
-import { useGrantsDropDown } from '~/composables/useGrantDropDowns'
+import { useDonationDropDown, useDonorDropDown } from '~/composables/useDonationDropDown'
+import { useGrantsDropDown, useGrantorDropDown } from '~/composables/useGrantDropDowns'
 import { useEventDropDown } from '~/composables/useEventDropDown'
 import { useAuth } from '~/composables/useAuth'
 import { useDonation } from '~/composables/useDonation'
@@ -142,9 +153,8 @@ if (!session.value?.user) {
 
 const { donationsData, postDonation } = useDonation();
 const { donors, putDonor } = useDonor();
-const { donorOrganizations } = useDonorDropDown(donors.value);
 const { grantsData, postGrant } = useGrant();
-const { grantors, putGrantor } = useGrantor();
+const { grantors, postGrantor } = useGrantor();
 const { eventsData, postEvent } = useEvent();
 const toasts = useToast();
 
@@ -167,7 +177,9 @@ const totalDonors = donors.value
 
 const { eventNames } = useEventDropDown(eventsData)
 const { donationMethods } = useDonationDropDown(donationsData.value)
+const { donorOrganizations } = useDonorDropDown(() => donors.value)
 const { grantPurposes, grantMethods } = useGrantsDropDown(grantsData.value)
+const { grantorOrganizations } = useGrantorDropDown(() => grantors.value);
 const eventDateLookup = computed<Record<string, string>>(() => {
   const lookup: Record<string, string> = {}
   eventsData.value.forEach((row) => {
@@ -289,7 +301,7 @@ async function createGrant(values:Record<string,any>){
 }
 
 async function createGrantor(values:Record<string,any>){
-    const result = await putGrantor(values, user.value)
+    const result = await postGrantor(values, user.value)
     if(result.success){
       toasts.add({
         title: "Grantor created!",
@@ -340,6 +352,14 @@ function cancelEvent(){
 
 function cancelGrant(){
   showGrantForm.value = false;
+}
+
+function openGrantorFormFromGrant(){
+    showGrantorForm.value = true;
+}
+
+function cancelGrantor(){
+    showGrantorForm.value = false;
 }
 
 // date range filters for the totals below

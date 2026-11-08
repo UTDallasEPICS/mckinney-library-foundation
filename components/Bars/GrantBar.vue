@@ -8,7 +8,7 @@
             <NuxtLink to = '/grants/'default>
                 <button 
                 class="px-3 py-1 rounded hover:bg-slate-600 transition cursor-pointer">
-                    View Grant
+                    View Grants
                 </button>
             </NuxtLink>
             <NuxtLink to="/grants/grantors">
@@ -32,6 +32,7 @@
             :purposes="grantPurposes"
             :grantors="grantors"
             :methods="grantMethods"
+            @request-create-grantor="openGrantorWithinGrant"
         />
     </div>
     <div  v-if = "addGrantor"> 
@@ -43,6 +44,16 @@
         />
     </div>
   </div> 
+
+  <div v-if="addGrantorWithinGrant"
+    class="fixed top-0 left-0 w-full h-full flex justify-center items-center z-20 bg-black/50">
+        <GrantorForm
+            :submit-grantor="createGrantor"
+            :cancel-submisison="cancelGrantorWithinGrant"
+            :view-only="false"
+            :organizations="grantorOrganizations"
+        />
+    </div>
   
 </template>
 
@@ -56,6 +67,7 @@ const { postGrantor, grantors: grantorData } = useGrantor();
 
 const addGrant = ref(false);
 const addGrantor = ref(false);
+const addGrantorWithinGrant = ref(false);
 const selectedFile = ref<File | null>(null);
 
 const props = defineProps<{
@@ -77,6 +89,7 @@ async function createGrantor(values:Record<string,any>){
     }
     else if(result.data){
         addGrantor.value=false;
+        addGrantorWithinGrant.value=false;
     }
 }
 function cancelGrantor(){
@@ -100,6 +113,12 @@ async function createGrant(values:Record<string,any>){
 function cancelGrant(){
     selectedFile.value = null;
     addGrant.value = false;
+}
+function openGrantorWithinGrant(){
+    addGrantorWithinGrant.value = true;
+}
+function cancelGrantorWithinGrant(){
+    addGrantorWithinGrant.value = false;
 }
 
 </script>

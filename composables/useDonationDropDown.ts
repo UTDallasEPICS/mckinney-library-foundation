@@ -30,7 +30,7 @@ export const useDonorDropDown = (donors:MaybeRefOrGetter<{donor:Donor, donations
         const rows = toValue(donors)
         if (rows) {
             const uniqueOrgs = new Set(
-                rows.map((row) => row.donor.organization).filter((organization) => organization != null)
+                rows.filter((row) => row.donor != null).map((row) => row.donor.organization).filter((organization) => organization != null)
             )
             return Array.from(uniqueOrgs)
         }
