@@ -12,7 +12,7 @@
     :delete-function="DonorTableProps.deleteFunciton"
     :view-function="DonorTableProps.viewFunction"
     :permission-level="user.permissionLevel"
-    :history-function="() => showHistory = true"
+    :history-function="() => { refreshHistory(); showHistory = true }"
   />
 
   <div

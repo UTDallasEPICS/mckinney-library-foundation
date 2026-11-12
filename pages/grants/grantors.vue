@@ -12,7 +12,7 @@
     :delete-function="GrantorTableProps.deleteFunciton"
     :view-function="GrantorTableProps.viewFunction"
     :permission-level="user.permissionLevel"
-    :history-function="() => showHistory = true"
+    :history-function="() => { refreshHistory(); showHistory = true }"
   />
   <div  v-if="sendEmail" class="fixed top-0 left-0 w-full h-full flex justify-center items-center z-20 bg-black/50">
     <EmailForm

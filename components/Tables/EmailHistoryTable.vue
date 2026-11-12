@@ -60,6 +60,7 @@ const selected = ref<any | null>(null);
 function statusSummary(log: any) {
     const sent = log.recipients.filter((r: any) => r.status === 'sent').length
     const failed = log.recipients.filter((r: any) => r.status === 'failed').length
-    return failed ? `${sent} sent, ${failed} failed` : `${sent} sent`
+    const pending = log.recipients.length - sent - failed
+    return [sent && `${sent} sent`, failed && `${failed} failed`, pending && `${pending} sending`].filter(Boolean).join(', ') || '0 sent'
 }
 </script>
