@@ -48,6 +48,7 @@ export default defineEventHandler(async (event) => {
         monetaryAmount: body.monetaryAmount,
         nonMonetaryAmount: body.nonMonetaryAmount,
         status: parseInt(body.status) ?? 0,
+        frequency: body.frequency ?? undefined,
         notes: body.notes,
         reason: body.reason,
         receivedDate: new Date(body.receivedDate),
