@@ -30,6 +30,7 @@ model User {
   grants        Grant[]
   grantors      Grantor[]
   Events        Event[]
+  emailLogs     EmailLog[]
 
   @@unique([email])
   @@map("user")
@@ -143,8 +144,30 @@ model Event {
   boardMember       User?     @relation(fields: [boardMemberId], references: [id], onDelete: Restrict)
   eventName         String
   eventDate         DateTime?
-  //like notes
   description       String?
   donors            Donor[]   @relation("DonorToEvent")
   donations         Donation[]
+}
+
+model EmailLog {
+  id            String           @id @default(cuid())
+  sentAt        DateTime         @default(now())
+  senderId      String?
+  sender        User?            @relation(fields: [senderId], references: [id], onDelete: SetNull)
+  recipientType String           
+  subject       String
+  body          String
+  recipients    EmailRecipient[]
+}
+
+model EmailRecipient {
+  id         String   @id @default(cuid())
+  emailLogId String
+  emailLog   EmailLog @relation(fields: [emailLogId], references: [id], onDelete: Cascade)
+  donorId    String?
+  grantorId  String?
+  name       String   
+  email      String   
+  status     String   @default("pending") 
+  error      String?
 }

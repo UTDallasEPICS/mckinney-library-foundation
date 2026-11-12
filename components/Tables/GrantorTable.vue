@@ -12,6 +12,7 @@
             <button v-if="permissionLevel > 1" :disabled="selectedRows.length === 0" @click="handleEmailClick(selectedRows)" class="disabled:bg-slate-300 rounded-md text-sm font-medium outline-none h-9 py-2 bg-blue-600 hover:bg-blue-700 text-white px-6">
                 Email Grantors{{ selectedRows.length ? ` (${selectedRows.length})` : '' }}
             </button>
+            <button v-if="permissionLevel > 1" @click="historyFunction" class="rounded-md text-sm font-medium outline-none h-9 py-2 bg-slate-700 hover:bg-slate-800 text-white px-6">Email History</button>
         </template>
         <template #actions="{ row }">
             <button v-if="permissionLevel > 0" class="rounded-md text-sm font-medium outline-none h-9 py-2 bg-blue-600 hover:bg-blue-700 text-white px-6" @click="editFunction(row.grantor, props.data.indexOf(row))">Edit</button>
@@ -32,6 +33,7 @@ type GrantorRow = {grantor:Grantor, grants:Grant[], boardMember:{name:string} | 
 const props = defineProps<{
     data: GrantorRow[]
     emailFunction: (selected: Record<string, boolean>) => Promise<void>
+    historyFunction: () => void
     editFunction: (grantor:Grantor,idx:number) => Promise<void>
     deleteFunction: (grantor:Grantor,idx:number) => Promise<void>
     viewFunction: (grantor:Grantor,idx:number) => Promise<void>

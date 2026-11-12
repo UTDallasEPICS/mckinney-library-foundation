@@ -12,6 +12,7 @@
     :delete-function="DonorTableProps.deleteFunciton"
     :view-function="DonorTableProps.viewFunction"
     :permission-level="user.permissionLevel"
+    :history-function="() => { refreshHistory(); showHistory = true }"
   />
 
   <div
@@ -51,11 +52,15 @@
       :organizations="donorOrganizations"
     />
   </div>
+  <div v-if="showHistory" class="fixed top-0 left-0 w-full h-full flex justify-center items-center z-20 bg-black/50">
+    <EmailHistoryTable :data="emailHistory" :close="() => showHistory = false" />
+  </div>
 </template>
 
 <script setup lang="ts">
 import DonorTable from "~/components/Tables/DonorTable.vue";
 import EmailForm from "~/components/Forms/EmailForm.vue";
+import EmailHistoryTable from "~/components/Tables/EmailHistoryTable.vue";
 import DonorForm from "~/components/Forms/DonorForm.vue";
 import DonationBar from "~/components/Bars/DonationBar.vue";
 import type { Donation, Donor } from "~~/server/utils/generated/prisma/browser";
@@ -81,6 +86,9 @@ const viewDonor = ref(false);
 const { donors, putDonor, deleteDonor } = useDonor();
 const emailList: Ref<string[]> = ref([]);
 const nameList = ref("");
+const recipientList: Ref<{ id: string; name: string; email: string }[]> = ref([]);
+const showHistory = ref(false);
+const { emailHistory, refresh: refreshHistory } = useEmailHistory("donor");
 const donorIndex = ref(0);
 
 const donorTableData = computed(() =>
@@ -155,11 +163,13 @@ function cancelUpdate() {
 
 async function prepEmail(selected: Record<string, boolean>) {
   emailList.value = [];
+  recipientList.value = [];
   nameList.value = "";
 
   donors.value.forEach((item) => {
     if (selected[item.id] && item.email !== "") {
       emailList.value.push(item.email);
+      recipientList.value.push({ id: item.id, name: item.name, email: item.email });
 
       if (nameList.value != "") {
         nameList.value += ", " + item.name;
@@ -235,12 +245,17 @@ async function groupEmail(values: Record<string, any>) {
         subject: values.Subject,
         text: values.Message,
         emails: emailList.value,
+        recipients: recipientList.value,
+        recipientType: "donor",
+        senderId: user.value.id,
       },
     });
 
     sendEmail.value = false;
     emailList.value = [];
     nameList.value = "";
+    recipientList.value = [];
+    refreshHistory();
   } catch (error) {
     alert("Failed to send email.");
     console.error(error);
