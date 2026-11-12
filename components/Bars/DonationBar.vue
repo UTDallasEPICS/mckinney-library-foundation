@@ -4,24 +4,24 @@
       <button
         v-if="user.permissionLevel > 0"
         @click="addDonation = true"
-        class="px-3 py-1 rounded hover:bg-slate-600 transition"
+        class="px-3 py-1 rounded hover:bg-slate-600 transition cursor-pointer"
       >
         Add Donation
       </button>
       <NuxtLink to="/donations/" default>
-        <button class="px-3 py-1 rounded hover:bg-slate-600 transition">
+        <button class="px-3 py-1 rounded hover:bg-slate-600 transition cursor-pointer">
           View Donation
         </button>
       </NuxtLink>
       <NuxtLink to="/donations/donors">
-        <button class="px-3 py-1 rounded hover:bg-slate-600 transition">
+        <button class="px-3 py-1 rounded hover:bg-slate-600 transition cursor-pointer">
           View Donors
         </button>
       </NuxtLink>
       <button
         v-if="user.permissionLevel > 0"
         @click="addDonor = true"
-        class="px-3 py-1 rounded hover:bg-slate-600 transition"
+        class="px-3 py-1 rounded hover:bg-slate-600 transition cursor-pointer"
       >
         Add Donor
       </button>
@@ -33,6 +33,7 @@
   >
     <div v-if="addDonation">
       <DonationForm
+        :donorInputEl="heldDonor"
         :submit-donation="createDonation"
         :cancel-submisison="cancelDonation"
         :view-only="false"
@@ -40,6 +41,7 @@
         :event-date-lookup="eventDateLookup"
         :donors="donors"
         :methods="donationMethods"
+        @request-create-donor="openDonorFormFromDonation"
         @request-create-event="openEventFormFromDonation"
       />
     </div>
@@ -52,6 +54,17 @@
       />
     </div>
   </div>
+
+  <div 
+    v-if="addDonorWithinDonation"
+    class="fixed top-0 left-0 w-full h-full flex justify-center items-center z-20 bg-black/50">
+      <DonorForm
+        :submit-donor="createDonorFromDonation"
+        :cancel-submisison="cancelDonorFormFromDonation"
+        :view-only="false"
+        :organizations="donorOrganizations"
+      />
+    </div>
 
   <div
     v-if="addEvent"
@@ -83,9 +96,11 @@ const { postDonation, donationsData } = useDonation();
 const { postDonor, donors: donorData } = useDonor();
 const { eventsData, postEvent } = useEvent();
 
+const heldDonor = ref();
 const addDonation = ref(false);
 const addDonor = ref(false);
 const addEvent = ref(false);
+const addDonorWithinDonation = ref(false);
 
 const props = defineProps<{
   user: { id: string; permissionLevel: number };
@@ -120,12 +135,18 @@ async function createDonor(values: Record<string, any>) {
   const result = await postDonor(values, props.user);
   if (result.error?.code === "P2002") {
     toasts.add({
-      title: "This contact information is already in use!",
+      title: "[ERROR] This contact information is already in use!",
     });
   } else if (result.data) {
+    heldDonor.value = values.donor
     addDonor.value = false;
+    addDonorWithinDonation.value = false;
   }
 }
+async function createDonorFromDonation(values: Record<string, any>) {
+  createDonor(values);
+}
+
 function cancelDonor() {
   addDonor.value = false;
 }
@@ -149,8 +170,18 @@ async function createEvent(values: Record<string, any>) {
     (result as any).error?.code === "EVENT_ALREADY_EXISTS" ||
     (result as any).message === "The event already exists"
   ) {
-    alert("The event already exists");
+    toasts.add({
+      title: "[ERROR] This event already exists",
+    });
   }
+}
+
+function openDonorFormFromDonation() {
+  addDonorWithinDonation.value = true;
+}
+
+function cancelDonorFormFromDonation() {
+  addDonorWithinDonation.value = false;
 }
 
 function openEventFormFromDonation() {

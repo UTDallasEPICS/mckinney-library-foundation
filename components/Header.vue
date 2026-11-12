@@ -17,10 +17,10 @@
             <arrow-left-icon/>
           </NuxtLink>
         </div>
-        <a href="https://www.mckinneyplf.org/" target = "__blank"class="inline-flex  border-[0.5px] items-center gap-2 rounded-lg  px-4 py-2 text-sm hover:bg-slate-600">          
+        <a href="https://www.mckinneyplf.org/" target = "__blank"class="inline-flex  border-[0.5px] items-center gap-2 rounded-lg  px-4 py-2 text-sm hover:bg-slate-600">
           MPLF Website
         </a>
-        <button @click = "signOut()" class="rounded-lg border-[0.5px] px-4 py-2 text-sm hover:bg-slate-600">Log Out</button>
+        <button @click = "signOut()" class="rounded-lg border-[0.5px] px-4 py-2 text-sm hover:bg-slate-600 cursor-pointer">Log Out</button>
       </div>
       </template>
     </div>

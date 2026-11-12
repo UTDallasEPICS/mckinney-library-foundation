@@ -7,8 +7,8 @@
         empty="No grants found"
     >
         <template #toolbar="{ getVisibleRows }">
-            <button class="rounded-md text-sm font-medium outline-none h-9 py-2 bg-slate-700 hover:bg-slate-800 text-white px-6" @click="exportCsv(getVisibleRows())">Export CSV</button>
-            <select v-model="fiscalYearFilter" class="h-9 px-3 border border-gray-300 rounded-md bg-white text-sm text-[#2d3e4d]">
+            <button class="rounded-md text-sm font-medium outline-none h-9 py-2 bg-slate-700 hover:bg-slate-800 text-white px-6 form-button" @click="exportCsv(getVisibleRows())">Export CSV</button>
+            <select v-model="fiscalYearFilter" class="h-9 px-3 border border-gray-300 rounded-md bg-white text-sm text-[#2d3e4d] cursor-pointer">
                 <option value="all">All fiscal years</option>
                 <option value="current">Current fiscal year (FY{{ currentFiscalYear }})</option>
                 <option value="past">Past fiscal years</option>
@@ -16,9 +16,9 @@
             </select>
         </template>
         <template #actions="{ row }">
-            <button v-if="permissionLevel > 0" class="rounded-md text-sm font-medium outline-none h-9 py-2 bg-blue-600 hover:bg-blue-700 text-white px-6" @click="editFunction(row, props.data.indexOf(row))">Edit</button>
-            <button v-if="permissionLevel > 0" class="rounded-md text-sm font-medium outline-none h-9 py-2 bg-red-600 hover:bg-red-700 text-white px-6" @click="deleteFunction(row.grant.id, props.data.indexOf(row))">Delete</button>
-            <button class="rounded-md text-sm font-medium outline-none h-9 py-2 bg-green-600 hover:bg-green-700 text-white px-6" @click="viewFunction(row, props.data.indexOf(row))">View</button>
+            <button v-if="permissionLevel > 0" class="rounded-md text-sm font-medium outline-none h-9 py-2 bg-blue-600 hover:bg-blue-700 text-white px-6 form-button" @click="editFunction(row, props.data.indexOf(row))">Edit</button>
+            <button v-if="permissionLevel > 0" class="rounded-md text-sm font-medium outline-none h-9 py-2 bg-red-600 hover:bg-red-700 text-white px-6 form-button" @click="deleteFunction(row.grant.id, props.data.indexOf(row))">Delete</button>
+            <button class="rounded-md text-sm font-medium outline-none h-9 py-2 bg-green-600 hover:bg-green-700 text-white px-6 form-button" @click="viewFunction(row, props.data.indexOf(row))">View</button>
         </template>
     </DataTable>
 </template>

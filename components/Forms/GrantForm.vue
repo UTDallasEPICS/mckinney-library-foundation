@@ -10,12 +10,43 @@
                 <div>
                     <h2 class="form-field-label mb-2">Grantor <span class = "text-red-500">*</span></h2>
                     <VeeField autocomplete="off" v-slot="{field}" :disabled="viewOnly" name="grantorName" class="form-input focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px]">
-                        <input :disabled="viewOnly" autocomplete="off" v-bind="field" list="grantor-list" class="w-full px-3 py-2 bg-white border border-gray-300 rounded text-[#2d3e4d] focus:outline-none focus:ring-2 focus:ring-[#5a6a77] cursor-pointer">
-                            <datalist id="grantor-list">
-                                <option></option>
-                                <option v-if="grantors.length > 0" v-for="grantor in grantors" :value="grantor.grantor.name"></option>
-                            </datalist>
+                        <div class="relative">
+                        <input
+                            ref="grantorInputEl"
+                            :disabled="viewOnly"
+                            autocomplete="off"
+                            v-bind="field"
+                            placeholder="Type a grantor's name"
+                            class="w-full px-3 py-2 bg-white border border-gray-300 rounded text-[#2d3e4d] focus:outline-none focus:ring-2 focus:ring-[#5a6a77]"
+                            @input="handleGrantorInput(($event.target as HTMLInputElement).value)"
+                            @focus="isGrantorDropdownOpen = true"
+                            @blur="closeGrantorDropdown()"
+                        >
                         </input>
+                        <div
+                            v-if="showGrantorDropdown"
+                            class="absolute left-0 right-0 mt-1 z-10 bg-white border border-gray-300 rounded shadow-sm max-h-40 overflow-y-auto"
+                        >
+                            <button
+                                v-for="grantor in filteredGrantorOptions"
+                                :key="grantor.grantor.name"
+                                type="button"
+                                class="block w-full text-left px-3 py-2 text-[#2d3e4d] hover:bg-gray-100"
+                                @mousedown.prevent="selectExistingGrantor(grantor.grantor.name)"
+                            >
+                                {{ grantor.grantor.name }}
+                            </button>
+
+                            <button
+                                v-if="showCreateGrantorOption"
+                                type="button"
+                                class="block w-full text-left px-3 py-2 text-[#2d3e4d] hover:bg-gray-100 border-t border-gray-200"
+                                @mousedown.prevent="requestCreateGrantor()"
+                            >
+                                Create Grantor
+                            </button>
+                        </div>
+                    </div>
                     </VeeField>  
                     <VeeErrorMessage class="min-h-[20px] text-red-500 text-sm" name="grantorName" />
                 </div>
@@ -114,7 +145,7 @@
                 </VeeField>
             </div>
 
-            <div class="px-6 mb-6">
+            <div class="px-6 mb-6 cursor-pointer">
                 <h2 class="form-field-label mb-2">Grant Attachment</h2>
                 <UFileUpload 
                     v-model="selectedFile" 
@@ -157,6 +188,9 @@ const selectedFile = defineModel<File | null>({
 });
 const recievedDateRef = ref(new Date().toISOString());
 const proposedDateRef = ref('');
+const grantorInputEl = ref<HTMLInputElement | null>(null);
+const currentGrantorInput = ref('');
+const isGrantorDropdownOpen = ref(false);
 const initValues = props.data?{
     index:props.index, 
     id: props.data.grant.id,
@@ -173,6 +207,65 @@ const initValues = props.data?{
     receivedDate: props.data.grant.receivedDate? props.data.grant.receivedDate.toISOString().split('T')[0] : '',
     proposedDate: props.data.grant.proposedDate? props.data.grant.proposedDate.toISOString().split('T')[0] : '',
 }: undefined
+
+const emit = defineEmits<{
+    (e: 'request-create-grantor'): void
+}>();
+
+// donor dropdown
+const filteredGrantorOptions = computed(() => {
+    const normalized = currentGrantorInput.value.trim().toLowerCase();
+    if (!normalized) {
+        return props.grantors;
+    }
+    return props.grantors.filter((grantor) => grantor.grantor.name.toLowerCase().includes(normalized));
+});
+
+const showCreateGrantorOption = computed(() => {
+    const normalized = currentGrantorInput.value.trim().toLowerCase();
+    if (props.viewOnly || normalized.length === 0) {
+        return false;
+    }
+    const grantorExists = props.grantors.some((grantor) => grantor.grantor.name.trim().toLowerCase() === normalized);
+    return !grantorExists;
+});
+
+const showGrantorDropdown = computed(() => {
+    return !props.viewOnly && isGrantorDropdownOpen.value && currentGrantorInput.value.trim().length > 0;
+});
+
+function handleGrantorInput(value: string) {
+    currentGrantorInput.value = value;
+    isGrantorDropdownOpen.value = true;
+}
+
+function requestCreateGrantor() {
+    if (grantorInputEl.value) {
+        grantorInputEl.value.value = '';
+        grantorInputEl.value.dispatchEvent(new Event('input', { bubbles: true }));
+        grantorInputEl.value.dispatchEvent(new Event('change', { bubbles: true }));
+    }
+    currentGrantorInput.value = '';
+    isGrantorDropdownOpen.value = false;
+    emit('request-create-grantor');
+}
+
+function selectExistingGrantor(donorName: string) {
+    if (!grantorInputEl.value) {
+        return;
+    }
+    grantorInputEl.value.value = donorName;
+    currentGrantorInput.value = donorName;
+    grantorInputEl.value.dispatchEvent(new Event('input', { bubbles: true }));
+    grantorInputEl.value.dispatchEvent(new Event('change', { bubbles: true }));
+    isGrantorDropdownOpen.value = false;
+}
+
+function closeGrantorDropdown() {
+    setTimeout(() => {
+        isGrantorDropdownOpen.value = false;
+    }, 100);
+}
 
 if(initValues && initValues.receivedDate != ''){
     recievedDateRef.value = initValues.receivedDate;
