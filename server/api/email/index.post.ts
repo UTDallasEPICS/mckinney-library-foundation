@@ -1,10 +1,24 @@
+import prisma from '~~/server/utils/prisma'
 const {sendMail} = useNodeMailer();
 const sendDelay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
+
+async function saveStatus(logId: string | undefined, email: string, status: string, error?: string) {
+    if (!logId) return;
+    try {
+        await prisma.emailRecipient.updateMany({
+            where: { emailLogId: logId, email },
+            data: { status, error }
+        });
+    } catch (e) {
+        console.error("Failed to save email status: ", e);
+    }
+}
 
 async function sendEmailsBackground(
     emails: string[],
     subject: string,
-    text: string
+    text: string,
+    logId?: string
 ) {
     for (const email of emails) {
         try {
@@ -14,8 +28,10 @@ async function sendEmailsBackground(
                 bcc: [email],
             });
             console.log("Sent to: ", email, info.messageId)
+            await saveStatus(logId, email, "sent");
         } catch (error: any) {
             console.log("Failed: ", email, error?.message)
+            await saveStatus(logId, email, "failed", error?.message);
         }
         await sendDelay(300);
     }
@@ -33,10 +49,37 @@ export default eventHandler(async (event)=>{
     console.log(body);
 
     try{
+            
+        let logId: string | undefined;
+        if (body.recipients) {
+            try {
+                const log = await prisma.emailLog.create({
+                    data: {
+                        senderId: body.senderId,
+                        recipientType: body.recipientType,
+                        subject: body.subject,
+                        body: body.text,
+                        recipients: {
+                            create: body.recipients.map((r: { id: string, name: string, email: string }) => ({
+                                donorId: body.recipientType === "donor" ? r.id : null,
+                                grantorId: body.recipientType === "grantor" ? r.id : null,
+                                name: r.name,
+                                email: r.email,
+                            }))
+                        }
+                    }
+                });
+                logId = log.id;
+            } catch (error) {
+                console.error("Failed to save email history: ", error);
+            }
+        }
+
         sendEmailsBackground(
             body.emails,
             body.subject,
-            body.text
+            body.text,
+            logId
         );
         return {
             success: true,
@@ -63,4 +106,5 @@ export default eventHandler(async (event)=>{
             error: error, 
         }
     }
+
 })

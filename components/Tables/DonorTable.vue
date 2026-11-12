@@ -12,6 +12,7 @@
             <button v-if="permissionLevel > 1" :disabled="selectedRows.length === 0" @click="handleEmailClick(selectedRows)" class="disabled:bg-slate-300 rounded-md text-sm font-medium outline-none h-9 py-2 bg-blue-600 hover:bg-blue-700 text-white px-6">
                 Email Donors{{ selectedRows.length ? ` (${selectedRows.length})` : '' }}
             </button>
+            <button v-if="permissionLevel > 1" @click="historyFunction" class="rounded-md text-sm font-medium outline-none h-9 py-2 bg-slate-700 hover:bg-slate-800 text-white px-6">Email History</button>
         </template>
         <template #actions="{ row }">
             <button v-if="permissionLevel > 0" class="rounded-md text-sm font-medium outline-none h-9 py-2 bg-blue-600 hover:bg-blue-700 text-white px-6" @click="editFunction(row.donor, props.data.indexOf(row))">Edit</button>
@@ -32,6 +33,7 @@ type DonorRow = {donor:Donor, donations:Donation[], boardMember:{name:string} | 
 const props = defineProps<{
     data: DonorRow[]
     emailFunction: (selected:Record<string, boolean>) => Promise<void>
+    historyFunction: () => void
     editFunction: (donor:Donor,idx:number) => Promise<void>
     deleteFunction: (donor:Donor,idx:number) => Promise<void>
     viewFunction: (donor:Donor,idx:number) => Promise<void>
