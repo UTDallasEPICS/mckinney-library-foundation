@@ -47,7 +47,6 @@ export const useDonation = () => {
                 boardMemberId: user.id,
                 permissionLevel: user.permissionLevel,
                 status: values.status,
-                frequency: values.frequency,
                 event: values.event,
                 method:values.method,
                 monetaryAmount: values.monetaryAmount,

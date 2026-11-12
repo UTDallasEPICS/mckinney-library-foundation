@@ -109,17 +109,6 @@
                 </div>
             </div>
             <div class="px-6 mb-6">
-                <h2 class="form-field-label mb-2">Donation Frequency</h2>
-                <VeeField v-slot="{field}" name="frequency">
-                    <select v-bind="field" :disabled="viewOnly" class="w-full px-3 py-2 bg-white border border-gray-300 rounded text-[#2d3e4d] focus:outline-none focus:ring-2 focus:ring-[#5a6a77] cursor-pointer">
-                        <option value="ONE_TIME">One Time</option>
-                        <option value="MONTHLY">Monthly</option>
-                        <option value="ANNUALLY">Annually</option>
-                    </select>
-                    <VeeErrorMessage class="text-red-500 text-sm" name="frequency" />
-                </VeeField>
-            </div>
-            <div class="px-6 mb-6">
                 <h2 class="form-field-label mb-2">Notes</h2>
                 <VeeField autocomplete="off" :disabled="viewOnly" v-slot="{field}" name="notes">
                     <textarea v-bind="field" :disabled="viewOnly" class="form-field focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px]"></textarea>
@@ -274,13 +263,10 @@ const initValues: Record<string, any> | undefined = props.data ? {
     nonMonetaryAmount:props.data.donation.nonMonetaryAmount,
     method:props.data.donation.method,
     status:props.data.donation.status,
-    frequency: props.data.donation.frequency,
     notes:props.data.donation.notes,
     reason:props.data.donation.reason,
     receivedDate: props.data.donation.receivedDate ? new Date(props.data.donation.receivedDate).toISOString().split('T')[0] : '',
-} : {
-    frequency: 'ONE_TIME'
-}
+} : undefined
 
 const schema = yup.object({
     donorName: yup.string().required('Enter anonymous if donor unknown'),
@@ -295,7 +281,6 @@ const schema = yup.object({
     }),
     method: yup.string().required('Must enter payment method'),
     status: yup.string().required('Must enter status'),
-    frequency: yup.string().oneOf(['ONE_TIME', 'MONTHLY', 'ANNUALLY']).required('Select a donation frequency'),
     receivedDate: yup.date().required("Must be a valid date")
 })
 
