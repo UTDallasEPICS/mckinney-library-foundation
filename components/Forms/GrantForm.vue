@@ -109,17 +109,17 @@
                 <div>
                     <h2 class="form-field-label mb-2">Proposed Date</h2>
                     <VeeField v-slot="{field}" autocomplete="off" :disabled="viewOnly" class="form-input focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px]" name="proposedDate">
-                        <input id="propDate"  autocomplete="off" :disabled="viewOnly" v-model="proposedDateRef" v-bind="field" type="date" class="w-full px-3 py-2 bg-white border border-gray-300 rounded text-[#2d3e4d] focus:outline-none focus:ring-2 focus:ring-[#5a6a77] cursor-pointer"></input>
+                        <input id="propDate"  autocomplete="off" :disabled="viewOnly" v-bind="field" type="date" class="w-full px-3 py-2 bg-white border border-gray-300 rounded text-[#2d3e4d] focus:outline-none focus:ring-2 focus:ring-[#5a6a77] cursor-pointer"></input>
                     </VeeField>
                     <VeeErrorMessage class="min-h-[20px] text-red-500 text-sm" name="proposedDate" />
                 </div>
 
                 <div>
-                    <h2 class="form-field-label mb-2">Received Date<span class = "text-red-500">*</span></h2>
+                    <h2 class="form-field-label mb-2">Received Date</h2>
                     <VeeField v-slot="{field}" autocomplete="off" :disabled="viewOnly" class="form-input focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px]" name="receivedDate">
-                        <input id="reqDate"  autocomplete="off" :disabled="viewOnly" v-model="recievedDateRef" v-bind="field" type="date" class="w-full px-3 py-2 bg-white border border-gray-300 rounded text-[#2d3e4d] focus:outline-none focus:ring-2 focus:ring-[#5a6a77] cursor-pointer"></input>
+                        <input id="reqDate"  autocomplete="off" :disabled="viewOnly" v-bind="field" type="date" class="w-full px-3 py-2 bg-white border border-gray-300 rounded text-[#2d3e4d] focus:outline-none focus:ring-2 focus:ring-[#5a6a77] cursor-pointer"></input>
                     </VeeField>
-                    <VeeErrorMessage class="min-h-[20px] text-red-500 text-sm" name="recievedDate" />
+                    <VeeErrorMessage class="min-h-[20px] text-red-500 text-sm" name="receivedDate" />
                 </div>
             </div>
             
@@ -186,8 +186,6 @@ const props = defineProps<{
 const selectedFile = defineModel<File | null>({
     default: null
 });
-const recievedDateRef = ref(new Date().toISOString());
-const proposedDateRef = ref('');
 const grantorInputEl = ref<HTMLInputElement | null>(null);
 const currentGrantorInput = ref('');
 const isGrantorDropdownOpen = ref(false);
@@ -267,10 +265,6 @@ function closeGrantorDropdown() {
     }, 100);
 }
 
-if(initValues && initValues.receivedDate != ''){
-    recievedDateRef.value = initValues.receivedDate;
-}
-
 const schema = yup.object({
     grantorName: yup.string().required('Enter anonymous if grantor unknown'),
     purpose: yup.string().required('Enter "none" if not associated with a purpose'),
@@ -285,10 +279,14 @@ const schema = yup.object({
     }),
     method: yup.string().required('Must enter payment method'),
     status: yup.string().required('Must enter status'),
-    recievedDate: yup.string().test('date-not-empty', 'Received Date must be entered', ()=>{
-        return recievedDateRef.value !== ''
-    }),
     proposedDate: yup.string().nullable(),
+    receivedDate: yup.string().nullable().test(
+    'date-not-empty',
+    'Grant must include either a proposed or received date',
+    function (value) {
+        const {proposedDate} = this.parent
+        return (value != null && value !== '') || (proposedDate != null && proposedDate !== '')
+    }),
 })
 
 </script>

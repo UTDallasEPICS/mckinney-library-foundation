@@ -1,6 +1,6 @@
 <template>
     <div class="bg-[#e5e9ec] rounded-md p-6 flex justify-center items-start">
-        <VeeForm :initial-values="initValues" :validation-schema="schema" class= "w-full sm:w-[700px] max-h-[80vh] overflow-y-auto" @submit="submitDonationForm">
+        <VeeForm :initial-values="initValues" :validation-schema="schema" class= "w-full sm:w-[700px] max-h-[80vh] overflow-y-auto" @submit="submitDonationForm" v-slot="{ values: formValues }">
             <div class = "px-6 pt-6 pb-5">
               <h1 class = "form-title"> Donation Information</h1>
             </div>
@@ -133,7 +133,7 @@
                     <VeeErrorMessage class="text-red-500 text-sm"  name="status" />
                 </div>
                 <div>
-                    <h2 class="form-field-label mb-2">Received Date<span class = "text-red-500">*</span></h2>
+                    <h2 class="form-field-label mb-2">Received Date<span v-if="formValues.status == 1" class = "text-red-500">*</span></h2>
                     <VeeField v-slot="{field}" autocomplete="off" :disabled="viewOnly" class="form-input focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px]" name="receivedDate">
                         <input ref="receivedDateInputEl" id="reqDate"  autocomplete="off" :disabled="viewOnly" v-bind="field" type="date" class="w-full px-3 py-2 bg-white border border-gray-300 rounded text-[#2d3e4d] focus:outline-none focus:ring-2 focus:ring-[#5a6a77] cursor-pointer"></input>
                     </VeeField>
@@ -394,7 +394,11 @@ const schema = yup.object({
     }),
     method: yup.string().required('Must enter payment method'),
     status: yup.string().required('Must enter status'),
-    receivedDate: yup.date().required("Must be a valid date")
+    // a pending donation may not have arrived yet, so only received donations need a date
+    receivedDate: yup.date().nullable().transform((value, original) => original === '' ? null : value).typeError('Must be a valid date').when('status', {
+        is: (status: string | number) => status == 1,
+        then: (schema) => schema.required('Received donations must have a received date'),
+    })
 })
 
 </script>

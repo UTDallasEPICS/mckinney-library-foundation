@@ -18,6 +18,12 @@ export default defineEventHandler (async (event)=>{
                 statusMessage: "The donation requires a monetary or non-monetary value"
             });
         }
+        if(body.status == 1 && !body.receivedDate){
+            throw createError({
+                statusCode: 400,
+                statusMessage: "A received donation requires a received date"
+            });
+        }
         const eventName = typeof body.event === 'string' ? body.event.trim() : '';
         const matchedEvent = eventName
             ? await prisma.event.findFirst({
@@ -57,7 +63,7 @@ export default defineEventHandler (async (event)=>{
                 status: body.status,
                 notes: body.notes,
                 reason: body.reason,
-                receivedDate: new Date(body.receivedDate),
+                receivedDate: body.receivedDate ? new Date(body.receivedDate) : null,
                 lastEditDate: new Date()
             },
             include: {
