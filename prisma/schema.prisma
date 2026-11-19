@@ -13,6 +13,12 @@ datasource db {
   provider = "sqlite"
 }
 
+enum DonationFrequency {
+  ONE_TIME
+  MONTHLY
+  ANNUALLY
+}
+
 model User {
   id            String        @id @default(cuid())
   name          String        @default("Anonymous")
@@ -112,6 +118,7 @@ model Donation {
   monetaryAmount    String?
   nonMonetaryAmount String?
   status            Int       @default(0) // 0: pending, 1: completed
+  frequency         DonationFrequency @default(ONE_TIME)
   notes             String?
   reason            String?
   receivedDate      DateTime?
