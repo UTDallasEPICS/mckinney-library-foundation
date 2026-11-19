@@ -12,17 +12,17 @@
         <VeeErrorMessage class="text-red-500" name= "email"/>
         <VeeField autocomplete="off" name="email" placeholder="Email"
         class ="form-input bg-[#f5f6f8]"/>
-        <h3 v-if="type" class="form-field-label">Role</h3>
-        <VeeField autocomplete="off" v-if="type" v-slot="{field}" name="permission">
-            <select v-bind="field" class="w-full px-3 py-2 bg-white border border-gray-300 rounded text-[#2d3e4d] focus:outline-none focus:ring-2 focus:ring-[#5a6a77] cursor-pointer">
+        <h3 v-if="!type" class="form-field-label">Role</h3>
+        <VeeField v-if="!type" autocomplete="off" v-slot="{field}" name="permission">
+            <select v-bind="field" class="w-full px-3 py-2 bg-white border border-gray-300 rounded text-[#2d3e4d] focus:outline-none focus:ring-2 focus:ring-[#5a6a77] cursor-pointer bg-[#f5f6f8]">
                 <option value="0">Viewer</option>
                 <option value="1">Editor</option>
                 <option value="2">Admin</option>
                 <option value="3">Main Admin</option>
             </select>
         </VeeField>
-        <button class ="account-btn bg-gradient-to-r from-[#4a5f7a] to-[#3d4d5c] hover:shadow-xl"> {{ buttonText }}</button> 
-        <button v-if="account" type="button" @click="cancelFunciton" class="account-btn bg-gradient-to-r from-[#606263] to-[#7d7e7f] hover:shadow-xl mb-4"> Cancel </button>
+        <button class="account-btn bg-gradient-to-r from-[#4a5f7a] to-[#3d4d5c] hover:shadow-xl"> {{ buttonText }}</button>
+        <button type="button" @click="cancelFunction" class="account-btn bg-gradient-to-r from-[#606263] to-[#7d7e7f] hover:shadow-xl mb-4 mt-2"> Cancel </button>
     </VeeForm>
 </template>
 
@@ -34,13 +34,13 @@
         type:  boolean, 
         buttonText: string,
         account?: {id:string, name:string, email:string, permission:number}
-        cancelFunciton?: () => void
+        cancelFunction?: () => void
     }>();
 
     const AccReqFormSchema = yup.object({
         email: yup.string().required("Email is required").email("Please enter a valid email address (example@domain.com)"),
-        fName: yup.string().required("First name required"),
-        lName: yup.string().required("Last name required"),
+        fName: yup.string().required("First name is required"),
+        lName: yup.string().required("Last name is required"),
 });
     const submit = props.function;
 

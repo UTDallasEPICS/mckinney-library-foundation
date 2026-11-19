@@ -1,11 +1,27 @@
 <template>
-<h1 class="text-[36px] text-[#2c3e50] text-center py-5 mb-2"> Manage Accounts </h1>
+<h1 class="text-[28px] text-[#2c3e50] text-center py-1 mb-0 mt-2"> Manage Accounts </h1>
  <AccountTable v-if="users && users.length > 0"
   key= "ExistingAccounts"
   :accounts="users"
+  :add-account="addAccount"
   :edit-account="PrepEditAccount"
+  :user-email="userEmail"
   :permission-level="permissionLevel"
 />
+<div v-if="showAdd" class="fixed top-0 left-0 w-full h-full flex justify-center items-center z-20 bg-black/50">
+  <div class="bg-[#e5e9ec] p-0 gap-0 border-0 rounded-md">
+    <div class="w-[800px] max-h-[130vh] overflow-y-auto mx-4">
+      <h1 class="form-title mt-4">Add Account</h1>
+      <AccReqForm
+      :function="createAccount"
+      button-text="Create Account"
+      :type="false"
+      :account="user"
+      :cancel-function="cancelFunction"
+    />
+    </div>
+  </div>
+</div>
 <div v-if="showEdit" class="fixed top-0 left-0 w-full h-full flex justify-center items-center z-20 bg-black/50">
   <div class="bg-[#e5e9ec] p-0 gap-0 border-0 rounded-md">
     <div class="w-[800px] max-h-[130vh] overflow-y-auto mx-4">
@@ -15,7 +31,7 @@
       button-text="Save"
       :type="true"
       :account="user"
-      :cancel-funciton="cancelEdit"
+      :cancel-function="cancelFunction"
     />
     </div>
   </div>
@@ -42,14 +58,17 @@ const { data: session } = await useAuth();
 const toasts = useToast();
 
 const permissionLevel = ref(0);
+const userEmail = ref("");
 
 if(session.value?.user){
   permissionLevel.value = session.value.user.permission;
+  userEmail.value = session.value.user.email;
 }
 else{
-  navigateTo("/");
+  await navigateTo("/");
 }
 
+const showAdd = ref(false);
 const showEdit = ref(false);
 
 const requestOBJ = await useFetch("/api/request");
@@ -75,6 +94,24 @@ async function PrepEditAccount(index:number){
   showEdit.value=true
   userIndex.value=index;
 }
+async function addAccount(){
+  showAdd.value = true;
+}
+async function createAccount(values:Record<string,any>){
+    toasts.add({
+      title: "Account created!"
+    });
+    const info = await $fetch("/api/user",{
+        method: "POST",
+        body:{
+            name: values.fName + " " + values.lName,
+            email: values.email.toLowerCase(),
+            permission: parseInt(values.permission),
+            permissionLevel:permissionLevel.value
+        }
+    });
+    cancelFunction();
+}
 async function editAccount(values: Record<string, any>){
   const name = values.fName.trim() + ' ' + values.lName.trim();
   const email = values.email.trim().toLowerCase();
@@ -92,7 +129,7 @@ async function editAccount(values: Record<string, any>){
     account.name = name;
     account.email = email;
     account.permission = permission;
-    cancelEdit();
+    cancelFunction();
   }catch(error:any){
     toasts.add({
       title: error?.data?.message ?? "Failed to update account",
@@ -100,8 +137,9 @@ async function editAccount(values: Record<string, any>){
     });
   }
 }
-function cancelEdit(){
+function cancelFunction(){
   user.value={id:"",name:"",email:"",permission:0}
+  showAdd.value=false
   showEdit.value=false
 }
 </script>

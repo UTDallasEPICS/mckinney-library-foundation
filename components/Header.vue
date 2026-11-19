@@ -13,7 +13,7 @@
       <template v-if="signedIn">
         <div class="flex  items-center gap-3">
         <div v-if="showDashboardBackArrow" class = "w-6 h-6 ">
-          <NuxtLink to = "/dashboard">
+          <NuxtLink :to = backArrowDestination>
             <arrow-left-icon/>
           </NuxtLink>
         </div>
@@ -35,6 +35,8 @@ const { data: session } = await useAuth();
 const route = useRoute();
 const signedIn = computed(() => !!session.value?.session);
 const showDashboardBackArrow = computed(() => route.path !== '/dashboard');
+const backArrowDestination = computed(() => route.path.includes("/settings/roles") ? "/settings/accounts" : "/dashboard" )
+const viewingRoles = computed(() => route.path.includes("/settings/roles"));
 const toasts = useToast();
 
 async function signOut(){

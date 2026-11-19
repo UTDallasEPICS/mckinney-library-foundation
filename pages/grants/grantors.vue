@@ -9,7 +9,7 @@
     :data="grantorTableData" 
     :email-function="GrantorTableProps.emailFunction"
     :edit-function="GrantorTableProps.editFunction"
-    :delete-function="GrantorTableProps.deleteFunciton"
+    :delete-function="GrantorTableProps.deleteFunction"
     :view-function="GrantorTableProps.viewFunction"
     :permission-level="user.permissionLevel"
   />
@@ -101,7 +101,7 @@ const { grantsData } = useGrant();
 const GrantorTableProps ={
   emailFunction: prepEmail,
   editFunction:prepGrantorUpdate,
-  deleteFunciton:removeGrantor,
+  deleteFunction:removeGrantor,
   viewFunction:prepGrantorView
 }
 

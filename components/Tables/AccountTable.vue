@@ -7,9 +7,25 @@
     container-class="max-w-7xl mx-auto"
     :ui="{ thead: 'bg-[#5a6a77]', tbody: 'bg-[#e5e9ec] [&>tr:hover]:bg-[#e5e9ec]', th: 'bg-[#5a6a77] text-white px-6 py-4 border-b-0', td: 'bg-[#e5e9ec] group-hover:bg-[#e5e9ec] border-b-0' }"
   >
+  <template #toolbar="{}">
+    <button
+      :disabled="permissionLevel < 3"
+      @click="addAccount()"
+      class="disabled:bg-slate-300 rounded-md text-sm font-medium outline-none h-9 py-2 bg-blue-600 hover:bg-blue-700 text-white px-6 form-button"
+      >
+        Add Account
+    </button>
+    <button
+      :disabled="permissionLevel < 1"
+      @click="viewRoles"
+      class="disabled:bg-slate-330 disabled:cursor-default rounded-md text-sm font-medium outline-none h-9 py-2 bg-blue-600 hover:bg-blue-700 text-white px-6 form-button"
+      >
+        View Roles
+    </button>
+    </template>
     <template #permission-cell="{ row: account }">
       <select
-        :disabled="account.permission >= permissionLevel && permissionLevel < 3"
+        :disabled="account.permission >= permissionLevel && (permissionLevel < 3 || account.email == userEmail)"
         @change="updatePermission(account, Number(($event.target as HTMLSelectElement).value), $event.target as HTMLSelectElement)"
         class="w-full px-3 py-2 bg-white border border-gray-300 rounded text-[#2d3e4d] cursor-pointer disabled:cursor-not-allowed disabled:bg-gray-100"
       >
@@ -59,6 +75,7 @@
 </template>
 
 <script setup lang="ts">
+import { user } from "#build/ui";
 import DataTable from "~/components/Tables/DataTable.vue";
 import type { DataTableColumn } from "~/types/dataTable";
 
@@ -72,8 +89,10 @@ type Account = {
 
 const props = defineProps<{
   accounts: Account[];
+  addAccount: () => void;
   editAccount: (index: number) => void;
   permissionLevel: number;
+  userEmail: string;
 }>();
 
 const roleOptions = [
@@ -88,6 +107,10 @@ const columns: DataTableColumn<Account>[] = [
   { id: "email", header: "Email", value: (account) => account.email, sortable: false, align: "center" },
   { id: "permission", header: "Role", value: (account) => account.permission, sortable: false, filterable: false, align: "center" },
 ];
+
+async function viewRoles() {
+  await navigateTo("/settings/roles")
+}
 
 async function updatePermission(account: Account, nextPermission: number, select: HTMLSelectElement) {
   try {

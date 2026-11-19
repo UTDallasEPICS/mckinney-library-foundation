@@ -9,7 +9,7 @@
     :data="donorTableData"
     :email-function="DonorTableProps.emailFunction"
     :edit-function="DonorTableProps.editFunction"
-    :delete-function="DonorTableProps.deleteFunciton"
+    :delete-function="DonorTableProps.deleteFunction"
     :view-function="DonorTableProps.viewFunction"
     :permission-level="user.permissionLevel"
   />
@@ -116,7 +116,7 @@ const toasts = useToast();
 const DonorTableProps = {
   emailFunction: prepEmail,
   editFunction: prepDonorUpdate,
-  deleteFunciton: removeDonor,
+  deleteFunction: removeDonor,
   viewFunction: prepDonorView,
 };
 
