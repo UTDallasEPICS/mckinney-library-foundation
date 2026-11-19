@@ -166,7 +166,7 @@ model EmailLog {
   recipientType String           
   subject       String
   body          String
-  recipients    EmailRecipient[] @@index([emailLogId])
+  recipients    EmailRecipient[]
 }
 
 model EmailRecipient {
