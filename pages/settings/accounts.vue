@@ -12,7 +12,7 @@
   <div class="bg-[#e5e9ec] p-0 gap-0 border-0 rounded-md">
     <div class="w-[800px] max-h-[130vh] overflow-y-auto mx-4">
       <h1 class="form-title mt-4">Add Account</h1>
-      <AccReqForm
+      <AccountForm
       :function="createAccount"
       button-text="Create Account"
       :type="false"
@@ -26,7 +26,7 @@
   <div class="bg-[#e5e9ec] p-0 gap-0 border-0 rounded-md">
     <div class="w-[800px] max-h-[130vh] overflow-y-auto mx-4">
       <h1 class="form-title mt-4">Edit Account</h1>
-      <AccReqForm
+      <AccountForm
       :function="editAccount"
       button-text="Save"
       :type="true"
@@ -51,7 +51,7 @@
 import { ref } from 'vue';
 import AccountTable from '~/components/Tables/AccountTable.vue';
 import RequestTable from '~/components/Tables/RequestTable.vue';
-import AccReqForm from '~/components/Forms/AccReqForm.vue';
+import AccountForm from '~/components/Forms/AccountForm.vue';
 import { useAuth } from '~/composables/useAuth';
 
 const { data: session } = await useAuth();

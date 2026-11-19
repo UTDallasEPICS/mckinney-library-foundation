@@ -1,10 +1,10 @@
 <template>
    <div class = "flex items-center basis-1/2">
       <div class = "bg-white rounded-3xl shadow-2xl p-10 border border-gray-100 w-2/5 mx-auto my-8 my">
-        <AccReqForm
+        <AccountForm
         key="AdminAccCreate"
-        :function="AccReqFormProps.function"
-        :type="AccReqFormProps.type"
+        :function="AccountFormProps.function"
+        :type="AccountFormProps.type"
         button-text="Create Account"
         />
       </div>
@@ -13,7 +13,7 @@
 </template>
 
 <script setup lang="ts">
-import AccReqForm from '~/components/Forms/AccReqForm.vue';
+import AccountForm from '~/components/Forms/AccountForm.vue';
 import * as yup from "yup";
 import { useAuth } from '~/composables/useAuth';
 
@@ -32,7 +32,7 @@ else{
   navigateTo("/");
 }
 
-const AccReqFormProps ={
+const AccountFormProps ={
   function: createAccount,
   type: false,
 }

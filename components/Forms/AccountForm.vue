@@ -1,5 +1,5 @@
 <template>
-    <VeeForm :initial-values="initalVals" :validation-schema="AccReqFormSchema" @submit="submit">
+    <VeeForm :initial-values="initalVals" :validation-schema="AccountFormSchema" @submit="submit">
         <h3 class="form-field-label">First Name</h3>
         <VeeErrorMessage class="text-red-500" name= "fName"/>
         <VeeField autocomplete="off" name="fName" placeholder="First" 
@@ -37,7 +37,7 @@
         cancelFunction?: () => void
     }>();
 
-    const AccReqFormSchema = yup.object({
+    const AccountFormSchema = yup.object({
         email: yup.string().required("Email is required").email("Please enter a valid email address (example@domain.com)"),
         fName: yup.string().required("First name is required"),
         lName: yup.string().required("Last name is required"),
