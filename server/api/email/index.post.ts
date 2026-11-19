@@ -1,4 +1,6 @@
 import prisma from '~~/server/utils/prisma'
+import { requireSession } from "~~/server/utils/requireSession";
+
 const {sendMail} = useNodeMailer();
 const sendDelay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
 
@@ -39,13 +41,8 @@ async function sendEmailsBackground(
 }
 
 export default eventHandler(async (event)=>{
+    const session = await requireSession(event, 2);
     const body = await readBody(event);
-    if(body.permissionLevel < 2){
-        throw createError({
-            statusCode:401,
-            statusMessage:"User does not have permission to send group emails"
-        })
-    }
     console.log(body);
 
     try{
@@ -55,7 +52,7 @@ export default eventHandler(async (event)=>{
             try {
                 const log = await prisma.emailLog.create({
                     data: {
-                        senderId: body.senderId,
+                        senderId: session.user.id,
                         recipientType: body.recipientType,
                         subject: body.subject,
                         body: body.text,

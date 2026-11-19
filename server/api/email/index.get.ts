@@ -6,6 +6,7 @@ export default defineEventHandler(async (event) =>{
         await requireSession(event, 2);
         const query = getQuery(event);
         const data = await prisma.emailLog.findMany({
+            take: 50,
             where: query.type ? { recipientType: String(query.type) } : {},
             include: {
                 recipients: true,

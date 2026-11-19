@@ -300,7 +300,6 @@ async function groupEmail(values: Record<string, any>) {
     await $fetch("/api/email", {
       method: "POST",
       body: {
-        permissionLevel: user.value.permissionLevel,
         subject: values.Subject,
         text: values.Message,
         emails: emailList.value,
