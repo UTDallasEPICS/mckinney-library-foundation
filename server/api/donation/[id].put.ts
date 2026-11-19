@@ -61,7 +61,6 @@ export default defineEventHandler (async (event)=>{
                 monetaryAmount: body. monetaryAmount,
                 nonMonetaryAmount: body.nonMonetaryAmount,
                 status: body.status,
-                frequency: body.frequency ?? undefined,
                 notes: body.notes,
                 reason: body.reason,
                 receivedDate: body.receivedDate ? new Date(body.receivedDate) : null,
