@@ -1,4 +1,5 @@
 import prisma from '~~/server/utils/prisma'
+import { writeAuditLog } from "~~/server/utils/auditLog";
 import { requireSession } from "~~/server/utils/requireSession";
 
 export default defineEventHandler(async (event) =>{
@@ -27,7 +28,13 @@ export default defineEventHandler(async (event) =>{
 
         const targetUser = await prisma.user.findUnique({
             where: { id },
-            select: { id: true, permission: true }
+            select: {
+                id: true,
+                name: true,
+                email: true,
+                permission: true,
+                status: true,
+            }
         });
 
         if(!targetUser){
@@ -45,6 +52,16 @@ export default defineEventHandler(async (event) =>{
             throw createError({
                 statusCode: 400,
                 statusMessage: "Permission or status is required"
+            });
+        }
+
+        if (
+            nextPermission !== undefined &&
+            (!Number.isInteger(nextPermission) || nextPermission < 0 || nextPermission > 3)
+        ) {
+            throw createError({
+                statusCode: 400,
+                statusMessage: "Permission level is invalid"
             });
         }
 
@@ -72,11 +89,38 @@ export default defineEventHandler(async (event) =>{
             updateData.status = nextStatus;
         }
 
-        const data = await prisma.user.update({
-            where: {
-                id: id,
-            },
-            data: updateData,
+        const data = await prisma.$transaction(async (tx) => {
+            const updatedUser = await tx.user.update({
+                where: { id },
+                data: updateData,
+            });
+
+            if (
+                targetUser.permission !== updatedUser.permission ||
+                targetUser.status !== updatedUser.status
+            ) {
+                await writeAuditLog(
+                    tx,
+                    session.user.id,
+                    "UPDATE",
+                    "ACCOUNT",
+                    updatedUser.id,
+                    {
+                        name: targetUser.name,
+                        email: targetUser.email,
+                        permission: targetUser.permission,
+                        status: targetUser.status,
+                    },
+                    {
+                        name: updatedUser.name,
+                        email: updatedUser.email,
+                        permission: updatedUser.permission,
+                        status: updatedUser.status,
+                    },
+                );
+            }
+
+            return updatedUser;
         });
         return{
             success: true,
@@ -84,6 +128,9 @@ export default defineEventHandler(async (event) =>{
             data: data
         }
     }catch(error){
+        if (error && typeof error === "object" && "statusCode" in error) {
+            throw error;
+        }
         const statusCode =
             typeof error === "object" && error && "statusCode" in error
                 ? Number((error as { statusCode?: number }).statusCode) || 500

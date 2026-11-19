@@ -1,4 +1,5 @@
 import prisma from "~~/server/utils/prisma";
+import { writeAuditLog } from "~~/server/utils/auditLog";
 import { requireSession } from "~~/server/utils/requireSession";
 
 export default defineEventHandler(async (event) => {
@@ -50,20 +51,24 @@ export default defineEventHandler(async (event) => {
       },
     });
 
-    await tx.auditLog.create({
-      data: {
-        userId: session.user.id,
-        action: "CREATE",
-        recordType: "DONOR",
-        recordId: donor.id,
-        snapshot: {
-          before: {},
-          after: {
-            name: donor.name,
-          },
-        },
+    await writeAuditLog(
+      tx,
+      session.user.id,
+      "CREATE",
+      "DONOR",
+      donor.id,
+      {},
+      {
+        name: donor.name,
+        email: donor.email,
+        phone: donor.phone,
+        organization: donor.organization,
+        preferredCommunication: donor.preferredCommunication,
+        address: donor.address,
+        notes: donor.notes,
+        webLink: donor.webLink,
       },
-    });
+    );
 
     return donor;
     });
@@ -77,6 +82,9 @@ export default defineEventHandler(async (event) => {
 
   } catch (error) {
     console.error(error);
+    if (error && typeof error === "object" && "statusCode" in error) {
+      throw error;
+    }
     if (error instanceof Prisma.PrismaClientKnownRequestError) {
       if (error.code === "P2002") {
         return {

@@ -9,6 +9,7 @@
   </button>
 
   <button
+    v-if="permissionLevel >= 2"
     @click="navigateTo('/settings/logs')"
     class="bg-white border border-gray-300 text-[#2c3e50] px-4 py-2 rounded-md font-medium hover:bg-gray-50 transition shadow-sm"
   >

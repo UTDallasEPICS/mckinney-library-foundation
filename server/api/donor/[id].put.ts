@@ -1,4 +1,5 @@
 import prisma from "~~/server/utils/prisma";
+import { writeAuditLog } from "~~/server/utils/auditLog";
 import { requireSession } from "~~/server/utils/requireSession";
 
 export default defineEventHandler(async (event) => {
@@ -71,39 +72,35 @@ export default defineEventHandler(async (event) => {
       data: { isAuthor: donor.isAuthor },
     });
 
-    await tx.auditLog.create({
-      data: {
-        userId: session.user.id,
-        action: "UPDATE",
-        recordType: "DONOR",
-        recordId: donor.id,
-        snapshot: { 
-          before: {
-            name: previousDonor.name,
-            email: previousDonor.email,
-            phone: previousDonor.phone,
-            address: previousDonor.address,
-            preferredCommunication: previousDonor.preferredCommunication,
-            notes: previousDonor.notes,
-            webLink: previousDonor.webLink,
-            isAuthor: previousDonor.isAuthor,
-            organization: previousDonor.organization,
-          },
-          after: {
-            name: donor.name,
-            email: donor.email,
-            phone: donor.phone,
-            address: donor.address,
-            preferredCommunication: donor.preferredCommunication,
-            notes: donor.notes,
-            webLink: donor.webLink,
-            isAuthor: donor.isAuthor,
-            organization: donor.organization,
-          }
-                    
-         }
+    await writeAuditLog(
+      tx,
+      session.user.id,
+      "UPDATE",
+      "DONOR",
+      donor.id,
+      {
+        name: previousDonor.name,
+        email: previousDonor.email,
+        phone: previousDonor.phone,
+        address: previousDonor.address,
+        preferredCommunication: previousDonor.preferredCommunication,
+        notes: previousDonor.notes,
+        webLink: previousDonor.webLink,
+        isAuthor: previousDonor.isAuthor,
+        organization: previousDonor.organization,
       },
-    });
+      {
+        name: donor.name,
+        email: donor.email,
+        phone: donor.phone,
+        address: donor.address,
+        preferredCommunication: donor.preferredCommunication,
+        notes: donor.notes,
+        webLink: donor.webLink,
+        isAuthor: donor.isAuthor,
+        organization: donor.organization,
+      },
+    );
 
     return donor;
   });
@@ -117,6 +114,9 @@ export default defineEventHandler(async (event) => {
   
 } catch (error) {
   console.error(error);
+  if (error && typeof error === "object" && "statusCode" in error) {
+    throw error;
+  }
   if (error instanceof Prisma.PrismaClientKnownRequestError) {
     if (error.code === "P2002") {
       return {

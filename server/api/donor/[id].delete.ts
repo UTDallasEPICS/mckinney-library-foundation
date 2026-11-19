@@ -1,3 +1,5 @@
+import prisma from "~~/server/utils/prisma";
+import { writeAuditLog } from "~~/server/utils/auditLog";
 import { requireSession } from "~~/server/utils/requireSession";
 
 export default defineEventHandler(async (event) => {  
@@ -10,20 +12,24 @@ export default defineEventHandler(async (event) => {
                 where: { id: id }
             });
 
-            await tx.auditLog.create({
-                data: {
-                    userId: session.user.id,
-                    action: "DELETE",
-                    recordType: "DONOR",
-                    recordId: donor.id,
-                    snapshot: {
-                        before: {
-                            name: donor.name
-                        },
-                        after: {}
-                    }
-                }
-            });
+            await writeAuditLog(
+                tx,
+                session.user.id,
+                "DELETE",
+                "DONOR",
+                donor.id,
+                {
+                    name: donor.name,
+                    ...(donor.email?.trim() ? { email: donor.email.trim() } : {}),
+                    ...(donor.phone?.trim() ? { phone: donor.phone.trim() } : {}),
+                    ...(donor.organization?.trim() ? { organization: donor.organization.trim() } : {}),
+                    ...(donor.preferredCommunication?.trim() ? { preferredCommunication: donor.preferredCommunication.trim() } : {}),
+                    ...(donor.address?.trim() ? { address: donor.address.trim() } : {}),
+                    ...(donor.notes?.trim() ? { notes: donor.notes.trim() } : {}),
+                    ...(donor.webLink?.trim() ? { webLink: donor.webLink.trim() } : {}),
+                },
+                {},
+            );
 
             return donor;
         });
@@ -37,6 +43,9 @@ export default defineEventHandler(async (event) => {
         };
     } catch (error) {
         console.error("some error", error);
+        if (error && typeof error === "object" && "statusCode" in error) {
+            throw error;
+        }
         return { 
             success: false,
             statusCode: 500,

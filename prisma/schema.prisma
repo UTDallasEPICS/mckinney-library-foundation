@@ -30,7 +30,7 @@ model User {
   grants        Grant[]
   grantors      Grantor[]
   Events        Event[]
-  logs          auditLog[]
+  logs          AuditLog[]
 
   @@unique([email])
   @@map("user")
@@ -159,6 +159,7 @@ model AuditLog {
   snapshot          Json?
 
   user User? @relation(fields: [userId], references: [id], onDelete: SetNull)
+  @@map("auditLog")
 }
 
 
