@@ -1,34 +1,5 @@
 <template>
-  <div class = "flex min-h-screen w-auto bg-blue-100">
-
-    <div class = "basis-1/2 bg-[#34495e]" id="site_info">
-      <div class="w-3/4 mx-auto">
-        <div class="mt-6 mb-6 flex flex-col items-center">
-          <img src="/logo.png" alt="MPLF Logo" class="h-24 w-auto" style="background-color: white; padding: 8px; border-radius: 4px;" />
-        </div>
-        <div class = "text-center text-white">
-          <h1 className ="text-[42px] bg-red-500 mb-4 leading-tight" style ="font-weight: 700; letter-spacing: -0.5px;" >McKinney Public Library Foundation</h1>
-          <p class ="text-[20px] leading-relaxed opacity-90" style="font-weight: 400;">Empowering Communities Through Knowledge &amp; Strategic Philanthropy</p>
-        </div>
-        <div class = "text-white">
-          <InfoBanner class = "my-5"
-            icon="/icons/book.svg"            
-            title="Track Donations &amp; Grants"
-            description="Comprehensive financial management"
-          />
-          <InfoBanner class = "my-5"
-            icon="/icons/users.svg"
-            title="Manage Donor Relationships"
-            description="Build lasting community connections"
-          />
-          <InfoBanner class = "my-5 w-full"
-            icon="/icons/chart.svg"
-            title="Generate Insights &amp; Reports"
-            description="Data-driven descision making"
-          />  
-        </div>  
-      </div>    
-    </div>
+  <div class = "flex min-h-[calc(100vh-88px)] w-auto bg-[#5a6a77]">
     <div class = "flex items-center basis-1/2" id="login">
       <div class = "bg-white rounded-3xl shadow-2xl p-10 border border-gray-100 w-4/5 mx-auto my">
         <img src="/logo.png" alt="MPLF Logo" class ="h-14 mx-auto" />
@@ -83,16 +54,16 @@ const toasts = useToast();
 const emailSchema = yup.object({
   email: 
     yup.string()
-    .required("Email is required")
-    .email("Please enter a valid email address (example@domain.com)"),
+    .required("  Email is required")
+    .email("  Please enter a valid email address (example@domain.com)"),
 });
 const otpSchema = yup.object({
   otp_code: 
     yup.string()
-    .required('Code is required')
-    .min(6,"Please enter a valid code")
-    .max(6,"Please enter a valid code")
-    .test('type', 'Please enter a valid code', code => {
+    .required('  Code is required')
+    .min(6,"  Please enter a valid code")
+    .max(6,"  Please enter a valid code")
+    .test('type', '  Please enter a valid code', code => {
     if(!code){
       return false;
     }
@@ -156,7 +127,7 @@ async function checkEmailExists(email:string){
     } 
     else{
       toasts.add({
-        title: "Email does not exist."
+        title: "[ERROR] Email does not exist."
       });
       return false;
     }

@@ -6,12 +6,13 @@
 />
   <GrantorTable 
     key="GrantorTable"
-    :data="GrantorTableProps.grantorTableData" 
+    :data="grantorTableData" 
     :email-function="GrantorTableProps.emailFunction"
     :edit-function="GrantorTableProps.editFunction"
     :delete-function="GrantorTableProps.deleteFunciton"
     :view-function="GrantorTableProps.viewFunction"
     :permission-level="user.permissionLevel"
+    :history-function="() => { refreshHistory(); showHistory = true }"
   />
   <div  v-if="sendEmail" class="fixed top-0 left-0 w-full h-full flex justify-center items-center z-20 bg-black/50">
     <EmailForm
@@ -40,11 +41,15 @@
       :organizations="grantorOrganizations"
     />
   </div> 
+    <div v-if="showHistory" class="fixed top-0 left-0 w-full h-full flex justify-center items-center z-20 bg-black/50">
+    <EmailHistoryTable :data="emailHistory" :close="() => showHistory = false" />
+  </div>
 </template>
 
 <script setup lang="ts">
 import GrantorTable from '~/components/Tables/GrantorTable.vue';
 import EmailForm from '~/components/Forms/EmailForm.vue';
+import EmailHistoryTable from '~/components/Tables/EmailHistoryTable.vue';
 import GrantorForm from '~/components/Forms/GrantorForm.vue';
 import GrantBar from '~/components/Bars/GrantBar.vue'
 import { useAuth } from '~/composables/useAuth';
@@ -68,6 +73,9 @@ const viewGrantor = ref(false);
 const { grantors, putGrantor, deleteGrantor } = useGrantor();
 const emailList: Ref<string[]> = ref([])
 const nameList = ref("")
+const recipientList: Ref<{id:string, name:string, email:string}[]> = ref([])
+const showHistory = ref(false);
+const { emailHistory, refresh: refreshHistory } = useEmailHistory('grantor');
 const grantorIndex = ref(0);
 const toasts = useToast();
 
@@ -94,12 +102,11 @@ const grantorFormData:Ref<{grantor:Grantor}> = ref({
 });
 
 
-const {grantorOrganizations} = useGrantorDropDown(grantorTableData.value)
+const {grantorOrganizations} = useGrantorDropDown(grantorTableData)
 
 const { grantsData } = useGrant();
 
 const GrantorTableProps ={
-  grantorTableData:grantorTableData.value,
   emailFunction: prepEmail,
   editFunction:prepGrantorUpdate,
   deleteFunciton:removeGrantor,
@@ -140,11 +147,13 @@ function cancelUpdate(){
 
 async function prepEmail(selected: Record<string, boolean>) {
   emailList.value = [];
+  recipientList.value = [];
   nameList.value = "";
 
   grantors.value.forEach((item) => {
     if(selected[item.id] && item.email !== "") {
       emailList.value.push(item.email);
+      recipientList.value.push({ id: item.id, name: item.name, email: item.email });
 
       if (nameList.value != "") {
         nameList.value += ", " + item.name;
@@ -179,7 +188,7 @@ async function removeGrantor(grantor:Grantor,index:number) {
   const result = await deleteGrantor(grantor,user.value.permissionLevel);
   if(result.error?.code == 'P2003'){
     toasts.add({
-      title: "Cannot delete a grantor with grants on record"
+      title: "[ERROR] Cannot delete a grantor with grants on record"
     });
   }
 }
@@ -190,17 +199,22 @@ async function groupEmail(values:Record<string, any>){
     await $fetch("/api/email",{
     method:"POST",
     body:{
-      permissionLevel:user.value.permissionLevel,
       subject:values.Subject,
       text:values.Message,
       emails:emailList.value,
+      recipients:recipientList.value,
+      recipientType:"grantor",
     }
   });
   sendEmail.value= false;
   emailList.value = [];
   nameList.value = "";
+  recipientList.value = [];
+  refreshHistory();
 } catch (error) {
-  alert("Failed to send email.");
+  toasts.add({
+    title: "[ERROR] Failed to send email",
+  });
   console.error(error);
   }
 }

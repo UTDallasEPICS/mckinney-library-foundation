@@ -1,9 +1,10 @@
 import prisma from '~~/server/utils/prisma'
+import { writeAuditLog } from '~~/server/utils/auditLog'
 import { auth } from '~~/server/utils/auth'
 
 export default defineEventHandler(async (event) => {
     try {
-        const body = await readBody(event);
+        //const body = await readBody(event);
         const session = await auth.api.getSession({ headers: event.headers });
         if (!session?.user) {
             return {
@@ -15,7 +16,7 @@ export default defineEventHandler(async (event) => {
             };
         }
 
-        const currentUser = session.user as { permission?: number };
+        const currentUser = session.user as { id: string; permission?: number };
         const permissionLevel = Number(currentUser.permission ?? 0);
         const id = await getRouterParam(event, 'id');
         if (!id) {
@@ -48,8 +49,24 @@ export default defineEventHandler(async (event) => {
             };
         }
 
-        const deletedEvent = await prisma.event.delete({
-            where: { id },
+        const deletedEvent = await prisma.$transaction(async (tx) => {
+            const removedEvent = await tx.event.delete({ where: { id } });
+
+            await writeAuditLog(
+                tx,
+                currentUser.id,
+                'DELETE',
+                'EVENT',
+                removedEvent.id,
+                {
+                    eventName: removedEvent.eventName,
+                    eventDate: removedEvent.eventDate?.toISOString() ?? null,
+                    description: removedEvent.description,
+                },
+                {},
+            );
+
+            return removedEvent;
         });
 
         return {
@@ -60,6 +77,9 @@ export default defineEventHandler(async (event) => {
         };
     } catch (error) {
         console.error('error deleting event:', error);
+        if (error && typeof error === 'object' && 'statusCode' in error) {
+            throw error;
+        }
         const prismaError = error as { code?: string };
         // P2003 is error that happens when a relation is unable to properly reference a piece of data in another relation
         // in this case, happens when donation references an event id and details for an event that doesn't exist bc it is deleted

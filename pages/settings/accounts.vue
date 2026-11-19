@@ -1,5 +1,23 @@
 <template>
-<h1 class="text-[36px] text-[#2c3e50] text-center py-5 mb-2"> Manage Accounts </h1>
+<div class="pt-6 pb-2 px-8">
+  <div class="flex items-center gap-3 max-w-7xl mx-auto">
+  <button
+    class="bg-[#2c3e50] text-white px-4 py-2 rounded-md font-medium shadow-sm cursor-default"
+    disabled
+  >
+    Manage Accounts
+  </button>
+
+  <button
+    v-if="permissionLevel >= 2"
+    @click="navigateTo('/settings/logs')"
+    class="bg-white border border-gray-300 text-[#2c3e50] px-4 py-2 rounded-md font-medium hover:bg-gray-50 transition shadow-sm"
+  >
+    View Audit Log
+  </button>
+  </div>
+</div>
+
  <AccountTable v-if="users && users.length > 0"
   key= "ExistingAccounts"
   :accounts="users"
@@ -13,7 +31,7 @@
       <AccReqForm
       :function="editAccount"
       button-text="Save"
-      :type="false"
+      :type="true"
       :account="user"
       :cancel-funciton="cancelEdit"
     />
@@ -39,6 +57,7 @@ import AccReqForm from '~/components/Forms/AccReqForm.vue';
 import { useAuth } from '~/composables/useAuth';
 
 const { data: session } = await useAuth();
+const toasts = useToast();
 
 const permissionLevel = ref(0);
 
@@ -75,23 +94,29 @@ async function PrepEditAccount(index:number){
   userIndex.value=index;
 }
 async function editAccount(values: Record<string, any>){
-  const {success} = await $fetch(`/api/user/${user.value.id}`,{
-    method:"PATCH",
-    body:{
-      email:values.email.toLowerCase(),
-      name:values.fName+ ' ' + values.lName,
-      permission:values.permission,
-      permissionLevel:permissionLevel.value
-    }
-  })
-  if(success){
-    if(users){
-      users[userIndex.value].name = values.fName + ' ' + values.lName;
-      users[userIndex.value].email = values.email.toLowerCase();
-      users[userIndex.value].permission = values.permission
-    } 
+  const name = values.fName.trim() + ' ' + values.lName.trim();
+  const email = values.email.trim().toLowerCase();
+  const permission = Number(values.permission);
+  try{
+    await $fetch(`/api/user/${user.value.id}`,{
+      method:"PATCH",
+      body:{
+        email:email,
+        name:name,
+        permission:permission
+      }
+    })
+    const account = users.value[userIndex.value];
+    account.name = name;
+    account.email = email;
+    account.permission = permission;
+    cancelEdit();
+  }catch(error:any){
+    toasts.add({
+      title: error?.data?.message ?? "Failed to update account",
+      color: "error"
+    });
   }
-  cancelEdit();
 }
 function cancelEdit(){
   user.value={id:"",name:"",email:"",permission:0}

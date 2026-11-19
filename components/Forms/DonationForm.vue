@@ -1,6 +1,6 @@
 <template>
     <div class="bg-[#e5e9ec] rounded-md p-6 flex justify-center items-start">
-        <VeeForm :initial-values="initValues" :validation-schema="schema" class= "w-full sm:w-[700px] max-h-[80vh] overflow-y-auto" @submit="submitDonationForm">
+        <VeeForm :initial-values="initValues" :validation-schema="schema" class= "w-full sm:w-[700px] max-h-[80vh] overflow-y-auto" @submit="submitDonationForm" v-slot="{ values: formValues }">
             <div class = "px-6 pt-6 pb-5">
               <h1 class = "form-title"> Donation Information</h1>
             </div>
@@ -10,18 +10,50 @@
                 <div>
                     <h2 class="form-field-label mb-2">Donor <span class = "text-red-500">*</span></h2>
                     <VeeField autocomplete="off" v-slot="{field}" :disabled="viewOnly" name="donorName" class="form-input focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px]">
-                        <input :disabled="viewOnly" autocomplete="off" v-bind="field" list="donor-list" class="w-full px-3 py-2 bg-white border border-gray-300 rounded text-[#2d3e4d] focus:outline-none focus:ring-2 focus:ring-[#5a6a77] cursor-pointer">
-                            <datalist id="donor-list">
-                                <option></option>
-                                <option v-if="donors.length > 0" v-for="donor in donors" :value="donor.donor.name"></option>
-                            </datalist>
+                        <div class="relative">
+                        <input
+                            ref="donorInputEl"
+                            :disabled="viewOnly"
+                            autocomplete="off"
+                            v-bind="field"
+                            placeholder="Type a donor's name"
+                            class="w-full px-3 py-2 bg-white border border-gray-300 rounded text-[#2d3e4d] focus:outline-none focus:ring-2 focus:ring-[#5a6a77]"
+                            @input="handleDonorInput(($event.target as HTMLInputElement).value)"
+                            @focus="isDonorDropdownOpen = true"
+                            @blur="closeDonorDropdown()"
+                        >
                         </input>
+                        <div
+                            v-if="showDonorDropdown"
+                            class="absolute left-0 right-0 mt-1 z-10 bg-white border border-gray-300 rounded shadow-sm max-h-40 overflow-y-auto"
+                        >
+                            <button
+                                v-for="donor in filteredDonorOptions"
+                                :key="donor.donor.name"
+                                type="button"
+                                class="block w-full text-left px-3 py-2 text-[#2d3e4d] hover:bg-gray-100"
+                                @mousedown.prevent="selectExistingDonor(donor.donor.name)"
+                            >
+                                {{ donor.donor.name }}
+                            </button>
+
+                            <button
+                                v-if="showCreateDonorOption"
+                                type="button"
+                                title="Create Donor"
+                                class="block w-full text-left px-3 py-2 text-[#2d3e4d] hover:bg-gray-100 border-t border-gray-200"
+                                @mousedown.prevent="requestCreateDonor()"
+                            >
+                                Create Donor
+                            </button>
+                        </div>
+                    </div>
                     </VeeField> 
                     <VeeErrorMessage class="text-red-500 text-sm"  name="donorName" /> 
                 </div>
 
                 <div>
-                    <h2 class="form-field-label mb-2">Event Name</h2>   
+                    <h2 class="form-field-label mb-2">Event Name</h2>
                     <VeeField autocomplete="off" :disabled="viewOnly" v-slot="{field}" name="event" class="form-input focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px]">
                     <div class="relative">
                         <input
@@ -30,7 +62,7 @@
                             autocomplete="off"
                             v-bind="field"
                             placeholder="Type an event name"
-                            class="w-full px-3 py-2 bg-white border border-gray-300 rounded text-[#2d3e4d] focus:outline-none focus:ring-2 focus:ring-[#5a6a77] cursor-pointer"
+                            class="w-full px-3 py-2 bg-white border border-gray-300 rounded text-[#2d3e4d] focus:outline-none focus:ring-2 focus:ring-[#5a6a77]"
                             @input="handleEventInput(($event.target as HTMLInputElement).value)"
                             @focus="isEventDropdownOpen = true"
                             @blur="closeEventDropdown()"
@@ -81,7 +113,7 @@
                 <div>
                     <h2 class="form-field-label mb-2">Method <span class = "text-red-500">*</span></h2>
                     <VeeField v-slot="{field}" autocomplete="off" :disabled="viewOnly"name="method" class="form-input focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px]">
-                        <input :disabled="viewOnly" autocomplete="off" v-bind="field" list="method-list" class="w-full px-3 py-2 bg-white border border-gray-300 rounded text-[#2d3e4d] focus:outline-none focus:ring-2 focus:ring-[#5a6a77] cursor-pointer">
+                        <input :disabled="viewOnly" autocomplete="off" v-bind="field" list="method-list" class="w-full px-3 py-2 bg-white border border-gray-300 rounded text-[#2d3e4d] focus:outline-none focus:ring-2 focus:ring-[#5a6a77]">
                             <datalist id="method-list">
                                 <option></option>
                                 <option v-if="methods.length > 0" v-for="method in methods" :value="method"></option>
@@ -101,12 +133,27 @@
                     <VeeErrorMessage class="text-red-500 text-sm"  name="status" />
                 </div>
                 <div>
-                    <h2 class="form-field-label mb-2">Received Date<span class = "text-red-500">*</span></h2>
+                    <h2 class="form-field-label mb-2">Received Date<span v-if="formValues.status == 1" class = "text-red-500">*</span></h2>
                     <VeeField v-slot="{field}" autocomplete="off" :disabled="viewOnly" class="form-input focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px]" name="receivedDate">
                         <input ref="receivedDateInputEl" id="reqDate"  autocomplete="off" :disabled="viewOnly" v-bind="field" type="date" class="w-full px-3 py-2 bg-white border border-gray-300 rounded text-[#2d3e4d] focus:outline-none focus:ring-2 focus:ring-[#5a6a77] cursor-pointer"></input>
                     </VeeField>
                     <VeeErrorMessage class="text-red-500 text-sm" name="receivedDate" />
                 </div>
+            </div>
+            <div class="px-6 mb-6">
+                <h2 class="form-field-label mb-2">Donation Frequency</h2>
+                <VeeField v-slot="{field}" name="frequency">
+                    <select
+                        v-bind="field"
+                        :disabled="viewOnly"
+                        class="w-full px-3 py-2 bg-white border border-gray-300 rounded text-[#2d3e4d] focus:outline-none focus:ring-2 focus:ring-[#5a6a77] cursor-pointer"
+                    >
+                        <option value="ONE_TIME">One Time</option>
+                        <option value="MONTHLY">Monthly</option>
+                        <option value="ANNUALLY">Annually</option>
+                    </select>
+                    <VeeErrorMessage class="text-red-500 text-sm" name="frequency" />
+                </VeeField>
             </div>
             <div class="px-6 mb-6">
                 <h2 class="form-field-label mb-2">Notes</h2>
@@ -146,13 +193,92 @@ const props = defineProps<{
 
 const emit = defineEmits<{
     (e: 'request-create-event'): void
+    (e: 'request-create-donor'): void
 }>();
 
+const toasts = useToast();
+const donorInputEl = ref<HTMLInputElement | null>(null);
+const currentDonorInput = ref('');
+const isDonorDropdownOpen = ref(false);
 const eventInputEl = ref<HTMLInputElement | null>(null);
 const receivedDateInputEl = ref<HTMLInputElement | null>(null);
 const currentEventInput = ref('');
 const isEventDropdownOpen = ref(false);
 
+// donor dropdown
+const filteredDonorOptions = computed(() => {
+    const normalized = currentDonorInput.value.trim().toLowerCase();
+    if (!normalized) {
+        return props.donors;
+    }
+    return props.donors.filter((donor) => donor.donor.name.toLowerCase().includes(normalized));
+});
+
+const showCreateDonorOption = computed(() => {
+    const normalized = currentDonorInput.value.trim().toLowerCase();
+    if (props.viewOnly || normalized.length === 0) {
+        return false;
+    }
+    const donorExists = props.donors.some((donor) => donor.donor.name.trim().toLowerCase() === normalized);
+    return !donorExists;
+});
+
+const showDonorDropdown = computed(() => {
+    return !props.viewOnly && isDonorDropdownOpen.value && currentDonorInput.value.trim().length > 0;
+});
+
+function handleDonorInput(value: string) {
+    currentDonorInput.value = value;
+    isDonorDropdownOpen.value = true;
+    setNameFromDonor(value);
+}
+
+function requestCreateDonor() {
+    if (donorInputEl.value) {
+        donorInputEl.value.value = '';
+        donorInputEl.value.dispatchEvent(new Event('input', { bubbles: true }));
+        donorInputEl.value.dispatchEvent(new Event('change', { bubbles: true }));
+    }
+    currentDonorInput.value = '';
+    isDonorDropdownOpen.value = false;
+    emit('request-create-donor');
+}
+
+function selectExistingDonor(donorName: string) {
+    if (!donorInputEl.value) {
+        return;
+    }
+    donorInputEl.value.value = donorName;
+    currentDonorInput.value = donorName;
+    donorInputEl.value.dispatchEvent(new Event('input', { bubbles: true }));
+    donorInputEl.value.dispatchEvent(new Event('change', { bubbles: true }));
+    isDonorDropdownOpen.value = false;
+}
+
+function setNameFromDonor(donorName: string) {
+    if (!donorInputEl.value) {
+        return;
+    }
+
+    const lookup = props.donors ?? {};
+    const lookupKey = Object.keys(lookup).find((donor) => donor.trim().toLowerCase() === donorName.trim().toLowerCase());
+    const passedName = lookupKey ? lookup[lookupKey] : undefined;
+    if (!passedName) {
+        return;
+    }
+
+    donorInputEl.value.value = passedName;
+    donorInputEl.value.dispatchEvent(new Event('input', { bubbles: true }));
+    donorInputEl.value.dispatchEvent(new Event('change', { bubbles: true }));
+}
+
+function closeDonorDropdown() {
+    setTimeout(() => {
+        isDonorDropdownOpen.value = false;
+    }, 100);
+}
+
+// event dropdown
 const filteredEventOptions = computed(() => {
     const normalized = currentEventInput.value.trim().toLowerCase();
     if (!normalized) {
@@ -243,7 +369,9 @@ async function submitDonationForm(values: Record<string, any>) {
     if (eventValue.length > 0) {
         const matchedEventName = getMatchingEventName(eventValue);
         if (!matchedEventName) {
-            alert('Invalid Event');
+            toasts.add({
+                title: "[ERROR] Invalid event",
+            });
             return;
         }
         // Only autofill on submit when date is empty so manual user edits are preserved.
@@ -263,10 +391,13 @@ const initValues: Record<string, any> | undefined = props.data ? {
     nonMonetaryAmount:props.data.donation.nonMonetaryAmount,
     method:props.data.donation.method,
     status:props.data.donation.status,
+    frequency: props.data.donation.frequency,
     notes:props.data.donation.notes,
     reason:props.data.donation.reason,
     receivedDate: props.data.donation.receivedDate ? new Date(props.data.donation.receivedDate).toISOString().split('T')[0] : '',
-} : undefined
+} : {
+    frequency: 'ONE_TIME'
+}
 
 const schema = yup.object({
     donorName: yup.string().required('Enter anonymous if donor unknown'),
@@ -281,7 +412,12 @@ const schema = yup.object({
     }),
     method: yup.string().required('Must enter payment method'),
     status: yup.string().required('Must enter status'),
-    receivedDate: yup.date().required("Must be a valid date")
+    frequency: yup.string().oneOf(['ONE_TIME', 'MONTHLY', 'ANNUALLY']).required('Select a donation frequency'),
+    // a pending donation may not have arrived yet, so only received donations need a date
+    receivedDate: yup.date().nullable().transform((value, original) => original === '' ? null : value).typeError('Must be a valid date').when('status', {
+        is: (status: string | number) => status == 1,
+        then: (schema) => schema.required('Received donations must have a received date'),
+    })
 })
 
 </script>
