@@ -43,3 +43,4 @@ package-lock.json
 server/utils/generated/
 # Ignore prisma seed file
 server/utils/seed.ts
+/uploads/

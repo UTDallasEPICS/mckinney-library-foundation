@@ -115,6 +115,7 @@ if (session.value?.user) {
 
 const { eventsData, postEvent, putEvent, deleteEvent } = useEvent();
 
+const toasts = useToast();
 const sendEmail = ref(false);
 const emailList = ref<string[]>([]);
 const nameList = ref("");
@@ -162,7 +163,9 @@ async function createEvent(values: Record<string, any>) {
     (result as any).error?.code === "EVENT_ALREADY_EXISTS" ||
     (result as any).message === "The event already exists"
   ) {
-    alert("The event already exists");
+    toasts.add({
+      title: "[ERROR] This event already exists",
+    });
   }
 }
 
@@ -271,7 +274,9 @@ async function editEvent(values: Record<string, any>) {
     (result as any).error?.code === "EVENT_ALREADY_EXISTS" ||
     (result as any).message === "The event already exists"
   ) {
-    alert("The event already exists");
+    toasts.add({
+      title: "[ERROR] This event already exists",
+    });
   }
 }
 
@@ -284,7 +289,9 @@ async function removeEvent(id: string, index: number) {
       deleteResult.error?.code === "EVENT_HAS_DONATIONS" ||
       deleteResult.error?.code === "P2003"
     ) {
-      alert("There are donations under this event");
+      toasts.add({
+        title: "[ERROR] There are donations listed under this event",
+      });
     }
   }
 }
@@ -311,7 +318,9 @@ async function groupEmail(values: Record<string, any>) {
     emailList.value = [];
     nameList.value = "";
   } catch (error) {
-    alert("Failed to send email.");
+    toasts.add({
+      title: "[ERROR] Failed to send email",
+    });
     console.error(error);
   }
 }

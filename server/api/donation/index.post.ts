@@ -13,6 +13,13 @@ export default defineEventHandler(async (event) => {
       });
     }
   
+    if (body.status == 1 && !body.receivedDate) {
+      throw createError({
+        statusCode: 400,
+        statusMessage: "A received donation requires a received date",
+      });
+    }
+
     const donation = await prisma.$transaction(async (tx) => {
     const eventName = typeof body.event === "string" ? body.event.trim() : "";
     const matchedEvent = eventName
@@ -49,6 +56,7 @@ export default defineEventHandler(async (event) => {
           monetaryAmount: body.monetaryAmount,
           nonMonetaryAmount: body.nonMonetaryAmount,
           status: Number(body.status),
+          frequency: body.frequency ?? undefined,
           notes: body.notes,
           reason: body.reason,
           receivedDate,
@@ -84,6 +92,7 @@ export default defineEventHandler(async (event) => {
           monetaryAmount: createdDonation.monetaryAmount,
           nonMonetaryAmount: createdDonation.nonMonetaryAmount,
           status: createdDonation.status == 1 ? "Received" : "Pending",
+          frequency: createdDonation.frequency,
           notes: createdDonation.notes,
           reason: createdDonation.reason,
           receivedDate: createdDonation.receivedDate?.toISOString() ?? null,

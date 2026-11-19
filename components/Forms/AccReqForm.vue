@@ -22,7 +22,7 @@
             </select>
         </VeeField>
         <button class ="account-btn bg-gradient-to-r from-[#4a5f7a] to-[#3d4d5c] hover:shadow-xl"> {{ buttonText }}</button> 
-        <button v-if="account" @click="cancelFunciton" class="account-btn bg-gradient-to-r from-[#606263] to-[#7d7e7f] hover:shadow-xl mb-4"> Cancel </button>
+        <button v-if="account" type="button" @click="cancelFunciton" class="account-btn bg-gradient-to-r from-[#606263] to-[#7d7e7f] hover:shadow-xl mb-4"> Cancel </button>
     </VeeForm>
 </template>
 
@@ -48,9 +48,10 @@ const initalVals: Ref<{fName:string, lName:string, email:string, permission:numb
     {fName:"",lName:"",email:"",permission:0});
     
 if(props.account){
+    const [fName = "", ...lName] = props.account.name.trim().split(/\s+/);
     initalVals.value = {
-        fName: props.account.name.split(' ')[0],
-        lName: props.account.name.split(' ')[1] || "",
+        fName: fName,
+        lName: lName.join(' '),
         email: props.account.email,
         permission: props.account.permission
     }

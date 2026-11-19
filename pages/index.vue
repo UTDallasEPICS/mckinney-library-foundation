@@ -83,16 +83,16 @@ const toasts = useToast();
 const emailSchema = yup.object({
   email: 
     yup.string()
-    .required("Email is required")
-    .email("Please enter a valid email address (example@domain.com)"),
+    .required("  Email is required")
+    .email("  Please enter a valid email address (example@domain.com)"),
 });
 const otpSchema = yup.object({
   otp_code: 
     yup.string()
-    .required('Code is required')
-    .min(6,"Please enter a valid code")
-    .max(6,"Please enter a valid code")
-    .test('type', 'Please enter a valid code', code => {
+    .required('  Code is required')
+    .min(6,"  Please enter a valid code")
+    .max(6,"  Please enter a valid code")
+    .test('type', '  Please enter a valid code', code => {
     if(!code){
       return false;
     }
@@ -156,7 +156,7 @@ async function checkEmailExists(email:string){
     } 
     else{
       toasts.add({
-        title: "Email does not exist."
+        title: "[ERROR] Email does not exist."
       });
       return false;
     }

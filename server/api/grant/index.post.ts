@@ -6,6 +6,12 @@ export default defineEventHandler(async (event) => {
     try {
         const session = await requireSession(event, 1);
         const body = await readBody(event);
+        if (!body.proposedDate && !body.receivedDate) {
+            throw createError({
+                statusCode: 400,
+                statusMessage: "The grant requires a proposed or received date"
+            });
+        }
         const grant = await prisma.$transaction(async (tx) => {
             let grantorRecord = await tx.grantor.findFirst({
                 where: { name: body.grantor }
@@ -32,11 +38,11 @@ export default defineEventHandler(async (event) => {
                     method: body.method,
                     monetaryAmount: body.monetaryAmount,
                     nonMonetaryAmount: body.nonMonetaryAmount,
-                    status: Number(body.status),
+                    status: parseInt(body.status) || 0,
                     reimburse: body.reimburse,
                     notes: body.notes,
                     proposedDate: body.proposedDate ? new Date(body.proposedDate) : null,
-                    receivedDate: new Date(body.receivedDate),
+                    receivedDate: body.receivedDate ? new Date(body.receivedDate) : null,
                     lastEditDate: new Date(),
                 },
                 include: {

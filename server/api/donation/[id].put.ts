@@ -19,6 +19,12 @@ export default defineEventHandler (async (event)=>{
                 statusMessage: "The donation requires a monetary or non-monetary value"
             });
         }
+        if(body.status == 1 && !body.receivedDate){
+            throw createError({
+                statusCode: 400,
+                statusMessage: "A received donation requires a received date"
+            });
+        }
         const updateDonation = await prisma.$transaction(async (tx) => {
             const previousDonation = await tx.donation.findUnique({
                 where: { id },
@@ -60,6 +66,7 @@ export default defineEventHandler (async (event)=>{
                     monetaryAmount: body.monetaryAmount,
                     nonMonetaryAmount: body.nonMonetaryAmount,
                     status: body.status,
+                    frequency: body.frequency ?? undefined,
                     notes: body.notes,
                     reason: body.reason,
                     receivedDate,
@@ -94,6 +101,7 @@ export default defineEventHandler (async (event)=>{
                     monetaryAmount: previousDonation.monetaryAmount,
                     nonMonetaryAmount: previousDonation.nonMonetaryAmount,
                     status: previousDonation.status == 1 ? "Received" : "Pending",
+                    frequency: previousDonation.frequency,
                     notes: previousDonation.notes,
                     reason: previousDonation.reason,
                     receivedDate: previousDonation.receivedDate?.toISOString() ?? null,
@@ -105,6 +113,7 @@ export default defineEventHandler (async (event)=>{
                     monetaryAmount: donation.monetaryAmount,
                     nonMonetaryAmount: donation.nonMonetaryAmount,
                     status: donation.status == 1 ? "Received" : "Pending",
+                    frequency: donation.frequency,
                     notes: donation.notes,
                     reason: donation.reason,
                     receivedDate: donation.receivedDate?.toISOString() ?? null,

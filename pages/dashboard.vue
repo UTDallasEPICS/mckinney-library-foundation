@@ -78,12 +78,22 @@
         :events="eventNames"
         :event-date-lookup="eventDateLookup"
         :methods="donationMethods"
+        @request-create-donor="openDonorFormFromDonation"
         @request-create-event="openEventFormFromDonation"
       />
     </div>
 
+    <div v-if="showDonorForm" class="fixed top-0 left-0 w-full h-full flex justify-center items-center z-20 bg-black/50">
+      <DonorForm
+        :submit-donor="createDonor"
+        :cancel-submisison="cancelDonor"
+        :view-only="false"
+        :organizations="donorOrganizations"
+      />
+    </div>
+
     <div v-if="showEventForm" class="fixed top-0 left-0 w-full h-full flex justify-center items-center z-20 bg-black/50">
-      <EventForm 
+      <EventForm
         :submit-event="createEvent"  
         :cancel-submisison="cancelEvent"
         :view-only="false" 
@@ -98,6 +108,16 @@
             :purposes="grantPurposes"
             :grantors="grantorTableData"
             :methods="grantMethods"
+            @request-create-grantor="openGrantorFormFromGrant"
+        />
+    </div>
+
+    <div v-if="showGrantorForm" class="fixed top-0 left-0 w-full h-full flex justify-center items-center z-20 bg-black/50"> 
+        <GrantorForm
+            :submit-grantor="createGrantor"
+            :cancel-submisison="cancelGrantor"
+            :view-only="false"
+            :organizations="grantorOrganizations"
         />
     </div>
 
@@ -109,11 +129,13 @@ import { ref, computed, type Ref } from 'vue'
 import DashboardCard from '~/components/Cards/DashboardCard/DashboardCard.vue'
 import DashboardStat from '~/components/Banners/DashboardBanner.vue'
 import DonationForm from '~/components/Forms/DonationForm.vue'
+import DonorForm from '~/components/Forms/DonorForm.vue'
 import GrantForm from '~/components/Forms/GrantForm.vue'
+import GrantorForm from '~/components/Forms/GrantorForm.vue'
 import EventForm from '~/components/Forms/EventForm.vue'
 import DateRangeFilter, { type DateRangeValue } from '~/components/Forms/DateRangeFilter.vue'
-import { useDonationDropDown } from '~/composables/useDonationDropDown'
-import { useGrantsDropDown } from '~/composables/useGrantDropDowns'
+import { useDonationDropDown, useDonorDropDown } from '~/composables/useDonationDropDown'
+import { useGrantsDropDown, useGrantorDropDown } from '~/composables/useGrantDropDowns'
 import { useEventDropDown } from '~/composables/useEventDropDown'
 import { useAuth } from '~/composables/useAuth'
 import { useDonation } from '~/composables/useDonation'
@@ -130,9 +152,9 @@ if (!session.value?.user) {
 }
 
 const { donationsData, postDonation } = useDonation();
-const { donors } = useDonor();
+const { donors, putDonor } = useDonor();
 const { grantsData, postGrant } = useGrant();
-const { grantors } = useGrantor();
+const { grantors, postGrantor } = useGrantor();
 const { eventsData, postEvent } = useEvent();
 const toasts = useToast();
 
@@ -155,6 +177,9 @@ const totalDonors = donors.value
 
 const { eventNames } = useEventDropDown(eventsData)
 const { donationMethods } = useDonationDropDown(donationsData.value)
+const { donorOrganizations } = useDonorDropDown(() => donors.value)
+const { grantPurposes, grantMethods } = useGrantsDropDown(grantsData.value)
+const { grantorOrganizations } = useGrantorDropDown(() => grantors.value);
 const eventDateLookup = computed<Record<string, string>>(() => {
   const lookup: Record<string, string> = {}
   eventsData.value.forEach((row) => {
@@ -165,8 +190,6 @@ const eventDateLookup = computed<Record<string, string>>(() => {
   return lookup
 })
 
-const { grantPurposes, grantMethods } = useGrantsDropDown(grantsData.value)
-
 const user:Ref<{id:string, permissionLevel:number}> = ref({id:"",permissionLevel:0});
 if (session.value?.user) {
   user.value.id = session.value.user.id
@@ -175,7 +198,9 @@ if (session.value?.user) {
 
 // default: no forms shown
 const showDonationForm = ref(false)
+const showDonorForm = ref(false)
 const showGrantForm = ref(false)
+const showGrantorForm = ref(false)
 const showEventForm = ref(false)
 
 // handling clicks
@@ -251,6 +276,20 @@ async function createDonation(values:Record<string,any>){
     showDonationForm.value = false;
 }
 
+async function createDonor(values:Record<string,any>){
+    const result = await putDonor(values, user.value)
+    if(result.success){
+      toasts.add({
+        title: "Donor created!",
+      });
+      showDonorForm.value = false;
+    } else if ((result as any).error?.code === 'DONOR_ALREADY_EXISTS' || (result as any).message === 'The donor already exists') {
+      toasts.add({
+        title: "[ERROR] This donor already exists",
+      });
+    }
+}
+
 async function createGrant(values:Record<string,any>){
     const result = await postGrant(values,user.value)
     if(result.success){
@@ -261,14 +300,40 @@ async function createGrant(values:Record<string,any>){
     showGrantForm.value = false;
 }
 
+async function createGrantor(values:Record<string,any>){
+    const result = await postGrantor(values, user.value)
+    if(result.success){
+      toasts.add({
+        title: "Grantor created!",
+      });
+      showGrantorForm.value = false;
+    } else if ((result as any).error?.code === 'GRANTOR_ALREADY_EXISTS' || (result as any).message === 'The grantor already exists') {
+      toasts.add({
+        title: "[ERROR] This grantor already exists",
+      });
+    }
+}
+
 async function createEvent(values:Record<string,any>){
     const result = await postEvent(values, user.value)
     if(result.success){
-      alert("event created")
+      toasts.add({
+        title: "Event created!",
+      });
       showEventForm.value = false;
     } else if ((result as any).error?.code === 'EVENT_ALREADY_EXISTS' || (result as any).message === 'The event already exists') {
-      alert('The event already exists')
+      toasts.add({
+        title: "[ERROR] This event already exists",
+      });
     }
+}
+
+function openDonorFormFromDonation(){
+    showDonorForm.value = true;
+}
+
+function cancelDonor(){
+    showDonorForm.value = false;
 }
 
 // when clicking "create event" from donation form, opens event form
@@ -287,6 +352,14 @@ function cancelEvent(){
 
 function cancelGrant(){
   showGrantForm.value = false;
+}
+
+function openGrantorFormFromGrant(){
+    showGrantorForm.value = true;
+}
+
+function cancelGrantor(){
+    showGrantorForm.value = false;
 }
 
 // date range filters for the totals below

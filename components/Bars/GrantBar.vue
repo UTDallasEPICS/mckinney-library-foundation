@@ -2,22 +2,22 @@
     <div class="w-full bg-slate-500 text-white px-6 py-3 flex justify-center ">
         <div class = "w-[90vw] flex justify-between">
             <button v-if="user.permissionLevel>0" @click="addGrant = true"
-                class="px-3 py-1 rounded hover:bg-slate-600 transition">
+                class="px-3 py-1 rounded hover:bg-slate-600 transition cursor-pointer">
                 Add Grant
             </button>
             <NuxtLink to = '/grants/'default>
                 <button 
-                class="px-3 py-1 rounded hover:bg-slate-600 transition">
-                    View Grant
+                class="px-3 py-1 rounded hover:bg-slate-600 transition cursor-pointer">
+                    View Grants
                 </button>
             </NuxtLink>
             <NuxtLink to="/grants/grantors">
-                <button class="px-3 py-1 rounded hover:bg-slate-600 transition">
+                <button class="px-3 py-1 rounded hover:bg-slate-600 transition cursor-pointer">
                     View Grantors
                 </button>
             </NuxtLink>
             <button v-if="user.permissionLevel>0" @click="addGrantor = true"
-                class="px-3 py-1 rounded hover:bg-slate-600 transition">
+                class="px-3 py-1 rounded hover:bg-slate-600 transition cursor-pointer">
                 Add Grantor
             </button>
         </div>
@@ -25,12 +25,14 @@
   <div v-if="addGrant || addGrantor" class="fixed top-0 left-0 w-full h-full flex justify-center items-center z-20 bg-black/50">
     <div v-if = "addGrant">
         <GrantForm
+            v-model="selectedFile"
             :submit-grant="createGrant"
             :cancel-submisison="cancelGrant"
             :view-only="false"
             :purposes="grantPurposes"
             :grantors="grantors"
             :methods="grantMethods"
+            @request-create-grantor="openGrantorWithinGrant"
         />
     </div>
     <div  v-if = "addGrantor"> 
@@ -42,6 +44,16 @@
         />
     </div>
   </div> 
+
+  <div v-if="addGrantorWithinGrant"
+    class="fixed top-0 left-0 w-full h-full flex justify-center items-center z-20 bg-black/50">
+        <GrantorForm
+            :submit-grantor="createGrantor"
+            :cancel-submisison="cancelGrantorWithinGrant"
+            :view-only="false"
+            :organizations="grantorOrganizations"
+        />
+    </div>
   
 </template>
 
@@ -50,11 +62,13 @@ import type { Grant, Grantor } from '~~/server/utils/generated/prisma/browser';
 import GrantForm from '../Forms/GrantForm.vue';
 import GrantorForm from '../Forms/GrantorForm.vue';
 
-const { postGrant, grantsData } = useGrant();
+const { postGrant, grantsData, uploadGrantAttachment } = useGrant();
 const { postGrantor, grantors: grantorData } = useGrantor();
 
 const addGrant = ref(false);
 const addGrantor = ref(false);
+const addGrantorWithinGrant = ref(false);
+const selectedFile = ref<File | null>(null);
 
 const props = defineProps<{
     user:{id:string, permissionLevel:number}
@@ -63,18 +77,19 @@ const props = defineProps<{
 }>();
 
 const {grantMethods,grantPurposes} = useGrantsDropDown(props.grants);
-const {grantorOrganizations} = useGrantorDropDown(props.grantors);
+const {grantorOrganizations} = useGrantorDropDown(() => props.grantors);
 const toasts = useToast()
 
 async function createGrantor(values:Record<string,any>){
     const result = await postGrantor(values, props.user);
     if(result.error?.code === 'P2002'){
         toasts.add({
-            title: "Grantor already exists!"
+            title: "[ERROR] Grantor already exists"
         });
     }
     else if(result.data){
         addGrantor.value=false;
+        addGrantorWithinGrant.value=false;
     }
 }
 function cancelGrantor(){
@@ -83,13 +98,27 @@ function cancelGrantor(){
 async function createGrant(values:Record<string,any>){
     const result = await postGrant(values,props.user);
     if(result.data){
+        const grantId = result.data.id;
+
+        if (selectedFile.value) {
+            await uploadGrantAttachment(grantId, selectedFile.value)
+        }
+
+        selectedFile.value = null;
         addGrant.value = false;
     }else{
         console.error(result.error);
     }
 }
 function cancelGrant(){
+    selectedFile.value = null;
     addGrant.value = false;
+}
+function openGrantorWithinGrant(){
+    addGrantorWithinGrant.value = true;
+}
+function cancelGrantorWithinGrant(){
+    addGrantorWithinGrant.value = false;
 }
 
 </script>

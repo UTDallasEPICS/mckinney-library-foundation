@@ -35,6 +35,7 @@ const props = defineProps<{
 }>();
 
 const { postEvent } = useEvent();
+const toasts = useToast();
 
 const addEvent = ref(false);
 
@@ -43,7 +44,9 @@ async function createEvent(values: Record<string, any>) {
     if (result.success) {
         addEvent.value = false;
     } else if ((result as any).error?.code === 'EVENT_ALREADY_EXISTS' || (result as any).message === 'The event already exists') {
-        alert('The event already exists');
+        toasts.add({
+            title: "[ERROR] This event already exists",
+        });
     }
 }
 

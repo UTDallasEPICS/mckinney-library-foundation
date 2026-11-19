@@ -1,12 +1,27 @@
 import prisma from '~~/server/utils/prisma'
 import { writeAuditLog } from "~~/server/utils/auditLog";
 import { requireSession } from "~~/server/utils/requireSession";
+import { z } from "zod";
+
+const fileSchema = z
+  .file()
+  .min(1, "File cannot be empty")
+  .max(2 * 1024 * 1024)
+  .mime(["image/webp", "image/jpg", "image/png", "application/pdf"], {
+    message: "Invalid file type (PDF/JPG/PNG/WEBP only)",
+  });
 
 export default defineEventHandler(async (event) => {
     try {
         const session = await requireSession(event, 1);
         const grantId = getRouterParam(event, 'id');
         const body = await readBody(event);
+        if (!body.proposedDate && !body.receivedDate) {
+            throw createError({
+                statusCode: 400,
+                statusMessage: "The grant requires a proposed or received date",
+            });
+        }
         const grant = await prisma.$transaction(async (tx) => {
             const previousGrant = await tx.grant.findUnique({
                 where: { id: grantId },

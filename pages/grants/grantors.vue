@@ -6,7 +6,7 @@
 />
   <GrantorTable 
     key="GrantorTable"
-    :data="GrantorTableProps.grantorTableData" 
+    :data="grantorTableData" 
     :email-function="GrantorTableProps.emailFunction"
     :edit-function="GrantorTableProps.editFunction"
     :delete-function="GrantorTableProps.deleteFunciton"
@@ -94,12 +94,11 @@ const grantorFormData:Ref<{grantor:Grantor}> = ref({
 });
 
 
-const {grantorOrganizations} = useGrantorDropDown(grantorTableData.value)
+const {grantorOrganizations} = useGrantorDropDown(grantorTableData)
 
 const { grantsData } = useGrant();
 
 const GrantorTableProps ={
-  grantorTableData:grantorTableData.value,
   emailFunction: prepEmail,
   editFunction:prepGrantorUpdate,
   deleteFunciton:removeGrantor,
@@ -179,7 +178,7 @@ async function removeGrantor(grantor:Grantor,index:number) {
   const result = await deleteGrantor(grantor,user.value.permissionLevel);
   if(result.error?.code == 'P2003'){
     toasts.add({
-      title: "Cannot delete a grantor with grants on record"
+      title: "[ERROR] Cannot delete a grantor with grants on record"
     });
   }
 }
@@ -200,7 +199,9 @@ async function groupEmail(values:Record<string, any>){
   emailList.value = [];
   nameList.value = "";
 } catch (error) {
-  alert("Failed to send email.");
+  toasts.add({
+    title: "[ERROR] Failed to send email",
+  });
   console.error(error);
   }
 }

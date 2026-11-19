@@ -32,6 +32,7 @@ export const useDonor = () => {
         notes: values.notes,
         webLink: values.webLink ? values.webLink.trim() : "",
         organization: values.organization ? values.organization.trim() : "",
+        isAuthor: values.isAuthor ? true : false,
         permissionLevel: user.permissionLevel,
         boardMemberId: user.id,
       },
@@ -66,7 +67,8 @@ export const useDonor = () => {
     });
     if (result.data) {
       const idx = donors.value.findIndex((d) => d.id === values.id);
-      if (idx !== -1) donors.value[idx] = result.data;
+      // The response omits donations and donationCount, so keep the row's existing ones.
+      if (idx !== -1) donors.value[idx] = { ...donors.value[idx], ...result.data };
     }
     return result;
   };
