@@ -1,7 +1,7 @@
 <template>
   <div class = "flex min-h-[calc(100vh-88px)] w-auto bg-[#5a6a77]">
-    <div class = "flex items-center basis-1/2" id="login">
-      <div class = "bg-white rounded-3xl shadow-2xl p-10 border border-gray-100 w-4/5 mx-auto my">
+    <div class = "flex items-center basis-1/1" id="login">
+      <div class = "bg-white rounded-3xl shadow-2xl p-10 border border-gray-100 w-1/2 mx-auto my">
         <img src="/logo.png" alt="MPLF Logo" class ="h-14 mx-auto" />
         <div v-if="userEmail" class = "text-center">
           <h2 class = "text-[36px] text-[#2c3e50] mb-2" style="font-weight: 700;">WELCOME!</h2>
