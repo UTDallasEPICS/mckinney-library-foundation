@@ -30,7 +30,7 @@ export const useGrantorDropDown = (grantors:MaybeRefOrGetter<{grantor:Grantor, g
         const rows = toValue(grantors)
         if (rows) {
             const uniqueOrgs = new Set(
-                rows.map((row) => row.grantor.organization).filter((organization) => organization != null)
+                rows.filter((row) => row.grantor != null).map((row) => row.grantor.organization).filter((organization) => organization != null)
             )
             return Array.from(uniqueOrgs)
         }

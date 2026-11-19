@@ -1,6 +1,6 @@
 import prisma from '~~/server/utils/prisma'
+import { writeAuditLog } from "~~/server/utils/auditLog";
 import { requireSession } from "~~/server/utils/requireSession";
-
 
 export default defineEventHandler(async (event) =>{
     try{
@@ -15,7 +15,14 @@ export default defineEventHandler(async (event) =>{
 
         const targetUser = await prisma.user.findUnique({
             where: { id },
-            select: { id: true, permission: true }
+            select: {
+                id: true,
+                name: true,
+                email: true,
+                permission: true,
+                status: true,
+                phone: true,
+            }
         });
 
         if(!targetUser){
@@ -32,11 +39,28 @@ export default defineEventHandler(async (event) =>{
             });
         }
 
-        const user = await prisma.user.delete({
-            where:{
-                id:id
-            }
-        })
+        const user = await prisma.$transaction(async (tx) => {
+            const deletedUser = await tx.user.delete({ where: { id } });
+
+            await writeAuditLog(
+                tx,
+                session.user.id,
+                "DELETE",
+                "ACCOUNT",
+                deletedUser.id,
+                {
+                    name: targetUser.name,
+                    email: targetUser.email,
+                    permission: targetUser.permission,
+                    status: targetUser.status,
+                    phone: targetUser.phone,
+                },
+                {},
+                session.user.name,
+            );
+
+            return deletedUser;
+        });
         return{
             success: true,
             statusCode: 200,
@@ -44,6 +68,9 @@ export default defineEventHandler(async (event) =>{
         }
     }catch(error){
         console.log(error)
+        if (error && typeof error === "object" && "statusCode" in error) {
+            throw error;
+        }
         return{
             success: false,
             statusCode: 500,

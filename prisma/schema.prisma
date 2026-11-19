@@ -13,6 +13,12 @@ datasource db {
   provider = "sqlite"
 }
 
+enum DonationFrequency {
+  ONE_TIME
+  MONTHLY
+  ANNUALLY
+}
+
 model User {
   id            String        @id @default(cuid())
   name          String        @default("Anonymous")
@@ -31,6 +37,7 @@ model User {
   grantors      Grantor[]
   Events        Event[]
   emailLogs     EmailLog[]
+  logs          AuditLog[]
 
   @@unique([email])
   @@map("user")
@@ -113,6 +120,7 @@ model Donation {
   monetaryAmount    String?
   nonMonetaryAmount String?
   status            Int       @default(0) // 0: pending, 1: completed
+  frequency         DonationFrequency @default(ONE_TIME)
   notes             String?
   reason            String?
   receivedDate      DateTime?
@@ -172,3 +180,18 @@ model EmailRecipient {
   status     String   @default("pending") 
   error      String?
 }
+
+model AuditLog {
+  id                String    @id @default(cuid())
+  userId            String?
+  action            String
+  recordType        String
+  recordId          String?
+  createdAt         DateTime  @default(now())
+  snapshot          Json?
+
+  user User? @relation(fields: [userId], references: [id], onDelete: SetNull)
+  @@map("auditLog")
+}
+
+

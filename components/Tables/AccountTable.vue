@@ -28,27 +28,27 @@
       <template v-if="account.permission < permissionLevel">
         <button
           v-if="!account.status"
-          class="rounded-md text-sm font-medium outline-none h-9 py-2 bg-blue-600 hover:bg-blue-700 text-white px-6"
+          class="rounded-md text-sm font-medium outline-none h-9 py-2 bg-blue-600 hover:bg-blue-700 text-white px-6 form-button"
           @click="freezeAccount(account)"
         >
           Freeze
         </button>
         <button
           v-else
-          class="rounded-md text-sm font-medium outline-none h-9 py-2 bg-yellow-600 hover:bg-yellow-700 text-white px-6"
+          class="rounded-md text-sm font-medium outline-none h-9 py-2 bg-yellow-600 hover:bg-yellow-700 text-white px-6 form-button"
           @click="freezeAccount(account)"
         >
           Unfreeze
         </button>
         <button
-          class="rounded-md text-sm font-medium outline-none h-9 py-2 bg-red-600 hover:bg-red-700 text-white px-6"
+          class="rounded-md text-sm font-medium outline-none h-9 py-2 bg-red-600 hover:bg-red-700 text-white px-6 form-button"
           @click="deleteAccount(account.id)"
         >
           Delete
         </button>
         <button
           v-if="permissionLevel === 3"
-          class="rounded-md text-sm font-medium outline-none h-9 py-2 bg-green-600 hover:bg-green-700 text-white px-6"
+          class="rounded-md text-sm font-medium outline-none h-9 py-2 bg-green-600 hover:bg-green-700 text-white px-6 form-button"
           @click="editAccount(accounts.indexOf(account))"
         >
           Edit

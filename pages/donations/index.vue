@@ -25,6 +25,7 @@
         :event-date-lookup="eventDateLookup"
         :methods="donationMethods"
         @request-create-event="openEventFormFromDonation"
+        @request-create-donor="openDonorFormFromDonation"
     />
 </div>
 
@@ -41,6 +42,15 @@
     />
 </div>
 
+<div v-if="showDonorForm" class="fixed top-0 left-0 w-full h-full flex justify-center items-center z-20 bg-black/50">
+    <DonorForm
+        :submit-donor="createDonor"
+        :cancel-submisison="cancelDonor"
+        :view-only="false"
+        :organizations="donorOrganizations"
+      />
+</div>
+
 <div v-if="showEventForm" class="fixed top-0 left-0 w-full h-full flex justify-center items-center z-20 bg-black/50">
     <EventForm :submit-event="createEvent" :cancel-submisison="cancelEvent" :view-only="false" />
 </div>
@@ -51,6 +61,7 @@
 import DonationBar from '~/components/Bars/DonationBar.vue';
 import DonationTable from '~/components/Tables/DonationTable.vue';
 import DonationForm from '~/components/Forms/DonationForm.vue';
+import DonorForm from '~/components/Forms/DonorForm.vue';
 import EventForm from '~/components/Forms/EventForm.vue';
 import { useAuth } from '~/composables/useAuth';
 import { useDonor } from '~/composables/useDonor';
@@ -62,6 +73,7 @@ import type { Donation, Donor } from '~~/server/utils/generated/prisma/browser';
 
 
 const { data: session } = await useAuth();
+const toasts = useToast();
 
 const user:Ref<{id:string, permissionLevel:number}> = ref({id:"",permissionLevel:0});
 
@@ -75,10 +87,11 @@ else{
 
 const showUpdateDonation = ref(false);
 const showViewDonation = ref(false);
+const showDonorForm = ref(false);
 const showEventForm = ref(false);
 
 
-const { donors } = useDonor();
+const { donors, putDonor } = useDonor();
 
 const { donationsData, putDonation, deleteDonation } = useDonation();
 
@@ -86,6 +99,7 @@ const { eventsData, postEvent } = useEvent();
 
 const { eventNames } = useEventDropDown(eventsData);
 const { donationMethods } = useDonationDropDown(donationsData.value);
+const { donorOrganizations } = useDonorDropDown(donors.value)
 const eventDateLookup = computed<Record<string, string>>(() => {
     const lookup: Record<string, string> = {}
     eventsData.value.forEach((row) => {
@@ -175,12 +189,33 @@ function cancelUpdate(){
     }
 }
 
+async function createDonor(values:Record<string,any>) {
+    const result = await putDonor(values, user.value);
+    if (result.success) {
+        showDonorForm.value = false;
+    } else if ((result as any).error?.code === 'DONOR_ALREADY_EXISTS' || (result as any).message === 'The donor already exists') {
+        toasts.add({
+            title: "[ERROR] This donor already exists",
+        });
+    }
+}
+
+function openDonorFormFromDonation() {
+    showDonorForm.value = true;
+}
+
+function cancelDonor() {
+    showDonorForm.value = false;
+}
+
 async function createEvent(values:Record<string,any>) {
     const result = await postEvent(values, user.value);
     if (result.success) {
         showEventForm.value = false;
     } else if ((result as any).error?.code === 'EVENT_ALREADY_EXISTS' || (result as any).message === 'The event already exists') {
-        alert('The event already exists');
+        toasts.add({
+            title: "[ERROR] This event already exists",
+        });
     }
 }
 

@@ -1,9 +1,10 @@
 import prisma from '~~/server/utils/prisma'
+import { writeAuditLog } from "~~/server/utils/auditLog";
 import { requireSession } from "~~/server/utils/requireSession";
 
 export default defineEventHandler (async (event)=>{   
-    const session = await requireSession(event, 1);
     try{
+        const session = await requireSession(event, 1);
         const body = await readBody(event);
         const id = event.context.params?.id;
         if(!id){
@@ -18,63 +19,109 @@ export default defineEventHandler (async (event)=>{
                 statusMessage: "The donation requires a monetary or non-monetary value"
             });
         }
-        const eventName = typeof body.event === 'string' ? body.event.trim() : '';
-        const matchedEvent = eventName
-            ? await prisma.event.findFirst({
-                where: {
-                    eventName,
-                },
-            })
-            : null;
-        let donorRecord = await prisma.donor.findFirst({
-            where: {
-                name: body.donor? body.donor : "anonymous"
-            }
-            })
+        if(body.status == 1 && !body.receivedDate){
+            throw createError({
+                statusCode: 400,
+                statusMessage: "A received donation requires a received date"
+            });
+        }
+        const updateDonation = await prisma.$transaction(async (tx) => {
+            const previousDonation = await tx.donation.findUnique({
+                where: { id },
+                include: { donor: true, event: true },
+            });
 
-            if (!donorRecord) {      
-            donorRecord = await prisma.donor.create({
-                data: {
-                name: body.donor? body.donor: "anonymous",
-                address: "",
-                email: "",
-                phone: "",
-                preferredCommunication: "",
-                notes: "",
-                boardMemberId: session.user.id
-                }
-            })
+            if (!previousDonation) {
+                throw createError({ statusCode: 404, statusMessage: "Donation not found" });
             }
-        const updateDonation = await prisma.donation.update({
-            where: { id:id },
-            data: {
-                boardMemberId: session.user.id,
-                donorId: donorRecord.id,
-                eventId: matchedEvent?.id ?? null,
-                method: body.method,
-                monetaryAmount: body. monetaryAmount,
-                nonMonetaryAmount: body.nonMonetaryAmount,
-                status: body.status,
-                notes: body.notes,
-                reason: body.reason,
-                receivedDate: new Date(body.receivedDate),
-                lastEditDate: new Date()
-            },
-            include: {
+
+            const eventName = typeof body.event === 'string' ? body.event.trim() : '';
+            const matchedEvent = eventName
+                ? await tx.event.findFirst({ where: { eventName } })
+                : null;
+            const donorName = body.donor?.trim() || "anonymous";
+            let donorRecord = await tx.donor.findFirst({ where: { name: donorName } });
+
+            if (!donorRecord) {
+                donorRecord = await tx.donor.create({
+                    data: {
+                        name: donorName,
+                        address: "",
+                        email: "",
+                        phone: "",
+                        preferredCommunication: "",
+                        notes: "",
+                        boardMemberId: session.user.id,
+                    },
+                });
+            }
+            const receivedDate = body.receivedDate ? new Date(body.receivedDate) : null;
+            const donation = await tx.donation.update({
+                where: { id },
+                data: {
+                    boardMemberId: session.user.id,
+                    donorId: donorRecord.id,
+                    eventId: matchedEvent?.id ?? null,
+                    method: body.method,
+                    monetaryAmount: body.monetaryAmount,
+                    nonMonetaryAmount: body.nonMonetaryAmount,
+                    status: body.status,
+                    frequency: body.frequency ?? undefined,
+                    notes: body.notes,
+                    reason: body.reason,
+                    receivedDate,
+                    lastEditDate: new Date(),
+                },
+                include: {
                 event: {
                     select: {
                         eventName: true,
                         eventDate: true,
                     }
                 },
-                donor: true,
-                boardMember:{
+                    donor: true,
+                    boardMember:{
                     select:{
                         name:true
                     }
                 }
-            }
-        })
+                },
+            });
+
+            await writeAuditLog(
+                tx,
+                session.user.id,
+                "UPDATE",
+                "DONATION",
+                donation.id,
+                {
+                    donor: previousDonation.donor?.name ?? null,
+                    event: previousDonation.event?.eventName ?? null,
+                    method: previousDonation.method,
+                    monetaryAmount: previousDonation.monetaryAmount,
+                    nonMonetaryAmount: previousDonation.nonMonetaryAmount,
+                    status: previousDonation.status == 1 ? "Received" : "Pending",
+                    frequency: previousDonation.frequency,
+                    notes: previousDonation.notes,
+                    reason: previousDonation.reason,
+                    receivedDate: previousDonation.receivedDate?.toISOString() ?? null,
+                },
+                {
+                    donor: donation.donor?.name ?? null,
+                    event: donation.event?.eventName ?? null,
+                    method: donation.method,
+                    monetaryAmount: donation.monetaryAmount,
+                    nonMonetaryAmount: donation.nonMonetaryAmount,
+                    status: donation.status == 1 ? "Received" : "Pending",
+                    frequency: donation.frequency,
+                    notes: donation.notes,
+                    reason: donation.reason,
+                    receivedDate: donation.receivedDate?.toISOString() ?? null,
+                },
+            );
+
+            return donation;
+        });
         return {
             success: true,
             statusCode: 200,
@@ -83,6 +130,9 @@ export default defineEventHandler (async (event)=>{
         }
     }catch(error){
         console.log("error",error)
+        if (error && typeof error === "object" && "statusCode" in error) {
+            throw error;
+        }
         return{
             success: false,
             statusCode: 500,

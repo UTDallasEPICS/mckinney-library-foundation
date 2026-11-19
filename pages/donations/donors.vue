@@ -210,11 +210,11 @@ async function editDonor(values: Record<string, any>) {
   if (!result.success) {
     if (result.error?.code === "P2002") {
       toasts.add({
-        title: "This contact information is already in use!",
+        title: "[ERROR] This contact information is already in use!",
       });
     } else {
       toasts.add({
-        title: "Unable to update donor",
+        title: "[ERROR] Unable to update donor",
       });
     }
     return;
@@ -226,13 +226,12 @@ async function removeDonor(donor: Donor, index: number) {
   const result = await deleteDonor(donor, user.value.permissionLevel);
   if (result.error?.code == "P2003") {
     toasts.add({
-      title: "Cannot delete a donor with donations on record.",
+      title: "[ERROR] Cannot delete a donor with donations on record.",
     });
   }
 }
 
 const addDonor = (data: any) => {
-  console.log("donros", donors);
   donors.value.push(data);
 };
 
@@ -255,7 +254,9 @@ async function groupEmail(values: Record<string, any>) {
     recipientList.value = [];
     refreshHistory();
   } catch (error) {
-    alert("Failed to send email.");
+    toasts.add({
+      title: "[ERROR] Failed to send email",
+    });
     console.error(error);
   }
 }
