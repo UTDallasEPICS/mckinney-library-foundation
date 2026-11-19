@@ -36,6 +36,7 @@ model User {
   grants        Grant[]
   grantors      Grantor[]
   Events        Event[]
+  logs          AuditLog[]
 
   @@unique([email])
   @@map("user")
@@ -155,3 +156,18 @@ model Event {
   donors            Donor[]   @relation("DonorToEvent")
   donations         Donation[]
 }
+
+model AuditLog {
+  id                String    @id @default(cuid())
+  userId            String?
+  action            String
+  recordType        String
+  recordId          String?
+  createdAt         DateTime  @default(now())
+  snapshot          Json?
+
+  user User? @relation(fields: [userId], references: [id], onDelete: SetNull)
+  @@map("auditLog")
+}
+
+
