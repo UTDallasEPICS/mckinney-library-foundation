@@ -70,6 +70,7 @@ export const useDonation = () => {
                 boardMemberId: user.id,
                 permissionLevel: user.permissionLevel,
                 status: parseInt(values.status),
+                frequency: values.frequency,
                 event: values.event,
                 method:values.method,
                 monetaryAmount: values.monetaryAmount,

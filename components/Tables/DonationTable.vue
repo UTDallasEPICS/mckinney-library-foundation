@@ -76,6 +76,23 @@ const columns: DataTableColumn<DonationRow>[] = [
     { id: 'nonMonetaryAmount', header: 'Non-Monetary Amount', value: (row) => row.donation.nonMonetaryAmount },
     { id: 'method', header: 'Payment Method', value: (row) => row.donation.method },
     { id: 'status', header: 'Status', type: 'select', value: (row) => row.donation.status, options: [{ label: 'Pending', value: '0' }, { label: 'Recieved', value: '1' }], display: (row) => row.donation.status == 0 ? 'pending' : 'recieved', sortDesc: true },
+    { id: 'frequency', header: 'Frequency', type: 'select', value: (row) => row.donation.frequency,
+        options: [
+            { label: 'One Time', value: 'ONE_TIME' },
+            { label: 'Monthly', value: 'MONTHLY' },
+            { label: 'Annually', value: 'ANNUALLY' }
+        ],
+        display: (row) => {
+            switch (row.donation.frequency) {
+                case 'MONTHLY':
+                    return 'Monthly'
+                case 'ANNUALLY':
+                    return 'Annually'
+                default:
+                    return 'One Time'
+            }
+        }
+    },
     { id: 'receivedDate', header: 'Recieved Date', type: 'date', value: (row) => row.donation.receivedDate, sortDesc: true },
     { id: 'boardName', header: 'Last Editor', value: (row) => row.boardMember?.name },
 ]
