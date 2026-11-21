@@ -15,13 +15,13 @@ export default defineEventHandler(async (event) =>{
         const body = await readBody(event);
         const bodyKeys = Object.keys(body ?? {});
         const hasUnsupportedField = bodyKeys.some(
-            (key) => !["permission", "status", "name", "email"].includes(key)
+            (key) => !["permission", "status", "name", "email", "firstLogin"].includes(key)
         );
 
         if (hasUnsupportedField) {
             throw createError({
                 statusCode: 400,
-                statusMessage: "Only permission, status, name, and email can be updated"
+                statusMessage: "Only permission, status, first login, name, and email can be updated"
             });
         }
 
@@ -40,6 +40,7 @@ export default defineEventHandler(async (event) =>{
         const nextPermission =
             body.permission !== undefined ? Number(body.permission) : undefined;
         const nextStatus = body.status;
+        const nextFirstLogin = body.firstLogin;
         const nextName =
             body.name !== undefined ? String(body.name).trim() : undefined;
         const nextEmail =
@@ -48,12 +49,13 @@ export default defineEventHandler(async (event) =>{
         if(
             nextPermission === undefined &&
             nextStatus === undefined &&
+            nextFirstLogin === undefined &&
             nextName === undefined &&
             nextEmail === undefined
         ){
             throw createError({
                 statusCode: 400,
-                statusMessage: "Permission, status, name, or email is required"
+                statusMessage: "Permission, status, first login, name, or email is required"
             });
         }
 
@@ -114,6 +116,9 @@ export default defineEventHandler(async (event) =>{
         }
         if (nextStatus !== undefined) {
             updateData.status = nextStatus;
+        }
+        if (nextFirstLogin !== undefined) {
+            updateData.firstLogin = nextFirstLogin;
         }
         if (nextName !== undefined) {
             updateData.name = nextName;

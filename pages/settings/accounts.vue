@@ -36,21 +36,11 @@
     </div>
   </div>
 </div>
-
-
-<h1 v-if="requests && requests.length > 0 && permissionLevel > 1" class="text-[36px] text-[#2c3e50] text-center py-5 mb-2">Account Requests </h1>
-<RequestTable v-if="requests && requests.length > 0 && permissionLevel > 1 && users && users.length > 0"
-  key= "RequestTable"
-  :requests="requests"
-  :permission-level="permissionLevel"
-  :accounts="users"
-/>
 </template>
 
 <script setup lang="ts">
 import { ref } from 'vue';
 import AccountTable from '~/components/Tables/AccountTable.vue';
-import RequestTable from '~/components/Tables/RequestTable.vue';
 import AccountForm from '~/components/Forms/AccountForm.vue';
 import { useAuth } from '~/composables/useAuth';
 
@@ -71,13 +61,6 @@ else{
 const showAdd = ref(false);
 const showEdit = ref(false);
 
-const requestOBJ = await useFetch("/api/request");
-const requests = requestOBJ.data.value?.data
-const viewRequest = ref(false);
-if(requests && requests.length > 0){
-  viewRequest.value = true;
-}
-
 const usersOBJ = await useFetch("/api/user");
 const users = ref(usersOBJ.data.value?.data ?? []);
 
@@ -97,6 +80,14 @@ async function PrepEditAccount(index:number){
 async function addAccount(){
   showAdd.value = true;
 }
+/*async function updateLogin(){
+    await $fetch(`/api/user/${user.value.id}`,{
+      method:"PATCH",
+      body:{
+        firstLogin: true
+      }
+    });
+}*/
 async function createAccount(values:Record<string,any>){
     toasts.add({
       title: "Account created!"
@@ -107,7 +98,8 @@ async function createAccount(values:Record<string,any>){
             name: values.fName + " " + values.lName,
             email: values.email.toLowerCase(),
             permission: parseInt(values.permission),
-            permissionLevel:permissionLevel.value
+            permissionLevel:permissionLevel.value,
+            firstLogin: true
         }
     });
     cancelFunction();

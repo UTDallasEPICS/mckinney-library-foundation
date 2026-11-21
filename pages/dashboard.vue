@@ -194,6 +194,7 @@ const user:Ref<{id:string, permissionLevel:number}> = ref({id:"",permissionLevel
 if (session.value?.user) {
   user.value.id = session.value.user.id
   user.value.permissionLevel = session.value.user.permission
+  //updateLogin(session.value.user.id);
 }
 
 // default: no forms shown
@@ -327,6 +328,25 @@ async function createEvent(values:Record<string,any>){
       });
     }
 }
+
+/*async function updateLogin(id:string) {
+  const user = await $fetch(`/api/user/${id}`);
+  if(user != null && user.data && user.data.firstLogin){
+    if(!user.data.status){
+      try {
+        await $fetch(`/api/user/${id}`, {
+          method: "PATCH",
+          body: {
+            firstLogin: false
+        },
+      });
+      }
+      catch (error) {
+      console.error(error);
+      }
+    }
+  }
+}*/
 
 function openDonorFormFromDonation(){
     showDonorForm.value = true;

@@ -1,12 +1,12 @@
 generator client {
-  provider        = "prisma-client"
-  output   = "../server/utils/generated/prisma"
+  provider               = "prisma-client"
+  output                 = "../server/utils/generated/prisma"
+  previewFeatures        = []
   engineType             = "client"
-  runtime                = "nodejs"
-  moduleFormat           = "esm"
   generatedFileExtension = "ts"
   importFileExtension    = "ts"
-  previewFeatures = []
+  moduleFormat           = "esm"
+  runtime                = "nodejs"
 }
 
 datasource db {
@@ -14,31 +14,31 @@ datasource db {
 }
 
 model User {
-  id            String        @id @default(cuid())
-  name          String        @default("Anonymous")
-  status        Boolean       @default(false) // 0: active, 1: frozen, 2: deleted
+  id            String     @id @default(cuid())
+  name          String     @default("Anonymous")
+  status        Boolean    @default(false)
   phone         String?
-  email         String        @default("mplfboard@gmail.com")
-  emailVerified Boolean       @default(false)
-  permission    Int           @default(0) // main admin, admin, editor, 0: viewer
+  email         String     @unique @default("mplfboard@gmail.com")
+  emailVerified Boolean    @default(false)
+  permission    Int        @default(0)
   image         String?
-  createdAt     DateTime      @default(now())
-  updatedAt     DateTime      @default(now()) @updatedAt
-  sessions      Session[]
+  createdAt     DateTime   @default(now())
+  updatedAt     DateTime   @default(now()) @updatedAt
+  firstLogin    Boolean    @default(true)
   donations     Donation[]
   donors        Donor[]
+  Events        Event[]
   grants        Grant[]
   grantors      Grantor[]
-  Events        Event[]
+  sessions      Session[]
 
-  @@unique([email])
   @@map("user")
 }
 
 model Session {
   id        String   @id @default(cuid())
   expiresAt DateTime
-  token     String
+  token     String   @unique
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   ipAddress String?
@@ -46,7 +46,6 @@ model Session {
   userId    String
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  @@unique([token])
   @@map("session")
 }
 
@@ -61,90 +60,83 @@ model Verification {
   @@map("verification")
 }
 
-model AccountCreationRequest {
-  id    String @id @default(cuid())
-  name  String @default("Anonymous")
-  email String
-}
-
 model Donor {
   id                     String     @id @default(cuid())
   boardMemberId          String?
-  boardMember            User?      @relation(fields: [boardMemberId], references: [id], onDelete: Restrict)
-  name                   String     @default("Anonymous") //@unique @default("Anonymous")
+  name                   String     @default("Anonymous")
   address                String?
-  phone                  String?    @unique 
-  email                  String?    @unique 
-  preferredCommunication String? // phone or email
+  phone                  String?    @unique
+  email                  String?    @unique
+  preferredCommunication String?
   notes                  String?
   webLink                String?
   isAuthor               Boolean    @default(false)
   organization           String?
   donations              Donation[]
+  boardMember            User?      @relation(fields: [boardMemberId], references: [id], onDelete: Restrict)
   Events                 Event[]    @relation("DonorToEvent")
 }
 
 model Grantor {
   id                     String  @id @default(cuid())
   boardMemberId          String?
-  boardMember            User?   @relation(fields: [boardMemberId], references: [id], onDelete: Restrict)
   name                   String  @default("Anonymous")
   phone                  String?
   address                String?
   email                  String?
-  preferredCommunication String? // phone or email
+  preferredCommunication String?
   notes                  String?
   webLink                String?
   organization           String?
   grants                 Grant[]
+  boardMember            User?   @relation(fields: [boardMemberId], references: [id], onDelete: Restrict)
 }
 
 model Donation {
   id                String    @id @default(cuid())
   boardMemberId     String?
-  boardMember       User?     @relation(fields: [boardMemberId], references: [id], onDelete: Restrict)
   donorId           String?
-  donor             Donor?    @relation(fields: [donorId], references: [id], onDelete: Restrict)
   isAuthor          Boolean   @default(false)
   eventId           String?
-  event             Event?    @relation(fields: [eventId], references: [id], onDelete: Restrict)
   method            String?
   monetaryAmount    String?
   nonMonetaryAmount String?
-  status            Int       @default(0) // 0: pending, 1: completed
+  status            Int       @default(0)
   notes             String?
   reason            String?
   receivedDate      DateTime?
   lastEditDate      DateTime?
+  event             Event?    @relation(fields: [eventId], references: [id], onDelete: Restrict)
+  donor             Donor?    @relation(fields: [donorId], references: [id], onDelete: Restrict)
+  boardMember       User?     @relation(fields: [boardMemberId], references: [id], onDelete: Restrict)
 }
 
 model Grant {
   id                String    @id @default(cuid())
   boardMemberId     String?
-  boardMember       User?     @relation(fields: [boardMemberId], references: [id], onDelete: Restrict)
   grantorId         String?
-  grantor           Grantor?  @relation(fields: [grantorId], references: [id], onDelete: Restrict)
   purpose           String?
   method            String?
   monetaryAmount    String?
   nonMonetaryAmount String?
-  status            Int?      @default(0) // 0: requested, 1: completed
+  status            Int?      @default(0)
   reimburse         Boolean   @default(false)
   notes             String?
-  fileName          String?
   proposedDate      DateTime?
   receivedDate      DateTime?
   lastEditDate      DateTime?
+  fileName          String?
+  grantor           Grantor?  @relation(fields: [grantorId], references: [id], onDelete: Restrict)
+  boardMember       User?     @relation(fields: [boardMemberId], references: [id], onDelete: Restrict)
 }
 
 model Event {
-  id                String    @id @default(cuid())
-  boardMemberId     String?
-  boardMember       User?     @relation(fields: [boardMemberId], references: [id], onDelete: Restrict)
-  eventName         String
-  eventDate         DateTime?
-  //like notes
-  description       String?
-  donors            Donor[]   @relation("DonorToEvent")
-  donations         Donation[]
+  id            String     @id @default(cuid())
+  boardMemberId String?
+  eventName     String
+  eventDate     DateTime?
+  description   String?
+  donations     Donation[]
+  boardMember   User?      @relation(fields: [boardMemberId], references: [id], onDelete: Restrict)
+  donors        Donor[]    @relation("DonorToEvent")
 }

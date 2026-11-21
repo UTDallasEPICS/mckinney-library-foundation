@@ -67,6 +67,7 @@ import * as yup from 'yup';
 import LoginForm from '~/components/Forms/LoginForm.vue';
 import { useAuth, authClient } from '~/composables/useAuth';
 import InfoBanner from '~/components/Banners/InfoBanner.vue';
+import { user } from '#build/ui';
 
 
 const route = useRoute();
@@ -189,11 +190,32 @@ async function checkCode(values:Record<string, any>){
           duration: 5000
         });
         window.location.replace("/dashboard");
+        updateLogin2(userEmail.value);
        }
      }
      catch(error){
       console.error(error)
       loading.value = false;
+    }
+  }
+}
+
+async function updateLogin2(email:string) {
+  const id = email;
+  const user = await $fetch(`/api/user/${id}`);
+  if(user.data && user.data.firstLogin){
+    if(!user.data.status){
+      try {
+        await $fetch(`/api/user/${id}`, {
+          method: "PATCH",
+          body: {
+            firstLogin: false
+        },
+      });
+      }
+      catch (error) {
+      console.error(error);
+      }
     }
   }
 }
