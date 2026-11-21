@@ -3,7 +3,6 @@ import { requireSession } from "~~/server/utils/requireSession";
 
 export default defineEventHandler(async (event) =>{
     try{
-        const session = await requireSession(event, 2);
         const id = getRouterParam(event, 'id');
         if(!id){
             throw createError({
@@ -14,6 +13,13 @@ export default defineEventHandler(async (event) =>{
 
         const body = await readBody(event);
         const bodyKeys = Object.keys(body ?? {});
+        const isSelfFirstLogin = bodyKeys.length === 1 && bodyKeys[0] === "firstLogin";
+        const session = await requireSession(event, isSelfFirstLogin ? 0 : 2);
+
+        if (isSelfFirstLogin && session.user.id !== id) {
+            throw createError({ statusCode: 403, statusMessage: "Forbidden" })
+        }
+
         const hasUnsupportedField = bodyKeys.some(
             (key) => !["permission", "status", "name", "email", "firstLogin"].includes(key)
         );

@@ -189,8 +189,8 @@ async function checkCode(values:Record<string, any>){
           title: "Success!",
           duration: 5000
         });
+        await updateLogin2(userEmail.value);
         window.location.replace("/dashboard");
-        updateLogin2(userEmail.value);
        }
      }
      catch(error){
@@ -201,21 +201,18 @@ async function checkCode(values:Record<string, any>){
 }
 
 async function updateLogin2(email:string) {
-  const id = email;
-  const user = await $fetch(`/api/user/${id}`);
-  if(user.data && user.data.firstLogin){
-    if(!user.data.status){
-      try {
-        await $fetch(`/api/user/${id}`, {
-          method: "PATCH",
-          body: {
-            firstLogin: false
-        },
-      });
-      }
-      catch (error) {
-      console.error(error);
-      }
+  const user = await $fetch(`/api/user/${email}`);
+  if(user.data && user.data.firstLogin && !user.data.status){
+    try {
+      await $fetch(`/api/user/${user.data.id}`, {
+        method: "PATCH",
+        body: {
+          firstLogin: false
+       },
+    });
+    }
+    catch (error) {
+     console.error(error);
     }
   }
 }

@@ -194,7 +194,6 @@ const user:Ref<{id:string, permissionLevel:number}> = ref({id:"",permissionLevel
 if (session.value?.user) {
   user.value.id = session.value.user.id
   user.value.permissionLevel = session.value.user.permission
-  //updateLogin(session.value.user.id);
 }
 
 // default: no forms shown
