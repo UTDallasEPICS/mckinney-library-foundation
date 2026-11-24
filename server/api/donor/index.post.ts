@@ -1,9 +1,10 @@
 import prisma from "~~/server/utils/prisma";
+import { writeAuditLog } from "~~/server/utils/auditLog";
 import { requireSession } from "~~/server/utils/requireSession";
 
 export default defineEventHandler(async (event) => {
   try {
-    await requireSession(event, 1);
+    const session = await requireSession(event, 1);
     const body = await readBody(event);
     const email = body.email?.trim() || null;
     const phone = body.phone?.trim() || null;
@@ -26,8 +27,9 @@ export default defineEventHandler(async (event) => {
       }
     }
 
-    const donor = await prisma.donor.create({
-      data: {
+    const donor = await prisma.$transaction(async (tx) => {
+      const donor = await tx.donor.create({
+        data: {
         name: body.name,
         boardMemberId: body.boardMemberId,
         email,
@@ -48,14 +50,41 @@ export default defineEventHandler(async (event) => {
         },
       },
     });
+
+    await writeAuditLog(
+      tx,
+      session.user.id,
+      "CREATE",
+      "DONOR",
+      donor.id,
+      {},
+      {
+        name: donor.name,
+        email: donor.email,
+        phone: donor.phone,
+        organization: donor.organization,
+        preferredCommunication: donor.preferredCommunication,
+        address: donor.address,
+        notes: donor.notes,
+        webLink: donor.webLink,
+      },
+    );
+
+    return donor;
+    });
+
     return {
       success: true,
       statusCode: 200,
       data: donor,
       error: { code: "" },
     };
+
   } catch (error) {
     console.error(error);
+    if (error && typeof error === "object" && "statusCode" in error) {
+      throw error;
+    }
     if (error instanceof Prisma.PrismaClientKnownRequestError) {
       if (error.code === "P2002") {
         return {

@@ -1,4 +1,5 @@
 import prisma from '~~/server/utils/prisma'
+import { writeAuditLog } from '~~/server/utils/auditLog'
 import { auth } from '~~/server/utils/auth'
 
 export default defineEventHandler(async (event) => {
@@ -56,21 +57,45 @@ export default defineEventHandler(async (event) => {
             }
         }
 
-        const updatedEvent = await prisma.event.update({
-            where: { id },
-            data: {
-                boardMemberId: currentUser.id,
-                eventName,
-                eventDate: parsedEventDate,
-                description: body.description,
-            },
-            include: {
-                boardMember: {
-                    select: {
-                        name: true,
+        const updatedEvent = await prisma.$transaction(async (tx) => {
+            const previousEvent = await tx.event.findUnique({ where: { id } });
+            if (!previousEvent) {
+                throw createError({ statusCode: 404, statusMessage: 'Event not found' });
+            }
+
+            const nextEvent = await tx.event.update({
+                where: { id },
+                data: {
+                    boardMemberId: currentUser.id,
+                    eventName,
+                    eventDate: parsedEventDate,
+                    description: body.description,
+                },
+                include: {
+                    boardMember: {
+                        select: {
+                            name: true,
+                        },
                     },
                 },
-            },
+            });
+
+            const snapshot = (record: typeof previousEvent) => ({
+                eventName: record.eventName,
+                eventDate: record.eventDate?.toISOString() ?? null,
+                description: record.description,
+            });
+            await writeAuditLog(
+                tx,
+                currentUser.id,
+                'UPDATE',
+                'EVENT',
+                nextEvent.id,
+                snapshot(previousEvent),
+                snapshot(nextEvent),
+            );
+
+            return nextEvent;
         });
 
         return {
@@ -81,6 +106,9 @@ export default defineEventHandler(async (event) => {
         };
     } catch (error) {
         console.error('error updating event:', error);
+        if (error && typeof error === 'object' && 'statusCode' in error) {
+            throw error;
+        }
         return {
             success: false,
             statusCode: 500,

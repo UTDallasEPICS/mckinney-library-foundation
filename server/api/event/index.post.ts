@@ -1,4 +1,5 @@
 import prisma from '~~/server/utils/prisma'
+import { writeAuditLog } from '~~/server/utils/auditLog'
 import { auth } from '~~/server/utils/auth'
 
 export default defineEventHandler(async (event) => {
@@ -48,20 +49,38 @@ export default defineEventHandler(async (event) => {
             }
         }
 
-        const createdEvent = await prisma.event.create({
-            data: {
-                boardMemberId: currentUser.id,
-                eventName,
-                eventDate: parsedEventDate,
-                description: body.description,
-            },
-            include: {
-                boardMember: {
-                    select: {
-                        name: true,
+        const createdEvent = await prisma.$transaction(async (tx) => {
+            const newEvent = await tx.event.create({
+                data: {
+                    boardMemberId: currentUser.id,
+                    eventName,
+                    eventDate: parsedEventDate,
+                    description: body.description,
+                },
+                include: {
+                    boardMember: {
+                        select: {
+                            name: true,
+                        }
                     }
                 }
-            }
+            });
+
+            await writeAuditLog(
+                tx,
+                currentUser.id,
+                'CREATE',
+                'EVENT',
+                newEvent.id,
+                {},
+                {
+                    eventName: newEvent.eventName,
+                    eventDate: newEvent.eventDate?.toISOString() ?? null,
+                    description: newEvent.description,
+                },
+            );
+
+            return newEvent;
         });
 
         return {
@@ -72,6 +91,9 @@ export default defineEventHandler(async (event) => {
         };
     } catch (error) {
         console.error(error);
+        if (error && typeof error === 'object' && 'statusCode' in error) {
+            throw error;
+        }
         return {
             success: false,
             statusCode: 500,
