@@ -1,7 +1,4 @@
 <template>
-<<<<<<< HEAD
-<h1 class="text-[28px] text-[#2c3e50] text-center py-1 mb-0 mt-2"> Manage Accounts </h1>
-=======
 <div class="pt-6 pb-2 px-8">
   <div class="flex items-center gap-3 max-w-7xl mx-auto">
   <button
@@ -21,7 +18,6 @@
   </div>
 </div>
 
->>>>>>> 426f9715f309d40cab84a768938900171296aa83
  <AccountTable v-if="users && users.length > 0"
   key= "ExistingAccounts"
   :accounts="users"
