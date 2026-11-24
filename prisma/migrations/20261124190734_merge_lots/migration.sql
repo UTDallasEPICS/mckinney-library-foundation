@@ -1,0 +1,27 @@
+-- RedefineTables
+PRAGMA defer_foreign_keys=ON;
+PRAGMA foreign_keys=OFF;
+CREATE TABLE "new_Donation" (
+    "id" TEXT NOT NULL PRIMARY KEY,
+    "boardMemberId" TEXT,
+    "donorId" TEXT,
+    "isAuthor" BOOLEAN NOT NULL DEFAULT false,
+    "eventId" TEXT,
+    "method" TEXT,
+    "monetaryAmount" TEXT,
+    "nonMonetaryAmount" TEXT,
+    "status" INTEGER NOT NULL DEFAULT 0,
+    "frequency" TEXT NOT NULL DEFAULT 'ONE_TIME',
+    "notes" TEXT,
+    "reason" TEXT,
+    "receivedDate" DATETIME,
+    "lastEditDate" DATETIME,
+    CONSTRAINT "Donation_eventId_fkey" FOREIGN KEY ("eventId") REFERENCES "Event" ("id") ON DELETE RESTRICT ON UPDATE CASCADE,
+    CONSTRAINT "Donation_donorId_fkey" FOREIGN KEY ("donorId") REFERENCES "Donor" ("id") ON DELETE RESTRICT ON UPDATE CASCADE,
+    CONSTRAINT "Donation_boardMemberId_fkey" FOREIGN KEY ("boardMemberId") REFERENCES "user" ("id") ON DELETE RESTRICT ON UPDATE CASCADE
+);
+INSERT INTO "new_Donation" ("boardMemberId", "donorId", "eventId", "id", "isAuthor", "lastEditDate", "method", "monetaryAmount", "nonMonetaryAmount", "notes", "reason", "receivedDate", "status") SELECT "boardMemberId", "donorId", "eventId", "id", "isAuthor", "lastEditDate", "method", "monetaryAmount", "nonMonetaryAmount", "notes", "reason", "receivedDate", "status" FROM "Donation";
+DROP TABLE "Donation";
+ALTER TABLE "new_Donation" RENAME TO "Donation";
+PRAGMA foreign_keys=ON;
+PRAGMA defer_foreign_keys=OFF;
