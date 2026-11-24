@@ -6,7 +6,7 @@
 
 */
 -- DropIndex
-DROP INDEX "Donor_name_key";
+DROP INDEX IF EXISTS "Donor_name_key";
 
 -- CreateTable
 CREATE TABLE "auditLog" (
@@ -21,7 +21,7 @@ CREATE TABLE "auditLog" (
 );
 
 -- CreateIndex
-CREATE UNIQUE INDEX "Donor_phone_key" ON "Donor"("phone");
+CREATE UNIQUE INDEX IF NOT EXISTS "Donor_phone_key" ON "Donor"("phone");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "Donor_email_key" ON "Donor"("email");
+CREATE UNIQUE INDEX IF NOT EXISTS "Donor_email_key" ON "Donor"("email");
