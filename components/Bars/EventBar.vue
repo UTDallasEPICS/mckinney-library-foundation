@@ -1,5 +1,5 @@
 <template>
-    <div class="w-full bg-slate-500 text-white px-6 py-3 flex justify-center">
+    <div class="w-full bg-slate-700 text-white px-6 py-3 flex justify-center">
         <div class="w-[90vw] grid grid-cols-2 gap-4">
             <NuxtLink to="/events" class="w-full">
                 <button class="w-full px-3 py-1 rounded hover:bg-slate-600 transition">

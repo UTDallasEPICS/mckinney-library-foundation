@@ -1,5 +1,5 @@
 <template>
-    <div class="bg-[#4a5f6d] rounded-xl shadow-lg p-6 text-white hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
+    <div class="bg-[#406080] rounded-xl shadow-lg p-6 text-white w-120">
         <div class="flex items-center justify-between mb-2">
             <h3>{{title}}</h3>
         </div>

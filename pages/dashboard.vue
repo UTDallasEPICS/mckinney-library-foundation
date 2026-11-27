@@ -1,56 +1,24 @@
 <template>
-  <div class="container mx-auto px-6 py-12 max-w-full">
-    <div class="mb-8 text-center w-full">
-      <h1 class="text-[#2d3e4d] mb-2 text-xl">MPLF Donor Dashboard</h1>
-      <p class="text-gray-600 text-lg">Manage your donations, grants, and system settings</p>
-    </div>
-
-    <!-- the actual cards on the dashboard -->
-    <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
-      <DashboardCard
-        :icon="DonationCardProps.icon"
-        :title="DonationCardProps.title"
-        :description="DonationCardProps.description"
-        :buttons="DonationCardProps.buttons"
-        :permission-level="user.permissionLevel"
-        @button-click="handleDashboardButtonClick"
-      />
-      <DashboardCard
-        :icon="EventCardProps.icon"
-        :title="EventCardProps.title"
-        :description="EventCardProps.description"
-        :buttons="EventCardProps.buttons"
-        :permission-level="user.permissionLevel"
-        @button-click="handleDashboardButtonClick"
-      />
-      <DashboardCard
-        :icon="GrantCardProps.icon"
-        :title="GrantCardProps.title"
-        :description="GrantCardProps.description"
-        :buttons="GrantCardProps.buttons"
-        :permission-level="user.permissionLevel"
-        @button-click="handleDashboardButtonClick"
-      />
-      <div class="lg:col-start-2">
-        <DashboardCard
-          :icon="SettingsCardProps.icon"
-          :title="SettingsCardProps.title"
-          :description="SettingsCardProps.description"
-          :buttons="SettingsCardProps.buttons"
-          :permission-level="user.permissionLevel"
-          @button-click="handleDashboardButtonClick"
+  <div class="container mx-auto px-6 py-0 max-w-full">
+    <!-- dashboard's sidebar -->
+    <div class="sidebar">
+      <CardButton
+          v-for="button in sidebarButtons"
+          :name="button.name"
+          :link="button.link"
+          :icon="button.icon"
+          @click="navigateTo(button.link)"
         />
-      </div>
     </div>
 
-    <!-- date range filters for the totals below -->
-    <div class="grid md:grid-cols-2 gap-6 mb-4">
+    <!-- date range filters for the overviews -->
+    <div class="grid md:grid-cols-2 gap-6 mb-4 left-320">
       <DateRangeFilter v-model="donationDateRange" label="Donations date range" placeholder="All time" />
       <DateRangeFilter v-model="grantDateRange" label="Grants date range" placeholder="All time" />
     </div>
 
-    <!-- the totals at the bottom -->
-    <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+    <!-- the overview widgets -->
+    <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8 left-320">
       <DashboardStat
         title="Total Donations"
         :value="totalDonations"
@@ -60,11 +28,6 @@
         title="Total Grants"
         :value="totalGrants"
         :description="grantsDescription"
-      />
-      <DashboardStat
-        title="Total Donors"
-        :value="totalDonors.length.toLocaleString()"
-        description="Unique donors count"
       />
     </div>
 
@@ -126,7 +89,7 @@
 
 <script setup lang="ts">
 import { ref, computed, type Ref } from 'vue'
-import DashboardCard from '~/components/Cards/DashboardCard/DashboardCard.vue'
+import CardButton from '~/components/Cards/DashboardCard/CardButton.vue'
 import DashboardStat from '~/components/Banners/DashboardBanner.vue'
 import DonationForm from '~/components/Forms/DonationForm.vue'
 import DonorForm from '~/components/Forms/DonorForm.vue'
@@ -171,9 +134,6 @@ const grantorTableData = computed(() =>
         grants: thisGrantor.grants,
     }))
 );
-
-
-const totalDonors = donors.value
 
 const { eventNames } = useEventDropDown(eventsData)
 const { donationMethods } = useDonationDropDown(donationsData.value)
@@ -221,6 +181,15 @@ const handleDashboardButtonClick = (button: any) => {
     navigateTo(button.link)
   }
 }
+
+const sidebarButtons = [
+    { name:"Donations", link:"/donations", icon: "/icons/dollar-sign.svg", accessLevel:0 },
+    { name:"Donors", link:"/donations/donors", icon: "/icons/people.svg", accessLevel:0 },
+    { name:"Grants", link:"/grants", icon: "/icons/eye.svg", accessLevel:0 },
+    { name:"Grantors", link:"/grants/grantors", icon: "/icons/people.svg", accessLevel:0 },
+    { name:"Events", link:"/events", icon: "/icons/eye.svg", accessLevel:1 },
+    { name:"Accounts", link:"/settings/accounts", icon: "/icons/people.svg", accessLevel:2 }
+]
 
 const DonationCardProps = {
   icon: "/icons/dollar-sign.svg",
@@ -328,25 +297,6 @@ async function createEvent(values:Record<string,any>){
     }
 }
 
-/*async function updateLogin(id:string) {
-  const user = await $fetch(`/api/user/${id}`);
-  if(user != null && user.data && user.data.firstLogin){
-    if(!user.data.status){
-      try {
-        await $fetch(`/api/user/${id}`, {
-          method: "PATCH",
-          body: {
-            firstLogin: false
-        },
-      });
-      }
-      catch (error) {
-      console.error(error);
-      }
-    }
-  }
-}*/
-
 function openDonorFormFromDonation(){
     showDonorForm.value = true;
 }
@@ -401,6 +351,16 @@ const filteredGrants = computed(() =>
   grantsData.value.filter((row) => isWithinRange(row.grant.receivedDate, grantDateRange.value))
 )
 
+const filteredDonors = computed(() =>
+  donors.value
+  //donors.value.filter((row) => isWithinRange(row.donation.receivedDate, donationDateRange.value))
+)
+
+const filteredGrantors = computed(() =>
+  grantors.value
+  //grantors.value.filter((row) => isWithinRange(row.grant.receivedDate, grantDateRange.value))
+)
+
 const currencyFormatter = new Intl.NumberFormat("en-US", {
   style: "currency",
   currency: "USD",
@@ -414,25 +374,25 @@ const totalDonations = computed(() => currencyFormatter.format(
   }, 0)
 ));
 
-function countDescription(count: number, singular: string, plural: string, range: DateRangeValue) {
-  const scope = range?.start && range?.end ? 'in selected range' : 'all time'
-  return `${count.toLocaleString()} ${count === 1 ? singular : plural}, ${scope}`
-}
-
-const donationsDescription = computed(() =>
-  countDescription(filteredDonations.value.length, 'donation', 'donations', donationDateRange.value)
-)
-
-const grantsDescription = computed(() =>
-  countDescription(filteredGrants.value.length, 'grant', 'grants', grantDateRange.value)
-)
-
 const totalGrants = computed(() => currencyFormatter.format(
   filteredGrants.value.reduce((sum, row) => {
     const amount = parseFloat(row.grant.monetaryAmount || "0");
     return sum + (isNaN(amount) ? 0 : amount);
   }, 0)
 ));
+
+function countDescription(itemCount: number, sourceCount: number, item: string, source: string, range: DateRangeValue) {
+  const scope = range?.start && range?.end ? 'in selected range' : 'all time'
+  return `${itemCount.toLocaleString()} ${itemCount === 1 ? item : item + 's'}, ${sourceCount.toLocaleString()} ${sourceCount === 1 ? source : source + 's'};  ${scope}`
+}
+
+const donationsDescription = computed(() =>
+  countDescription(filteredDonations.value.length, filteredDonors.value.length, 'donation', 'donor', donationDateRange.value)
+)
+
+const grantsDescription = computed(() =>
+  countDescription(filteredGrants.value.length, filteredGrantors.value.length, 'grant', 'grantor', grantDateRange.value)
+)
 
 
 

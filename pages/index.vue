@@ -5,11 +5,10 @@
         <img src="/logo.png" alt="MPLF Logo" class ="h-14 mx-auto" />
         <div v-if="userEmail" class = "text-center">
           <h2 class = "text-[36px] text-[#2c3e50] mb-2" style="font-weight: 700;">WELCOME!</h2>
-          <p class = "text-[15px] text-[#6b7785]">Sign in to access the Donor &amp; Grant Tracker</p>
         </div>
         <LoginForm 
           v-if="userEmail === ''" 
-          key="emailLoginForm" 
+          key="emailLoginForm"
           :message="emailFormProps.message"
           :field-name="emailFormProps.fieldname"
           :placeholder-txt="emailFormProps.placeholderTxt"

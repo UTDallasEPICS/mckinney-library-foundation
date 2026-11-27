@@ -2,10 +2,10 @@
 @import "@nuxt/ui";
 
 :root {
-    --ui-primary: #224344;
+    --ui-primary: #406080;
 }
 .dark {
-    --ui-primary: #224344;
+    --ui-primary: #406080;
 }
 
 @layer base {
@@ -38,6 +38,43 @@
     }
     .form-button{
        @apply rounded-md text-sm font-medium outline-none h-9 py-2 text-white px-6 cursor-pointer;
+    }
+    .header {
+        font-size: 20px;
+        transform: translateY(-10px);
+    }
+    .sidebar {
+        height: 100%; /*Full height*/
+        width: 280px;
+        position: fixed;
+        z-index: 1;
+        top: 1;
+        left: 0;
+        background-color: #D9D9D9;
+        overflow-x: hidden;
+        padding-top: 40px;
+        cursor: default;
+    }
+    .sidebar button {
+        width: 280px;
+        padding: 6px 8px 6px 6px;
+        text-decoration: none;
+        font-size: 25px;
+        padding-top: 0px;
+        background-color: #D9D9D9;
+        color: #818181;
+        display: block;
+    }
+    .sidebar button:hover {
+        background-color: #808090;
+        color: #ffffff;
+        cursor: pointer;
+    }
+    .sidebar-svg {
+        filter: brightness(0) saturate(100%) invert(54%) sepia(0%) saturate(593%) hue-rotate(316deg) brightness(94%) contrast(93%);
+    }
+    .sidebar-svg:hover {
+        filter: brightness(0) saturate(100%) invert(96%) sepia(96%) saturate(0%) hue-rotate(92deg) brightness(105%) contrast(103%);
     }
     /* Always-visible scrollbars for scrollable tables. macOS hides scrollbars until you scroll,
        which leaves no hint that a table can be scrolled; styling them keeps them on screen. */
