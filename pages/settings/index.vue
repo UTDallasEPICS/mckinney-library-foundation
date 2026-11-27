@@ -47,8 +47,7 @@ async function createAccount(values:Record<string,any>){
             name: values.fName + " " + values.lName,
             email: values.email.toLowerCase(),
             permission: parseInt(values.permission),
-            permissionLevel:permissionLevel.value,
-            firstLogin: true
+            permissionLevel:permissionLevel.value
         }
     });
     navigateTo("/settings/accounts");

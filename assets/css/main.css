@@ -73,7 +73,7 @@
     .sidebar-svg {
         filter: brightness(0) saturate(100%) invert(54%) sepia(0%) saturate(593%) hue-rotate(316deg) brightness(94%) contrast(93%);
     }
-    .sidebar-svg:hover {
+    .sidebar button:hover .sidebar-svg {
         filter: brightness(0) saturate(100%) invert(96%) sepia(96%) saturate(0%) hue-rotate(92deg) brightness(105%) contrast(103%);
     }
     /* Always-visible scrollbars for scrollable tables. macOS hides scrollbars until you scroll,

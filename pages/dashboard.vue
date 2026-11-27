@@ -351,15 +351,17 @@ const filteredGrants = computed(() =>
   grantsData.value.filter((row) => isWithinRange(row.grant.receivedDate, grantDateRange.value))
 )
 
-const filteredDonors = computed(() =>
-  donors.value
-  //donors.value.filter((row) => isWithinRange(row.donation.receivedDate, donationDateRange.value))
-)
+function filteredDonors() {
+  const filtered: Donor[] = [];
+  filteredDonations.value.filter((donation) => { if (!filtered.includes(donation.donor)) filtered.push(donation.donor) })
+  return filtered;
+}
 
-const filteredGrantors = computed(() =>
-  grantors.value
-  //grantors.value.filter((row) => isWithinRange(row.grant.receivedDate, grantDateRange.value))
-)
+function filteredGrantors() {
+  const filtered: Grantor[] = [];
+  filteredGrants.value.filter((grant) => { if (!filtered.includes(grant.grantor)) filtered.push(grant.grantor) })
+  return filtered;
+}
 
 const currencyFormatter = new Intl.NumberFormat("en-US", {
   style: "currency",
@@ -387,11 +389,11 @@ function countDescription(itemCount: number, sourceCount: number, item: string, 
 }
 
 const donationsDescription = computed(() =>
-  countDescription(filteredDonations.value.length, filteredDonors.value.length, 'donation', 'donor', donationDateRange.value)
+  countDescription(filteredDonations.value.length, filteredDonors.length, 'donation', 'donor', donationDateRange.value)
 )
 
 const grantsDescription = computed(() =>
-  countDescription(filteredGrants.value.length, filteredGrantors.value.length, 'grant', 'grantor', grantDateRange.value)
+  countDescription(filteredGrants.value.length, filteredGrantors.length, 'grant', 'grantor', grantDateRange.value)
 )
 
 

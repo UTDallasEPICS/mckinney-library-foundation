@@ -98,14 +98,6 @@ async function PrepEditAccount(index:number){
 async function addAccount(){
   showAdd.value = true;
 }
-/*async function updateLogin(){
-    await $fetch(`/api/user/${user.value.id}`,{
-      method:"PATCH",
-      body:{
-        firstLogin: true
-      }
-    });
-}*/
 async function createAccount(values:Record<string,any>){
     toasts.add({
       title: "Account created!"
@@ -116,8 +108,7 @@ async function createAccount(values:Record<string,any>){
             name: values.fName + " " + values.lName,
             email: values.email.toLowerCase(),
             permission: parseInt(values.permission),
-            permissionLevel:permissionLevel.value,
-            firstLogin: true
+            permissionLevel:permissionLevel.value
         }
     });
     cancelFunction();

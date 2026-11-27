@@ -1,5 +1,5 @@
 <template>
-  <div class = "flex min-h-[calc(100vh-88px)] w-auto bg-[#5a6a77]">
+  <div class = "flex min-h-[calc(100vh-88px)] w-auto bg-slate-700">
     <div class = "flex items-center basis-1/1" id="login">
       <div class = "bg-white rounded-3xl shadow-2xl p-10 border border-gray-100 w-1/2 mx-auto my">
         <img src="/logo.png" alt="MPLF Logo" class ="h-14 mx-auto" />
@@ -159,30 +159,12 @@ async function checkCode(values:Record<string, any>){
           title: "Success!",
           duration: 5000
         });
-        await updateLogin2(userEmail.value);
         window.location.replace("/dashboard");
        }
      }
      catch(error){
       console.error(error)
       loading.value = false;
-    }
-  }
-}
-
-async function updateLogin2(email:string) {
-  const user = await $fetch(`/api/user/${email}`);
-  if(user.data && user.data.firstLogin && !user.data.status){
-    try {
-      await $fetch(`/api/user/${user.data.id}`, {
-        method: "PATCH",
-        body: {
-          firstLogin: false
-       },
-    });
-    }
-    catch (error) {
-     console.error(error);
     }
   }
 }

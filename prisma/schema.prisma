@@ -30,7 +30,6 @@ model User {
   image         String?
   createdAt     DateTime   @default(now())
   updatedAt     DateTime   @default(now()) @updatedAt
-  firstLogin    Boolean    @default(true)
   donations     Donation[]
   donors        Donor[]
   Events        Event[]
