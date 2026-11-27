@@ -1,4 +1,26 @@
 <template>
+  <div class="pt-6 pb-2 px-8">
+  <div class="flex items-center gap-3 max-w-7xl mx-auto">
+  <button
+    class="bg-white border border-gray-300 text-[#2c3e50] px-4 py-2 rounded-md font-medium hover:bg-gray-50 transition shadow-sm form-button"
+    @click="navigateTo('/settings/accounts')"
+  >
+    Manage Accounts
+  </button>
+  <button
+    class="bg-[#2c3e50] text-white px-4 py-2 rounded-md font-medium shadow-sm cursor-default form-button"
+    disabled
+  >
+    View Roles
+  </button>
+  <button
+    v-if="permissionLevel >= 2"
+    @click="navigateTo('/settings/logs')"
+    class="bg-white border border-gray-300 text-[#2c3e50] px-4 py-2 rounded-md font-medium hover:bg-gray-50 transition shadow-sm form-button"
+  >
+    View Audit Log
+  </button>
+  </div></div>
   <div class="flex-1 p-8 ">
     <div class="bg-white rounded-lg shadow-lg overflow-hidden mx-auto">
       <table class="w-full">

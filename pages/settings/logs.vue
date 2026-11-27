@@ -1,21 +1,25 @@
 <template>
   <div class="pt-6 pb-2 px-8">
-    <div class="flex items-center gap-3 max-w-7xl mx-auto">
-      <button
-        @click="navigateTo('/settings/accounts')"
-        class="bg-white border border-gray-300 text-[#2c3e50] px-4 py-2 rounded-md font-medium hover:bg-gray-50 transition shadow-sm"
-      >
-        Manage Accounts
-      </button>
-
-      <button
-        class="bg-[#2c3e50] text-white px-4 py-2 rounded-md font-medium shadow-sm cursor-default"
-        disabled
-      >
-        View Audit Log
-      </button>
-    </div>
-  </div>
+  <div class="flex items-center gap-3 max-w-7xl mx-auto">
+  <button
+    class="bg-white border border-gray-300 text-[#2c3e50] px-4 py-2 rounded-md font-medium hover:bg-gray-50 transition shadow-sm form-button"
+    @click="navigateTo('/settings/accounts')"
+  >
+    Manage Accounts
+  </button>
+  <button
+    class="bg-white border border-gray-300 text-[#2c3e50] px-4 py-2 rounded-md font-medium hover:bg-gray-50 transition shadow-sm form-button"
+    @click="navigateTo('/settings/roles')"
+  >
+    View Roles
+  </button>
+  <button
+    class="bg-[#2c3e50] text-white px-4 py-2 rounded-md font-medium shadow-sm cursor-default form-button"
+    disabled
+  >
+    View Audit Log
+  </button>
+  </div></div>
 
   <div class="flex-1 px-8 pt-4 pb-8">
     <div v-if="error" class="max-w-7xl mx-auto text-[#2d3e4d]">

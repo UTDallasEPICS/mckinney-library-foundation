@@ -15,13 +15,6 @@
       >
         Add Account
     </button>
-    <button
-      :disabled="permissionLevel < 1"
-      @click="viewRoles"
-      class="disabled:bg-slate-330 disabled:cursor-default rounded-md text-sm font-medium outline-none h-9 py-2 bg-blue-600 hover:bg-blue-700 text-white px-6 form-button"
-      >
-        View Roles
-    </button>
     </template>
     <template #permission-cell="{ row: account }">
       <select

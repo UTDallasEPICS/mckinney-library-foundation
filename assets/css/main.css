@@ -52,15 +52,17 @@
         left: 0;
         background-color: #D9D9D9;
         overflow-x: hidden;
-        padding-top: 40px;
+        padding-top: 0px;
         cursor: default;
     }
     .sidebar button {
         width: 280px;
-        padding: 6px 8px 6px 6px;
+        padding-top: 10px;
+        padding-bottom: 10px;
+        padding-left: 18px;
+        padding-right: 40px;
         text-decoration: none;
         font-size: 25px;
-        padding-top: 0px;
         background-color: #D9D9D9;
         color: #818181;
         display: block;
@@ -75,6 +77,14 @@
     }
     .sidebar button:hover .sidebar-svg {
         filter: brightness(0) saturate(100%) invert(96%) sepia(96%) saturate(0%) hue-rotate(92deg) brightness(105%) contrast(103%);
+    }
+    .filters {
+        place-items: center;
+        padding-left: 40px;
+    }
+    .widgets {
+        place-items: center;
+        padding-left: 180px;
     }
     /* Always-visible scrollbars for scrollable tables. macOS hides scrollbars until you scroll,
        which leaves no hint that a table can be scrolled; styling them keeps them on screen. */

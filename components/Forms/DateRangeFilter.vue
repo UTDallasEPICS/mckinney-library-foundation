@@ -4,7 +4,7 @@
     <UPopover v-model:open="open">
       <button
         type="button"
-        class="w-full sm:w-72 px-3 py-2 bg-white border border-gray-300 rounded text-[#2d3e4d] text-left focus:outline-none focus:ring-2 focus:ring-[#5a6a77] cursor-pointer flex items-center justify-between gap-2"
+        class="w-full sm:w-56 px-3 py-2 bg-white border border-gray-300 rounded text-[#2d3e4d] text-left focus:outline-none focus:ring-2 focus:ring-[#5a6a77] cursor-pointer flex items-center justify-cent gap-2"
       >
         <span class="truncate">{{ displayText }}</span>
         <span class="text-gray-400 shrink-0 text-xs">&#9662;</span>

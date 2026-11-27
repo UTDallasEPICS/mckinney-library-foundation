@@ -1,7 +1,7 @@
 <template>
   <div class="container mx-auto px-6 py-0 max-w-full">
     <!-- dashboard's sidebar -->
-    <div class="sidebar">
+    <div class="sidebar px-0 padding-5px">
       <CardButton
           v-for="button in sidebarButtons"
           :name="button.name"
@@ -12,13 +12,13 @@
     </div>
 
     <!-- date range filters for the overviews -->
-    <div class="grid md:grid-cols-2 gap-6 mb-4 left-320">
+    <div class="filters grid md:grid-cols-2 gap-4 mb-4">
       <DateRangeFilter v-model="donationDateRange" label="Donations date range" placeholder="All time" />
       <DateRangeFilter v-model="grantDateRange" label="Grants date range" placeholder="All time" />
     </div>
 
     <!-- the overview widgets -->
-    <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8 left-320">
+    <div class="widgets grid md:grid-cols-1 gap-6 mb-8">
       <DashboardStat
         title="Total Donations"
         :value="totalDonations"
@@ -30,60 +30,6 @@
         :description="grantsDescription"
       />
     </div>
-
-    <!-- overlay forms to add stuff -->
-    <div v-if="showDonationForm" class="fixed top-0 left-0 w-full h-full flex justify-center items-center z-20 bg-black/50">
-      <DonationForm
-        :submit-donation="createDonation"
-        :cancel-submisison="cancelDonation"
-        :view-only="false"
-        :donors="donorTableData"
-        :events="eventNames"
-        :event-date-lookup="eventDateLookup"
-        :methods="donationMethods"
-        @request-create-donor="openDonorFormFromDonation"
-        @request-create-event="openEventFormFromDonation"
-      />
-    </div>
-
-    <div v-if="showDonorForm" class="fixed top-0 left-0 w-full h-full flex justify-center items-center z-20 bg-black/50">
-      <DonorForm
-        :submit-donor="createDonor"
-        :cancel-submisison="cancelDonor"
-        :view-only="false"
-        :organizations="donorOrganizations"
-      />
-    </div>
-
-    <div v-if="showEventForm" class="fixed top-0 left-0 w-full h-full flex justify-center items-center z-20 bg-black/50">
-      <EventForm
-        :submit-event="createEvent"  
-        :cancel-submisison="cancelEvent"
-        :view-only="false" 
-      />
-    </div>
-
-    <div v-if="showGrantForm" class="fixed top-0 left-0 w-full h-full flex justify-center items-center z-20 bg-black/50">
-      <GrantForm
-            :submit-grant="createGrant"
-            :cancel-submisison="cancelGrant"
-            :view-only="false"
-            :purposes="grantPurposes"
-            :grantors="grantorTableData"
-            :methods="grantMethods"
-            @request-create-grantor="openGrantorFormFromGrant"
-        />
-    </div>
-
-    <div v-if="showGrantorForm" class="fixed top-0 left-0 w-full h-full flex justify-center items-center z-20 bg-black/50"> 
-        <GrantorForm
-            :submit-grantor="createGrantor"
-            :cancel-submisison="cancelGrantor"
-            :view-only="false"
-            :organizations="grantorOrganizations"
-        />
-    </div>
-
   </div>
 </template>
 
@@ -91,11 +37,6 @@
 import { ref, computed, type Ref } from 'vue'
 import CardButton from '~/components/Cards/DashboardCard/CardButton.vue'
 import DashboardStat from '~/components/Banners/DashboardBanner.vue'
-import DonationForm from '~/components/Forms/DonationForm.vue'
-import DonorForm from '~/components/Forms/DonorForm.vue'
-import GrantForm from '~/components/Forms/GrantForm.vue'
-import GrantorForm from '~/components/Forms/GrantorForm.vue'
-import EventForm from '~/components/Forms/EventForm.vue'
 import DateRangeFilter, { type DateRangeValue } from '~/components/Forms/DateRangeFilter.vue'
 import { useDonationDropDown, useDonorDropDown } from '~/composables/useDonationDropDown'
 import { useGrantsDropDown, useGrantorDropDown } from '~/composables/useGrantDropDowns'
@@ -156,32 +97,6 @@ if (session.value?.user) {
   user.value.permissionLevel = session.value.user.permission
 }
 
-// default: no forms shown
-const showDonationForm = ref(false)
-const showDonorForm = ref(false)
-const showGrantForm = ref(false)
-const showGrantorForm = ref(false)
-const showEventForm = ref(false)
-
-// handling clicks
-const handleDashboardButtonClick = (button: any) => {
-  if (button.name === 'Add Donations') {
-    showDonationForm.value = true
-    return
-  }
-  if (button.name === 'Add Grants') {
-    showGrantForm.value = true
-    return
-  }
-  if (button.name === 'Add Events') {
-    showEventForm.value = true
-    return
-  }
-  if (button.link) {
-    navigateTo(button.link)
-  }
-}
-
 const sidebarButtons = [
     { name:"Donations", link:"/donations", icon: "/icons/dollar-sign.svg", accessLevel:0 },
     { name:"Donors", link:"/donations/donors", icon: "/icons/people.svg", accessLevel:0 },
@@ -190,146 +105,6 @@ const sidebarButtons = [
     { name:"Events", link:"/events", icon: "/icons/eye.svg", accessLevel:1 },
     { name:"Accounts", link:"/settings/accounts", icon: "/icons/people.svg", accessLevel:2 }
 ]
-
-const DonationCardProps = {
-  icon: "/icons/dollar-sign.svg",
-  title: "Donations",
-  description: "Manage donation records, track contributions, and view donor information.",
-  buttons: [
-    { name:"View Donations", link:"/donations", icon: "/icons/eye.svg", accessLevel:0 },
-    { name:"Add Donations", icon:"/icons/plus.svg", accessLevel:1 },
-    { name:"View Donors", link:"/donations/donors", icon: "/icons/people.svg", accessLevel:0 }
-  ]
-}
-
-const GrantCardProps = {
-  icon:"/icons/file-text.svg",
-  title:"Grants",
-  description:"Track garant applications, manage awards, and monitor grant progress.",
-  buttons: [
-    { name:"View Grants", link:"/grants", icon: "/icons/eye.svg", accessLevel:0 },
-    { name:"Add Grants", icon: "/icons/plus.svg", accessLevel:1 },
-    { name:"View Grantors", link:"/grants/grantors", icon: "/icons/people.svg", accessLevel:0 }
-  ]
-}
-
-const EventCardProps = {
-    icon:"/icons/book.svg",
-    title:"Events",
-    description:"Manage hosted events and group donors per attendees.",
-    buttons: [
-    { name:"Add Events", icon: "/icons/plus.svg", accessLevel:1 },
-    { name:"View Events", link:"/events", icon: "/icons/eye.svg", accessLevel:1 },
-  ]
-}
-
-const SettingsCardProps = {
-  icon:"/icons/settings.svg",
-  title:"Settings",
-  description:"Configure system settings, manage user accounts, and control access.",
-  buttons: [
-    { name:"Add Accounts", link:"/settings", icon:"/icons/plus.svg", accessLevel:3 },
-    { name:"View Roles", link:"/settings/roles", icon:"/icons/eye.svg", accessLevel: 1},
-    { name:"View Accounts", link:"/settings/accounts", icon: "/icons/people.svg", accessLevel:2 }
-  ]
-}
-
-// handling hitting submit on the forms
-async function createDonation(values:Record<string,any>){
-    const result = await postDonation(values,user.value)
-    if(result.success){
-      toasts.add({
-        title: "Donation created!"
-      });
-    }
-    showDonationForm.value = false;
-}
-
-async function createDonor(values:Record<string,any>){
-    const result = await putDonor(values, user.value)
-    if(result.success){
-      toasts.add({
-        title: "Donor created!",
-      });
-      showDonorForm.value = false;
-    } else if ((result as any).error?.code === 'DONOR_ALREADY_EXISTS' || (result as any).message === 'The donor already exists') {
-      toasts.add({
-        title: "[ERROR] This donor already exists",
-      });
-    }
-}
-
-async function createGrant(values:Record<string,any>){
-    const result = await postGrant(values,user.value)
-    if(result.success){
-      toasts.add({
-        title: "Grant created!"
-      });
-    }
-    showGrantForm.value = false;
-}
-
-async function createGrantor(values:Record<string,any>){
-    const result = await postGrantor(values, user.value)
-    if(result.success){
-      toasts.add({
-        title: "Grantor created!",
-      });
-      showGrantorForm.value = false;
-    } else if ((result as any).error?.code === 'GRANTOR_ALREADY_EXISTS' || (result as any).message === 'The grantor already exists') {
-      toasts.add({
-        title: "[ERROR] This grantor already exists",
-      });
-    }
-}
-
-async function createEvent(values:Record<string,any>){
-    const result = await postEvent(values, user.value)
-    if(result.success){
-      toasts.add({
-        title: "Event created!",
-      });
-      showEventForm.value = false;
-    } else if ((result as any).error?.code === 'EVENT_ALREADY_EXISTS' || (result as any).message === 'The event already exists') {
-      toasts.add({
-        title: "[ERROR] This event already exists",
-      });
-    }
-}
-
-function openDonorFormFromDonation(){
-    showDonorForm.value = true;
-}
-
-function cancelDonor(){
-    showDonorForm.value = false;
-}
-
-// when clicking "create event" from donation form, opens event form
-function openEventFormFromDonation(){
-    showEventForm.value = true;
-}
-
-// handling clicking cancel on forms to close them 
-function cancelDonation(){
-    showDonationForm.value = false;
-}
-
-function cancelEvent(){
-  showEventForm.value = false;
-}
-
-function cancelGrant(){
-  showGrantForm.value = false;
-}
-
-function openGrantorFormFromGrant(){
-    showGrantorForm.value = true;
-}
-
-function cancelGrantor(){
-    showGrantorForm.value = false;
-}
 
 // date range filters for the totals below
 const donationDateRange = ref<DateRangeValue>(null)
@@ -353,7 +128,7 @@ const filteredGrants = computed(() =>
 
 function filteredDonors() {
   const filtered: Donor[] = [];
-  filteredDonations.value.filter((donation) => { if (!filtered.includes(donation.donor)) filtered.push(donation.donor) })
+  filteredDonations.value.filter((donation) => { if (!filtered.includes(donation.donor) || true) filtered.push(donation.donor) })
   return filtered;
 }
 
@@ -395,7 +170,6 @@ const donationsDescription = computed(() =>
 const grantsDescription = computed(() =>
   countDescription(filteredGrants.value.length, filteredGrantors.length, 'grant', 'grantor', grantDateRange.value)
 )
-
 
 
 </script>

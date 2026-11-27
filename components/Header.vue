@@ -36,7 +36,7 @@ const { data: session } = await useAuth();
 const route = useRoute();
 const signedIn = computed(() => !!session.value?.session);
 const showDashboardBackArrow = computed(() => route.path !== '/dashboard');
-const backArrowDestination = computed(() => route.path.includes("/settings/roles") ? "/settings/accounts" : "/dashboard" )
+const backArrowDestination = computed(() => "/dashboard" )
 const toasts = useToast();
 
 async function signOut(){

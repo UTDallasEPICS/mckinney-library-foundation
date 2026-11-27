@@ -2,16 +2,22 @@
 <div class="pt-6 pb-2 px-8">
   <div class="flex items-center gap-3 max-w-7xl mx-auto">
   <button
-    class="bg-[#2c3e50] text-white px-4 py-2 rounded-md font-medium shadow-sm cursor-default"
+    class="bg-[#2c3e50] text-white px-4 py-2 rounded-md font-medium shadow-sm cursor-default form-button"
     disabled
   >
     Manage Accounts
   </button>
-
   <button
-    v-if="permissionLevel >= 2"
+    class="disabled:bg-slate-330 disabled:cursor-default bg-white border border-gray-300 text-[#2c3e50] px-4 py-2 rounded-md font-medium hover:bg-gray-50 transition shadow-sm form-button"
+    :disabled="permissionLevel < 1"
+    @click="navigateTo('/settings/roles')"
+  >
+    View Roles
+  </button>
+  <button
+    :disabled="permissionLevel < 2"
     @click="navigateTo('/settings/logs')"
-    class="bg-white border border-gray-300 text-[#2c3e50] px-4 py-2 rounded-md font-medium hover:bg-gray-50 transition shadow-sm"
+    class="disabled:bg-slate-330 disabled:cursor-default bg-white border border-gray-300 text-[#2c3e50] px-4 py-2 rounded-md font-medium hover:bg-gray-50 transition shadow-sm form-button"
   >
     View Audit Log
   </button>

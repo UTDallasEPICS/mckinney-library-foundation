@@ -10,7 +10,7 @@
       </button>
       <NuxtLink to="/donations/" default>
         <button class="px-3 py-1 rounded hover:bg-slate-600 transition cursor-pointer">
-          View Donation
+          View Donations
         </button>
       </NuxtLink>
       <NuxtLink to="/donations/donors">
