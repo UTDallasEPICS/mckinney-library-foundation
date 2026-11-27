@@ -14,6 +14,11 @@ export default defineEventHandler(async (event) =>{
 
         const body = await readBody(event);
         const bodyKeys = Object.keys(body ?? {});
+        const session = await requireSession(event, 2);
+
+        if (session.user.id !== id) {
+            throw createError({ statusCode: 403, statusMessage: "Forbidden" })
+        }
 
         const hasUnsupportedField = bodyKeys.some(
             (key) => !["permission", "status", "name", "email"].includes(key)
